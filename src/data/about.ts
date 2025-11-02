@@ -25,15 +25,8 @@ export const timeline: TimelineItem[] = [
     id: "spain-experience",
     year: "2021",
     title: "Studied in Spain",
-    description: "Immersive experience studying business and Spanish culture in Madrid. Expanded global perspective and cross-cultural communication skills.",
+    description: "Immersive experience studying business and Spanish culture in Bilbao. Expanded global perspective and cross-cultural communication skills.",
     type: "education",
-  },
-  {
-    id: "puente-launch",
-    year: "2021",
-    title: "Co-Founded Puente",
-    description: "Built communication platform connecting communities across borders, focusing on language accessibility.",
-    type: "business",
   },
   {
     id: "ppl",
@@ -42,23 +35,11 @@ export const timeline: TimelineItem[] = [
     description: "Completed initial flight training and earned Private Pilot certificate. Beginning of aviation journey.",
     type: "aviation",
   },
-  {
-    id: "uniquench-launch",
-    year: "2020",
-    title: "Founded UniQuench",
-    description: "Created sustainable hydration solution for college campuses. First entrepreneurial venture.",
-    type: "business",
-  },
 ];
 
 export const aboutContent = {
   intro: "I'm Noah Berman — a pilot, founder, and builder at the intersection of aviation and technology.",
-  mission: "I believe in building things that matter, whether it's training the next generation of pilots, creating technology that connects people, or exploring new frontiers in business and aviation.",
-  spanishStory: {
-    title: "The Spanish Chapter",
-    subtitle: "El Capítulo Español",
-    content: "Living and studying in Spain wasn't just an academic experience—it was a transformation. Immersed in Madrid's vibrant culture, I learned to think in two languages, see through two perspectives, and connect across two worlds. The Spanish approach to life—passionate, present, and deeply human—fundamentally shaped how I build businesses and connect with people. This cross-cultural fluency inspired Puente, my venture focused on bridging communication gaps, and continues to influence how I approach every project with warmth and cultural awareness.",
-  },
+  mission: "Building things that matter: training pilots, creating technology that connects people, and exploring new frontiers in business and aviation.",
   values: [
     {
       title: "Precision",

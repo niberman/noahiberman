@@ -33,29 +33,6 @@ export default function About() {
           </p>
         </motion.div>
 
-        {/* Spanish Story Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-5xl mx-auto mb-32"
-        >
-          <div className="bg-gradient-dusk rounded-3xl p-12 md:p-16 shadow-glow relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-secondary/20 to-transparent rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-display font-bold mb-3 text-primary-foreground">
-                {aboutContent.spanishStory.title}
-              </h2>
-              <p className="text-2xl md:text-3xl text-secondary font-display italic mb-8">
-                {aboutContent.spanishStory.subtitle}
-              </p>
-              <p className="text-xl text-primary-foreground/95 leading-relaxed">
-                {aboutContent.spanishStory.content}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Values */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -11,7 +11,6 @@ export function Navigation() {
     { path: "/about", label: "About" },
     { path: "/ventures", label: "Ventures" },
     { path: "/projects", label: "Projects" },
-    { path: "/blog", label: "Blog" },
     { path: "/contact", label: "Contact" },
   ];
 

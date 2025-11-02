@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Twitter, Mail, Plane } from "lucide-react";
+import { Github, Linkedin, Mail, Plane } from "lucide-react";
 
 export function Footer() {
   return (
@@ -42,11 +42,6 @@ export function Footer() {
                   Projects
                 </Link>
               </li>
-              <li>
-                <Link to="/blog" className="text-primary-foreground/80 hover:text-secondary transition-colors">
-                  Blog
-                </Link>
-              </li>
             </ul>
           </div>
           
@@ -83,15 +78,6 @@ export function Footer() {
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-6 w-6" />
-              </a>
-              <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-primary-foreground/70 hover:text-secondary transition-all hover:scale-110"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-6 w-6" />
               </a>
               <a 
                 href="mailto:noah@example.com" 

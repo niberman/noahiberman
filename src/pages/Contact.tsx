@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Linkedin, Github, Twitter } from "lucide-react";
+import { Mail, Linkedin, Github } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
@@ -144,17 +144,6 @@ export default function Contact() {
                     <Github className="h-6 w-6 text-secondary" />
                   </div>
                   <span className="text-base font-medium">GitHub</span>
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-muted/50 transition-all hover:scale-[1.02] group"
-                >
-                  <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center group-hover:bg-secondary/30 transition-colors">
-                    <Twitter className="h-6 w-6 text-secondary" />
-                  </div>
-                  <span className="text-base font-medium">Twitter</span>
                 </a>
               </CardContent>
             </Card>
