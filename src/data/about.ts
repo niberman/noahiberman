@@ -8,31 +8,52 @@ export interface TimelineItem {
 
 export const timeline: TimelineItem[] = [
   {
-    id: "cpl",
-    year: "2023",
-    title: "FAA Commercial Pilot License",
-    description: "Earned Commercial Pilot certification with Instrument and Multi-Engine ratings. Authorized to fly professionally.",
-    type: "aviation",
-  },
-  {
     id: "freedom-aviation-launch",
-    year: "2022",
+    year: "2025",
     title: "Founded Freedom Aviation",
     description: "Launched a modern flight training organization focused on personalized instruction and innovative teaching methods.",
     type: "business",
   },
   {
+    id: "commercial-multi",
+    year: "2025",
+    title: "Commercial Multi-Engine Rating",
+    description: "Added multi-engine rating to commercial certificate, enabling operations of multi-engine aircraft for commercial purposes.",
+    type: "aviation",
+  },
+  {
     id: "spain-experience",
-    year: "2021",
+    year: "2024-2025",
     title: "Studied in Spain",
     description: "Immersive experience studying business and Spanish culture in Bilbao. Expanded global perspective and cross-cultural communication skills.",
     type: "education",
   },
   {
+    id: "helicopter-ppl",
+    year: "2024",
+    title: "Helicopter Private Pilot License",
+    description: "Earned Private Pilot certificate for helicopters, expanding capabilities to rotorcraft operations.",
+    type: "aviation",
+  },
+  {
+    id: "cpl",
+    year: "2024",
+    title: "FAA Commercial Pilot License",
+    description: "Earned Commercial Pilot certification with Instrument rating. Authorized to fly professionally.",
+    type: "aviation",
+  },
+  {
     id: "ppl",
-    year: "2020",
+    year: "2023",
     title: "Private Pilot License",
     description: "Completed initial flight training and earned Private Pilot certificate. Beginning of aviation journey.",
+    type: "aviation",
+  },
+  {
+    id: "instrument-rating",
+    year: "2023",
+    title: "Instrument Rating",
+    description: "Earned Instrument Rating, enabling flight in instrument meteorological conditions (IMC) and expanding operational capabilities.",
     type: "aviation",
   },
 ];

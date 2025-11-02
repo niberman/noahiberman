@@ -60,6 +60,7 @@ export default function Ventures() {
                     {venture.link && (
                       <Button 
                         asChild 
+                        variant="secondary"
                         size="lg"
                         className="shrink-0 rounded-full group-hover:scale-105 transition-transform"
                       >

@@ -1,0 +1,398 @@
+ForeFlight Logbook Import,This row is required for importing into ForeFlight. Do not delete or modify.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Aircraft Table,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AircraftID,TypeCode,Year,Make,Model,GearType,EngineType,equipType (FAA),aircraftClass (FAA),complexAircraft (FAA),taa (FAA),highPerformance (FAA),pressurized (FAA),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N2168D,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N2099J,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N998DW,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+526ND,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N2117Y,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N3547L,C172,,Aviones Colombia,172,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N3547L,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N52993,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N333RX,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N9094H,C172,,Cessna Aircraft,,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N6694E,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N315DM,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N2168D,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N406JA,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N452SM,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N1132W,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N549ND,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N546ND,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N547ND,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N522ND,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N25CW,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N1201E,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N537ND,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N5290V,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N526ND,C172,,Cessna Aircraft,172S Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N561ND,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+76FF,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N121NG,DA40,,Diamond,DA40NG,fixed_tricycle,Diesel,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N225WS,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N580ET,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N71DA,DA40,,Diamond,DA40NG,fixed_tricycle,Diesel,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N75FF,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N224VS,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N514MT,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N6018K,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N3744Y,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N562ND,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N816RD,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N618MM,SR20,,Cirrus Aircraft,SR20,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N810KK,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N222IA,SR20,,Cirrus Aircraft,SR20,fixed_tricycle,Piston,aatd,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N555IA,SR22,,Cirrus Aircraft,SR22 G6,fixed_tricycle,Piston,aatd,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N579WG,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N412AG,S22T,,Cirrus Aircraft,SR22T G6,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N804HS,S22T,,Cirrus Aircraft,SR22T G5,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N285CS,C182,,Cessna Aircraft,182T Skylane,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N773GP,S22T,,Cirrus Aircraft,SR22T G5,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N779RJ,S22T,,Cirrus,SR22t,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N831WT,S22T,,Cirrus Aircraft,SR22T G6,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N697RM,R44,,Robinson,R44,skids,Piston,aircraft,rotorcraft_helicopter,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N584RH,R44,,Robinson,R-44 Raven,skids,Piston,aircraft,rotorcraft_helicopter,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N621TK,P28A,,Piper Aircraft,Archer TX,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N284L,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N284L,P28A,,Piper Aircraft,Archer LX,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N526LK,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N546B,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N909MA,P28A,,Piper Aircraft,PA-28-181 Archer II,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N284CS,C182,,Cessna Aircraft,182T Skylane,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N625HA,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N546B,P28A,,Piper Aircraft,PA-28-181 Archer II,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N99BG,BE55,,Beechcraft,Baron 95-55/A55,retractable_tricycle,Piston,aircraft,airplane_multi_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N555XD,BL8,,American Champion,Xtreme Decathlon 8KCAB,fixed_tailwheel,Piston,aircraft,airplane_single_engine_land,,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N84RJ,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N84RJ,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N64PW,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N703BK,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N703BK,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N35206,C82S,,Cessna Aircraft,T182T Turbo Skylane,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N555YS,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N916PB,C172,,Cessna Aircraft,172 Skyhawk,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,TRUE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N916PB,,,,,,,aircraft,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+N625HA,C82S,,Cessna Aircraft,T182T Turbo Skylane,fixed_tricycle,Piston,aircraft,airplane_single_engine_land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Flights Table , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , ,Deprecated: Do not edit manually,Deprecated: Do not edit manually,Deprecated: Do not edit manually,Deprecated: Do not edit manually,Deprecated: Do not edit manually
+Date,AircraftID,From,To,Route,TimeOut,TimeOff,TimeOn,TimeIn,OnDuty,OffDuty,TotalTime,PIC,SIC,Night,Solo,CrossCountry,PICUS,MultiPilot,IFR,Examiner,NVG,NVG Ops,Distance,ActualInstrument,SimulatedInstrument,HobbsStart,HobbsEnd,TachStart,TachEnd,Holds,Approach1,Approach2,Approach3,Approach4,Approach5,Approach6,DualGiven,DualReceived,SimulatedFlight,GroundTraining,GroundTrainingGiven,InstructorName,InstructorComments,Person1,Person2,Person3,Person4,Person5,Person6,PilotComments,Flight Review (FAA),IPC (FAA),Checkride (FAA),FAA 61.58 (FAA),NVG Proficiency (FAA),Takeoff Day,Landing Full-Stop Day,Landing Touch-and-Go Day,DayTakeoffs,DayLandingsFullStop,NightTakeoffs,NightLandingsFullStop,AllLandings
+2025-10-30,N625HA,KAPA,KAPA,KLXV KCFO,,,,,,,4.5,4.5,0.0,0.0,0.0,4.5,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,3,3,,3,3,0,0,3
+2025-10-28,N625HA,KAPA,KAPA,KLAR,,,,,,,2.8,0.0,0.0,0.0,0.0,2.8,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,,,,,"""Right seat (derrick Vo left seat)""",,,,,,2,2,,2,2,0,0,2
+2025-10-23,N916PB,KAPA,KAPA,KFNL,,,,,,,1.7,1.7,0.0,0.0,0.0,1.7,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,2,1,1,2,1,0,0,2
+2025-09-29,N555YS,KAPA,KAPA,18V KFNL,,,,,,,2.5,2.5,0.0,0.0,0.0,1.2,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,1.2,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,Derrick Vo;Safety Pilot;;,,,,,,,,,,,,,,,5,0,0,0,5
+2025-09-26,N625HA,KAPA,KAPA,KASE,,,,,,,3.0,3.0,0.0,0.0,0.0,3.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2025-09-19,N35206,KAPA,KAPA,,,,,,,,0.5,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.5,0.0,0.0,0.0,Larry Hawkins,,,,,,,,"""Ground ops, takeoff, emergency procedures, real oil leak on wind shield declared emergency on initial upwind and returned to land""",,,,,,,,,1,1,0,0,1
+2025-09-15,N703BK,KAPA,KAPA,,,,,,,,1.7,1.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,0.0,Sean Comstock,,,,,,,,"""Right Seat: chandelles, steep spiral, 8s on pylons, lazy eights, emergency engine out""",,,,,,,,,1,1,0,0,1
+2025-09-04,N64PW,KAPA,KAPA,,,,,,,,1.8,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,0.0,Sean Comstock,"""Right seat, power off stalls, steep turns, normal landings """,,,,,,,"""Right Seat""",,,,,,,,,3,1,0,0,3
+2025-08-28,N84RJ,KAPA,KAPA,,,,,,,,1.2,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,0,0,1
+2025-08-19,N625HA,KAPA,KAPA,,,,,,,,0.8,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.8,0.0,0.0,0.0,"Lee R. Hill, Jr.","""C182T and C182 checkout. 0°, 20° and 30° Flap landings. """,,,,,,,,,,,,,,,,4,1,0,0,4
+2025-08-12,N625HA,KAPA,KAPA,,,,,,,,1.6,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,0.0,"Lee R. Hill, Jr.","""C182R check out. Slow flight, stalls, steep turns, steep descent. Emergency procedure.""",,,,,,,,,,,,,,,,6,1,0,0,6
+2025-08-01,N555XD,KAPA,KAPA,,,,,,,,1.3,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.5,0.0,Tien Luu,,,,,,,,"""Spin training, right hand yoke, power on/off stall, power on/off spin""",,,,,,,,,1,1,0,0,1
+2025-07-25,N99BG,KFNL,KFNL,,,,,,,,0.7,0.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.2,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 15;15;KFNL;;,,,,,,0.0,0.0,0.0,0.0,0.0,Dan Gimbel,,,,,,,,,,,,,,,,,2,2,0,0,2
+2025-07-24,N99BG,KLAR,KFNL,,,,,,,,1.5,0.0,0.0,0.0,0.0,1.5,0.0,0.0,0.0,0.0,0.0,0,0.00,0.5,0.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 33;33;KFNL;;,,,,,,0.0,1.5,0.0,0.0,0.0,Christopher Carroll,"""Checkride retraining: normal landing, single engine failure instrument approach, single engine failure during flight to include engine shutdown and restart, short field take off
+""",,,,,,,,,,,,,,,,4,4,0,0,4
+2025-07-24,N99BG,KFNL,KLAR,,,,,,,,1.5,0.0,0.0,0.0,0.0,1.5,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,2,1;RNAV (GPS) RWY 21;21;KLAR;;,,,,,,0.0,1.5,0.0,0.5,0.0,Christopher Carroll,"""Checkride retraining: normal landing, single engine failure instrument approach, single engine failure during flight to include engine shutdown and restart
+Ground training: discussed procedures regarding engine out, emergency situations and instrument refresher""",,,,,,,,,,,,,,,,1,1,0,0,1
+2025-07-23,N99BG,KFNL,KFNL,,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 33;33;KFNL;;,,,,,,0.0,1.6,0.0,0.0,0.0,Christopher Carroll,"""Checkride retraining: normal landing, single engine failure instrument approach, single engine failure during flight to include engine shutdown and restart""",,,,,,,,,,,,,,,,2,2,0,0,3
+2025-07-19,N546B,KAPA,KAPA,KCFO,,,,,,,2.1,2.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,3,1,0,0,3
+2025-07-08,N99BG,KBIL,KBIL,,,,,,,,1.8,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 28R;28R;KBIL;;,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""Checkride""",,,,,,,,,3,3,0,0,3
+2025-07-08,N99BG,KCYS,KCYS,KBIL,,,,,,,4.8,0.0,0.0,0.0,0.0,4.8,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,4.8,0.0,0.0,,Christopher Carroll,,,,,,,,,,,,,,,,,2,2,0,0,2
+2025-07-03,N99BG,KCYS,KCYS,,,,,,,,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.7,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 9;09;KCYS;;,1;RNAV (GPS) RWY 13;13;KCYS;;,,,,,0.0,2.2,0.0,0.0,,Christopher Carroll,,,,,,,,,,,,,,,,,4,4,0,0,4
+2025-07-02,N99BG,KCYS,KCYS,,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 13;13;KCYS;;,,,,,,0.0,1.7,0.0,0.0,,Christopher Carroll,,,,,,,,,,,,,,,,,1,1,0,0,1
+2025-06-26,N625HA,KAPA,KAPA,KCFO,,,,,,,3.1,3.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,,0.00,0.00,0.00,0.00,1,,,,,,,0.0,3.1,0.0,0.0,,Joseph Walko,,,,,,,,,,,,,,,,,7,1,0,0,7
+2025-06-21,N99BG,KCYS,KCYS,,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 13;13;KCYS;;,,,,,,0.0,1.6,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-06-21,N99BG,KCYS,KCYS,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 27;27;KCYS;;,,,,,,0.0,1.2,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,2,2,0,0,2
+2025-06-20,N99BG,KCYS,KCYS,,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,,0.5,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 27;27;KCYS;;,,,,,,0.0,1.7,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-06-19,N99BG,KCYS,KCYS,,,,,,,,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.8,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,4,4,0,0,4
+2025-06-19,N99BG,KCYS,KCYS,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,,1.0,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 27;27;KCYS;;,1;RNAV (GPS) RWY 27;27;KCYS;;,,,,,0.0,1.8,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-06-18,N99BG,KCYS,KCYS,,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-06-18,N99BG,KCYS,KCYS,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,1,1,0,0,1
+2025-06-17,N99BG,KCYS,KCYS,,,,,,,,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,1.0,0.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 9;09;KCYS;;,,,,,,0.0,2.0,0.0,,,Harold Reed,,,,,,,,,,,,,,,,,1,1,0,0,1
+2025-06-16,N99BG,KCYS,KCYS,,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Harold Reed,,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-06-14,N909MA,KAPA,KAPA,KCFO,,,,,,,2.1,2.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,1.8,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 26;26;KCFO;Reversionary mode;,1;RNAV (GPS) RWY 28;28;KAPA;;,1;LOC;26;KCFO;;,1;ILS OR LOC RWY 26;26;KCFO;;,,,0.0,2.1,0.0,0.0,,Nicholas Price,,,,,,,,,,,,,,,,,4,1,0,0,4
+2025-06-07,N546B,KAPA,KAPA,KPUB,,,,,,,2.1,2.1,0.0,0.0,0.0,2.1,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,2,1,0,0,2
+2025-06-06,N526LK,KAPA,KAPA,KCFO,,,,,,,2.4,2.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,1.6,0.4,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 35R;35R;KAPA;;,1;ILS OR LOC RWY 35;35;KCFO;;,,,,,0.0,2.4,0.0,0.0,,Nicholas Price,,,,,,,,,,,,,,,,,2,2,0,0,2
+2025-06-05,,KAPA,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,3.0,,,,,,,,,,"""Chad Pope CFI group ground 1: VOR, endorsements, glider exceptions""",,,,,,,,,0,0,0,0,0
+2025-05-23,N284L,KAPA,KAPA,KCFO,,,,,,,1.5,1.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Wyatt Haman,,,,,,,,,,,,,,,,,3,1,0,0,3
+2025-05-21,N621TK,KAPA,KAPA,,,,,,,,1.3,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Kristin Myren,,,,,,,,,,,,,,,,,3,1,0,0,3
+2025-01-08,N584RH,KBJC,KBJC,KEIK,,,,,,,1.6,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,David Dziura,"""Private RH Add on passed!""",,,,,,,,,,,,,,,,3,3,0,0,3
+2025-01-07,N584RH,KBJC,KBJC,KEIK,,,,,,,1.0,0.0,0.0,,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Ramon Brown,"""Reviewed deficiencies per notice of disapproval. Performed additional flight and ground instruction training per FAR 61.49.""",,,,,,,,,,,,,,,,3,3,0,0,3
+2025-01-06,N584RH,KBJC,KBJC,KEIK,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Ramon Brown,"""Autos, 180 autos, quick stop, hover autos""",,,,,,,,,,,,,,,,3,3,0,0,3
+2025-01-06,N584RH,KBJC,KBJC,KEIK,,,,,,,1.6,,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Ramon Brown,"""Autos,  180 autos, slopes, hover autos, hydraulics off landing 
+Check ride prep """,,,,,,,,,,,,,,,,3,3,0,0,3
+2025-01-02,N584RH,KBJC,KBJC,KEIK,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-12-31,N584RH,KBJC,KBJC,KEIK,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-12-29,N584RH,KBJC,KBJC,KEIK,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,5,5,0,0,5
+2024-12-28,N584RH,KBJC,KBJC,KEIK 18V,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Ramon Brown,,,,,,,,,,,,,,,,,5,5,0,2,7
+2024-12-27,N584RH,KBJC,KBJC,KEIK,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,4,4,0,0,4
+2024-12-23,N584RH,KBJC,KBJC,KGXY 18V,,,,,,,2.5,2.5,0.0,0.0,2.5,2.5,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,10,10,0,0,10
+2024-12-22,N584RH,KBJC,KBJC,KGXY KFNL 18V KEIK,,,,,,,2.7,2.7,0.0,0.0,2.7,2.7,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,10,10,0,0,10
+2024-12-21,N697RM,KBJC,KBJC,KGXY KFNL KEIK,,,,,,,3.1,0.0,0.0,3.1,0.0,3.1,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,3.1,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,0,0,13,13,13
+2024-12-21,N584RH,KBJC,KBJC,KEIK,,,,,,,1.2,0.6,0.0,0.0,0.6,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.6,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,6,6,0,0,6
+2024-12-20,N584RH,KBJC,KBJC,18V,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-12-19,N584RH,KBJC,KBJC,,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,"""Autorotation review""",,,,,,,,,1,1,0,0,1
+2024-12-18,N584RH,KBJC,KBJC,KEIK,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-12-17,N584RH,KBJC,KBJC,,,,,,,,0.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.6,0.0,0.0,,Jesse Guevara-Lehker,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-08-25,N831WT,KAPA,KAPA,KCOS KPUB,,,,,,,2.0,2.0,0.0,0.0,0.0,2.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.5,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 17L;17L;KCOS;;,,,,,,0.0,2.0,0.0,0.0,,Sean Comstock,,,,,,,,,,,,,,,,,7,1,0,0,7
+2024-08-24,N584RH,KBJC,KBJC,,,,,,,,0.6,0.6,0.0,0.0,0.6,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""Ramp solo, 3 takeoff and landing at towered airport""",,,,,,,,,3,3,0,0,3
+2024-08-21,N584RH,KBJC,KBJC,KEIK,,,,,,,2.0,1.1,0.0,0.0,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Robin Johnson,,,,,,,,"""Solo then dual steep approach and takeoff""",,,,,,,,,5,5,0,0,5
+2024-08-17,N584RH,KBJC,KBJC,18V,,,,,,,1.9,0.9,0.0,0.0,0.9,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Ramon Brown,"""18V solo with wind shift and runway change. Discuss offsite and how to determine wind direction. """,,,,,,,,,,,,,,,,9,9,0,0,9
+2024-08-16,N584RH,KBJC,KBJC,,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Brian Monroe,"""Great job, simulated ep offsite landings, high/ low reconnaissance, simulated engine failure in cruise, radio comm""",,,,,,,"""Offsite landings, EPs""",,,,,,,,,2,2,0,0,2
+2024-08-15,N584RH,KBJC,KBJC,KEIK,,,,,,,1.7,0.8,0.0,0.0,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-08-13,N584RH,KBJC,KBJC,KEIK,,,,,,,1.8,0.8,0.0,0.0,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,5,5,0,0,5
+2024-08-02,N584RH,18V,KBJC,,,,,,,,0.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.6,0.0,0.0,,Ramon Brown,"""Return to BJC from Solo flight.""",,,,,,,,,,,,,,,,1,1,0,0,1
+2024-08-02,N584RH,18V,18V,,,,,,,,0.3,0.3,0.0,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""First solo!""",,,,,,,,,3,3,0,0,3
+2024-08-02,N584RH,KBJC,18V,,,,,,,,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.5,0.0,0.0,,Ramon Brown,"""Normal flight to V18.""",,,,,,,,,,,,,,,,1,1,0,0,1
+2024-08-01,N584RH,KBJC,KBJC,KEIK,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Robin Johnson,,,,,,,,"""Pre solo review: low rotor rpm, simulated power failure off airport, pattern work, hydraulics off, governor off, straight in autorotation, 180 autorotation, max performance takeoff""",,,,,,,,,4,4,0,0,4
+2024-07-31,N584RH,KBJC,KBJC,,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Robin Johnson,,,,,,,,"""Off airport Forced landing: autorotation s turns, speed changes in auto, max range autorotation, aux fuel pump light on""",,,,,,,,,1,1,0,0,1
+2024-07-25,N697RM,KBJC,KBJC,KEIK,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Robin Johnson,,,,,,,,"""Vortex ring, running landing, hydraulics off landing, hover autos, quickstops""",,,,,,,,,3,3,0,0,3
+2024-07-24,N697RM,KBJC,KBJC,KEIK,,,,,,,1.2,,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Robin Johnson,,,,,,,,"""Straight in autorotation, 180 autorotation, quick stop, low rotor rpm recognition and recovery, mr temp light eps, clutch light ep, governor off with steep approach """,,,,,,,,,5,5,0,0,5
+2024-07-19,N584RH,KBJC,KBJC,KEIK,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Brian Monroe,,,,,,,,,,,,,,,,,5,5,0,0,5
+2024-07-18,N584RH,KBJC,KBJC,KEIK,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Robin Johnson,,,,,,,,"""Autorotation to power recovery, quick stops""",,,,,,,,,3,3,0,0,3
+2024-07-17,N697RM,KBJC,KBJC,,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Robin Johnson,,,,,,,,"""Autorotations, entry and rpm management with collective, and during turns""",,,,,,,,,1,1,0,0,1
+2024-07-13,N584RH,KBJC,KBJC,KEIK,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Ramon Brown,,,,,,,,"""Hover autos, quick stops, max performance take off, confined area takeoff and landing, steep turns, sloped takeoff and landing """,,,,,,,,,2,2,0,0,2
+2024-07-12,N584RH,KBJC,KBJC,KEIK,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Ramon Brown,,,,,,,,"""Hydraulics off, governor off maneuvers and landings""",,,,,,,,,4,4,0,0,4
+2024-07-11,N584RH,KBJC,KBJC,,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Robin Johnson,,,,,,,,"""Normal approach, steep approach, max performance takeoff""",,,,,,,,,5,5,0,0,5
+2024-07-09,N697RM,KBJC,KBJC,KEIK,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Robin Johnson,,,,,,,,"""Normal approaches, steep approaches, max performance take off with obstacle""",,,,,,,,,1,1,0,0,1
+2024-07-08,N697RM,KBJC,KBJC,KEIK,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Robin Johnson,,,,,,,,"""Pickups, set down, air taxi, normal approach, max performance takeoff, steep approach """,,,,,,,,,3,3,0,0,3
+2024-07-06,N584RH,KBJC,KBJC,KEIK,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Ramon Brown,,,,,,,,"""Normal approaches, pickup, set down, max and high performance takeoff and quick stops""",,,,,,,,,4,4,0,0,4
+2024-07-05,N697RM,KBJC,KBJC,KEIK,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Brian Monroe,,,,,,,,"""Accels and deccels, flight at various airspeeds, dissymmetry of lift, obstacle avoidance, traffic pattern operations, normal approach, normal takeoff, takeoff to a hover, landing from a hover, max performance takeoff and climb, checklist usage """,,,,,,,,,3,3,0,0,3
+2024-07-04,N779RJ,KAPA,KAPA,KASE,,,,,,,1.9,1.9,0.0,0.0,0.0,1.9,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2024-07-03,N697RM,KBJC,KBJC,KEIK,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Ramon Brown,,,,,,,,"""Normal approaches""",,,,,,,,,8,8,0,0,8
+2024-07-02,N697RM,KBJC,KBJC,KEIK,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Ramon Brown,,,,,,,,"""Normal approaches, hovering. """,,,,,,,,,8,8,0,0,8
+2024-07-01,N697RM,KBJC,KBJC,KEIK,,,,,,,0.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.8,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-06-24,N697RM,KBJC,KBJC,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Ramon Brown,"""Normal approaches, still needs work. Hovering, pickup, set down ok in light wind. """,,,,,,,,,,,,,,,,6,6,0,0,6
+2024-06-23,N831WT,KAPA,KAPA,KCOS KPUB,,,,,,,2.4,2.4,0.0,0.0,0.0,2.4,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,2.0,0.00,0.00,0.00,0.00,1,1;RNAV (GPS) RWY 29;29;1V6;Missed;,1;RNAV (GPS) RWY 33;33;KAEJ;Missed;,1;ILS OR LOC RWY 35R;35R;KAPA;;,1;ILS OR LOC RWY 17L;17L;KCOS;;,1;RNAV (GPS)-A;;KANK;Missed;,1;RNAV (GPS) RWY 8R;08R;KPUB;Hold fisher;,0.0,2.4,0.0,0.0,,Sean Comstock,"""Instrument Currency SAT.  Hold at FSHER""",,,,,,,,,,,,,,,,4,2,0,0,4
+2024-06-17,N697RM,KBJC,KBJC,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Logan Daehnick,"""Patternwork, normal takeoff, landing to a hover, setdowns """,,,,,,,,,,,,,,,,8,8,0,0,8
+2024-06-11,N697RM,KBJC,KBJC,KEIK,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Robin Johnson,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-06-10,N779RJ,KAPA,KAPA,KASE,,,,,,,2.3,2.3,0.0,0.0,0.0,2.3,0.0,0.0,0.0,0.0,0.0,0,0.00,0.5,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2024-06-07,N697RM,KBJC ,KBJC,KEIK,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Ramon Brown,,,,,,,,,,,,,,,,,5,5,0,0,5
+2024-06-06,N779RJ,KAPA,KAPA,KAEJ,,,,,,,1.7,1.7,0.0,0.0,0.0,1.7,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2024-06-02,N697RM,KBJC,KBJC ,KEIK,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Ramon Brown,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-06-01,N773GP,KAPA,KAPA,,,,,,,,1.3,1.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Keilidh McMath,,,,,,,,"""Turbo TOLs """,,,,,,,,,10,1,0,0,10
+2024-05-30,N697RM,KBJC,KBJC,KEIK,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Logan Daehnick,,,,,,,,,,,,,,,,,4,4,0,0,4
+2024-05-21,N697RM,KBJC,KBJC,,,,,,,,0.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.6,0.0,0.0,,Logan Daehnick,,,,,,,,,,,,,,,,,1,1,0,0,1
+2024-05-17,N285CS,KAPA,KAPA,,,,,,,,0.4,0.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,Greg Newman;Examiner;;,,,,,,"""Commercial power off 180 recheck pass""",,,,,,,,,1,1,0,0,1
+2024-05-16,N284CS,KAPA,KAPA,KBJC KEIK,,,,,,,1.9,1.9,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,,,,,,,,,,,,,,,,,,10,2,0,0,10
+2024-05-16,N284CS,KAPA,KAPA,KCFO,,,,,,,2.8,2.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.8,0.0,0.0,,Sean Comstock,"""Re-Training per 61.49 SAT""",,,,,,,,,,,,,,,,10,1,0,0,10
+2024-05-13,N284CS,KAPA,KAPA,KCFO,,,,,,,1.6,1.6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,Greg Newman;Examiner;;,,,,,,"""Commercial Checkride Fail Power off 180""",,,,,,,,,3,2,0,0,3
+2024-05-11,N284CS,KAPA,KAPA,KCFO,,,,,,,1.4,1.4,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Sean Comstock,"""Commercial Training per 61.129""",,,,,,,,,,,,,,,,10,1,0,0,10
+2024-05-10,N284CS,KAPA,KAPA,KBJC,,,,,,,1.7,1.7,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,6,1,0,0,6
+2024-05-09,N284CS,KAPA,KAPA,KCFO,,,,,,,2.2,2.2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.2,0.0,0.0,,Sean Comstock,"""Commercial checkride prep per 61.129""",,,,,,,,,,,,,,,,10,1,0,0,10
+2024-05-06,,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,4.0,,Sean Comstock,"""Mock Commercial Checkride - Reviewed codes CA.VI.A.K5b and CA.VI.B.K1 from Airman Knowledge Test Report""",,,,,,,,,,,,,,,,0,0,0,0,0
+2024-05-05,N284CS,KAPA,KAPA,,,,,,,,1.8,1.8,0.0,1.8,1.8,0.0,0.0,0.0,0.0,0.0,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,0,0,10,0,10
+2024-05-05,N284CS,KAPA,KAPA,,,,,,,,1.7,1.7,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,19,1,0,0,19
+2024-05-04,N284CS,KAPA,KAPA,KCFO,,,,,,,1.9,1.9,0.0,,0.0,0.0,0.0,0.0,0.0,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Sean Comstock,,,,,,,,,,,,,,,,,4,1,0,0,4
+2024-05-02,N284CS,KAPA,KAPA,KCFO,,,,,,,2.6,2.6,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.6,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,7,1,0,0,7
+2024-04-26,N285CS,KAPA,KAPA,,,,,,,,1.9,1.9,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,14,1,0,0,14
+2024-04-25,N285CS,KAPA,KAPA,,,,,,,,1.2,1.2,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Sean Comstock,"""Training per 61.129""",,,,,,,,,,,,,,,,1,1,0,0,1
+2024-04-23,N285CS,KAPA,KAPA,,,,,,,,1.3,1.3,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Sean Comstock,"""Training per 61.129""",,,,,,,,,,,,,,,,1,1,0,0,1
+2024-04-21,N285CS,KAPA,KAPA,KCFO,,,,,,,1.7,1.7,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,7,1,0,0,7
+2024-04-14,N285CS,KAPA,KAPA,18V KGXY,,,,,,,1.8,1.8,0.0,0.0,0.0,1.8,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Sean Comstock,"""Commercial training per 61.129""",,,,,,,,,,,,,,,,6,1,0,0,6
+2024-04-12,N285CS,KAPA,KAPA,KLIC,,,,,,,1.6,1.6,0.0,0.0,0.0,1.6,,,,,0.0,0,0.00,0.0,0.8,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 28;28;KAPA;;,,,,,,0.0,1.6,0.0,0.0,,Sean Comstock,"""Commercial Training per 61.129""",,,,,,,,,,,,,,,,3,1,0,0,3
+2024-04-11,N285CS,KAPA,KAPA,,,,,,,,1.5,1.5,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Sean Comstock,"""Commercial Training per 61.129""",,,,,,,,,,,,,,,,6,1,0,0,6
+2024-04-04,N284CS,KAPA,KAPA,18V KBJC,,,,,,,2.0,2.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Sean Comstock,"""Commercial Training per 61.129""",,,,,,,"""Commercial Training per 61.129""",,,,,,,,,7,1,0,0,7
+2024-03-21,N773GP,KAPA,KAPA,KASE,,,,,,,2.5,2.5,0.0,0.0,0.0,2.5,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2024-03-03,N804HS,KAPA,KASE,,,,,,,,1.3,1.3,0.0,0.0,0.0,1.3,,,,,0.0,0,0.00,0.0,0.7,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,Ethan Barber;Safety Pilot;;(802) 557-4819,,,,,,"""Safety pilot: Ethan barber """,,,,,,,,,1,1,0,0,1
+2024-02-29,N804HS,KAPA,KAPA,KASE,,,,,,,2.3,2.3,0.0,1.0,0.0,2.3,,,,,0.0,0,0.00,0.0,1.5,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,Ethan Barber;Safety Pilot;;(802) 557-4819,,,,,,"""Safety pilot: Ethan barber """,,,,,,,,,1,1,1,1,3
+2024-02-23,N831WT,KAPA,KAPA,KCOS KPUB,,,,,,,3.1,3.1,0.0,0.0,0.0,3.1,,,,,0.0,0,0.00,,2.5,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) Y RWY 35R;35R;KCOS;;,1;RNAV (GPS) RWY 17L;17L;KAPA;;,1;ILS OR LOC RWY 35R;35R;KCOS;;,,,,0.0,0.0,0.0,0.0,,,,Ethan Barber;Safety Pilot;;(802) 557-4819,,,,,,"""Safety pilot: Ethan Barber""",,,,,,,,,3,1,1,1,4
+2024-02-22,N831WT,KAPA,KAPA,KTEX,,,,,,,3.0,3.0,0.0,0.5,0.0,3.0,,,,,0.0,0,0.00,1.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,,0.0,0.0,,,,,,,,,,,,,,,,,,,2,1,0,1,2
+2024-02-18,N773GP,KAPA,KAPA,KPUB,,,,,,,2.3,2.3,0.0,1.0,0.0,2.3,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,4,1,1,1,4
+2024-02-08,N284CS,KAPA,KAPA,,,,,,,,0.7,0.7,0.0,0.7,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,0,0,3,3,3
+2024-02-05,N831WT,KAPA,KAPA,KASE KEGE KLXV,,,,,,,2.9,2.9,0.0,0.0,0.0,2.9,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.9,0.0,2.0,,Ian Howells,,,,,,,,,,,,,,,,,4,4,0,0,4
+2024-02-04,N804HS,KAPA,KAPA,KPUB,,,,,,,1.6,1.6,0.0,0.0,1.6,1.6,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,4,1,0,0,4
+2024-01-30,N412AG,KAPA,KAPA,KSBS,,,,,,,2.5,2.5,0.0,0.0,0.0,2.5,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.5,0.0,0.0,,Sean Comstock,,,,,,,,,,,,,,,,,3,3,0,0,3
+2024-01-28,N804HS,KAPA,KAPA,KRAP,,,,,,,4.7,4.7,0.0,0.0,0.0,4.7,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,2,0,0,2
+2024-01-27,N831WT,KAPA,KAPA,KCOS,,,,,,,1.9,1.9,0.0,1.9,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Sean Comstock,"""SR22T Transition Complete SAT""",,,,,,,,,,,,,,,,0,0,6,1,6
+2024-01-26,N831WT,KAPA,KAPA,KCPR,,,,,,,3.9,3.9,0.0,3.9,0.0,3.9,,,,,0.0,0,0.00,2.0,0.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 26;26;KCPR;;,1;RNAV (GPS) RWY 17L;17L;KAPA;;,,,,,0.0,3.9,0.0,0.0,,Sean Comstock,,,,,,,,,,,,,,,,,0,0,2,2,2
+2024-01-24,N773GP,KAPA,KAPA,,,,,,,,1.2,1.2,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 28;28;KAPA;;,1;RNAV (GPS) RWY 17L;17L;KAPA;;,,,,,0.0,1.2,0.0,0.0,,Bob Shank,,,,,,,,,,,,,,,,,5,2,0,0,5
+2024-01-23,N412AG,KAPA,KAPA,KLIC,,,,,,,1.7,1.7,0.0,0.0,0.0,1.7,,,,,0.0,0,0.00,0.0,0.3,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 17L;17L;KAPA;;,1;RNAV (GPS) RWY 16;16;KLIC;;,,,,,0.0,1.7,0.0,0.0,,Bob Shank,,,,,,,,,,,,,,,,,2,1,0,0,2
+2024-01-22,N284CS,KAPA,KAPA,,,,,,,,0.8,0.8,0.0,0.8,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,0,0,3,3,3
+2024-01-21,N804HS,KAPA,KAPA,,,,,,,,1.7,1.7,0.0,0.0,0.0,,,,,,0.0,0,0.00,,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Sarah Lion,,,,,,,,,,,,,,,,,13,1,0,0,13
+2024-01-20,N804HS,KAPA,KAPA,,,,,,,,2.1,2.1,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Sarah Lion,,,,,,,,,,,,,,,,,3,1,0,0,3
+2024-01-19,N412AG,KAPA,KAPA,KAKO,,,,,,,2.4,2.4,0.0,0.5,0.0,2.4,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,1.0,,Sarah Lion,,,,,,,,"""Aircraft power management, slow flight, steep turns, traffic pattern, normal landings, go-arounds""",,,,,,,,,3,0,0,0,3
+2024-01-17,N284CS,KAPA,KAPA,KCFO,,,,,,,0.9,0.9,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,1,0,0,2
+2024-01-05,N284CS,KAPA,KAPA,KCFO,,,,,,,1.8,1.8,0.0,0.0,,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.5,,Sean Comstock,,,,,,,,,,,,,,,,,10,1,0,0,10
+2024-01-03,N579WG,KBJC,KBJC,KLMO,,,,,,,0.9,0.9,0.0,0.5,0.5,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,1,1,2
+2023-12-30,N284CS,KAPA,KAPA,KBDU,,,,,,,1.6,1.6,0.0,0.7,1.6,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,1,1,2
+2023-12-30,N284CS,KAPA,KAPA,,,,,,,,1.0,1.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,2.0,,Sean Comstock,"""Flight Training per 61.129. Ground on Commercial Private vs Common Carriage.  Oxygen Requirements, Commercial Maneuvers.""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-12-29,N284CS,KAPA,KAPA,KPUB,,,,,,,2.3,2.3,0.0,1.0,0.0,2.3,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,1,1,2
+2023-12-27,N284CS,KAPA,KAPA,KCFO,,,,,,,1.5,1.5,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,1.2,0.00,0.00,0.00,0.00,1,1;RNAV (GPS) RWY 35;35;KCFO;;,1;LOC;35;KCFO;;,1;RNAV (GPS) RWY 28;28;KAPA;;CIRCLE,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""IFR checkride pass DPE: Greg Newman 3247490DPE  4/24""",,,,,,,,,2,1,0,0,2
+2023-12-22,N284CS,KAPA,KAPA,KBJC,,,,,,,2.6,2.6,0.0,1.6,0.0,0.0,,,,,0.0,0,0.00,,2.2,0.00,0.00,0.00,0.00,1,1;VOR DME-A;;KLMO;;,1;RNAV (GPS) RWY 17L;17L;KAPA;;,1;LOC;30R;KBJC;;,1;RNAV (GPS)-B;;KEIK;;,1;RNAV (GPS) RWY 29;29;KLMO;;,,0.0,2.6,0.0,0.0,,Sean Comstock,"""Instrument training per 61.65.  Mock Instrument checkride""",,,,,,,,,,,,,,,,1,0,2,1,3
+2023-12-21,N284CS,KAPA,KAPA,KGXY KBJC ,,,,,,,2.5,2.5,0.0,0.0,0.0,2.5,,,,,0.0,0,0.00,0.0,2.3,0.00,0.00,0.00,0.00,2,1;LOC;30R;KBJC;;,1;VOR-A;;KGXY;;,,,,,0.0,2.5,0.0,1.0,,Sean Comstock,"""Training per 61.65.  Ground on Knowledge Test codes IR.V.B.K1, IR.VI.B.K1, IR.VII.D.K2""",,,,,,,,,,,,,,,,4,1,0,0,4
+2023-12-20,N285CS,KAPA,KAPA,KFNL,,,,,,,2.1,2.1,0.0,0.0,0.0,2.1,,,,,0.0,0,0.00,0.0,2.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 10;10;KGXY;;CIRCLE,1;RNAV (GPS) RWY 28;28;KAPA;;,1;VOR-A;;KFNL;;,,,,0.0,2.1,0.0,0.0,,Sean Comstock,"""Instrument Training per 61.65""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-19,N285CS,KAPA,KAPA,KFNL KBJC ,,,,,,,2.2,2.2,0.0,0.5,0.0,2.2,,,,,0.0,0,0.00,0.0,2.0,0.00,0.00,0.00,0.00,0,2;LOC;30R;KBJC;;,1;RNAV (GPS) RWY 15;15;KFNL;;,1;ILS OR LOC RWY 35R;35R;KAPA;;,,,,0.0,2.2,0.0,2.0,,Sean Comstock,"""Training per 61.65.  Ground on Flight Planning, W&B, Airworthiness """,,,,,,,,,,,,,,,,2,0,0,1,2
+2023-12-18,N285CS,KAPA,KAPA,KGXY,,,,,,,2.1,2.1,0.0,0.0,0.0,2.1,,,,,0.0,0,0.00,0.0,2.0,0.00,0.00,0.00,0.00,0,1;ILS OR LOC DME RWY 35;35;KGXY;;,1;VOR-A;;KEIK;;CIRCLE,1;RNAV (GPS) RWY 29;29;KLMO;;,,,,0.0,2.1,0.0,0.0,,Samuel Walker,,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-17,N285CS,KAPA,KAPA,KFLY KTAD KMEJ,,,,,,,5.7,5.7,0.0,2.0,5.7,5.7,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,3,1,1,2,3
+2023-12-17,N285CS,KAPA,KAPA,KFNL KEIK,,,,,,,3.0,3.0,0.0,0.0,0.0,3.0,,,,,0.0,0,0.00,0.0,2.7,0.00,0.00,0.00,0.00,1,1;RNAV (GPS) RWY 15;15;KFNL;;,1;ILS OR LOC RWY 35R;35R;KAPA;;,1;VOR-A;;KEIK;;CIRCLE,1;LOC;30R;KBJC;;,1;RNAV (GPS) RWY 29;29;KLMO;;,,0.0,3.0,0.0,0.0,,Sean Comstock,"""Training per 61.65""",,,,,,,,,,,,,,,,3,1,0,0,3
+2023-12-16,N284CS,KAPA,KAPA,KPUB KCOS,,,,,,,3.5,3.5,0.0,0.0,0.0,3.5,,,,,0.0,0,0.00,0.0,3.1,0.00,0.00,0.00,0.00,1,1;ILS OR LOC RWY 8R;08R;KPUB;;,1;VOR RWY 17L;17L;KCOS;;,1;ILS OR LOC RWY 35R;35R;KAPA;;,,,,0.0,3.5,0.0,0.0,,Sean Comstock,"""Training per 61.65""",,,,,,,,,,,,,,,,5,2,0,0,5
+2023-12-15,N284CS,KEIK,KAPA,KCOS,,,,,,,1.9,1.9,0.0,0.0,0.0,1.9,,,,,0.0,0,0.00,0.0,1.7,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 35R;35R;KAPA;;,1;ILS OR LOC RWY 35R;35R;KCOS;;,,,,,0.0,1.9,0.0,0.0,,Sean Comstock,"""Instrument training per 61.65.  IFR XC Training""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-15,N284CS,KAPA,KEIK,KFNL,,,,,,,1.3,1.3,0.0,0.0,0.0,1.3,,,,,0.0,0,0.00,0.0,1.0,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 33;33;KFNL;;,1;VOR-A;34;KEIK;;CIRCLE,,,,,0.0,1.3,0.0,1.0,,Sean Comstock,"""Instrument Training per 61.65.  Ground on IFR Privileges, and Weather""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-13,N555IA,KAPA,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,1.4,0.00,0.00,0.00,0.00,1,1;VOR RWY 14;14;KDDC;;,1;ILS OR LOC RWY 14;14;KDDC;;,,,,,0.0,1.4,1.4,1.5,,Sean Comstock,"""Ground on Procedure Turns, Flight Instruments, ICEFLAGS""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-12-12,N555IA,KAPA,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,1.8,0.00,0.00,0.00,0.00,1,1;RNAV (GPS) RWY 33;33;KMTN;;,1;VOR DME-A;12;KLMO;;,1;VOR;15;KMTN;;,,,,0.0,1.8,1.8,2.0,,Sean Comstock,"""Ground on 91.175, WAAS, Circle to Land""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-12-11,N285CS,KAPA,KAPA,KLIC,,,,,,,2.1,2.1,0.0,0.0,0.0,2.1,,,,,0.0,0,0.00,0.0,1.7,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 28;28;KAPA;;,1;RNAV (GPS) RWY 16;16;KLIC;;CIRCLE,1;RNAV (GPS) RWY 34;34;KLIC;;,,,,0.0,2.1,0.0,0.0,,Sean Comstock,"""Instrument training per 61.65""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-07,N284CS,KAPA,KAPA,KGXY,,,,,,,1.9,1.9,0.0,0.0,0.0,1.9,,,,,0.0,0,0.00,0.0,1.5,0.00,0.00,0.00,0.00,0,1;VOR-A;17;KGXY;;CIRCLE,1;RNAV (GPS) RWY 17L;17L;KAPA;;,,,,,0.0,1.9,0.0,0.0,,Sean Comstock,"""Instrument Training per 61.65""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-12-06,N222IA,KAPA,KAPA,,,,,,,,,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,1.4,0.00,0.00,0.00,0.00,5,,,,,,,0.0,1.4,1.4,1.0,,Sean Comstock,"""Instrument Training per 61.65""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-11-30,N810KK,KBJC,KBJC,,,,,,,,2.2,2.2,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-11-27,N618MM,KAPA,KAPA,,,,,,,,1.0,1.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Sean Comstock,"""Slow Flight, Stalls, Steep Turns""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-11-22,N816RD,KBJC,KBJC,KLMO,,,,,,,0.8,0.8,0.0,0.3,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,0,1,1,2
+2023-11-12,N562ND,KBJC,KBJC,KCOS,,,,,,,2.3,2.3,0.0,0.0,0.0,2.3,,,,,0.0,0,0.00,0.0,2.0,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 12L;12L;KBJC;;,1;VOR RWY 17L;17L;KCOS;;,,,,,0.0,2.3,0.0,0.0,,Jacob Briggs,,,,,,,,,,,,,,,,,2,2,0,0,2
+2023-11-11,N810KK,KBJC,KBJC,KLMO,,,,,,,1.2,1.2,0.0,1.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,0,2,3,3
+2023-11-05,N3744Y,KBJC,KBJC,KSNY KGLD,,,,,,,5.1,5.1,0.0,4.0,0.0,5.1,,,,,0.0,0,0.00,,4.5,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 30;30;KGLD;;,1;VOR DME RWY 31;31;KSNY;;,1;RNAV (GPS) RWY 30R;30R;KBJC;;,,,,0.0,5.1,0.0,0.0,,Jacob Briggs,"""Long IFR XC""",,,,,,,,,,,,,,,,1,1,2,2,3
+2023-11-04,N6018K,KBJC,KBJC,KIBM,,,,,,,2.8,2.8,0.0,0.0,0.0,2.8,,,,,0.0,0,0.00,0.0,2.4,0.00,0.00,0.00,0.00,0,1;RNAV (GPS) RWY 12L;12L;KBJC;;,1;RNAV (GPS) RWY 28;28;KIBM;;,,,,,0.0,2.8,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-11-01,N514MT,KBJC,KBJC,,,,,,,,0.6,0.6,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-10-27,N224VS,KBJC,KBJC,KLMO,,,,,,,1.0,1.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,3,1,0,0,3
+2023-10-21,N561ND,KBJC,KBJC,KFMM,,,,,,,2.5,2.5,0.0,0.0,0.0,2.5,,,,,0.0,0,0.00,0.0,2.2,0.00,0.00,0.00,0.00,0,1;ILS OR LOC RWY 30R;30R;KBJC;;,1;RNAV (GPS) RWY 14;14;KFMM;;,,,,,0.0,2.5,0.0,0.0,,Anton Barlow,"""Instrument procedures, plate briefing, approach procedures, clearances """,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-10-19,N580ET,KBJC,KBJC,KLMO,,,,,,,1.8,1.8,0.0,1.8,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,0,0,3,3,3
+2023-10-14,N580ET,KBJC,KBJC,KFNL,,,,,,,1.6,1.6,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,3,1,0,0,3
+2023-10-13,N514MT,KBJC,KBJC,KLMO,,,,,,,1.0,1.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-10-05,N579WG,KBJC,KBJC,KLMO,,,,,,,1.0,1.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,,,,,,,,,,3,1,0,0,3
+2023-10-04,N3744Y,KBJC,KBJC,KLMO,,,,,,,0.8,0.8,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""First pax flight!""",,,,,,,,,2,1,0,0,2
+2023-09-30,N580ET,KBJC,KBJC,KLMO,,,,,,,1.3,1.3,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Dylan Wood,,,,,,,,,,,,,,,,,3,1,0,0,3
+2023-09-29,N526ND,KCPR,KBJC,,,,,,,,2.7,2.7,0.0,0.0,0.0,2.7,,,,,0.0,0,0.00,0.0,2.3,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.7,0.0,0.0,,Anton Barlow,"""Instrument xc training """,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-09-29,N526ND,KBJC,KCPR,,,,,,,,2.8,0.0,0.0,1.1,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.8,0.0,0.0,,Anton Barlow,"""Xc practice""",,,,,,,,,,,,,,,,0,1,1,0,1
+2023-09-29,N526ND,KCPR,KCPR,,,,,,,,1.5,1.5,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.2,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,,,,,,,,,"""Brian Parke Checkride 999996866""",,,,,,,,,3,2,0,0,3
+2023-09-28,N75FF,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep, emergency procedures""",,,,,,,,,,,,,,,,8,3,0,0,8
+2023-09-17,N5290V,KBJC,KBJC,KLMO,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep, all emergency procedures, risk management """,,,,,,,,,,,,,,,,4,3,0,0,4
+2023-09-15,N537ND,KBFF,KBJC,,,,,,,,1.6,0.0,0.0,0.0,0.0,1.6,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-09-14,N537ND,KBJC,KCPR,,,,,,,,2.8,0.0,0.0,2.3,,2.8,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.8,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,0,1,1,0,1
+2023-09-14,N537ND,KDGW,KBFF,,,,,,,,1.4,0.0,0.0,0.0,0.0,1.4,,,,,0.0,0,0.00,0.7,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-09-14,N537ND,KCPR,KDGW,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.6,,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-09-13,N537ND,KBJC,KBJC,KFNL,,,,,,,2.4,0.0,0.0,1.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Anton Barlow,"""Pvt checkride prep""",,,,,,,,,,,,,,,,8,1,0,0,8
+2023-09-12,N561ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,1.1,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Anton Barlow,"""Checkride prep ppl""",,,,,,,,,,,,,,,,6,4,0,0,6
+2023-09-09,N561ND,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep""",,,,,,,,,,,,,,,,7,1,0,0,7
+2023-09-07,N522ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep""",,,,,,,,,,,,,,,,12,1,0,0,12
+2023-09-06,N522ND,KBJC,KBJC,KFNL,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,,,Anton Barlow,"""Checkride prep ppl""",,,,,,,,,,,,,,,,9,1,0,0,9
+2023-09-03,N562ND,KBJC,KBJC,,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Anton Barlow,"""Pvt checkride prep""",,,,,,,,,,,,,,,,5,1,0,0,5
+2023-08-31,N547ND,KBJC,KBJC,KLMO,,,,,,,2.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Jacob Briggs,,,,,,,,,,,,,,,,,4,2,0,0,4
+2023-08-30,N6018K,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Anton Barlow,"""Private checkride prep and maneuvers """,,,,,,,,,,,,,,,,4,1,0,0,4
+2023-08-29,N562ND,KBJC,,,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Anton Barlow,"""Short field and soft field landings""",,,,,,,,,,,,,,,,12,1,0,0,12
+2023-08-28,N562ND,KBJC,KBJC,,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Anton Barlow,"""Private maneuvers and landings """,,,,,,,,,,,,,,,,5,4,0,0,5
+2023-08-24,N547ND,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Pvt check ride prep""",,,,,,,,,,,,,,,,5,5,0,0,5
+2023-08-22,N546ND,KBJC,KBJC,KFNL,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Anton Barlow,"""Pvt checkride prep
+""",,,,,,,,,,,,,,,,4,3,0,0,4
+2023-08-19,N537ND,KCPR,KBJC,,,,,,,,3.8,,0.0,0.0,0.0,3.8,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,3.8,0.0,0.0,,Jacob Briggs,"""Pvt check ride prep""",,,,,,,,,,,,,,,,3,3,0,0,3
+2023-08-19,N537ND,KBJC,KCPR,,,,,,,,2.8,0.0,0.0,2.8,0.0,2.8,,,,,0.0,0,0.00,,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.8,0.0,0.0,,Jacob Briggs,"""Pvt check ride prep""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-08-17,N561ND,KBJC,KBJC,KLMO,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,4,3,0,0,4
+2023-08-16,N561ND,KBJC,KBJC,,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,7,1,0,0,7
+2023-08-14,N561ND,KBJC,KBJC,KFNL,,,,,,,2.3,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.3,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,6,3,0,0,6
+2023-08-12,N547ND,KBJC,KBJC,KBDU,,,,,,,2.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep
+""",,,,,,,,,,,,,,,,3,3,0,0,3
+2023-08-11,N562ND,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""PVT Checkride prep
+""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-08-10,N549ND,KBJC,KBJC,KLMO,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Jacob Briggs,"""Pvt checkride prep""",,,,,,,,,,,,,,,,4,2,0,0,4
+2023-08-09,N522ND,KBJC,KBJC,,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Anton Barlow,"""Checkride Prep""",,,,,,,,,,,,,,,,3,3,0,0,3
+2023-08-07,N522ND,KBJC,KBJC,,,,,,,,0.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-08-04,N25CW,KBJC,KBJC,,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.4,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,George Edwards,"""PVT EOC pass""",,,,,,,,,,,,,,,,3,3,0,0,3
+2023-08-01,N537ND,KBJC,KBJC,,,,,,,,2.0,0.0,0.0,2.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Jacob Briggs,"""Night take off and landings""",,,,,,,,,,,,,,,,0,0,9,9,9
+2023-07-31,,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,1.0,,Jacob Briggs,,,,,,,,"""Missed acs codes, aerodynamics, W&B, stall and spin awareness, ADM""",,,,,,,,,0,0,0,0,0
+2023-07-30,N537ND,KBJC,KBJC,KAKO KEIK,,,,,,,2.8,2.8,0.0,0.0,2.8,2.8,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,"""Long solo XC""",,,,,,,,,,,,,,,,3,1,0,0,3
+2023-07-29,N537ND,KBJC,KBJC,,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Private pilot check ride profile. Unusual attitudes """,,,,,,,,,,,,,,,,4,1,0,0,4
+2023-07-28,N547ND,KBJC,KBJC,,,,,,,,2.1,,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Private pilot check ride prep""",,,,,,,,,,,,,,,,4,1,0,0,4
+2023-07-27,N547ND,KBJC,KBJC,,,,,,,,2.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Jacob Briggs,"""Private pilot maneuvers, TOLS""",,,,,,,,,,,,,,,,4,1,0,0,4
+2023-07-25,N547ND,KBJC,KBJC,,,,,,,,2.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Jacob Briggs,"""Soft field take off, power off stall, power on stall, slow flight, steep turns, s turns, turns around a point""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-07-24,N5290V,KBJC,KBJC,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Jacob Briggs,"""Soft fuel take off and landing, slow flight""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-07-21,N546ND,KBJC,KBJC,KAKO,,,,,,,2.9,0.0,0.0,0.0,0.0,2.9,,,,,0.0,0,0.00,0.4,1.6,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.9,0.0,0.0,,John Sauer,,,,,,,,,,,,,,,,,2,2,0,0,2
+2023-07-19,N547ND,KBJC,KBJC,,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Anton Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2023-07-18,N522ND,KBJC,KBJC,KLMO,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Jacob Briggs,"""Soft field landings""",,,,,,,,,,,,,,,,4,1,0,0,4
+2023-07-17,N549ND,KBJC,KBJC,KLMO,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Jacob Briggs,"""Soft field TOLS""",,,,,,,,,,,,,,,,6,6,0,0,6
+2023-07-16,N547ND,KBJC,KBJC,KLMO,,,,,,,2.0,0.0,,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Jacob Briggs,"""Soft field take off and landings""",,,,,,,,,,,,,,,,6,6,0,0,6
+2023-07-15,N547ND,KBJC,KBJC,KLMO,,,,,,,2.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.7,0.0,0.0,,Jacob Briggs,"""Soft field take off and landings """,,,,,,,,,,,,,,,,9,9,0,0,9
+2023-07-14,N561ND,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Short and soft field take off and landings""",,,,,,,,,,,,,,,,6,6,0,0,6
+2023-07-13,N561ND,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Jacob Briggs,"""Short field take offs and landings """,,,,,,,,,,,,,,,,5,1,0,0,5
+2023-07-12,N1201E,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Jacob Briggs,"""Take off and landing practice """,,,,,,,,,,,,,,,,8,1,0,0,8
+2023-07-11,,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,1.5,,Jacob Briggs,"""Airworthiness, night flying, systems""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-07-10,,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,1.8,,Jacob Briggs,"""Aeromedical factors """,,,,,,,"""Private pilot privileges and limitations, NTSB, AIM Regulations, vfr aeronautical charts""",,,,,,,,,0,0,0,0,0
+2023-06-29,,,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,2.0,,Jacob Briggs,"""Weather ground""",,,,,,,"""Weather ground""",,,,,,,,,0,0,0,0,0
+2023-06-28,N526ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Takeoffs and landings""",,,,,,,,,,,,,,,,7,1,0,0,7
+2023-06-26,N1132W,KBJC,KBJC,KLMO,,,,,,,1.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.9,0.0,0.0,,Jacob Briggs,"""Take offs and landings""",,,,,,,,,,,,,,,,5,1,0,0,5
+2023-06-23,N75FF,KBJC,KBJC,KCYS,,,,,,,2.4,0.0,0.0,2.4,0.0,2.4,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Jacob Briggs,"""100 NM night XC""",,,,,,,,,,,,,,,,0,0,2,1,2
+2023-06-20,N5290V,KBJC,KBJC,,,,,,,,1.7,1.7,0.0,0.0,1.7,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,"""Solo practice""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-06-19,N5290V,KBJC,KBJC,KFMM,,,,,,,2.0,2.0,,0.0,2.0,2.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,"""Solo XC""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-06-18,N549ND,KBJC,KBJC,KFMM,,,,,,,2.2,2.2,0.0,0.0,2.2,2.2,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,"""Xc solo""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-06-16,N75FF,KBJC,KBJC,KFMM,,,,,,,2.6,0.0,0.0,0.0,0.0,2.6,,,,,0.0,0,0.00,1.8,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.6,0.0,0.0,,Jacob Briggs,"""XC IMC flight""",,,,,,,,,,,,,,,,2,2,0,0,2
+2023-06-05,76FF,KBJC,KBJC,KLMO,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Hankyu Park,,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-05-31,N537ND,KBJC,KBJC,,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jacob Briggs,"""Intercepting and tracking VORs""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-05-26,,KBJC,,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.7,0.7,0.0,,Jacob Briggs,"""Emergency procedures""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-05-22,N561ND,KBJC,KBJC,KFMM,,,,,,,2.2,0.0,0.0,0.0,0.0,2.2,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.2,0.0,0.0,,Jacob Briggs,"""XC Practice, pilotage, dead reckoning, tracking VORs, opening closing VFR flight plan, flight following""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-05-17,N5290V,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,2.1,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""XC practice, pilotage and dead reckoning, VFR flight following""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-05-15,N6018K,KBJC,KBJC,KFMM,,,,,,,2.1,0.0,0.0,0.0,0.0,2.1,,,,,0.0,0,0.00,0.3,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""XC practice """,,,,,,,,,,,,,,,,2,2,0,0,2
+2023-05-07,N452SM,KBJC,KBJC,KCOS,,,,,,,2.2,0.0,0.0,0.0,0.0,2.2,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.2,0.0,0.0,,Jacob Briggs,"""XC Practice to KCOS, pilotage dead reckoning. """,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-05-03,N406JA,KBJC,KBJC,,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jacob Briggs,"""XC practice""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-04-30,N561ND,KBJC,KBJC,KCYS,,,,,,,2.2,0.0,0.0,,0.0,2.2,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.2,0.0,0.0,,Jacob Briggs,"""Pre solo XC practice. KBJC - KCYS - KBJC""",,,,,,,,,,,,,,,,2,2,0,0,2
+2023-04-16,N522ND,KBJC,KBJC,KCYS,,,,,,,2.4,0.0,0.0,0.0,0.0,2.4,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Jacob Briggs,"""XC from KBJC to KCYS with pilotage and dead reckoning""",,,,,,,,,,,,,,,,2,2,0,0,2
+2023-04-15,N561ND,KBJC,KBJC,KFNL,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jacob Briggs,"""Simulated engine out and XC practice""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-04-09,N561ND,KBJC,KBJC,,,,,,,,1.4,1.4,0.0,0.0,1.4,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,,,,,,,,,,,,,,,,,4,4,0,0,4
+2023-04-08,N546ND,KBJC,KBJC,,,,,,,,0.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.5,0.0,0.0,,Jacob Briggs,"""Pre solo pattern work""",,,,,,,,,,,,,,,,2,1,0,0,2
+2023-04-08,N546ND,KBJC,KBJC,,,,,,,,1.1,1.1,0.0,0.0,1.1,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,0.0,,Jacob Briggs,"""Towered solo at KBJC""",,,,,,,,,,,,,,,,6,6,0,0,6
+2023-04-07,N1201E,KBJC,KBJC,,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Jacob Briggs,"""Traffic pattern at towered airport KBJC""",,,,,,,,,,,,,,,,5,5,0,0,5
+2023-04-03,N1201E,KBJC,KBJC,,,,,,,,2.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.0,0.0,0.0,,Jacob Briggs,"""TOLs @ towered airport""",,,,,,,,,,,,,,,,6,6,0,0,6
+2023-03-29,N546ND,KBJC,KBJC,,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Jacob Briggs,"""Towered pattern work""",,,,,,,,,,,,,,,,2,2,0,0,2
+2023-03-26,N546ND,KBJC,KBJC,,,,,,,,1.1,,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Jacob Briggs,"""Full stop taxi backs at KBJC""",,,,,,,,,,,,,,,,3,3,0,0,3
+2023-03-23,N561ND,KBJC,KBJC,KLMO,,,,,,,2.1,0.5,0.0,0.0,0.5,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Jacob Briggs,"""Solo pattern work at KLMO. 6 landings""",,,,,,,"""6 solo take off and landings at KLMO""",,,,,,,,,10,5,0,0,10
+2023-03-21,N537ND,KBJC,KBJC,KFMM,,,,,,,2.2,0.0,0.0,0.0,0.0,2.2,,,,,0.0,0,66.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.2,0.0,0.0,,Jacob Briggs,,,,,,,,,,,,,,,,,3,2,0,0,3
+2023-03-12,N526ND,KBJC,KBJC,KLMO,,,,,,,1.4,0.4,0.0,0.0,0.4,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Jacob Briggs,"""First solo flight!""",,,,,,,,,,,,,,,,4,4,0,0,4
+2023-03-10,N537ND,KBJC,KBJC,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Hankyu Park,,,,,,,,"""Stage check pre solo passed""",,,,,,,,,1,1,0,0,1
+2023-03-03,N6018K,KBJC,,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Pre solo training: slow flight, ground reference maneuvers, power off stall, landings """,,,,,,,,,,,,,,,,2,1,0,0,2
+2023-03-02,N75FF,KBJC,KBJC,,,,,,,,0.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.0,0.0,1.5,,Jacob Briggs,"""Pre solo ground knowledge: Airworthiness, Safety procedures, Systems, in operative equipment, student pilot regs, wake turbulence avoidance, weight and balance, performance limitations, wind shear awareness and recovery, v speeds, airspace, and weather""",,,,,,,,,,,,,,,,0,0,0,0,0
+2023-02-24,N75FF,KBJC,KBJC,KLMO,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jacob Briggs,"""Pre solo Situational awareness flight """,,,,,,,,,,,,,,,,2,2,0,0,2
+2023-02-17,N522ND,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Ground reference maneuvers and stalls""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-02-16,N522ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Ground reference maneuvers and TOLs""",,,,,,,,,,,,,,,,3,0,0,0,2
+2023-02-11,N549ND,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Jacob Briggs,"""Pre solo training. Ground reference maneuvers. Power on stall. Take off and landings """,,,,,,,,,,,,,,,,3,1,0,0,3
+2023-02-10,N1132W,KBJC,KBJC,,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Jacob Briggs,"""Power off stall, power on stall, slow flight, and turns around a point.""",,,,,,,,,,,,,,,,1,1,0,0,1
+2023-01-31,N546ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Jacob Briggs,"""Normal take off and landings at KLMO, 1 Go Around""",,,,,,,,,,,,,,,,8,1,0,0,8
+2023-01-24,N537ND,KBJC,KBJC,KLMO,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Jacob Briggs,"""Take off and landings at KLMO""",,,,,,,,,,,,,,,,6,2,0,0,4
+2023-01-13,N537ND,KBJC,KBJC,KLMO,,,,,,,1.7,0.0,0.0,0.7,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Jacob Briggs,"""Normal take off and landings and 1 short approach""",,,,,,,,,,,,,,,,4,0,4,1,7
+2023-01-12,N522ND,KBJC,KBJC,KLMO,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Jacob Briggs,,,,,,,,"""Normal Take off and landings at KLMO """,,,,,,,,,8,1,0,0,8
+2022-12-13,N522ND,KBJC,KBJC,,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Jacob Briggs,"""Takeoff and Landings at KBJC""",,,,,,,,,,,,,,,,6,1,0,0,6
+2022-12-10,N2168D,KBJC,KBJC,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Jacob Briggs,"""Normal Takeoff and landings at KBJC""",,,,,,,,,,,,,,,,6,1,0,0,6
+2022-12-03,N562ND,KBJC,KBJC,KLMO,,,,,,,1.5,0.0,0.0,0.6,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,,,Jacob Briggs,"""TOL's day/night""",,,,,,,,,,,,,,,,3,0,3,1,7
+2022-09-15,N315DM,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Luke Kuberski,"""Slow flight, stalls, engine fire, engine failure, simulated power off landing, ground reference man. """,,,,,,,,,,,,,,,,1,0,0,0,0
+2022-09-09,N225WS,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Luke Kuberski,"""Simulated emergency landing, landing practice, normal takeoff, steep turns, lost procedures""",,,,,,,,,,,,,,,,6,1,0,0,6
+2022-07-14,N2117Y,KBJC,KBJC,KLMO,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Luke Kuberski,"""Stalls ,slow flight, steep turns, emergency descent, pattern work""",,,,,,,,,,,,,,,,3,1,0,0,3
+2022-04-24,N561ND,KBJC,KBJC,,,,,,,,0.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.7,0.0,0.0,,Luke Kuberski,"""Crosswind takeoff and landings, go arounds""",,,,,,,,,,,,,,,,2,1,0,0,2
+2022-04-21,N452SM,KBJC,KBJC,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Luke Kuberski,"""Crosswind takeoff and landings, no flap landings, simulated engine failure to land, full stop taxi backs """,,,,,,,,,,,,,,,,4,2,0,0,4
+2022-04-19,N549ND,KBJC,KBJC,,,,,,,,0.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Luke Kuberski,"""Landing practice""",,,,,,,,,,,,,,,,5,0,0,0,5
+2022-04-03,N452SM,KBJC,KBJC,KLMO,,,,,,,1.2,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.2,0.0,0.0,,Luke Kuberski,"""Steep turns, ground ref maneuvers, landings""",,,,,,,,,,,,,,,,2,1,0,0,2
+2022-03-27,N25CW,KBJC,KBJC,KLMO,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Luke Kuberski,"""Slow flight, stalls, steep turns, engine fire, landing practice """,,,,,,,,,,,,,,,,4,1,0,0,4
+2021-12-02,N1132W,KBJC,KBJC,KLMO,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Luke Kuberski,"""Steep turns, landing practice """,,,,,,,,,,,,,,,,8,1,0,0,8
+2021-11-30,N1132W,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.3,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Luke Kuberski,"""Landing practice, ground ref maneuvers """,,,,,,,,,,,,,,,,10,1,0,0,10
+2021-10-25,N561ND,KBJC,KBJC,,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Luke Kuberski,"""solo Pog check prep""",,,,,,,,,,,,,,,,2,1,0,0,2
+2021-10-18,N561ND,KBJC,KBJC,KLMO,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Luke Kuberski,"""Slow flight, stalls, normal takeoff and landings, ground reference maneuvers, emergency descent""",,,,,,,,,,,,,,,,6,1,0,0,6
+2021-10-15,N406JA,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Luke Kuberski,"""Landing practice, simulated engine failure in the pattern """,,,,,,,,,,,,,,,,8,1,0,0,8
+2021-10-11,N25CW,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Luke Kuberski,"""Crosswind takeoff and landings, getting into and out of airports, checklist usage""",,,,,,,,,,,,,,,,9,1,0,0,9
+2021-09-27,N25CW,KBJC,KBJC,KBDU KLMO KFNL KEIK,,,,,,,3.3,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,3.3,0.0,0.0,,Luke Kuberski,"""Emergency descent, engine failure, engine fire, no flap landing, alternator prob check prep""",,,,,,,,,,,,,,,,12,1,0,0,12
+2021-09-01,N526ND,KBJC,KBJC,,,,,,,,1.6,0.0,0.0,0.2,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Luke Kuberski,"""Normal takeoff and landings, stalls, slow flight, steep turns""",,,,,,,,,,,,,,,,8,1,0,0,8
+2021-08-28,N522ND,KBJC,KBJC,KLMO,,,,,,,1.6,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.6,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, emergency descents, normal takeoff and landings, go around, """,,,,,,,,,,,,,,,,6,1,0,0,6
+2021-08-23,N522ND,KBJC,KBJC,,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Luke Kuberski,"""Go arounds, normal takeoff and landings""",,,,,,,,,,,,,,,,9,1,0,0,9
+2021-08-22,N549ND,KBJC,KBJC,,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Luke Kuberski,"""Slow flight, stalls, steep turns, s turns, turns around a point, crosswind takeoff and landings""",,,,,,,,,,,,,,,,3,0,0,0,3
+2021-08-21,N522ND,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, normal takeoff and landings, """,,,,,,,,,,,,,,,,8,1,0,0,8
+2021-08-15,N546ND,KBJC,KBJC,KLMO,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Luke Kuberski,"""Engine failure at 3000, engine failure in the pattern, engine fire, emergency descent, forward slip, normal takeoff and landings""",,,,,,,,,,,,,,,,12,1,0,0,12
+2021-08-14,N522ND,KBJC,KBJC,KLMO,,,,,,,2.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.1,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, steep turns, forward slip to land, normal takeoff and landings""",,,,,,,,,,,,,,,,8,1,0,0,8
+2021-08-07,N546ND,KBJC,KBJC,KFNL KLMO,,,,,,,2.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,1.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.9,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, ground reference maneuvers, crosswind takeoff and landings, basic instrument maneuvers, GPS direct to nav IR""",,,,,,,,,,,,,,,,6,1,0,0,6
+2021-07-10,N406JA,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Luke Kuberski,"""Crosswind landings, go arounds, crosswind takeoffs""",,,,,,,,,,,,,,,,10,1,0,0,9
+2021-07-08,N537ND,KBJC,KBJC,KLMO,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.3,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Luke Kuberski,"""Landings, BAI maneuvers, using GPS DIRECT to function""",,,,,,,,,,,,,,,,4,1,0,0,4
+2021-07-07,N561ND,KBJC,KBJC,,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Kelsey Barlow,,,,,,,,,,,,,,,,,1,1,0,0,1
+2021-07-02,N522ND,KBJC,KBJC,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, steep turns""",,,,,,,,,,,,,,,,1,0,0,0,0
+2021-06-30,N998DW,KBJC,KBJC,,,,,,,,1.7,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.7,0.0,0.0,,Luke Kuberski,"""Steep turns, slow flight, stalls, ground reference maneuvers, forward slip""",,,,,,,,,,,,,,,,1,1,0,0,1
+2021-06-27,N2099J,KBJC,KBJC,,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.3,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Luke Kuberski,"""Stalls, slow flight, forward slip, normal takeoff and landings, """,,,,,,,,,,,,,,,,3,1,0,0,3
+2021-06-26,N315DM,KBJC,KBJC,,,,,,,,1.8,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.8,0.0,0.0,,Luke Kuberski,"""Slow flight, stalls, steep turns, ground reference maneuvers, normal takeoff and approaches, go-around""",,,,,,,,,,,,,,,,1,0,0,0,0
+2021-06-20,N315DM,KBJC,KBJC,,,,,,,,1.3,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.3,0.0,0.0,,Luke Kuberski,"""Stalls, rectangular course, turns around a point, crosswind approach to land, slow flight """,,,,,,,,,,,,,,,,0,0,0,0,0
+2021-06-13,N526ND,KBJC,KBJC,,,,,,,,2.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,2.4,0.0,0.0,,Luke Kuberski,"""Constant airspeed climbs and descents, normal takeoff, normal approach to land, stalls, slow flight""",,,,,,,,,,,,,,,,1,0,0,0,0
+2021-06-11,N2168D,KBJC,KBJC,,,,,,,,0.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Luke Kuberski,"""Constant airspeed climbs and descents, stalls, normal takeoff, normal approach to land """,,,,,,,,,,,,,,,,1,0,0,0,0
+2021-06-05,N315DM,KBJC,KBJC,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,,,Luke Kuberski,,,,,,,,"""Normal takeoff, constant airspeed climbs and descents, leveling off, slow flight, stalls, cruise flight, normal approach to landing """,,,,,,,,,0,0,0,0,0
+2021-05-29,N1201E,KBJC,KBJC,,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Michell Eiben,,,,,,,,,,,,,,,,,1,0,0,0,0
+2021-05-25,N71DA,KASE,KASE,,,,,,,,1.5,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.5,0.0,0.0,,Shaun DeWolfe,,,,,,,,"""Slow flight, power on power off stalls, takeoffs, landings.""",,,,,,,,,4,1,0,0,4
+2021-05-14,N71DA,KASE,KASE,,,,,,,,1.1,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.1,0.0,0.0,,Shaun DeWolfe,,,,,,,,,,,,,,,,,1,1,0,0,1
+2021-05-11,N71DA,KASE,KASE,,,,,,,,1.4,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.4,0.0,0.0,,Shaun DeWolfe,,,,,,,,,,,,,,,,,2,1,0,0,2
+2021-05-08,N121NG,KASE,KASE,,15:41,16:11,16:38,16:53,,,0.9,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,0.9,0.0,0.0,,Shaun DeWolfe,,,,,,,,,,,,,,,,,1,1,0,0,1
+2021-05-04,N121NG,KASE,KASE,,,,,,,,1.0,0.0,0.0,0.0,0.0,0.0,,,,,0.0,0,0.00,0.0,0.0,0.00,0.00,0.00,0.00,0,,,,,,,0.0,1.0,0.0,0.0,,Shaun DeWolfe,,,,,,,,,,,,,,,,,2,1,0,0,2

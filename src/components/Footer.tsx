@@ -42,6 +42,11 @@ export function Footer() {
                   Projects
                 </Link>
               </li>
+              <li>
+                <Link to="/follow-my-flight" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                  Follow My Flight
+                </Link>
+              </li>
             </ul>
           </div>
           
