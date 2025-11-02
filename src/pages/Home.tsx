@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Plane } from "lucide-react";
+import { ArrowRight, Plane, Laptop, Globe, Rocket } from "lucide-react";
 import { FlightPath } from "@/components/FlightPath";
 import { useRef } from "react";
 
@@ -146,7 +146,7 @@ export default function Home() {
                 title: "Aviation",
                 spanish: "Aviación",
                 description: "Training the next generation of pilots with modern methods and technology.",
-                icon: "✈️",
+                Icon: Plane,
                 colSpan: "lg:col-span-5",
                 delay: 0
               },
@@ -154,7 +154,7 @@ export default function Home() {
                 title: "Technology",
                 spanish: "Tecnología",
                 description: "Building software solutions that solve real problems for real people.",
-                icon: "💻",
+                Icon: Laptop,
                 colSpan: "lg:col-span-7",
                 delay: 0.1
               },
@@ -162,7 +162,7 @@ export default function Home() {
                 title: "Cultural Connection",
                 spanish: "Conexión Cultural",
                 description: "Bridging worlds through bilingual ventures that unite communities.",
-                icon: "🌍",
+                Icon: Globe,
                 colSpan: "lg:col-span-7",
                 delay: 0.2
               },
@@ -170,7 +170,7 @@ export default function Home() {
                 title: "Entrepreneurship",
                 spanish: "Emprendimiento",
                 description: "Creating ventures that combine passion with purpose and innovation.",
-                icon: "🚀",
+                Icon: Rocket,
                 colSpan: "lg:col-span-5",
                 delay: 0.3
               },
@@ -184,8 +184,8 @@ export default function Home() {
                 className={`${item.colSpan} group`}
               >
                 <div className="bg-gradient-card p-10 rounded-3xl shadow-elegant hover:shadow-glow transition-all duration-500 hover:scale-[1.02] h-full border border-border/50">
-                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {item.icon}
+                  <div className="mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <item.Icon className="h-16 w-16 text-secondary" />
                   </div>
                   <h3 className="text-3xl font-bold mb-2">{item.title}</h3>
                   <p className="text-lg text-secondary font-display italic mb-4">
