@@ -54,18 +54,26 @@ export const timeline: TimelineItem[] = [
 export const aboutContent = {
   intro: "I'm Noah Berman — a pilot, founder, and builder at the intersection of aviation and technology.",
   mission: "I believe in building things that matter, whether it's training the next generation of pilots, creating technology that connects people, or exploring new frontiers in business and aviation.",
+  spanishStory: {
+    title: "The Spanish Chapter",
+    subtitle: "El Capítulo Español",
+    content: "Living and studying in Spain wasn't just an academic experience—it was a transformation. Immersed in Madrid's vibrant culture, I learned to think in two languages, see through two perspectives, and connect across two worlds. The Spanish approach to life—passionate, present, and deeply human—fundamentally shaped how I build businesses and connect with people. This cross-cultural fluency inspired Puente, my venture focused on bridging communication gaps, and continues to influence how I approach every project with warmth and cultural awareness.",
+  },
   values: [
     {
       title: "Precision",
       description: "From the cockpit to the codebase, attention to detail matters.",
+      spanish: "Precisión",
     },
     {
       title: "Innovation",
       description: "Constantly seeking better ways to solve problems and serve people.",
+      spanish: "Innovación",
     },
     {
-      title: "Growth",
-      description: "Always learning, always building, always moving forward.",
+      title: "Connection",
+      description: "Building bridges between cultures, people, and ideas.",
+      spanish: "Conexión",
     },
   ],
 };

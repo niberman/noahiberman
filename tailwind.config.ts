@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -111,6 +112,24 @@ export default {
             transform: "translateY(-10px)",
           },
         },
+        "draw-line": {
+          "0%": {
+            strokeDashoffset: "1000",
+          },
+          "100%": {
+            strokeDashoffset: "0",
+          },
+        },
+        "pulse-glow": {
+          "0%, 100%": {
+            opacity: "0.6",
+            transform: "scale(1)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1.05)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -118,14 +137,20 @@ export default {
         "fade-in": "fade-in 0.6s ease-out",
         "slide-up": "slide-up 0.6s ease-out",
         "float": "float 3s ease-in-out infinite",
+        "draw-line": "draw-line 2s ease-out forwards",
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
       },
       backgroundImage: {
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-dusk': 'var(--gradient-dusk)',
         'gradient-subtle': 'var(--gradient-subtle)',
+        'gradient-card': 'var(--gradient-card)',
+        'texture-overlay': 'var(--texture-overlay)',
       },
       boxShadow: {
         'elegant': 'var(--shadow-elegant)',
         'glow': 'var(--shadow-glow)',
+        'warm': 'var(--shadow-warm)',
       },
     },
   },
