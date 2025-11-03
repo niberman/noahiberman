@@ -88,6 +88,8 @@ CREATE POLICY "Allow public read access on flights" ON flights
   FOR SELECT USING (true);
 
 -- Contact messages: allow public to insert (submit messages) but not read
+-- Drop policy if it exists, then create it (for idempotency)
+DROP POLICY IF EXISTS "Allow public insert on contact_messages" ON contact_messages;
 CREATE POLICY "Allow public insert on contact_messages" ON contact_messages
   FOR INSERT WITH CHECK (true);
 

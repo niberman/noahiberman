@@ -19,12 +19,17 @@ export interface ContactMessageInput {
 export function useSubmitContactMessage() {
   return useMutation({
     mutationFn: async (message: ContactMessageInput) => {
+      console.log('Submitting contact message:', { name: message.name, email: message.email });
+      console.log('Supabase configured:', isSupabaseConfigured());
+      console.log('Supabase client:', supabase ? 'exists' : 'null');
+      
       if (!isSupabaseConfigured() || !supabase) {
-        // If Supabase isn't configured, still resolve but log a warning
-        console.warn('Supabase is not configured. Contact message not saved to database.');
-        return { ...message, id: 'local', created_at: new Date().toISOString() } as ContactMessage;
+        const errorMsg = 'Supabase is not configured. Contact message not saved to database.';
+        console.error(errorMsg);
+        throw new Error(errorMsg);
       }
 
+      console.log('Inserting into contact_messages table...');
       const { data, error } = await supabase
         .from('contact_messages')
         .insert({
@@ -35,7 +40,17 @@ export function useSubmitContactMessage() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insert error:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+        throw error;
+      }
+      
+      console.log('Contact message saved successfully:', data);
       return data as ContactMessage;
     },
   });

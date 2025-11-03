@@ -22,26 +22,33 @@ export default function Contact() {
     e.preventDefault();
     
     try {
-      await submitMessage.mutateAsync({
+      const result = await submitMessage.mutateAsync({
         name: formData.name,
         email: formData.email,
         message: formData.message,
       });
+      
+      console.log("Contact message submitted successfully:", result);
       
       toast({
         title: "Message sent!",
         description: "Thanks for reaching out. I'll get back to you soon.",
       });
       setFormData({ name: "", email: "", message: "" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting message:", error);
-      // Still show success to user even if database save fails
-      // The form submission attempt was made
-      toast({
-        title: "Message received!",
-        description: "Thanks for reaching out. I'll get back to you soon.",
+      console.error("Error details:", {
+        message: error?.message,
+        code: error?.code,
+        details: error?.details,
+        hint: error?.hint,
       });
-      setFormData({ name: "", email: "", message: "" });
+      
+      toast({
+        title: "Error sending message",
+        description: error?.message || "Failed to send message. Please try again or contact directly.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -114,7 +121,7 @@ export default function Contact() {
                     </div>
                     <Button 
                       type="submit" 
-                      className="w-full text-base py-6 rounded-full hover:scale-105 transition-transform"
+                      className="w-full text-base py-6 rounded-full hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
                       size="lg"
                       disabled={submitMessage.isPending}
                     >
