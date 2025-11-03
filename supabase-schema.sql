@@ -78,20 +78,35 @@ ALTER TABLE flights ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
 -- Example RLS policies (read-only for public, adjust as needed)
+-- Drop policies if they exist, then create them (for idempotency)
+DROP POLICY IF EXISTS "Allow public read access on ventures" ON ventures;
 CREATE POLICY "Allow public read access on ventures" ON ventures
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public read access on projects" ON projects;
 CREATE POLICY "Allow public read access on projects" ON projects
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Allow public read access on flights" ON flights;
 CREATE POLICY "Allow public read access on flights" ON flights
   FOR SELECT USING (true);
 
--- Contact messages: allow public to insert (submit messages) but not read
--- Drop policy if it exists, then create it (for idempotency)
+-- Contact messages: allow public to insert (submit messages) and select (needed for .select() after insert)
+-- Drop policies if they exist, then create them (for idempotency)
 DROP POLICY IF EXISTS "Allow public insert on contact_messages" ON contact_messages;
+DROP POLICY IF EXISTS "Allow public select on contact_messages" ON contact_messages;
+
+-- Allow anyone to insert contact messages
 CREATE POLICY "Allow public insert on contact_messages" ON contact_messages
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT 
+  WITH CHECK (true);
+
+-- Allow selecting the inserted row (needed when using .select() after insert)
+-- Note: This allows reading any row. If you want to restrict this, you can remove this policy
+-- and modify the code to not use .select() after insert
+CREATE POLICY "Allow public select on contact_messages" ON contact_messages
+  FOR SELECT 
+  USING (true);
 
 -- Note: If you need write access, create additional policies or disable RLS for development
 -- For production, you should set up proper authentication and authorization
