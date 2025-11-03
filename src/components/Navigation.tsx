@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
 import { Plane } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -48,8 +47,6 @@ export function Navigation() {
               </Link>
             ))}
           </div>
-          
-          <ThemeToggle />
         </div>
       </div>
     </motion.nav>

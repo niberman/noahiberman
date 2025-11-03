@@ -70,14 +70,24 @@ export default function Projects() {
                       </div>
                     </div>
                     
-                    {project.link && (
-                      <a
-                        href={project.link}
-                        className="inline-flex items-center text-base text-secondary hover:underline font-medium group-hover:translate-x-1 transition-transform"
-                      >
-                        View Project <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
-                    )}
+                    <div className="flex flex-col gap-2">
+                      {project.link && (
+                        <a
+                          href={project.link}
+                          className="inline-flex items-center text-base text-secondary hover:underline font-medium group-hover:translate-x-1 transition-transform"
+                        >
+                          View Project <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      )}
+                      {project.ventureLink && project.ventureName && (
+                        <a
+                          href={project.ventureLink}
+                          className="inline-flex items-center text-sm text-muted-foreground hover:underline font-medium group-hover:translate-x-1 transition-transform"
+                        >
+                          Developed for {project.ventureName} <ExternalLink className="ml-1 h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

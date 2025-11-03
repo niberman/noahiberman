@@ -7,6 +7,8 @@ export interface Project {
   technologies: string[];
   link?: string;
   image?: string;
+  ventureLink?: string;
+  ventureName?: string;
 }
 
 export const projects: Project[] = [
@@ -18,5 +20,16 @@ export const projects: Project[] = [
     year: "2025",
     technologies: ["React", "TypeScript", "Vercel", "Tailwind CSS"],
     link: "#",
+  },
+  {
+    id: "language-school-platform",
+    title: "Language School Platform",
+    description: "Web and mobile platform digitizing The Language School's curriculum. Integrates video lessons, AI conversation partner, homework correction, and bilingual job-matching feed.",
+    category: "EdTech / AI",
+    year: "2025",
+    technologies: ["React", "TypeScript", "Supabase", "OpenAI API", "Vercel"],
+    link: "https://app.thelanguageschool.us",
+    ventureLink: "https://thelanguageschool.us",
+    ventureName: "The Language School",
   },
 ];

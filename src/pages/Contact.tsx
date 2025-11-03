@@ -120,16 +120,16 @@ export default function Contact() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <a
-                    href="mailto:noah@example.com"
+                    href="mailto:noah@noahiberman.com"
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all hover:scale-[1.02] group"
                   >
                     <div className="h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center group-hover:bg-secondary/30 transition-colors flex-shrink-0">
                       <Mail className="h-5 w-5 text-secondary" />
                     </div>
-                    <span className="text-sm font-medium truncate">noah@example.com</span>
+                    <span className="text-sm font-medium truncate">noah@noahiberman.com</span>
                   </a>
                   <a
-                    href="https://linkedin.com"
+                    href="https://www.linkedin.com/in/noahiberman/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all hover:scale-[1.02] group"
@@ -140,7 +140,7 @@ export default function Contact() {
                     <span className="text-sm font-medium">LinkedIn</span>
                   </a>
                   <a
-                    href="https://github.com"
+                    href="https://github.com/niberman"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all hover:scale-[1.02] group"
@@ -165,7 +165,7 @@ export default function Contact() {
                 </CardHeader>
                 <CardContent>
                   <a
-                    href="https://calendly.com"
+                    href="https://calendly.com/noahberman14/meeting-with-noah-clone"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

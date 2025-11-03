@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
-import { useEffect, useState, useMemo } from "react";
+import { FlightMap } from "@/components/FlightMap";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 
@@ -49,7 +50,7 @@ export default function FollowMyFlight() {
       totalHours += flightHours;
       
       // Check for mountain flying
-      const route = flight.route.originCode + ' ' + flight.destinationCode + ' ' + (flight.description || '');
+      const route = flight.route.originCode + ' ' + flight.route.destinationCode + ' ' + (flight.description || '');
       const isMountainFlying = MOUNTAIN_AIRPORTS.some(airport => route.includes(airport));
       if (isMountainFlying) {
         mountainFlying += flightHours;
@@ -299,19 +300,31 @@ export default function FollowMyFlight() {
               </CardContent>
             </Card>
 
-            {/* Airport Map */}
+            {/* Interactive Flight Tracker */}
             <Card className="bg-gradient-card border-border/50">
               <CardHeader>
-                <CardTitle>Airports Visited</CardTitle>
-                <CardDescription>All airports flown to or from ({chartData.airports.length} unique)</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Plane className="h-5 w-5 text-secondary" />
+                  Interactive Flight Tracker
+                </CardTitle>
+                <CardDescription>
+                  Explore your flight routes on a 3D map ({chartData.airports.length} unique airports)
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] w-full rounded-lg overflow-hidden bg-muted/10 border border-border/20 flex items-center justify-center">
-                  <iframe
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=-115%2C35%2C-100%2C45&amp;layer=mapnik&amp;marker=39.5,-105"
-                    className="w-full h-full border-0"
-                    style={{ pointerEvents: 'auto' }}
-                  />
+                <div className="h-[300px] w-full">
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-full flex items-center justify-center bg-card/50">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary mx-auto mb-2"></div>
+                          <p className="text-sm text-muted-foreground">Loading map...</p>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <FlightMap />
+                  </Suspense>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {chartData.airports.slice(0, 15).map((airport, idx) => (
@@ -329,55 +342,6 @@ export default function FollowMyFlight() {
             </Card>
           </div>
 
-          {/* Key Metrics */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
-                    <p className="text-2xl font-bold text-primary-foreground">{chartData.mountainFlying}h</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)}% of total
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Unique Airports</p>
-                    <p className="text-2xl font-bold text-primary-foreground">{chartData.airports.length}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Different locations
-                    </p>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                    <MapPin className="h-6 w-6 text-secondary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Average Flight</p>
-                    <p className="text-2xl font-bold text-primary-foreground">
-                      {(parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)}h
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Per flight
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </motion.div>
 
         {/* Flight History Section */}

@@ -59,7 +59,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:noah@example.com" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                <a href="mailto:noah@noahiberman.com" className="text-primary-foreground/80 hover:text-secondary transition-colors">
                   Email
                 </a>
               </li>
@@ -67,7 +67,7 @@ export function Footer() {
             
             <div className="flex gap-4">
               <a 
-                href="https://github.com" 
+                href="https://github.com/niberman" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-primary-foreground/70 hover:text-secondary transition-all hover:scale-110"
@@ -76,7 +76,7 @@ export function Footer() {
                 <Github className="h-6 w-6" />
               </a>
               <a 
-                href="https://linkedin.com" 
+                href="https://www.linkedin.com/in/noahiberman/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-primary-foreground/70 hover:text-secondary transition-all hover:scale-110"
@@ -85,7 +85,7 @@ export function Footer() {
                 <Linkedin className="h-6 w-6" />
               </a>
               <a 
-                href="mailto:noah@example.com" 
+                href="mailto:noah@noahiberman.com" 
                 className="text-primary-foreground/70 hover:text-secondary transition-all hover:scale-110"
                 aria-label="Email"
               >

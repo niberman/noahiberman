@@ -52,9 +52,20 @@ export default function Ventures() {
                         <Badge className={`${statusColors[venture.status]} border text-sm px-3 py-1`}>
                           {venture.status}
                         </Badge>
+                        {venture.isNew && (
+                          <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-500/40 border text-sm px-3 py-1">
+                            NEW
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-lg text-muted-foreground mb-2">{venture.role}</p>
-                      <p className="text-base text-secondary font-display italic">{venture.year}</p>
+                      <p className="text-base text-secondary font-display italic mb-2">{venture.year}</p>
+                      {venture.subtitleEn && venture.subtitleEs && (
+                        <div className="mb-2">
+                          <p className="text-lg text-muted-foreground italic">{venture.subtitleEn}</p>
+                          <p className="text-base text-secondary font-display italic">{venture.subtitleEs}</p>
+                        </div>
+                      )}
                     </div>
                     
                     {venture.link && (
