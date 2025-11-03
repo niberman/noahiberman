@@ -64,6 +64,14 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/bfadf460-6ad7-404d-9f0b-aa1d666b1c6b) and click on Share -> Publish.
 
+### Environment Variables
+
+For Vercel deployment, make sure to set the following environment variable:
+
+- `VITE_MAPBOX_TOKEN`: Your Mapbox access token (get one at https://account.mapbox.com/)
+
+**Note**: Mapbox tokens are client-side tokens meant to be bundled into the JavaScript. This is expected behavior and the tokens include URL restrictions for security.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

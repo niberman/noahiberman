@@ -25,7 +25,13 @@ interface TooltipData {
   y: number;
 }
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
+// Mapbox token - must be set in Vercel environment variables as VITE_MAPBOX_TOKEN
+// Note: Client-side tokens are bundled into the JavaScript at build time, which is expected behavior for Mapbox
+// To configure in Vercel: Go to Project Settings > Environment Variables and add VITE_MAPBOX_TOKEN
+const getMapboxToken = (): string => {
+  const token = import.meta.env.VITE_MAPBOX_TOKEN;
+  return token || "";
+};
 
 export function FlightMap() {
   const mapRef = useRef<MapRef>(null);
@@ -370,7 +376,9 @@ export function FlightMap() {
     return (hours + minutes / 60).toFixed(1);
   };
 
-  if (!MAPBOX_TOKEN) {
+  const mapboxToken = getMapboxToken();
+  
+  if (!mapboxToken) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-card/50 rounded-lg border border-border/50">
         <div className="text-center p-8">
@@ -402,7 +410,7 @@ export function FlightMap() {
           ref={mapRef}
           {...viewState}
           onMove={(evt) => setViewState(evt.viewState)}
-          mapboxAccessToken={MAPBOX_TOKEN}
+          mapboxAccessToken={mapboxToken}
           style={{ width: "100%", height: "100%" }}
           mapStyle="mapbox://styles/mapbox/dark-v11"
           terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
