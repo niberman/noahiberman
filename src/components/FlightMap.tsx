@@ -381,14 +381,24 @@ export function FlightMap() {
   if (!mapboxToken) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-card/50 rounded-lg border border-border/50">
-        <div className="text-center p-8">
+        <div className="text-center p-8 max-w-md">
           <Plane className="h-12 w-12 text-secondary mx-auto mb-4" />
           <h3 className="text-lg font-display font-bold text-primary-foreground mb-2">
             Mapbox Token Required
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Set VITE_MAPBOX_TOKEN to view the interactive flight map.
+          <p className="text-sm text-muted-foreground mb-4">
+            To enable the interactive flight map, set the VITE_MAPBOX_TOKEN environment variable in Vercel.
           </p>
+          <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg text-left space-y-1">
+            <p className="font-semibold">Setup Instructions:</p>
+            <ol className="list-decimal list-inside space-y-1 ml-2">
+              <li>Go to your Vercel project settings</li>
+              <li>Navigate to Environment Variables</li>
+              <li>Add <code className="bg-background px-1 rounded">VITE_MAPBOX_TOKEN</code> with your Mapbox token</li>
+              <li>Enable for Production, Preview, and Development</li>
+              <li>Redeploy your project</li>
+            </ol>
+          </div>
         </div>
       </div>
     );
