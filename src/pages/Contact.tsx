@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Linkedin, Github, Calendar } from "lucide-react";
+import { Mail, Linkedin, Github, Calendar, Phone } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
@@ -127,6 +127,15 @@ export default function Contact() {
                       <Mail className="h-5 w-5 text-secondary" />
                     </div>
                     <span className="text-sm font-medium truncate">noah@noahiberman.com</span>
+                  </a>
+                  <a
+                    href="tel:9706182094"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all hover:scale-[1.02] group"
+                  >
+                    <div className="h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center group-hover:bg-secondary/30 transition-colors flex-shrink-0">
+                      <Phone className="h-5 w-5 text-secondary" />
+                    </div>
+                    <span className="text-sm font-medium">(970) 618-2094</span>
                   </a>
                   <a
                     href="https://www.linkedin.com/in/noahiberman/"
