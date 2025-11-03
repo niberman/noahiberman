@@ -629,7 +629,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 36m",
@@ -646,7 +646,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 0m",
@@ -663,7 +663,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 0m",
@@ -680,7 +680,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 36m",
@@ -697,7 +697,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 42m",
@@ -714,7 +714,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 18m",
@@ -731,7 +731,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 18m",
@@ -748,7 +748,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "2h 6m",
@@ -765,7 +765,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 24m",
@@ -782,7 +782,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "2h 30m",
@@ -799,7 +799,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "2h 42m",
@@ -833,7 +833,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 12m",
@@ -850,7 +850,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 24m",
@@ -867,7 +867,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 0m",
@@ -883,7 +883,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 0m",
@@ -900,7 +900,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "36m",
@@ -933,7 +933,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "36m",
@@ -949,7 +949,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "2h 0m",
@@ -966,7 +966,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 54m",
@@ -983,7 +983,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 6m",
@@ -999,7 +999,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 42m",
@@ -1016,7 +1016,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 48m",
@@ -1033,7 +1033,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "36m",
@@ -1049,7 +1049,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "18V",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "18m",
@@ -1065,7 +1065,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "18V",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "30m",
@@ -1081,7 +1081,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 30m",
@@ -1098,7 +1098,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 18m",
@@ -1149,7 +1149,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 6m",
@@ -1166,7 +1166,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 12m",
@@ -1200,7 +1200,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 24m",
@@ -1217,7 +1217,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 6m",
@@ -1234,7 +1234,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 6m",
@@ -1285,7 +1285,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Robinson R-44 Raven",
+      type: "Robinson R44",
       registration: "N584RH",
     },
     duration: "1h 12m",
@@ -2794,7 +2794,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "2h 42m",
@@ -2810,7 +2810,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KCPR",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "2h 48m",
@@ -2826,7 +2826,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KCPR",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "1h 30m",
@@ -2991,7 +2991,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 48m",
@@ -3008,7 +3008,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "2h 6m",
@@ -3107,7 +3107,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 42m",
@@ -3239,7 +3239,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "1h 42m",
@@ -3256,7 +3256,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 54m",
@@ -3272,7 +3272,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "54m",
@@ -3288,7 +3288,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N25CW",
     },
     duration: "2h 6m",
@@ -3417,7 +3417,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "2h 54m",
@@ -3450,7 +3450,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 12m",
@@ -3467,7 +3467,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "1h 54m",
@@ -3552,7 +3552,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1201E",
     },
     duration: "1h 36m",
@@ -3569,7 +3569,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "1h 48m",
@@ -3586,7 +3586,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1132W",
     },
     duration: "1h 54m",
@@ -3653,7 +3653,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "2h 12m",
@@ -3771,7 +3771,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N452SM",
     },
     duration: "2h 12m",
@@ -3821,7 +3821,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "2h 24m",
@@ -3871,7 +3871,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "30m",
@@ -3887,7 +3887,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 6m",
@@ -3903,7 +3903,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1201E",
     },
     duration: "1h 18m",
@@ -3919,7 +3919,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1201E",
     },
     duration: "2h 0m",
@@ -3935,7 +3935,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 0m",
@@ -3951,7 +3951,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 6m",
@@ -4001,7 +4001,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "1h 24m",
@@ -4051,7 +4051,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 48m",
@@ -4067,7 +4067,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 48m",
@@ -4084,7 +4084,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "1h 36m",
@@ -4101,7 +4101,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1132W",
     },
     duration: "2h 6m",
@@ -4117,7 +4117,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 48m",
@@ -4168,7 +4168,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 30m",
@@ -4185,7 +4185,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 12m",
@@ -4234,7 +4234,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N315DM",
     },
     duration: "1h 48m",
@@ -4267,7 +4267,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N2117Y",
     },
     duration: "1h 24m",
@@ -4300,7 +4300,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N452SM",
     },
     duration: "1h 30m",
@@ -4316,7 +4316,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "54m",
@@ -4332,7 +4332,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N452SM",
     },
     duration: "1h 12m",
@@ -4349,7 +4349,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N25CW",
     },
     duration: "1h 30m",
@@ -4366,7 +4366,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1132W",
     },
     duration: "1h 42m",
@@ -4383,7 +4383,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1132W",
     },
     duration: "2h 6m",
@@ -4450,7 +4450,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N25CW",
     },
     duration: "1h 36m",
@@ -4467,7 +4467,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N25CW",
     },
     duration: "3h 18m",
@@ -4484,7 +4484,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "1h 36m",
@@ -4500,7 +4500,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 36m",
@@ -4517,7 +4517,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 42m",
@@ -4533,7 +4533,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N549ND",
     },
     duration: "1h 24m",
@@ -4549,7 +4549,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 48m",
@@ -4565,7 +4565,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "1h 48m",
@@ -4582,7 +4582,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "2h 6m",
@@ -4599,7 +4599,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N546ND",
     },
     duration: "2h 54m",
@@ -4665,7 +4665,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N522ND",
     },
     duration: "1h 30m",
@@ -4681,7 +4681,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N998DW",
     },
     duration: "1h 42m",
@@ -4697,7 +4697,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N2099J",
     },
     duration: "1h 24m",
@@ -4713,7 +4713,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N315DM",
     },
     duration: "1h 48m",
@@ -4729,7 +4729,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N315DM",
     },
     duration: "1h 18m",
@@ -4745,7 +4745,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N526ND",
     },
     duration: "2h 24m",
@@ -4777,7 +4777,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N315DM",
     },
     duration: "1h 30m",
@@ -4794,7 +4794,7 @@ export const flightHistory: Flight[] = [
       destinationCode: "KBJC",
     },
     aircraft: {
-      type: "Cessna Aircraft 172S Skyhawk",
+      type: "Cessna Aircraft 172 Skyhawk",
       registration: "N1201E",
     },
     duration: "1h 0m",

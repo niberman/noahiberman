@@ -7,14 +7,15 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 // Dynamically import Map components to avoid SSR issues  
 const Map = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.default || mod.Map })));
-const Source = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.Source })));
-const Layer = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.Layer })));
-const Marker = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.Marker })));
+
+// Import Source and Layer directly (they should work without lazy loading)
+import { Source, Layer, Marker } from "react-map-gl/mapbox";
 
 interface FlightRoute {
   flight: Flight;
   originCoords: [number, number];
   destinationCoords: [number, number];
+  destinationCode: string;
   arc: [number, number][];
 }
 
@@ -97,20 +98,37 @@ export function FlightMap() {
       
       // Process routes from description field to find intermediate destinations
       if (flight.description) {
+        // Match "Route: ..." pattern and extract all airport codes
+        // Handles formats like: "Route: KGXY KFNL 18V KEIK" or "Route: KASE KEGE KLXV"
         const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
         if (routeMatches) {
-          const routeString = routeMatches[1];
-          // Extract all airport codes (handles codes like KAPA, KBIL, 18V, 1V6)
+          const routeString = routeMatches[1].trim();
+          
+          // Extract all airport codes - improved regex to catch all formats
+          // Matches: KXXX (4 chars), XXX (3 chars like 18V), XX (2 chars)
+          // Also handles codes with numbers like K1V6, 1V6, etc.
           const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
+          
+          // Also try matching without word boundaries for edge cases
+          const additionalCodes = routeString.match(/([A-Z][A-Z0-9]{2,4})/g) || [];
+          
+          // Combine and deduplicate codes
+          const allCodes = new Set<string>();
+          [...airportCodes, ...additionalCodes].forEach(code => {
+            const upperCode = code.toUpperCase().trim();
+            // Valid airport codes are 2-4 characters, start with a letter
+            if (upperCode && upperCode.length >= 2 && upperCode.length <= 4 && /^[A-Z]/.test(upperCode)) {
+              allCodes.add(upperCode);
+            }
+          });
           
           // Create routes from KAPA to each unique airport in the route
           const visitedAirports = new Set<string>();
           
-          // Add airports from route description
-          airportCodes.forEach(code => {
-            const upperCode = code.toUpperCase().trim();
-            if (upperCode && upperCode.length >= 2 && upperCode !== "KAPA") {
-              visitedAirports.add(upperCode);
+          // Add all airports from route description (excluding KAPA as it's the origin)
+          allCodes.forEach(code => {
+            if (code !== "KAPA") {
+              visitedAirports.add(code);
             }
           });
           
@@ -120,6 +138,7 @@ export function FlightMap() {
           }
           
           // Create a route from KAPA to each visited airport
+          // This ensures every airport in the multi-stop flight gets a line from KAPA
           visitedAirports.forEach(airportCode => {
             const destCoords = getAirportCoordinates(airportCode);
             if (destCoords) {
@@ -128,8 +147,11 @@ export function FlightMap() {
                 flight,
                 originCoords: kapaCoords,
                 destinationCoords: destCoords,
+                destinationCode: airportCode,
                 arc,
               });
+            } else {
+              console.warn(`Missing coordinates for airport in route: ${airportCode} (from flight ${flight.id})`);
             }
           });
         } else {
@@ -142,6 +164,7 @@ export function FlightMap() {
                 flight,
                 originCoords: kapaCoords,
                 destinationCoords,
+                destinationCode: destCode,
                 arc,
               });
             }
@@ -157,6 +180,7 @@ export function FlightMap() {
               flight,
               originCoords: kapaCoords,
               destinationCoords,
+              destinationCode: destCode,
               arc,
             });
           }
@@ -164,32 +188,69 @@ export function FlightMap() {
       }
     });
 
-    console.log(`Processed ${routes.length} flight route segments out of ${flightHistory.length} flights`);
-    console.log(`Found ${airportsWithCoords.length} unique airports with coordinates out of ${uniqueAirports.length} total`);
+    const flightsFromKAPA = flightHistory.filter(f => f.route.originCode.toUpperCase().trim() === "KAPA");
+    console.log(`Found ${flightsFromKAPA.length} flights from KAPA out of ${flightHistory.length} total flights`);
+    console.log(`Processed ${routes.length} flight route segments from KAPA`);
     
-    // Log sample routes for debugging
+    if (routes.length === 0 && flightsFromKAPA.length > 0) {
+      console.warn("WARNING: Found flights from KAPA but created 0 routes!");
+      console.log("Sample flights from KAPA:", flightsFromKAPA.slice(0, 3).map(f => ({
+        id: f.id,
+        origin: f.route.originCode,
+        dest: f.route.destinationCode,
+        description: f.description?.substring(0, 50)
+      })));
+    }
+    
     if (routes.length > 0) {
-      console.log("Sample routes:", routes.slice(0, 5).map(r => ({
-        from: `${r.originCoords[0]},${r.originCoords[1]}`,
-        to: `${r.destinationCoords[0]},${r.destinationCoords[1]}`,
-        flight: r.flight.route.originCode + "->" + r.flight.route.destinationCode
+      console.log("Sample routes created:", routes.slice(0, 3).map(r => ({
+        destination: r.destinationCode,
+        coords: r.destinationCoords,
+        arcPoints: r.arc.length
+      })));
+    }
+    
+    // Log multi-stop flights for debugging
+    const multiStopFlights = flightsFromKAPA.filter(f => {
+      if (f.description) {
+        const routeMatch = f.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
+        if (routeMatch) {
+          const airports = routeMatch[1].match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
+          return airports.length > 1;
+        }
+      }
+      return false;
+    });
+    
+    if (multiStopFlights.length > 0) {
+      console.log(`Found ${multiStopFlights.length} multi-stop flights from KAPA`);
+      console.log("Sample multi-stop flights:", multiStopFlights.slice(0, 3).map(f => ({
+        id: f.id,
+        route: f.description,
+        destinations: routes.filter(r => r.flight.id === f.id).map(r => r.destinationCode)
       })));
     }
     
     return routes;
-  }, [airportsWithCoords.length, uniqueAirports.length]);
+  }, [flightHistory, airportsWithCoords, uniqueAirports]);
 
-  // Calculate bounds for all airports (not just routes)
+  // Show all airports (not just ones with routes from KAPA)
+  // Lines will only be drawn from KAPA, but all visited airports are displayed
+  const airportsToDisplay = useMemo(() => {
+    return airportsWithCoords;
+  }, [airportsWithCoords]);
+
+  // Calculate bounds for airports with routes (including KAPA and destinations)
   const bounds = useMemo(() => {
-    if (airportsWithCoords.length === 0) return null;
+    if (airportsToDisplay.length === 0) return null;
 
     let minLon = Infinity;
     let maxLon = -Infinity;
     let minLat = Infinity;
     let maxLat = -Infinity;
 
-    // Include all airports in bounds calculation
-    airportsWithCoords.forEach((airport) => {
+    // Include airports with routes in bounds calculation
+    airportsToDisplay.forEach((airport) => {
       const [lon, lat] = airport.coords;
       minLon = Math.min(minLon, lon);
       maxLon = Math.max(maxLon, lon);
@@ -198,7 +259,7 @@ export function FlightMap() {
     });
 
     return { minLon, maxLon, minLat, maxLat };
-  }, [airportsWithCoords]);
+  }, [airportsToDisplay]);
 
   // Immediately show all routes instead of waiting for animation
   useEffect(() => {
@@ -349,8 +410,19 @@ export function FlightMap() {
           reuseMaps
           onLoad={() => {
             console.log("Map loaded, rendering flight routes");
+            console.log(`Flight routes count: ${flightRoutes.length}`);
+            console.log(`Airports to display: ${airportsToDisplay.length}`);
             console.log(`Bounds: ${bounds?.minLon}, ${bounds?.minLat} to ${bounds?.maxLon}, ${bounds?.maxLat}`);
-            if (airportsWithCoords.length > 0 && mapRef.current && bounds) {
+            
+            if (flightRoutes.length > 0) {
+              console.log("Sample route:", {
+                origin: flightRoutes[0].flight.route.originCode,
+                destination: flightRoutes[0].destinationCode,
+                coordinates: flightRoutes[0].arc.length,
+              });
+            }
+            
+            if (airportsToDisplay.length > 0 && mapRef.current && bounds) {
               mapRef.current.fitBounds(
                 [
                   [bounds.minLon, bounds.minLat],
@@ -364,51 +436,56 @@ export function FlightMap() {
             }
           }}
         >
-          {/* Flight Routes - Clean Lines */}
-          {flightRoutes.map((route, routeIndex) => {
-            // Mapbox expects [longitude, latitude] format
-            const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
-            
-            // Create unique ID for each route segment
-            const routeId = `route-${route.flight.id}-${routeIndex}`;
-
-            return (
-              <Source
-                key={routeId}
-                id={`route-${routeId}`}
-                type="geojson"
-                data={{
-                  type: "Feature",
-                  geometry: {
-                    type: "LineString",
-                    coordinates: routeCoordinates,
-                  },
-                  properties: {
-                    flightId: route.flight.id,
-                    origin: route.flight.route.originCode,
-                    destination: route.flight.route.destinationCode,
-                  },
+          {/* Flight Routes - Combined into single GeoJSON source */}
+          {flightRoutes.length > 0 && (
+            <Source
+              id="all-flight-routes"
+              type="geojson"
+              data={{
+                type: "FeatureCollection",
+                features: flightRoutes.map((route, routeIndex) => {
+                  const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
+                  return {
+                    type: "Feature" as const,
+                    geometry: {
+                      type: "LineString" as const,
+                      coordinates: routeCoordinates,
+                    },
+                    properties: {
+                      flightId: route.flight.id,
+                      origin: route.flight.route.originCode,
+                      destination: route.destinationCode,
+                      routeIndex,
+                    },
+                  };
+                }).filter(f => f.geometry.coordinates.length >= 2),
+              }}
+            >
+              <Layer
+                id="flight-routes-layer"
+                type="line"
+                paint={{
+                  "line-color": "#a855f7",
+                  "line-width": 3,
+                  "line-opacity": 1,
                 }}
-              >
-                <Layer
-                  id={`route-${routeId}`}
-                  type="line"
-                  paint={{
-                    "line-color": "#a855f7",
-                    "line-width": 2.5,
-                    "line-opacity": 0.7,
-                  }}
-                  layout={{
-                    "line-cap": "round",
-                    "line-join": "round",
-                  }}
-                />
-              </Source>
-            );
-          })}
+                layout={{
+                  "line-cap": "round",
+                  "line-join": "round",
+                }}
+              />
+            </Source>
+          )}
+          
+          {/* Debug overlay */}
+          {flightRoutes.length === 0 && (
+            <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50">
+              No routes to display (flightRoutes.length: {flightRoutes.length})
+            </div>
+          )}
 
-          {/* All Unique Airport Markers */}
-          {airportsWithCoords.map((airport) => (
+          {/* Airport Markers - Only show airports with routes */}
+          {airportsToDisplay.map((airport) => (
             <Marker
               key={`airport-${airport.code}`}
               longitude={airport.coords[0]}

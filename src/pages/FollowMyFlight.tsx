@@ -63,11 +63,21 @@ export default function FollowMyFlight() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 8);
 
-    // Collect all unique airports
+    // Collect all unique airports (including from route descriptions)
     const airports = new Set<string>();
     flightHistory.forEach(flight => {
-      airports.add(flight.route.originCode);
-      airports.add(flight.route.destinationCode);
+      airports.add(flight.route.originCode.trim().toUpperCase());
+      airports.add(flight.route.destinationCode.trim().toUpperCase());
+      
+      // Also extract airports from route description
+      if (flight.description) {
+        const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
+        if (routeMatches) {
+          const routeString = routeMatches[1];
+          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
+          airportCodes.forEach(code => airports.add(code.toUpperCase().trim()));
+        }
+      }
     });
 
     return {
