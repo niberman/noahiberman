@@ -13,10 +13,10 @@ export const projects: Project[] = [
   {
     id: "flight-dispatch",
     title: "Freedom Aviation Dashboard",
-    description: "Modern dispatch application for flight schools. Real-time aircraft tracking, scheduling, and student management with intuitive mobile-first design.",
+    description: "Smart management platform for aircraft owners and pilots. Streamlined scheduling, maintenance tracking, and concierge coordination through a modern, intuitive dashboard.",
     category: "Aviation Tech",
-    year: "2023",
-    technologies: ["React", "TypeScript", "Firebase", "Tailwind CSS"],
+    year: "2025",
+    technologies: ["React", "TypeScript", "Vercel", "Tailwind CSS"],
     link: "#",
   },
 ];
