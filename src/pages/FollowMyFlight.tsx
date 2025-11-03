@@ -342,6 +342,56 @@ export default function FollowMyFlight() {
             </Card>
           </div>
 
+          {/* Key Metrics */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <Card className="bg-gradient-card border-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
+                    <p className="text-2xl font-bold text-primary-foreground">{chartData.mountainFlying}h</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)}% of total
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-card border-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Unique Airports</p>
+                    <p className="text-2xl font-bold text-primary-foreground">{chartData.airports.length}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Different locations
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                    <MapPin className="h-6 w-6 text-secondary" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-card border-border/50">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Average Flight</p>
+                    <p className="text-2xl font-bold text-primary-foreground">
+                      {(parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)}h
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Per flight
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
         </motion.div>
 
         {/* Flight History Section */}

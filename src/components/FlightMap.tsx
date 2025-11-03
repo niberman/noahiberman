@@ -76,70 +76,89 @@ export function FlightMap() {
   }, [uniqueAirports]);
 
   // Process flights into routes with coordinates
-  // This includes routes from origin->destination AND intermediate stops from the route description
+  // Only show routes FROM KAPA (Centennial) to each destination airport
   const flightRoutes = useMemo<FlightRoute[]>(() => {
     const routes: FlightRoute[] = [];
-    const routeSet = new Set<string>(); // Track unique routes to avoid duplicates
+    const kapaCoords = getAirportCoordinates("KAPA");
+
+    if (!kapaCoords) {
+      console.warn("KAPA coordinates not found!");
+      return routes;
+    }
 
     flightHistory.forEach((flight) => {
-      // Process direct origin -> destination route
-      if (flight.route.originCode !== flight.route.destinationCode) {
-        const originCoords = getAirportCoordinates(flight.route.originCode);
-        const destinationCoords = getAirportCoordinates(flight.route.destinationCode);
-
-        if (originCoords && destinationCoords) {
-          const routeKey = `${flight.route.originCode}-${flight.route.destinationCode}`;
-          if (!routeSet.has(routeKey)) {
-            routeSet.add(routeKey);
-            const arc = generateArc(originCoords, destinationCoords, 100);
-            routes.push({
-              flight,
-              originCoords,
-              destinationCoords,
-              arc,
-            });
-          }
-        }
+      const originCode = flight.route.originCode.toUpperCase().trim();
+      const destCode = flight.route.destinationCode.toUpperCase().trim();
+      
+      // Only process flights that start from KAPA
+      if (originCode !== "KAPA") {
+        return;
       }
-
-      // Process intermediate airports from route description
-      // Extract airport codes from description (e.g., "Route: KLXV KCFO - 3")
+      
+      // Process routes from description field to find intermediate destinations
       if (flight.description) {
         const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
         if (routeMatches) {
           const routeString = routeMatches[1];
-          // Extract all airport codes (3-4 letter codes)
-          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{2,3})\b/g) || [];
+          // Extract all airport codes (handles codes like KAPA, KBIL, 18V, 1V6)
+          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
           
-          // Create segments: origin -> first intermediate, intermediate -> intermediate, last intermediate -> destination
-          const allAirports = [
-            flight.route.originCode,
-            ...airportCodes.filter(code => code.toUpperCase() !== flight.route.originCode && code.toUpperCase() !== flight.route.destinationCode),
-            flight.route.destinationCode
-          ].filter((code, index, arr) => arr.indexOf(code) === index); // Remove duplicates
-
-          for (let i = 0; i < allAirports.length - 1; i++) {
-            const fromCode = allAirports[i].toUpperCase().trim();
-            const toCode = allAirports[i + 1].toUpperCase().trim();
-            
-            if (fromCode && toCode && fromCode !== toCode) {
-              const routeKey = `${fromCode}-${toCode}`;
-              if (!routeSet.has(routeKey)) {
-                const fromCoords = getAirportCoordinates(fromCode);
-                const toCoords = getAirportCoordinates(toCode);
-                
-                if (fromCoords && toCoords) {
-                  routeSet.add(routeKey);
-                  const arc = generateArc(fromCoords, toCoords, 100);
-                  routes.push({
-                    flight,
-                    originCoords: fromCoords,
-                    destinationCoords: toCoords,
-                    arc,
-                  });
-                }
-              }
+          // Create routes from KAPA to each unique airport in the route
+          const visitedAirports = new Set<string>();
+          
+          // Add airports from route description
+          airportCodes.forEach(code => {
+            const upperCode = code.toUpperCase().trim();
+            if (upperCode && upperCode.length >= 2 && upperCode !== "KAPA") {
+              visitedAirports.add(upperCode);
             }
+          });
+          
+          // Add destination if different from KAPA
+          if (destCode && destCode !== "KAPA") {
+            visitedAirports.add(destCode);
+          }
+          
+          // Create a route from KAPA to each visited airport
+          visitedAirports.forEach(airportCode => {
+            const destCoords = getAirportCoordinates(airportCode);
+            if (destCoords) {
+              const arc = generateArc(kapaCoords, destCoords, 100);
+              routes.push({
+                flight,
+                originCoords: kapaCoords,
+                destinationCoords: destCoords,
+                arc,
+              });
+            }
+          });
+        } else {
+          // Description exists but no route pattern - use destination
+          if (destCode && destCode !== "KAPA") {
+            const destinationCoords = getAirportCoordinates(destCode);
+            if (destinationCoords) {
+              const arc = generateArc(kapaCoords, destinationCoords, 100);
+              routes.push({
+                flight,
+                originCoords: kapaCoords,
+                destinationCoords,
+                arc,
+              });
+            }
+          }
+        }
+      } else {
+        // No description - use origin -> destination
+        if (destCode && destCode !== "KAPA") {
+          const destinationCoords = getAirportCoordinates(destCode);
+          if (destinationCoords) {
+            const arc = generateArc(kapaCoords, destinationCoords, 100);
+            routes.push({
+              flight,
+              originCoords: kapaCoords,
+              destinationCoords,
+              arc,
+            });
           }
         }
       }
@@ -147,6 +166,16 @@ export function FlightMap() {
 
     console.log(`Processed ${routes.length} flight route segments out of ${flightHistory.length} flights`);
     console.log(`Found ${airportsWithCoords.length} unique airports with coordinates out of ${uniqueAirports.length} total`);
+    
+    // Log sample routes for debugging
+    if (routes.length > 0) {
+      console.log("Sample routes:", routes.slice(0, 5).map(r => ({
+        from: `${r.originCoords[0]},${r.originCoords[1]}`,
+        to: `${r.destinationCoords[0]},${r.destinationCoords[1]}`,
+        flight: r.flight.route.originCode + "->" + r.flight.route.destinationCode
+      })));
+    }
+    
     return routes;
   }, [airportsWithCoords.length, uniqueAirports.length]);
 
@@ -318,7 +347,6 @@ export function FlightMap() {
           terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
           projection={{ name: "globe" }}
           reuseMaps
-          interactiveLayerIds={flightRoutes.map((r) => `route-${r.flight.id}`)}
           onLoad={() => {
             console.log("Map loaded, rendering flight routes");
             console.log(`Bounds: ${bounds?.minLon}, ${bounds?.minLat} to ${bounds?.maxLon}, ${bounds?.maxLat}`);
@@ -335,77 +363,47 @@ export function FlightMap() {
               );
             }
           }}
-          onMouseEnter={(e) => {
-            if (e.features && e.features.length > 0) {
-              const feature = e.features[0];
-              const flightId = feature.properties?.flightId;
-              if (flightId) {
-                const route = flightRoutes.find((r) => r.flight.id === flightId);
-                if (route) {
-                  setTooltip({
-                    flight: route.flight,
-                    x: e.originalEvent.clientX,
-                    y: e.originalEvent.clientY,
-                  });
-                }
-              }
-            }
-          }}
-          onMouseLeave={() => setTooltip(null)}
-          cursor="pointer"
         >
-          {/* Airport Markers and Flight Routes */}
-          {flightRoutes.map((route) => {
-            const isAnimated = animatedRoutes.has(route.flight.id);
+          {/* Flight Routes - Clean Lines */}
+          {flightRoutes.map((route, routeIndex) => {
             // Mapbox expects [longitude, latitude] format
             const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
+            
+            // Create unique ID for each route segment
+            const routeId = `route-${route.flight.id}-${routeIndex}`;
 
             return (
-              <div key={`route-group-${route.flight.id}`}>
-                <Source
-                  id={`route-${route.flight.id}`}
-                  type="geojson"
-                  data={{
-                    type: "Feature",
-                    geometry: {
-                      type: "LineString",
-                      coordinates: routeCoordinates,
-                    },
-                    properties: {
-                      flightId: route.flight.id,
-                    },
+              <Source
+                key={routeId}
+                id={`route-${routeId}`}
+                type="geojson"
+                data={{
+                  type: "Feature",
+                  geometry: {
+                    type: "LineString",
+                    coordinates: routeCoordinates,
+                  },
+                  properties: {
+                    flightId: route.flight.id,
+                    origin: route.flight.route.originCode,
+                    destination: route.flight.route.destinationCode,
+                  },
+                }}
+              >
+                <Layer
+                  id={`route-${routeId}`}
+                  type="line"
+                  paint={{
+                    "line-color": "#a855f7",
+                    "line-width": 2.5,
+                    "line-opacity": 0.7,
                   }}
-                >
-                  <Layer
-                    id={`route-${route.flight.id}`}
-                    type="line"
-                    paint={{
-                      "line-color": "#a855f7",
-                      "line-width": isAnimated ? 3 : 3,
-                      "line-opacity": isAnimated ? 0.8 : 0.8,
-                    }}
-                    layout={{
-                      "line-cap": "round",
-                      "line-join": "round",
-                    }}
-                  />
-                  {/* Animated glow trail */}
-                  <Layer
-                    id={`route-glow-${route.flight.id}`}
-                    type="line"
-                    paint={{
-                      "line-color": "#a855f7",
-                      "line-width": isAnimated ? 8 : 8,
-                      "line-opacity": isAnimated ? 0.2 : 0.2,
-                      "line-blur": 10,
-                    }}
-                    layout={{
-                      "line-cap": "round",
-                      "line-join": "round",
-                    }}
-                  />
-                </Source>
-              </div>
+                  layout={{
+                    "line-cap": "round",
+                    "line-join": "round",
+                  }}
+                />
+              </Source>
             );
           })}
 
