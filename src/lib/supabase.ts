@@ -7,15 +7,14 @@ const supabaseUrl =
 const supabaseAnonKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  const errorMessage = import.meta.env.PROD
-    ? 'Missing Supabase environment variables. Please ensure Vercel integration is properly configured with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
-    : 'Missing Supabase environment variables. Please check your .env file. You need VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.';
-  
-  throw new Error(errorMessage);
-}
+// Create Supabase client only if env vars are available
+// This allows the app to load even if Supabase isn't configured yet
+export const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Export a helper to check if Supabase is configured
+export const isSupabaseConfigured = () => !!(supabaseUrl && supabaseAnonKey);
 
 // Database types (you can generate these from your Supabase schema later)
 export type Json =

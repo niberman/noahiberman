@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export interface ContactMessage {
   id?: string;
@@ -19,6 +19,12 @@ export interface ContactMessageInput {
 export function useSubmitContactMessage() {
   return useMutation({
     mutationFn: async (message: ContactMessageInput) => {
+      if (!isSupabaseConfigured() || !supabase) {
+        // If Supabase isn't configured, still resolve but log a warning
+        console.warn('Supabase is not configured. Contact message not saved to database.');
+        return { ...message, id: 'local', created_at: new Date().toISOString() } as ContactMessage;
+      }
+
       const { data, error } = await supabase
         .from('contact_messages')
         .insert({

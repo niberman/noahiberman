@@ -7,6 +7,9 @@ export function useFlights() {
   return useQuery({
     queryKey: ['flights'],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('flights')
         .select('*')
@@ -23,6 +26,9 @@ export function useActiveFlight() {
   return useQuery({
     queryKey: ['flights', 'active'],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('flights')
         .select('*')
@@ -41,6 +47,9 @@ export function useCreateFlight() {
 
   return useMutation({
     mutationFn: async (flight: Omit<Flight, 'id'>) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('flights')
         .insert(flight)
@@ -62,6 +71,9 @@ export function useUpdateFlight() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Flight> & { id: string }) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('flights')
         .update(updates)

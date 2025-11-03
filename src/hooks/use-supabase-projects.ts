@@ -7,6 +7,9 @@ export function useProjects() {
   return useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -23,6 +26,9 @@ export function useProjectsByCategory(category: string) {
   return useQuery({
     queryKey: ['projects', 'category', category],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -42,6 +48,9 @@ export function useCreateProject() {
 
   return useMutation({
     mutationFn: async (project: Omit<Project, 'id'>) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('projects')
         .insert(project)
@@ -63,6 +72,9 @@ export function useUpdateProject() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Project> & { id: string }) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('projects')
         .update(updates)

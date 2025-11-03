@@ -7,6 +7,9 @@ export function useVentures() {
   return useQuery({
     queryKey: ['ventures'],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('ventures')
         .select('*')
@@ -23,6 +26,9 @@ export function useVenture(id: string) {
   return useQuery({
     queryKey: ['ventures', id],
     queryFn: async () => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('ventures')
         .select('*')
@@ -42,6 +48,9 @@ export function useCreateVenture() {
 
   return useMutation({
     mutationFn: async (venture: Omit<Venture, 'id'>) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { data, error } = await supabase
         .from('ventures')
         .insert(venture)
@@ -86,6 +95,9 @@ export function useDeleteVenture() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { error } = await supabase
         .from('ventures')
         .delete()
