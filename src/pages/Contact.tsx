@@ -35,18 +35,32 @@ export default function Contact() {
         description: "Thanks for reaching out. I'll get back to you soon.",
       });
       setFormData({ name: "", email: "", message: "" });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting message:", error);
-      console.error("Error details:", {
-        message: error?.message,
-        code: error?.code,
-        details: error?.details,
-        hint: error?.hint,
-      });
+      
+      // Handle different error types
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : "Failed to send message. Please try again or contact directly.";
+      
+      const errorDetails = error instanceof Error ? {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      } : typeof error === 'object' && error !== null ? {
+        message: 'message' in error ? String(error.message) : undefined,
+        code: 'code' in error ? String(error.code) : undefined,
+        details: 'details' in error ? String(error.details) : undefined,
+        hint: 'hint' in error ? String(error.hint) : undefined,
+      } : {};
+      
+      console.error("Error details:", errorDetails);
       
       toast({
         title: "Error sending message",
-        description: error?.message || "Failed to send message. Please try again or contact directly.",
+        description: errorMessage,
         variant: "destructive",
       });
     }

@@ -37,7 +37,9 @@ export default function FollowMyFlight() {
     
     flightHistory.forEach(flight => {
       // Count aircraft types
-      const aircraftType = flight.aircraft.type.split(' ').slice(-2).join(' '); // Get last 2 words (e.g., "172 Skyhawk")
+      const aircraftType = flight.aircraft.type 
+        ? flight.aircraft.type.split(' ').slice(-2).join(' ') || flight.aircraft.type
+        : 'Unknown'; // Get last 2 words (e.g., "172 Skyhawk")
       aircraftTypes[aircraftType] = (aircraftTypes[aircraftType] || 0) + 1;
       
       // Parse duration
@@ -361,7 +363,10 @@ export default function FollowMyFlight() {
                     <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
                     <p className="text-2xl font-bold text-primary-foreground">{chartData.mountainFlying}h</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)}% of total
+                      {parseFloat(chartData.totalHours) > 0 
+                        ? ((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)
+                        : '0.0'
+                      }% of total
                     </p>
                   </div>
                 </div>
@@ -391,7 +396,10 @@ export default function FollowMyFlight() {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Average Flight</p>
                     <p className="text-2xl font-bold text-primary-foreground">
-                      {(parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)}h
+                      {flightHistory.length > 0 
+                        ? (parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)
+                        : '0.0'
+                      }h
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Per flight

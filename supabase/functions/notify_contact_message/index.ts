@@ -7,14 +7,23 @@ serve(async (req) => {
     const { record } = await req.json();
     const { name, email, message, created_at } = record;
 
+    // Get environment variables
+    const smtpUsername = Deno.env.get("SMTP_USERNAME");
+    const smtpPassword = Deno.env.get("SMTP_PASSWORD");
+
+    if (!smtpUsername || !smtpPassword) {
+      console.error("SMTP credentials not configured");
+      return new Response("SMTP credentials not configured", { status: 500 });
+    }
+
     // Create the SMTP client
     const client = new SmtpClient();
 
     await client.connectTLS({
       hostname: "smtp.gmail.com",
       port: 465,
-      username: Deno.env.get("SMTP_USERNAME")!, // your Gmail address
-      password: Deno.env.get("SMTP_PASSWORD")!, // your Gmail App Password
+      username: smtpUsername,
+      password: smtpPassword,
     });
 
     const subject = `New contact message from ${name}`;

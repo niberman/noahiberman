@@ -16,11 +16,18 @@ export function AmbientSound() {
   const toggleSound = () => {
     if (!audioRef.current) return;
     
+    // Check if audio source is configured
+    if (!audioRef.current.src || audioRef.current.src === window.location.href) {
+      console.warn("Audio source not configured. Please set the src attribute to an audio file.");
+      return;
+    }
+    
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       audioRef.current.play().catch(err => {
         console.log("Audio playback failed:", err);
+        setIsPlaying(false);
       });
     }
     setIsPlaying(!isPlaying);

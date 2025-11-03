@@ -574,7 +574,9 @@ export function FlightMap() {
             <div className="flex items-center gap-2">
               <Plane className="h-4 w-4 text-secondary" />
               <span className="text-sm text-muted-foreground">
-                {tooltip.flight.aircraft.type.split(" ").slice(-2).join(" ")}
+                {tooltip.flight.aircraft.type 
+                  ? tooltip.flight.aircraft.type.split(" ").slice(-2).join(" ") || tooltip.flight.aircraft.type
+                  : 'Unknown'}
               </span>
             </div>
             <div className="flex items-center gap-2">
