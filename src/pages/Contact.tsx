@@ -7,6 +7,7 @@ import { Mail, Linkedin, Github, Calendar, Phone } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
+import { useSubmitContactMessage } from "@/hooks/use-supabase-contact";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -15,14 +16,31 @@ export default function Contact() {
     message: "",
   });
   const { toast } = useToast();
+  const submitMessage = useSubmitContactMessage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message sent!",
-      description: "Thanks for reaching out. I'll get back to you soon.",
-    });
-    setFormData({ name: "", email: "", message: "" });
+    
+    try {
+      await submitMessage.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      });
+      
+      toast({
+        title: "Message sent!",
+        description: "Thanks for reaching out. I'll get back to you soon.",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Error submitting message:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -96,8 +114,9 @@ export default function Contact() {
                       type="submit" 
                       className="w-full text-base py-6 rounded-full hover:scale-105 transition-transform"
                       size="lg"
+                      disabled={submitMessage.isPending}
                     >
-                      Send Message
+                      {submitMessage.isPending ? "Sending..." : "Send Message"}
                     </Button>
                   </form>
                 </CardContent>

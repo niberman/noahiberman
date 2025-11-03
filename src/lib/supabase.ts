@@ -29,18 +29,23 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      // Add your table types here
-      // Example:
-      // ventures: {
-      //   Row: {
-      //     id: string;
-      //     title: string;
-      //     description: string;
-      //     // ... other fields
-      //   };
-      //   Insert: Omit<Database['public']['Tables']['ventures']['Row'], 'id'>;
-      //   Update: Partial<Database['public']['Tables']['ventures']['Insert']>;
-      // };
+      contact_messages: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          message: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>;
+      };
     };
     Views: {
       [_ in never]: never;
