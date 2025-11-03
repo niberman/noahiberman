@@ -13,11 +13,11 @@ export const ventures: Venture[] = [
   {
     id: "freedom-aviation",
     title: "Freedom Aviation",
-    description: "Building the future of flight training with modern technology and personalized instruction. Comprehensive programs from private pilot to commercial certification.",
-    role: "Founder & Chief Flight Instructor",
-    year: "2022 - Present",
+    description: "Redefining aircraft ownership with professional management and elite instruction. Tailored programs for pilots who demand precision and performance.",
+    role: "Founder & Chief Executive Officer",
+    year: "2025 - Present",
     status: "active",
     link: "https://freedomaviationco.com",
-    tags: ["Aviation", "Education", "Startup"],
+    tags: ["Aviation", "Aircraft", "Startup"],
   },
 ];
