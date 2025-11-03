@@ -71,6 +71,7 @@ For Vercel deployment, make sure to set the following environment variables:
 - `VITE_MAPBOX_TOKEN`: Your Mapbox access token (get one at https://account.mapbox.com/)
 - `VITE_SUPABASE_URL`: Your Supabase project URL (get from https://app.supabase.com/project/_/settings/api)
 - `VITE_SUPABASE_ANON_KEY`: Your Supabase anon/public key (get from https://app.supabase.com/project/_/settings/api)
+- `VITE_AEROAPI_TAIL_NUMBER`: Your aircraft tail number (e.g., N12345) - set this when you're flying to enable live flight tracking
 
 **Note**: Mapbox tokens are client-side tokens meant to be bundled into the JavaScript. This is expected behavior and the tokens include URL restrictions for security.
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { FlightMap } from "@/components/FlightMap";
+import { AeroAPIFlightTracker } from "@/components/AeroAPIFlightTracker";
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -18,6 +19,11 @@ const MOUNTAIN_AIRPORTS = ['KLXV', 'KASE', 'KTEX', 'KEGE', 'KSBS', '1V6', 'KAEJ'
 export default function FollowMyFlight() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [displayedFlights, setDisplayedFlights] = useState(FLIGHTS_PER_PAGE);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -117,22 +123,32 @@ export default function FollowMyFlight() {
   ];
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen pt-20 md:pt-32 pb-10 md:pb-20">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto mb-20"
+          className="max-w-4xl mx-auto mb-8 md:mb-20"
         >
           <BilingualHeading 
             english="Follow My Flight"
             spanish="Sigue Mi Vuelo"
             as="h1"
-            className="mb-6"
+            className="mb-4 md:mb-6"
           />
-          <p className="text-xl text-muted-foreground leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
             Track my current flight in real-time and explore my flight history.
           </p>
+        </motion.div>
+
+        {/* AeroAPI Live Flight Tracker */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="max-w-6xl mx-auto mb-8 md:mb-20"
+        >
+          <AeroAPIFlightTracker />
         </motion.div>
 
         {/* Active Flight Section */}
@@ -141,54 +157,54 @@ export default function FollowMyFlight() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="max-w-6xl mx-auto mb-20"
+            className="max-w-6xl mx-auto mb-8 md:mb-20"
           >
             <Card className="bg-gradient-dusk border-secondary/20 shadow-glow relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-secondary/20 to-transparent rounded-full blur-3xl" />
               <CardHeader className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                      <Plane className="h-6 w-6 text-secondary animate-float" />
+                    <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                      <Plane className="h-5 w-5 md:h-6 md:w-6 text-secondary animate-float" />
                     </div>
                     <div>
-                      <CardTitle className="text-3xl font-display text-primary-foreground">
+                      <CardTitle className="text-2xl md:text-3xl font-display text-primary-foreground">
                         Active Flight
                       </CardTitle>
-                      <CardDescription className="text-base text-secondary">
+                      <CardDescription className="text-sm md:text-base text-secondary">
                         Live Tracking
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-sm px-4 py-2 animate-pulse">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 animate-pulse w-fit">
                     In Flight
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="relative z-10 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-5 w-5 text-secondary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Route</p>
-                        <p className="text-xl font-bold text-primary-foreground">
+              <CardContent className="relative z-10 space-y-4 md:space-y-6">
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                  <div className="space-y-3 md:space-y-4">
+                    <div className="flex items-start gap-2 md:gap-3">
+                      <MapPin className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0 mt-1" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs md:text-sm text-muted-foreground">Route</p>
+                        <p className="text-lg md:text-xl font-bold text-primary-foreground break-words">
                           {activeFlight.route.originCode} → {activeFlight.route.destinationCode}
                         </p>
-                        <p className="text-base text-muted-foreground">
+                        <p className="text-sm md:text-base text-muted-foreground break-words">
                           {activeFlight.route.origin} to {activeFlight.route.destination}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
-                      <Plane className="h-5 w-5 text-secondary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Aircraft</p>
-                        <p className="text-lg font-semibold text-primary-foreground">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm text-muted-foreground">Aircraft</p>
+                        <p className="text-base md:text-lg font-semibold text-primary-foreground break-words">
                           {activeFlight.aircraft.type}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {activeFlight.aircraft.registration}
                         </p>
                       </div>
@@ -196,33 +212,33 @@ export default function FollowMyFlight() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-card/50 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <TrendingUp className="h-4 w-4 text-secondary" />
+                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                      <div className="bg-card/50 rounded-lg p-3 md:p-4">
+                        <div className="flex items-center gap-2 mb-1 md:mb-2">
+                          <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" />
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Altitude</p>
                         </div>
-                        <p className="text-2xl font-bold text-primary-foreground">
+                        <p className="text-xl md:text-2xl font-bold text-primary-foreground">
                           {activeFlight.altitude?.toLocaleString()} ft
                         </p>
                       </div>
                       
-                      <div className="bg-card/50 rounded-lg p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Navigation className="h-4 w-4 text-secondary" />
+                      <div className="bg-card/50 rounded-lg p-3 md:p-4">
+                        <div className="flex items-center gap-2 mb-1 md:mb-2">
+                          <Navigation className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" />
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Speed</p>
                         </div>
-                        <p className="text-2xl font-bold text-primary-foreground">
+                        <p className="text-xl md:text-2xl font-bold text-primary-foreground">
                           {activeFlight.speed} kts
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-secondary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Current Time</p>
-                        <p className="text-xl font-mono font-bold text-primary-foreground">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <Clock className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm text-muted-foreground">Current Time</p>
+                        <p className="text-lg md:text-xl font-mono font-bold text-primary-foreground">
                           {formatTime(currentTime)}
                         </p>
                       </div>
@@ -247,13 +263,13 @@ export default function FollowMyFlight() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="max-w-6xl mx-auto mb-20"
+          className="max-w-6xl mx-auto mb-8 md:mb-20"
         >
-          <h2 className="text-3xl font-display font-bold text-primary-foreground mb-8">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-primary-foreground mb-6 md:mb-8">
             Flight Experience Summary
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* Total Hours */}
             <Card className="bg-gradient-card border-border/50">
               <CardContent className="p-6">
@@ -286,15 +302,15 @@ export default function FollowMyFlight() {
           </div>
 
           {/* Experience Breakdown */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
             {/* Aircraft Types Chart */}
             <Card className="bg-gradient-card border-border/50">
-              <CardHeader>
-                <CardTitle>Flights by Aircraft Type</CardTitle>
-                <CardDescription>Number of flights per aircraft type</CardDescription>
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="text-lg md:text-xl">Flights by Aircraft Type</CardTitle>
+                <CardDescription className="text-sm">Number of flights per aircraft type</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <ChartContainer config={chartConfig} className="h-[250px] md:h-[300px] w-full">
                   <BarChart data={chartData.aircraftData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis 
@@ -314,17 +330,17 @@ export default function FollowMyFlight() {
 
             {/* Interactive Flight Tracker */}
             <Card className="bg-gradient-card border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plane className="h-5 w-5 text-secondary" />
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary" />
                   Interactive Flight Tracker
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-sm">
                   Explore your flight routes on a 3D map ({chartData.airports.length} unique airports)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] w-full">
+                <div className="h-[250px] md:h-[300px] w-full">
                   <Suspense
                     fallback={
                       <div className="w-full h-full flex items-center justify-center bg-card/50">
@@ -355,9 +371,9 @@ export default function FollowMyFlight() {
           </div>
 
           {/* Key Metrics */}
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-3 gap-3 md:gap-4">
             <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
@@ -419,8 +435,8 @@ export default function FollowMyFlight() {
           transition={{ delay: 0.4 }}
           className="max-w-6xl mx-auto"
         >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-display font-bold text-primary-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-primary-foreground">
               Flight History
             </h2>
             <Badge variant="outline" className="text-sm">
@@ -437,22 +453,22 @@ export default function FollowMyFlight() {
                 transition={{ delay: Math.min(0.05 * index, 1), duration: 0.5 }}
               >
                 <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300 hover:scale-[1.01]">
-                  <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center gap-4 flex-wrap">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+                      <div className="flex-1 space-y-2 md:space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-secondary" />
-                            <span className="text-2xl font-bold text-primary-foreground">
+                            <MapPin className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
+                            <span className="text-xl md:text-2xl font-bold text-primary-foreground">
                               {flight.route.originCode} → {flight.route.destinationCode}
                             </span>
                           </div>
-                          <Badge variant="outline" className="text-sm">
+                          <Badge variant="outline" className="text-xs md:text-sm w-fit">
                             {flight.status}
                           </Badge>
                         </div>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
                           <div>
                             <p className="text-muted-foreground mb-1">Date</p>
                             <p className="font-semibold text-primary-foreground">
@@ -501,16 +517,16 @@ export default function FollowMyFlight() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-center mt-10"
+              className="flex justify-center mt-6 md:mt-10"
             >
               <Button
                 onClick={() => setDisplayedFlights(prev => Math.min(prev + FLIGHTS_PER_PAGE, flightHistory.length))}
                 size="lg"
-                className="rounded-full px-8 py-6 text-base"
+                className="rounded-full px-6 md:px-8 py-4 md:py-6 text-sm md:text-base"
                 variant="outline"
               >
                 Load More Flights
-                <ChevronDown className="ml-2 h-5 w-5" />
+                <ChevronDown className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </motion.div>
           )}
