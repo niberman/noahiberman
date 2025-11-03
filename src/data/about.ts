@@ -11,7 +11,7 @@ export const timeline: TimelineItem[] = [
     id: "freedom-aviation-launch",
     year: "2025",
     title: "Founded Freedom Aviation",
-    description: "Launched a modern flight training organization focused on personalized instruction and innovative teaching methods.",
+    description: "Founded a premium aviation company delivering concierge-level aircraft management and expert flight instruction. Focused on elevating the owner-pilot experience through precision service, modern tools, and ATP-rated professionalism.",
     type: "business",
   },
   {
