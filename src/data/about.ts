@@ -43,18 +43,19 @@ export const timeline: TimelineItem[] = [
     type: "aviation",
   },
   {
-    id: "ppl",
-    year: "2023",
-    title: "Private Pilot License",
-    description: "Completed initial flight training and earned Private Pilot certificate. Beginning of aviation journey.",
-    type: "aviation",
-  },
-  {
-    id: "instrument-rating",
+   id: "instrument-rating",
     year: "2023",
     title: "Instrument Rating",
     description: "Earned Instrument Rating, enabling flight in instrument meteorological conditions (IMC) and expanding operational capabilities.",
     type: "aviation",
+  },
+  {
+     id: "ppl",
+    year: "2023",
+    title: "Private Pilot License",
+    description: "Completed initial flight training and earned Private Pilot certificate. Beginning of aviation journey.",
+    type: "aviation",
+    
   },
 ];
 
