@@ -9,7 +9,7 @@ import { AmbientSound } from "@/components/AmbientSound";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Ventures from "./pages/Ventures";
-import Projects from "./pages/Projects";
+import VentureDetail from "./pages/VentureDetail";
 import Contact from "./pages/Contact";
 import FollowMyFlight from "./pages/FollowMyFlight";
 import NotFound from "./pages/NotFound";
@@ -29,7 +29,7 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/ventures" element={<Ventures />} />
-              <Route path="/projects" element={<Projects />} />
+              <Route path="/ventures/:id" element={<VentureDetail />} />
               <Route path="/follow-my-flight" element={<FollowMyFlight />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />

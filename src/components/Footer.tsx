@@ -38,11 +38,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/projects" className="text-primary-foreground/80 hover:text-secondary transition-colors">
-                  Projects
-                </Link>
-              </li>
-              <li>
                 <Link to="/follow-my-flight" className="text-primary-foreground/80 hover:text-secondary transition-colors">
                   Follow My Flight
                 </Link>

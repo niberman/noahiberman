@@ -9,6 +9,8 @@ export interface Project {
   image?: string;
   ventureLink?: string;
   ventureName?: string;
+  ventureId?: string; // Link to venture by ID for routing
+  featured?: boolean; // Highlight key builds
 }
 
 export const projects: Project[] = [
@@ -20,6 +22,10 @@ export const projects: Project[] = [
     year: "2025",
     technologies: ["React", "TypeScript", "Vercel", "Tailwind CSS"],
     link: "#",
+    ventureId: "freedom-aviation",
+    ventureName: "Freedom Aviation",
+    ventureLink: "https://freedomaviationco.com",
+    featured: true,
   },
   {
     id: "language-school-platform",
@@ -29,7 +35,9 @@ export const projects: Project[] = [
     year: "2025",
     technologies: ["React", "TypeScript", "Supabase", "OpenAI API", "Vercel"],
     link: "https://app.thelanguageschool.us",
+    ventureId: "language-school",
     ventureLink: "https://thelanguageschool.us",
     ventureName: "The Language School",
+    featured: true,
   },
 ];

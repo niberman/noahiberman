@@ -10,7 +10,6 @@ export function Navigation() {
     { path: "/", label: "Home" },
     { path: "/about", label: "About" },
     { path: "/ventures", label: "Ventures" },
-    { path: "/projects", label: "Projects" },
     { path: "/follow-my-flight", label: "Follow My Flight" },
     { path: "/contact", label: "Contact" },
   ];

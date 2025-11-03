@@ -66,11 +66,75 @@ Simply open [Lovable](https://lovable.dev/projects/bfadf460-6ad7-404d-9f0b-aa1d6
 
 ### Environment Variables
 
-For Vercel deployment, make sure to set the following environment variable:
+For Vercel deployment, make sure to set the following environment variables:
 
 - `VITE_MAPBOX_TOKEN`: Your Mapbox access token (get one at https://account.mapbox.com/)
+- `VITE_SUPABASE_URL`: Your Supabase project URL (get from https://app.supabase.com/project/_/settings/api)
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anon/public key (get from https://app.supabase.com/project/_/settings/api)
 
 **Note**: Mapbox tokens are client-side tokens meant to be bundled into the JavaScript. This is expected behavior and the tokens include URL restrictions for security.
+
+**Important for Vercel + Supabase Integration**: 
+If you've connected Supabase through Vercel's integration panel, Vercel may automatically add `SUPABASE_URL` and `SUPABASE_ANON_KEY`. However, for client-side access in Vite, you need the `VITE_` prefix. 
+
+After connecting through Vercel's integration:
+1. Go to your Vercel project settings → Environment Variables
+2. Verify that `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set (they should be automatically created)
+3. If not, manually add them using the values from your Supabase dashboard
+4. Redeploy your application after adding/changing environment variables
+
+## Supabase Setup
+
+This project is configured to use Supabase as the backend. Follow these steps to set it up:
+
+1. **Create a Supabase project** (if you haven't already):
+   - Go to https://app.supabase.com/
+   - Create a new project
+   - Wait for the project to be fully provisioned
+
+2. **Get your API credentials**:
+   - Navigate to Project Settings > API
+   - Copy your Project URL and anon/public key
+
+3. **Set up environment variables**:
+   - Create a `.env` file in the root directory (copy from `.env.example`)
+   - Add your Supabase credentials:
+     ```
+     VITE_SUPABASE_URL=your_supabase_project_url
+     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+     ```
+
+4. **Create your database tables**:
+   - In your Supabase dashboard, go to SQL Editor
+   - Create tables matching your data models (ventures, flights, projects, etc.)
+   - You can use the existing TypeScript interfaces in `src/data/` as a reference for your schema
+
+5. **Use Supabase hooks**:
+   - Import and use the provided hooks in `src/hooks/`:
+     - `useVentures()`, `useVenture(id)`, `useCreateVenture()`, etc.
+     - `useFlights()`, `useActiveFlight()`, `useCreateFlight()`, etc.
+     - `useProjects()`, `useProjectsByCategory()`, etc.
+   - These hooks are built on top of React Query and provide caching, refetching, and error handling out of the box.
+
+6. **Example usage**:
+   ```tsx
+   import { useVentures } from '@/hooks/use-supabase-ventures';
+   
+   function VenturesPage() {
+     const { data: ventures, isLoading, error } = useVentures();
+     
+     if (isLoading) return <div>Loading...</div>;
+     if (error) return <div>Error: {error.message}</div>;
+     
+     return (
+       <div>
+         {ventures?.map(venture => (
+           <div key={venture.id}>{venture.title}</div>
+         ))}
+       </div>
+     );
+   }
+   ```
 
 ## Can I connect a custom domain to my Lovable project?
 

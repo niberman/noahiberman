@@ -66,10 +66,10 @@ export default function Home() {
               className="space-y-3 mb-10"
             >
               <p className="text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance">
-                Building the future of aviation and technology,
+                The sky is not the limit
               </p>
               <p className="text-xl md:text-2xl text-secondary font-display italic">
-                con pasión y propósito
+                El cielo no es el límite
               </p>
             </motion.div>
             
@@ -200,6 +200,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

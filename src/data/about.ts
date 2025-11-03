@@ -25,7 +25,7 @@ export const timeline: TimelineItem[] = [
     id: "spain-experience",
     year: "2024-2025",
     title: "Studied in Spain",
-    description: "Immersive experience studying business and Spanish culture in Bilbao. Expanded global perspective and cross-cultural communication skills.",
+    description: "Immersive year abroad in Bilbao, Spain, studying business and Spanish language at the University of Deusto. Lived with a local homestay family, fully engaging in Basque and Spanish daily life while developing strong fluency through academic coursework and real-world interaction. Gained a deep understanding of Spanish and Basque culture, international business practices, and European perspectives.",
     type: "education",
   },
   {
@@ -60,8 +60,8 @@ export const timeline: TimelineItem[] = [
 ];
 
 export const aboutContent = {
-  intro: "I'm Noah Berman — a pilot, founder, and builder at the intersection of aviation and technology.",
-  mission: "Building things that matter: training pilots, creating technology that connects people, and exploring new frontiers in business and aviation.",
+  intro: "I'm Noah Berman — a pilot, founder, and builder at the intersection of aviation and technology and languages.",
+  mission: "My mission is to build and scale ventures that create massive positive impact across cultures — empowering people through technology, language, and opportunity — while achieving long-term financial freedom and global reach.",
   values: [
     {
       title: "Precision",
