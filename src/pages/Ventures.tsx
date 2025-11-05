@@ -97,21 +97,34 @@ export default function Ventures() {
                           )}
                         </div>
                         
-                        <div className="flex gap-3 shrink-0">
+                        <div className="flex flex-col items-end gap-2 shrink-0">
                           <div className="flex items-center gap-2 text-secondary font-medium">
                             View Details <ArrowRight className="h-4 w-4" />
                           </div>
-                          {venture.link && (
-                            <a
-                              href={venture.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center px-6 py-3 rounded-full border border-border hover:bg-accent transition-colors text-sm font-medium"
-                            >
-                              Visit <ExternalLink className="ml-2 h-4 w-4" />
-                            </a>
-                          )}
+                          <div className="flex flex-col items-end gap-2">
+                            {venture.link && (
+                              <a
+                                href={venture.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center px-6 py-3 rounded-full border border-border hover:bg-accent transition-colors text-sm font-medium"
+                              >
+                                Visit <ExternalLink className="ml-2 h-4 w-4" />
+                              </a>
+                            )}
+                            {venture.companyLink && (
+                              <a
+                                href={venture.companyLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                Company Website <ExternalLink className="inline ml-1 h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
 

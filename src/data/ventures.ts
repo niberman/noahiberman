@@ -6,6 +6,7 @@ export interface Venture {
   year: string;
   status: "active" | "completed" | "in-progress";
   link?: string;
+  companyLink?: string; // Secondary link to company website (not highlighted)
   tags: string[];
   subtitleEn?: string;
   subtitleEs?: string;
@@ -30,7 +31,8 @@ export const ventures: Venture[] = [
     role: "Technical Co-Founder",
     year: "2025 – Present",
     status: "active",
-    link: "https://thelanguageschool.us",
+    link: "https://lang-school-connect-david2792.replit.app",
+    companyLink: "https://thelanguageschool.us",
     tags: ["Education", "AI", "Bilingual", "Startup"],
     subtitleEn: "Transforming language learning into opportunity.",
     subtitleEs: "Transformando el aprendizaje en oportunidades.",

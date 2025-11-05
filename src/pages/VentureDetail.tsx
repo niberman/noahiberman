@@ -94,18 +94,30 @@ export default function VentureDetail() {
                 )}
               </div>
               
-              {venture.link && (
-                <Button 
-                  asChild 
-                  variant="secondary"
-                  size="lg"
-                  className="shrink-0 rounded-full hover:scale-105 transition-transform"
-                >
-                  <a href={venture.link} target="_blank" rel="noopener noreferrer">
-                    Visit <ExternalLink className="ml-2 h-4 w-4" />
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                {venture.link && (
+                  <Button 
+                    asChild 
+                    variant="secondary"
+                    size="lg"
+                    className="rounded-full hover:scale-105 transition-transform"
+                  >
+                    <a href={venture.link} target="_blank" rel="noopener noreferrer">
+                      Visit <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                )}
+                {venture.companyLink && (
+                  <a
+                    href={venture.companyLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Company Website <ExternalLink className="inline ml-1 h-3 w-3" />
                   </a>
-                </Button>
-              )}
+                )}
+              </div>
             </div>
 
             <p className="text-xl mb-8 leading-relaxed text-foreground/90">
