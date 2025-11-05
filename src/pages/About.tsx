@@ -1,9 +1,13 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { aboutContent, timeline } from "@/data/about";
 import { Check } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
 
 export default function About() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
   const typeColors = {
     aviation: "bg-secondary/20 text-secondary border-secondary/40",
     business: "bg-primary/20 text-primary border-primary/40",
