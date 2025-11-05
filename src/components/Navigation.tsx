@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
-import { Plane } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Navigation() {
@@ -23,7 +22,13 @@ export function Navigation() {
       <div className="container mx-auto px-4 py-5">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <Plane className="h-7 w-7 text-secondary group-hover:scale-110 transition-transform" />
+            <div className="h-7 w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="absolute inset-0 w-full h-full object-contain origin-center"
+              />
+            </div>
             <span className="text-xl font-display font-bold group-hover:text-secondary transition-colors">
               Noah Berman
             </span>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, Plane } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 
 export function Footer() {
   return (
@@ -10,7 +10,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <Plane className="h-8 w-8 text-secondary" />
+              <div className="h-8 w-8 overflow-hidden rounded relative">
+                <img 
+                  src="/logo.png" 
+                  alt="Logo" 
+                  className="absolute inset-0 w-full h-full object-contain origin-center"
+                />
+              </div>
               <h3 className="font-display font-bold text-2xl text-primary-foreground">Noah Berman</h3>
             </div>
             <p className="text-lg text-primary-foreground/80 mb-3">

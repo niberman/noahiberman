@@ -45,9 +45,13 @@ export default function Home() {
                 stiffness: 100,
                 damping: 15
               }}
-              className="inline-block mb-8"
+              className="inline-block mb-8 h-20 w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
             >
-              <Plane className="h-20 w-20 md:h-24 md:w-24 text-secondary drop-shadow-glow animate-float" />
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="absolute inset-0 w-full h-full object-contain origin-center"
+              />
             </motion.div>
             
             <motion.h1 
