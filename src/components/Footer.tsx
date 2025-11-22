@@ -1,7 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Github, Linkedin, Mail } from "lucide-react";
 
 export function Footer() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      const element = document.getElementById(id);
+      if (element) element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <footer className="bg-gradient-dusk border-t border-secondary/20 mt-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-texture-overlay opacity-30" />
@@ -34,19 +51,31 @@ export function Footer() {
             <h4 className="font-semibold mb-5 text-primary-foreground text-lg">Quick Links</h4>
             <ul className="space-y-3 text-base">
               <li>
-                <Link to="/about" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                <a 
+                  href="#about" 
+                  onClick={(e) => scrollToSection(e, "about")}
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors"
+                >
                   About
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/ventures" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                <a 
+                  href="#ventures" 
+                  onClick={(e) => scrollToSection(e, "ventures")}
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors"
+                >
                   Ventures
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/follow-my-flight" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                <a 
+                  href="#follow-my-flight" 
+                  onClick={(e) => scrollToSection(e, "follow-my-flight")}
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors"
+                >
                   Follow My Flight
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -55,9 +84,13 @@ export function Footer() {
             <h4 className="font-semibold mb-5 text-primary-foreground text-lg">Connect</h4>
             <ul className="space-y-3 text-base mb-6">
               <li>
-                <Link to="/contact" className="text-primary-foreground/80 hover:text-secondary transition-colors">
+                <a 
+                  href="#contact" 
+                  onClick={(e) => scrollToSection(e, "contact")}
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors"
+                >
                   Contact
-                </Link>
+                </a>
               </li>
               <li>
                 <a href="mailto:noah@noahiberman.com" className="text-primary-foreground/80 hover:text-secondary transition-colors">

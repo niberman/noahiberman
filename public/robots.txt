@@ -1,7 +1,18 @@
+# Allow all search engines full access
+User-agent: *
+Allow: /
+
+# Specific bots
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
 Allow: /
 
 User-agent: Twitterbot
@@ -10,5 +21,11 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
+
+# Sitemap location
+Sitemap: https://noahberman.com/sitemap.xml
+
+# Crawl delay (optional, adjust if needed)
+Crawl-delay: 1

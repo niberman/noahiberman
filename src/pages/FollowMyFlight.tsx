@@ -3,27 +3,118 @@ import { activeFlight, flightHistory } from "@/data/flights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown } from "lucide-react";
+import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown, ChevronRight } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { FlightMap } from "@/components/FlightMap";
 import { AeroAPIFlightTracker } from "@/components/AeroAPIFlightTracker";
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { SEO } from "@/components/SEO";
 
 const FLIGHTS_PER_PAGE = 25;
 
 // Mountain airports
 const MOUNTAIN_AIRPORTS = ['KLXV', 'KASE', 'KTEX', 'KEGE', 'KSBS', '1V6', 'KAEJ', 'KANK'];
 
+// Individual flight card component with collapsible details
+const FlightCard = ({ flight, index }: { flight: typeof flightHistory[0], index: number }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(0.05 * index, 1), duration: 0.5 }}
+    >
+      <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300 hover:scale-[1.01]">
+        <CardContent className="p-4 md:p-6">
+          <div className="space-y-3">
+            {/* Main Flight Info */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-secondary flex-shrink-0" />
+                <span className="text-xl md:text-2xl font-bold text-primary-foreground">
+                  {flight.route.originCode} → {flight.route.destinationCode}
+                </span>
+              </div>
+              <Badge variant="outline" className="text-xs md:text-sm">
+                {flight.status}
+              </Badge>
+            </div>
+            
+            {/* Key Details - Always visible */}
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-muted-foreground mb-1">Date</p>
+                <p className="font-semibold text-primary-foreground">
+                  {new Date(flight.date).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground mb-1">Duration</p>
+                <p className="font-semibold text-primary-foreground">{flight.duration}</p>
+              </div>
+            </div>
+
+            {/* Expandable Extra Details */}
+            <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-between p-2 hover:bg-card/50 rounded-lg"
+                >
+                  <span className="text-sm">More Details</span>
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-90' : ''}`} 
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-3">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground mb-1">Aircraft</p>
+                    <p className="font-semibold text-primary-foreground">
+                      {flight.aircraft.type}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {flight.aircraft.registration}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground mb-1">Route</p>
+                    <p className="font-semibold text-primary-foreground text-xs">
+                      {flight.route.origin} → {flight.route.destination}
+                    </p>
+                  </div>
+                </div>
+
+                {flight.description && (
+                  <div className="pt-2 border-t border-border/50">
+                    <p className="text-sm text-muted-foreground">
+                      {flight.description}
+                    </p>
+                  </div>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
 export default function FollowMyFlight() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [displayedFlights, setDisplayedFlights] = useState(FLIGHTS_PER_PAGE);
-
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+  const [displayedFlights, setDisplayedFlights] = useState(3);
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isExperienceOpen, setIsExperienceOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -124,6 +215,18 @@ export default function FollowMyFlight() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-32 pb-10 md:pb-20">
+      <SEO
+        title="Follow My Flight — Track Noah Berman's Flights | Colorado Pilot Flight Tracking"
+        description="Track Noah Berman's current flight in real-time and explore flight history across Colorado and beyond. Live flight tracking, logbook, and aviation statistics from a commercial pilot based in Colorado. Follow flights in real-time with live data."
+        keywords="flight tracking, live flight tracker, Colorado pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot Colorado, flight statistics, aviation experience, mountain flying Colorado"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Follow My Flight",
+          "description": "Track flights in real-time and explore aviation history",
+          "url": "https://noahberman.com/follow-my-flight"
+        }}
+      />
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -141,14 +244,60 @@ export default function FollowMyFlight() {
           </p>
         </motion.div>
 
-        {/* AeroAPI Live Flight Tracker */}
+        {/* Live Flight Tracking & Interactive Map */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
           className="max-w-6xl mx-auto mb-8 md:mb-20"
         >
-          <AeroAPIFlightTracker />
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+            {/* AeroAPI Live Flight Tracker */}
+            <div>
+              <AeroAPIFlightTracker />
+            </div>
+
+            {/* Interactive Flight Tracker */}
+            <Card className="bg-gradient-card border-border/50">
+              <CardHeader className="pb-3 md:pb-6">
+                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                  <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary" />
+                  Interactive Flight Map
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Explore flight routes on a 3D map ({chartData.airports.length} airports)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] md:h-[300px] w-full">
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-full flex items-center justify-center bg-card/50 rounded-lg">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary mx-auto mb-2"></div>
+                          <p className="text-sm text-muted-foreground">Loading map...</p>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <FlightMap />
+                  </Suspense>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {chartData.airports.slice(0, 12).map((airport, idx) => (
+                    <Badge key={idx} variant="outline" className="text-xs">
+                      {airport}
+                    </Badge>
+                  ))}
+                  {chartData.airports.length > 12 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{chartData.airports.length - 12} more
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </motion.div>
 
         {/* Active Flight Section */}
@@ -181,95 +330,113 @@ export default function FollowMyFlight() {
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="relative z-10 space-y-4 md:space-y-6">
-                <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex items-start gap-2 md:gap-3">
-                      <MapPin className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0 mt-1" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs md:text-sm text-muted-foreground">Route</p>
-                        <p className="text-lg md:text-xl font-bold text-primary-foreground break-words">
-                          {activeFlight.route.originCode} → {activeFlight.route.destinationCode}
-                        </p>
-                        <p className="text-sm md:text-base text-muted-foreground break-words">
-                          {activeFlight.route.origin} to {activeFlight.route.destination}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs md:text-sm text-muted-foreground">Aircraft</p>
-                        <p className="text-base md:text-lg font-semibold text-primary-foreground break-words">
-                          {activeFlight.aircraft.type}
-                        </p>
-                        <p className="text-xs md:text-sm text-muted-foreground">
-                          {activeFlight.aircraft.registration}
-                        </p>
-                      </div>
+              <CardContent className="relative z-10 space-y-4">
+                {/* Main Flight Info - Always Visible */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-secondary flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">Route</p>
+                      <p className="text-2xl font-bold text-primary-foreground">
+                        {activeFlight.route.originCode} → {activeFlight.route.destinationCode}
+                      </p>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <Plane className="h-5 w-5 text-secondary flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">Aircraft</p>
+                      <p className="text-lg font-semibold text-primary-foreground">
+                        {activeFlight.aircraft.type}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3 md:gap-4">
-                      <div className="bg-card/50 rounded-lg p-3 md:p-4">
-                        <div className="flex items-center gap-2 mb-1 md:mb-2">
-                          <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" />
+                {/* Expandable Extra Info */}
+                <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+                  <CollapsibleTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full flex items-center justify-between p-3 hover:bg-card/50 rounded-lg"
+                    >
+                      <span className="text-sm font-medium">Additional Flight Details</span>
+                      <ChevronRight 
+                        className={`h-4 w-4 transition-transform ${isStatsOpen ? 'rotate-90' : ''}`} 
+                      />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-4 pt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-card/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp className="h-4 w-4 text-secondary flex-shrink-0" />
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Altitude</p>
                         </div>
-                        <p className="text-xl md:text-2xl font-bold text-primary-foreground">
+                        <p className="text-2xl font-bold text-primary-foreground">
                           {activeFlight.altitude?.toLocaleString()} ft
                         </p>
                       </div>
                       
-                      <div className="bg-card/50 rounded-lg p-3 md:p-4">
-                        <div className="flex items-center gap-2 mb-1 md:mb-2">
-                          <Navigation className="h-3 w-3 md:h-4 md:w-4 text-secondary flex-shrink-0" />
+                      <div className="bg-card/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Navigation className="h-4 w-4 text-secondary flex-shrink-0" />
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Speed</p>
                         </div>
-                        <p className="text-xl md:text-2xl font-bold text-primary-foreground">
+                        <p className="text-2xl font-bold text-primary-foreground">
                           {activeFlight.speed} kts
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <Clock className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs md:text-sm text-muted-foreground">Current Time</p>
-                        <p className="text-lg md:text-xl font-mono font-bold text-primary-foreground">
+                    <div className="flex items-center gap-3">
+                      <Clock className="h-5 w-5 text-secondary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Current Time</p>
+                        <p className="text-xl font-mono font-bold text-primary-foreground">
                           {formatTime(currentTime)}
                         </p>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {activeFlight.description && (
-                  <div className="pt-4 border-t border-border/50">
-                    <p className="text-base text-muted-foreground">
-                      {activeFlight.description}
-                    </p>
-                  </div>
-                )}
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Full Route</p>
+                      <p className="text-base text-primary-foreground">
+                        {activeFlight.route.origin} to {activeFlight.route.destination}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Registration</p>
+                      <p className="text-base text-primary-foreground font-mono">
+                        {activeFlight.aircraft.registration}
+                      </p>
+                    </div>
+
+                    {activeFlight.description && (
+                      <div className="pt-3 border-t border-border/50 space-y-2">
+                        <p className="text-sm text-muted-foreground">Notes</p>
+                        <p className="text-base text-primary-foreground">
+                          {activeFlight.description}
+                        </p>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
               </CardContent>
             </Card>
           </motion.div>
         )}
 
-        {/* Flight Experience Summary Section */}
+        {/* Flight Experience Summary Section - Simplified */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="max-w-6xl mx-auto mb-8 md:mb-20"
         >
-          <h2 className="text-2xl md:text-3xl font-display font-bold text-primary-foreground mb-6 md:mb-8">
-            Flight Experience Summary
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
             {/* Total Hours */}
             <Card className="bg-gradient-card border-border/50">
               <CardContent className="p-6">
@@ -301,235 +468,144 @@ export default function FollowMyFlight() {
             </Card>
           </div>
 
-          {/* Experience Breakdown */}
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-            {/* Aircraft Types Chart */}
+          {/* Expandable Detailed Stats */}
+          <Collapsible open={isExperienceOpen} onOpenChange={setIsExperienceOpen}>
             <Card className="bg-gradient-card border-border/50">
-              <CardHeader className="pb-3 md:pb-6">
-                <CardTitle className="text-lg md:text-xl">Flights by Aircraft Type</CardTitle>
-                <CardDescription className="text-sm">Number of flights per aircraft type</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[250px] md:h-[300px] w-full">
-                  <BarChart data={chartData.aircraftData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis 
-                      dataKey="type" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={100}
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    />
-                    <YAxis tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-            {/* Interactive Flight Tracker */}
-            <Card className="bg-gradient-card border-border/50">
-              <CardHeader className="pb-3 md:pb-6">
-                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-                  <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary" />
-                  Interactive Flight Tracker
-                </CardTitle>
-                <CardDescription className="text-sm">
-                  Explore your flight routes on a 3D map ({chartData.airports.length} unique airports)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[250px] md:h-[300px] w-full">
-                  <Suspense
-                    fallback={
-                      <div className="w-full h-full flex items-center justify-center bg-card/50">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary mx-auto mb-2"></div>
-                          <p className="text-sm text-muted-foreground">Loading map...</p>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <FlightMap />
-                  </Suspense>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {chartData.airports.slice(0, 15).map((airport, idx) => (
-                    <Badge key={idx} variant="outline" className="text-xs">
-                      {airport}
-                    </Badge>
-                  ))}
-                  {chartData.airports.length > 15 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{chartData.airports.length - 15} more
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Key Metrics */}
-          <div className="grid md:grid-cols-3 gap-3 md:gap-4">
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
-                    <p className="text-2xl font-bold text-primary-foreground">{chartData.mountainFlying}h</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {parseFloat(chartData.totalHours) > 0 
-                        ? ((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)
-                        : '0.0'
-                      }% of total
-                    </p>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-between p-6 hover:bg-card/50 rounded-lg"
+                >
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-secondary" />
+                    <span className="text-lg font-semibold">Detailed Flight Statistics</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Unique Airports</p>
-                    <p className="text-2xl font-bold text-primary-foreground">{chartData.airports.length}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Different locations
-                    </p>
+                  <ChevronRight 
+                    className={`h-5 w-5 transition-transform ${isExperienceOpen ? 'rotate-90' : ''}`} 
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-6 pt-0">
+                  {/* Experience Breakdown */}
+                  <div className="grid md:grid-cols-1 gap-4 md:gap-6">
+                    {/* Aircraft Types Chart */}
+                    <Card className="bg-card/30 border-border/50">
+                      <CardHeader className="pb-3 md:pb-6">
+                        <CardTitle className="text-lg md:text-xl">Flights by Aircraft Type</CardTitle>
+                        <CardDescription className="text-sm">Number of flights per aircraft type</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ChartContainer config={chartConfig} className="h-[250px] md:h-[300px] w-full">
+                          <BarChart data={chartData.aircraftData}>
+                            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                            <XAxis 
+                              dataKey="type" 
+                              angle={-45}
+                              textAnchor="end"
+                              height={100}
+                              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                            />
+                            <YAxis tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                            <ChartTooltip content={<ChartTooltipContent />} />
+                            <Bar dataKey="count" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                          </BarChart>
+                        </ChartContainer>
+                      </CardContent>
+                    </Card>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                    <MapPin className="h-6 w-6 text-secondary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gradient-card border-border/50">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Average Flight</p>
-                    <p className="text-2xl font-bold text-primary-foreground">
-                      {flightHistory.length > 0 
-                        ? (parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)
-                        : '0.0'
-                      }h
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Per flight
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-        </motion.div>
-
-        {/* Flight History Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="max-w-6xl mx-auto"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-primary-foreground">
-              Flight History
-            </h2>
-            <Badge variant="outline" className="text-sm">
-              {displayedFlights} of {flightHistory.length} flights
-            </Badge>
-          </div>
-          
-          <div className="space-y-6">
-            {flightHistory.slice(0, displayedFlights).map((flight, index) => (
-              <motion.div
-                key={flight.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(0.05 * index, 1), duration: 0.5 }}
-              >
-                <Card className="bg-gradient-card border-border/50 hover:shadow-glow transition-all duration-300 hover:scale-[1.01]">
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-                      <div className="flex-1 space-y-2 md:space-y-3">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 md:h-5 md:w-5 text-secondary flex-shrink-0" />
-                            <span className="text-xl md:text-2xl font-bold text-primary-foreground">
-                              {flight.route.originCode} → {flight.route.destinationCode}
-                            </span>
-                          </div>
-                          <Badge variant="outline" className="text-xs md:text-sm w-fit">
-                            {flight.status}
-                          </Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
+                  {/* Key Metrics */}
+                  <div className="grid md:grid-cols-3 gap-3 md:gap-4">
+                    <Card className="bg-card/30 border-border/50">
+                      <CardContent className="p-4 md:p-6">
+                        <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-muted-foreground mb-1">Date</p>
-                            <p className="font-semibold text-primary-foreground">
-                              {new Date(flight.date).toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground mb-1">Duration</p>
-                            <p className="font-semibold text-primary-foreground">{flight.duration}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground mb-1">Aircraft</p>
-                            <p className="font-semibold text-primary-foreground">
-                              {flight.aircraft.type}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {flight.aircraft.registration}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground mb-1">Route</p>
-                            <p className="font-semibold text-primary-foreground">
-                              {flight.route.origin} → {flight.route.destination}
+                            <p className="text-sm text-muted-foreground mb-1">Mountain Flying</p>
+                            <p className="text-2xl font-bold text-primary-foreground">{chartData.mountainFlying}h</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {parseFloat(chartData.totalHours) > 0 
+                                ? ((parseFloat(chartData.mountainFlying) / parseFloat(chartData.totalHours)) * 100).toFixed(1)
+                                : '0.0'
+                              }% of total
                             </p>
                           </div>
                         </div>
+                      </CardContent>
+                    </Card>
 
-                        {flight.description && (
-                          <p className="text-sm text-muted-foreground pt-2">
-                            {flight.description}
-                          </p>
-                        )}
-                      </div>
+                    <Card className="bg-card/30 border-border/50">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Unique Airports</p>
+                            <p className="text-2xl font-bold text-primary-foreground">{chartData.airports.length}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Different locations
+                            </p>
+                          </div>
+                          <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                            <MapPin className="h-6 w-6 text-secondary" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-card/30 border-border/50">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Average Flight</p>
+                            <p className="text-2xl font-bold text-primary-foreground">
+                              {flightHistory.length > 0 
+                                ? (parseFloat(chartData.totalHours) / flightHistory.length).toFixed(1)
+                                : '0.0'
+                              }h
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Per flight
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Flight History Section */}
+                  <div className="mt-8 pt-8 border-t border-border/50">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                      <h3 className="text-xl md:text-2xl font-display font-bold text-primary-foreground">
+                        Flight History
+                      </h3>
+                      <Badge variant="outline" className="text-sm w-fit">
+                        {displayedFlights} of {flightHistory.length} flights
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                    
+                    <div className="space-y-4">
+                      {flightHistory.slice(0, displayedFlights).map((flight, index) => (
+                        <FlightCard key={flight.id} flight={flight} index={index} />
+                      ))}
+                    </div>
 
-          {displayedFlights < flightHistory.length && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-center mt-6 md:mt-10"
-            >
-              <Button
-                onClick={() => setDisplayedFlights(prev => Math.min(prev + FLIGHTS_PER_PAGE, flightHistory.length))}
-                size="lg"
-                className="rounded-full px-6 md:px-8 py-4 md:py-6 text-sm md:text-base"
-                variant="outline"
-              >
-                Load More Flights
-                <ChevronDown className="ml-2 h-4 w-4 md:h-5 md:w-5" />
-              </Button>
-            </motion.div>
-          )}
+                    {displayedFlights < flightHistory.length && (
+                      <div className="flex justify-center mt-6">
+                        <Button
+                          onClick={() => setDisplayedFlights(prev => Math.min(prev + FLIGHTS_PER_PAGE, flightHistory.length))}
+                          size="lg"
+                          className="rounded-full px-6 md:px-8 py-4 md:py-6 text-sm md:text-base"
+                          variant="outline"
+                        >
+                          Load More Flights
+                          <ChevronDown className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </motion.div>
       </div>
     </div>

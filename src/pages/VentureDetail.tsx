@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowLeft, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BilingualHeading } from "@/components/BilingualHeading";
+import { SEO } from "@/components/SEO";
 import NotFound from "./NotFound";
 
 export default function VentureDetail() {
@@ -26,8 +27,49 @@ export default function VentureDetail() {
     "in-progress": "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/40",
   };
 
+  // Dynamic SEO based on venture
+  const seoConfig = {
+    "freedom-aviation": {
+      title: "Freedom Aviation — Premium Aircraft Management & Flight Instruction | Colorado",
+      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction in Colorado. Founded by Noah Berman, ATP-rated commercial pilot. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
+      keywords: "Freedom Aviation, aircraft management Colorado, flight instruction Colorado, aviation services Colorado, aircraft management Denver, flight training Colorado, ATP flight instructor, commercial pilot Colorado, aircraft ownership services, aviation company Colorado",
+    },
+    "language-school": {
+      title: "The Language School — AI-Powered Bilingual Workforce Platform | English Learning",
+      description: "The Language School platform connects Spanish-speaking adults with U.S. employers through AI-driven English fluency curriculum. Technical co-founder Noah Berman built innovative bilingual education technology transforming language learning into career opportunity.",
+      keywords: "The Language School, bilingual education platform, AI language learning, English fluency platform, Spanish-English workforce, bilingual employment, language learning technology, ESL platform, workforce development, bilingual careers",
+    }
+  };
+
+  const currentSEO = seoConfig[id as keyof typeof seoConfig] || {
+    title: `${venture.title} — Noah Berman Ventures`,
+    description: venture.description,
+    keywords: `${venture.title}, ${venture.tags.join(", ")}, Colorado ventures`,
+  };
+
   return (
     <div className="min-h-screen pt-32 pb-20">
+      <SEO
+        title={currentSEO.title}
+        description={currentSEO.description}
+        keywords={currentSEO.keywords}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": venture.title,
+          "description": venture.description,
+          "url": venture.link,
+          "founder": {
+            "@type": "Person",
+            "name": "Noah Berman"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "CO",
+            "addressCountry": "US"
+          }
+        }}
+      />
       <div className="container mx-auto px-4">
         {/* Breadcrumbs */}
         <motion.div
@@ -36,7 +78,14 @@ export default function VentureDetail() {
           className="mb-8"
         >
           <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/ventures" className="hover:text-secondary transition-colors">
+            <Link 
+              to="/" 
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/#ventures";
+              }}
+              className="hover:text-secondary transition-colors"
+            >
               Ventures
             </Link>
             <span>/</span>
@@ -55,7 +104,13 @@ export default function VentureDetail() {
             variant="ghost"
             className="gap-2 hover:text-secondary"
           >
-            <Link to="/ventures">
+            <Link 
+              to="/"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/#ventures";
+              }}
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to Ventures
             </Link>

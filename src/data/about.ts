@@ -60,8 +60,30 @@ export const timeline: TimelineItem[] = [
 ];
 
 export const aboutContent = {
-  intro: "I'm Noah Berman — a pilot, founder, and builder at the intersection of aviation and technology and languages.",
-  mission: "My mission is to build and scale ventures that create massive positive impact across cultures — empowering people through technology, language, and opportunity — while achieving long-term financial freedom and global reach.",
+  intro: "I'm Noah Berman — a bilingual pilot, founder, and builder operating where aviation, technology, and culture intersect, building ventures that matter at that crossroads. Based in Colorado, I serve the mountain state's aviation community and beyond.",
+  mission: "I launch ventures that deliver real-world impact, empowering people through software, language, and opportunity while creating durable freedom and global reach from the heart of the Rocky Mountains.",
+  focusAreas: [
+    {
+      title: "Aviation",
+      spanish: "Aviación",
+      description: "Training the next generation of pilots with modern methods and technology in Colorado's unique mountain flying environment.",
+    },
+    {
+      title: "Technology",
+      spanish: "Tecnología",
+      description: "Building software solutions that solve real problems for real people, from the Colorado tech ecosystem.",
+    },
+    {
+      title: "Cultural Connection",
+      spanish: "Conexión Cultural",
+      description: "Bridging worlds through bilingual ventures that unite communities across Colorado and beyond.",
+    },
+    {
+      title: "Entrepreneurship",
+      spanish: "Emprendimiento",
+      description: "Creating ventures that blend passion, purpose, and innovation in Colorado's entrepreneurial landscape.",
+    },
+  ],
   values: [
     {
       title: "Precision",

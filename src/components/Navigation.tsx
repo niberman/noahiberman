@@ -1,17 +1,45 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 import { motion } from "framer-motion";
 
 export function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
   
   const links = [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
-    { path: "/ventures", label: "Ventures" },
-    { path: "/follow-my-flight", label: "Follow My Flight" },
-    { path: "/contact", label: "Contact" },
+    { path: "/", label: "Home", id: "home" },
+    { path: "/#about", label: "About", id: "about" },
+    { path: "/#ventures", label: "Ventures", id: "ventures" },
+    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight" },
+    { path: "/#contact", label: "Contact", id: "contact" },
   ];
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id: string) => {
+    if (path === "/") {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => window.scrollTo(0, 0), 100);
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (path.startsWith("/#")) {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      } else {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <motion.nav
@@ -21,7 +49,11 @@ export function Navigation() {
     >
       <div className="container mx-auto px-4 py-5">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link 
+            to="/" 
+            className="flex items-center gap-3 group"
+            onClick={(e) => scrollToSection(e, "/", "home")}
+          >
             <div className="h-7 w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative">
               <img 
                 src="/logo.png" 
@@ -36,20 +68,21 @@ export function Navigation() {
           
           <div className="hidden md:flex items-center gap-10">
             {links.map((link) => (
-              <Link
+              <a
                 key={link.path}
-                to={link.path}
-                className={`text-base font-medium transition-all hover:text-secondary relative group ${
-                  location.pathname === link.path
+                href={link.path}
+                onClick={(e) => scrollToSection(e, link.path, link.id)}
+                className={`text-base font-medium transition-all hover:text-secondary relative group cursor-pointer ${
+                  location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
                     ? "text-secondary"
                     : "text-muted-foreground"
                 }`}
               >
                 {link.label}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${
-                  location.pathname === link.path ? "w-full" : "w-0 group-hover:w-full"
+                  location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash) ? "w-full" : "w-0 group-hover:w-full"
                 }`} />
-              </Link>
+              </a>
             ))}
             
             <ThemeToggle />

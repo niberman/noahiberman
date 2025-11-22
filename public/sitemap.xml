@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://noahberman.com/</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://noahberman.com/" />
+  </url>
+  
+  <!-- About Section -->
+  <url>
+    <loc>https://noahberman.com/about</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://noahberman.com/about" />
+  </url>
+  
+  <!-- Ventures Section -->
+  <url>
+    <loc>https://noahberman.com/ventures</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/ventures" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://noahberman.com/ventures" />
+  </url>
+  
+  <!-- Freedom Aviation Venture Detail -->
+  <url>
+    <loc>https://noahberman.com/ventures/freedom-aviation</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/ventures/freedom-aviation" />
+  </url>
+  
+  <!-- The Language School Venture Detail -->
+  <url>
+    <loc>https://noahberman.com/ventures/language-school</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/ventures/language-school" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://noahberman.com/ventures/language-school" />
+  </url>
+  
+  <!-- Follow My Flight Section -->
+  <url>
+    <loc>https://noahberman.com/follow-my-flight</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/follow-my-flight" />
+  </url>
+  
+  <!-- Contact Section -->
+  <url>
+    <loc>https://noahberman.com/contact</loc>
+    <lastmod>2025-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahberman.com/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://noahberman.com/contact" />
+  </url>
+  
+</urlset>
+

@@ -7,12 +7,9 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AmbientSound } from "@/components/AmbientSound";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Ventures from "./pages/Ventures";
 import VentureDetail from "./pages/VentureDetail";
-import Contact from "./pages/Contact";
-import FollowMyFlight from "./pages/FollowMyFlight";
 import NotFound from "./pages/NotFound";
+import { SectionRedirect } from "@/components/SectionRedirect";
 
 const queryClient = new QueryClient();
 
@@ -27,11 +24,11 @@ const App = () => (
           <main className="flex-1 relative z-10">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/ventures" element={<Ventures />} />
+              <Route path="/about" element={<SectionRedirect sectionId="about" />} />
+              <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
               <Route path="/ventures/:id" element={<VentureDetail />} />
-              <Route path="/follow-my-flight" element={<FollowMyFlight />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="/follow-my-flight" element={<SectionRedirect sectionId="follow-my-flight" />} />
+              <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

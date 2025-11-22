@@ -1,9 +1,13 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ArrowRight, Plane, Laptop, Globe, Rocket } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { FlightPath } from "@/components/FlightPath";
-import { useRef } from "react";
+import { SEO } from "@/components/SEO";
+import { useRef, useEffect } from "react";
+import About from "./About";
+import Ventures from "./Ventures";
+import FollowMyFlight from "./FollowMyFlight";
+import Contact from "./Contact";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -16,10 +20,55 @@ export default function Home() {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Handle hash navigation on page load
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.substring(1);
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen relative">
+      <SEO
+        title="Noah Berman — Colorado-Based Pilot, Founder & Builder | Aviation & Technology"
+        description="Commercial pilot, bilingual entrepreneur, and founder based in Colorado. Building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings, serving the Colorado aviation community."
+        keywords="Noah Berman, Colorado pilot, aviation Colorado, commercial pilot, Freedom Aviation, flight instructor Colorado, bilingual entrepreneur, aviation technology, aircraft management Colorado, flight training Colorado, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot, Colorado aviation services, Denver aviation, Colorado flight training"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Noah Berman — Home",
+          "description": "Commercial pilot and entrepreneur based in Colorado building aviation and technology ventures",
+          "url": "https://noahberman.com/",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://noahberman.com/"
+              }
+            ]
+          }
+        }}
+      />
       {/* Hero Section with Parallax */}
       <section 
+        id="home"
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
@@ -84,22 +133,20 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-5 justify-center items-center"
             >
               <Button
-                asChild
+                onClick={() => scrollToSection("ventures")}
                 size="lg"
                 className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-lg px-10 py-6 rounded-full transition-all hover:scale-105"
               >
-                <Link to="/ventures">
-                  View Ventures <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                View Ventures <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               
               <Button
-                asChild
+                onClick={() => scrollToSection("contact")}
                 size="lg"
                 variant="outline"
                 className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-lg px-10 py-6 rounded-full transition-all hover:scale-105"
               >
-                <Link to="/contact">Get in Touch</Link>
+                Get in Touch
               </Button>
             </motion.div>
           </motion.div>
@@ -125,85 +172,25 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Featured Section - Asymmetric Layout */}
-      <section className="py-32 bg-gradient-subtle relative">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mb-20"
-          >
-            <h2 className="text-5xl md:text-6xl font-display font-bold mb-4">What I Do</h2>
-            <p className="text-2xl text-secondary font-display italic mb-3">
-              Lo Que Hago
-            </p>
-            <p className="text-xl text-muted-foreground max-w-2xl">
-              At the intersection of aviation and technology, building ventures that matter.
-            </p>
-          </motion.div>
+      {/* About Section */}
+      <div id="about">
+        <About />
+      </div>
 
-          <div className="grid lg:grid-cols-12 gap-8 max-w-7xl">
-            {[
-              {
-                title: "Aviation",
-                spanish: "Aviación",
-                description: "Training the next generation of pilots with modern methods and technology.",
-                Icon: Plane,
-                colSpan: "lg:col-span-5",
-                delay: 0
-              },
-              {
-                title: "Technology",
-                spanish: "Tecnología",
-                description: "Building software solutions that solve real problems for real people.",
-                Icon: Laptop,
-                colSpan: "lg:col-span-7",
-                delay: 0.1
-              },
-              {
-                title: "Cultural Connection",
-                spanish: "Conexión Cultural",
-                description: "Bridging worlds through bilingual ventures that unite communities.",
-                Icon: Globe,
-                colSpan: "lg:col-span-7",
-                delay: 0.2
-              },
-              {
-                title: "Entrepreneurship",
-                spanish: "Emprendimiento",
-                description: "Creating ventures that combine passion with purpose and innovation.",
-                Icon: Rocket,
-                colSpan: "lg:col-span-5",
-                delay: 0.3
-              },
-            ].map((item) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: item.delay }}
-                className={`${item.colSpan} group`}
-              >
-                <div className="bg-gradient-card p-10 rounded-3xl shadow-elegant hover:shadow-glow transition-all duration-500 hover:scale-[1.02] h-full border border-border/50">
-                  <div className="mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <item.Icon className="h-16 w-16 text-secondary" />
-                  </div>
-                  <h3 className="text-3xl font-bold mb-2">{item.title}</h3>
-                  <p className="text-lg text-secondary font-display italic mb-4">
-                    {item.spanish}
-                  </p>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Ventures Section */}
+      <div id="ventures">
+        <Ventures />
+      </div>
+
+      {/* Follow My Flight Section */}
+      <div id="follow-my-flight">
+        <FollowMyFlight />
+      </div>
+
+      {/* Contact Section */}
+      <div id="contact">
+        <Contact />
+      </div>
 
     </div>
   );
