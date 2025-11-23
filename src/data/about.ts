@@ -60,15 +60,13 @@ export const timeline: TimelineItem[] = [
 ];
 
 export const aboutContent = {
-  intro: "I'm Noah Berman. A bilingual pilot-founder forging solutions where aviation, technology, and culture collide.",
-  mission: "My mission is to
-  
-  build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.",
+  intro: "I'm Noah Berman. A bilingual pilot and engineer forging solutions where aviation, technology, and culture collide.",
+  mission: "My mission is to build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.",
   focusAreas: [
     {
       title: "Aviation",
       spanish: "Aviación",
-      description: "Training the next generation of pilots with modern methods and technology.",
+      description: "Flying with the next generation of pilots with modern methods and technology.",
     },
     {
       title: "Technology",
