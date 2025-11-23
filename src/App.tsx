@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AmbientSound } from "@/components/AmbientSound";
+import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import VentureDetail from "./pages/VentureDetail";
@@ -20,12 +22,20 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SecretDashboardAccess />
         <div className="min-h-screen flex flex-col relative">
           <Navigation />
           <main className="flex-1 relative z-10">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />
               <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
               <Route path="/ventures/:id" element={<VentureDetail />} />
