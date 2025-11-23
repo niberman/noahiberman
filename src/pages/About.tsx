@@ -14,22 +14,17 @@ export default function About() {
   return (
     <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-8 sm:pb-12 md:pb-16 lg:pb-20">
       <SEO
-        title="About Noah Berman — Colorado Commercial Pilot & Entrepreneur | Aviation Journey"
-        description="Learn about Noah Berman's journey from private pilot to FAA Commercial Pilot with multi-engine and helicopter ratings. Based in Colorado, building Freedom Aviation and bridging aviation, technology, and culture. Studied in Spain, fluent in Spanish and English."
-        keywords="Noah Berman about, aviation career Colorado, commercial pilot journey, flight training Colorado, bilingual pilot, Freedom Aviation founder, University of Deusto Spain, Colorado entrepreneur, aviation timeline, pilot certifications, multi-engine rating, helicopter pilot license, instrument rating Colorado"
+        title="About Noah Berman — Commercial Pilot & Entrepreneur | Aviation Journey"
+        description="Learn about Noah Berman's journey from private pilot to FAA Commercial Pilot with multi-engine and helicopter ratings. Building Freedom Aviation and bridging aviation, technology, and culture. Studied in Spain, fluent in Spanish and English."
+        keywords="Noah Berman about, aviation career, commercial pilot journey, flight training, bilingual pilot, Freedom Aviation founder, University of Deusto Spain, entrepreneur, aviation timeline, pilot certifications, multi-engine rating, helicopter pilot license, instrument rating"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "ProfilePage",
           "mainEntity": {
             "@type": "Person",
             "name": "Noah Berman",
-            "description": "Commercial pilot, bilingual entrepreneur, and founder based in Colorado",
-            "knowsLanguage": ["en-US", "es-ES"],
-            "address": {
-              "@type": "PostalAddress",
-              "addressRegion": "CO",
-              "addressCountry": "US"
-            }
+            "description": "Commercial pilot, bilingual entrepreneur, and founder",
+            "knowsLanguage": ["en-US", "es-ES"]
           }
         }}
       />

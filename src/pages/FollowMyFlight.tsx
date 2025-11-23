@@ -216,9 +216,9 @@ export default function FollowMyFlight() {
   return (
     <div className="min-h-screen pt-20 md:pt-32 pb-10 md:pb-20">
       <SEO
-        title="Follow My Flight — Track Noah Berman's Flights | Colorado Pilot Flight Tracking"
-        description="Track Noah Berman's current flight in real-time and explore flight history across Colorado and beyond. Live flight tracking, logbook, and aviation statistics from a commercial pilot based in Colorado. Follow flights in real-time with live data."
-        keywords="flight tracking, live flight tracker, Colorado pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot Colorado, flight statistics, aviation experience, mountain flying Colorado"
+        title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
+        description="Track Noah Berman's current flight in real-time and explore flight history. Live flight tracking, logbook, and aviation statistics from a commercial pilot. Follow flights in real-time with live data."
+        keywords="flight tracking, live flight tracker, pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot, flight statistics, aviation experience, mountain flying"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebPage",

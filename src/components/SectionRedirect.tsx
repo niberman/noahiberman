@@ -21,3 +21,4 @@ export function SectionRedirect({ sectionId }: SectionRedirectProps) {
   return null;
 }
 
+

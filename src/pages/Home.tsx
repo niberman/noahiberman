@@ -44,14 +44,14 @@ export default function Home() {
   return (
     <div className="min-h-screen relative">
       <SEO
-        title="Noah Berman — Colorado-Based Pilot, Founder & Builder | Aviation & Technology"
-        description="Commercial pilot, bilingual entrepreneur, and founder based in Colorado. Building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings, serving the Colorado aviation community."
-        keywords="Noah Berman, Colorado pilot, aviation Colorado, commercial pilot, Freedom Aviation, flight instructor Colorado, bilingual entrepreneur, aviation technology, aircraft management Colorado, flight training Colorado, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot, Colorado aviation services, Denver aviation, Colorado flight training"
+        title="Noah Berman — Pilot, Founder & Builder | Aviation & Technology"
+        description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
+        keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "WebPage",
           "name": "Noah Berman — Home",
-          "description": "Commercial pilot and entrepreneur based in Colorado building aviation and technology ventures",
+          "description": "Commercial pilot and entrepreneur building aviation and technology ventures",
           "url": "https://noahberman.com/",
           "breadcrumb": {
             "@type": "BreadcrumbList",

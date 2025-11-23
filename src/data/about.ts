@@ -60,28 +60,30 @@ export const timeline: TimelineItem[] = [
 ];
 
 export const aboutContent = {
-  intro: "I'm Noah Berman — a bilingual pilot, founder, and builder operating where aviation, technology, and culture intersect, building ventures that matter at that crossroads. Based in Colorado, I serve the mountain state's aviation community and beyond.",
-  mission: "I launch ventures that deliver real-world impact, empowering people through software, language, and opportunity while creating durable freedom and global reach from the heart of the Rocky Mountains.",
+  intro: "I'm Noah Berman. A bilingual pilot-founder forging solutions where aviation, technology, and culture collide.",
+  mission: "My mission is to
+  
+  build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.",
   focusAreas: [
     {
       title: "Aviation",
       spanish: "Aviación",
-      description: "Training the next generation of pilots with modern methods and technology in Colorado's unique mountain flying environment.",
+      description: "Training the next generation of pilots with modern methods and technology.",
     },
     {
       title: "Technology",
       spanish: "Tecnología",
-      description: "Building software solutions that solve real problems for real people, from the Colorado tech ecosystem.",
+      description: "Building software solutions that solve real problems for real people.",
     },
     {
       title: "Cultural Connection",
       spanish: "Conexión Cultural",
-      description: "Bridging worlds through bilingual ventures that unite communities across Colorado and beyond.",
+      description: "Bridging worlds through bilingual ventures that unite communities.",
     },
     {
       title: "Entrepreneurship",
       spanish: "Emprendimiento",
-      description: "Creating ventures that blend passion, purpose, and innovation in Colorado's entrepreneurial landscape.",
+      description: "Creating ventures that blend passion, purpose, and innovation.",
     },
   ],
   values: [

@@ -23,9 +23,9 @@ export default function Ventures() {
   return (
     <div className="pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
       <SEO
-        title="Ventures & Projects — Freedom Aviation, The Language School | Colorado Aviation & Tech"
-        description="Explore Noah Berman's ventures including Freedom Aviation (premium aircraft management & flight instruction in Colorado) and The Language School (AI-powered bilingual workforce platform). Building technology solutions that bridge aviation, education, and culture."
-        keywords="Freedom Aviation Colorado, aircraft management Colorado, flight instruction Colorado, The Language School, bilingual education platform, aviation startup Colorado, technology ventures, aviation technology, aircraft services Colorado, flight training business, bilingual workforce, AI education platform, Colorado tech startups"
+        title="Ventures & Projects — Freedom Aviation, The Language School | Aviation & Tech"
+        description="Explore Noah Berman's ventures including Freedom Aviation (premium aircraft management & flight instruction) and The Language School (AI-powered bilingual workforce platform). Building technology solutions that bridge aviation, education, and culture."
+        keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, bilingual education platform, aviation startup, technology ventures, aviation technology, aircraft services, flight training business, bilingual workforce, AI education platform, tech startups"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",

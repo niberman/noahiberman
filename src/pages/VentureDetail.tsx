@@ -30,9 +30,9 @@ export default function VentureDetail() {
   // Dynamic SEO based on venture
   const seoConfig = {
     "freedom-aviation": {
-      title: "Freedom Aviation — Premium Aircraft Management & Flight Instruction | Colorado",
-      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction in Colorado. Founded by Noah Berman, ATP-rated commercial pilot. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
-      keywords: "Freedom Aviation, aircraft management Colorado, flight instruction Colorado, aviation services Colorado, aircraft management Denver, flight training Colorado, ATP flight instructor, commercial pilot Colorado, aircraft ownership services, aviation company Colorado",
+      title: "Freedom Aviation — Premium Aircraft Management & Flight Instruction",
+      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction. Founded by Noah Berman, ATP-rated commercial pilot. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
+      keywords: "Freedom Aviation, aircraft management, flight instruction, aviation services, flight training, ATP flight instructor, commercial pilot, aircraft ownership services, aviation company",
     },
     "language-school": {
       title: "The Language School — AI-Powered Bilingual Workforce Platform | English Learning",
@@ -44,7 +44,7 @@ export default function VentureDetail() {
   const currentSEO = seoConfig[id as keyof typeof seoConfig] || {
     title: `${venture.title} — Noah Berman Ventures`,
     description: venture.description,
-    keywords: `${venture.title}, ${venture.tags.join(", ")}, Colorado ventures`,
+    keywords: `${venture.title}, ${venture.tags.join(", ")}`,
   };
 
   return (
@@ -62,11 +62,6 @@ export default function VentureDetail() {
           "founder": {
             "@type": "Person",
             "name": "Noah Berman"
-          },
-          "address": {
-            "@type": "PostalAddress",
-            "addressRegion": "CO",
-            "addressCountry": "US"
           }
         }}
       />
