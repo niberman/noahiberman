@@ -5,13 +5,18 @@ export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const links = [
+  const sectionLinks = [
     { path: "/", label: "Home", id: "home" },
     { path: "/#about", label: "About", id: "about" },
     { path: "/#ventures", label: "Ventures", id: "ventures" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight" },
     { path: "/#contact", label: "Contact", id: "contact" },
   ];
+
+  const updateHash = (hash?: string) => {
+    const newUrl = hash ? `/#${hash}` : "/";
+    window.history.replaceState(null, "", newUrl);
+  };
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id: string) => {
     if (path === "/") {
@@ -22,6 +27,7 @@ export function Navigation() {
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
+      updateHash();
       return;
     }
 
@@ -32,10 +38,12 @@ export function Navigation() {
         setTimeout(() => {
           const element = document.getElementById(id);
           if (element) element.scrollIntoView({ behavior: "smooth" });
+          updateHash(id);
         }, 100);
       } else {
         const element = document.getElementById(id);
         if (element) element.scrollIntoView({ behavior: "smooth" });
+        updateHash(id);
       }
     }
   };
@@ -66,7 +74,7 @@ export function Navigation() {
           </Link>
           
           <div className="hidden md:flex items-center gap-10">
-            {links.map((link) => (
+            {sectionLinks.map((link) => (
               <a
                 key={link.path}
                 href={link.path}

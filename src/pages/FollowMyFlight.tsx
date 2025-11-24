@@ -13,6 +13,10 @@ import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
 
+interface PageSectionProps {
+  showSEO?: boolean;
+}
+
 const FLIGHTS_PER_PAGE = 25;
 
 // Mountain airports
@@ -110,7 +114,7 @@ const FlightCard = ({ flight, index }: { flight: typeof flightHistory[0], index:
   );
 };
 
-export default function FollowMyFlight() {
+export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [displayedFlights, setDisplayedFlights] = useState(3);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -215,18 +219,20 @@ export default function FollowMyFlight() {
 
   return (
     <div className="min-h-screen pt-20 md:pt-32 pb-10 md:pb-20">
-      <SEO
-        title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
-        description="Track Noah Berman's current flight in real-time and explore flight history. Live flight tracking, logbook, and aviation statistics from a commercial pilot. Follow flights in real-time with live data."
-        keywords="flight tracking, live flight tracker, pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot, flight statistics, aviation experience, mountain flying"
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "Follow My Flight",
-          "description": "Track flights in real-time and explore aviation history",
-          "url": "https://noahiberman.com/follow-my-flight"
-        }}
-      />
+      {showSEO && (
+        <SEO
+          title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
+          description="Track Noah Berman's current flight in real-time and explore flight history. Live flight tracking, logbook, and aviation statistics from a commercial pilot. Follow flights in real-time with live data."
+          keywords="flight tracking, live flight tracker, pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot, flight statistics, aviation experience, mountain flying"
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Follow My Flight",
+            "description": "Track flights in real-time and explore aviation history",
+            "url": "https://noahiberman.com/follow-my-flight"
+          }}
+        />
+      )}
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

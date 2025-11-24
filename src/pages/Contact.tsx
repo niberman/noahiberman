@@ -10,7 +10,11 @@ import { BilingualHeading } from "@/components/BilingualHeading";
 import { useSubmitContactMessage } from "@/hooks/use-supabase-contact";
 import { SEO } from "@/components/SEO";
 
-export default function Contact() {
+interface PageSectionProps {
+  showSEO?: boolean;
+}
+
+export default function Contact({ showSEO = true }: PageSectionProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -69,19 +73,21 @@ export default function Contact() {
 
   return (
     <div className="py-16 sm:py-20 md:py-24 lg:py-32">
-      <SEO
-        title="Contact Noah Berman — Pilot & Founder | Get in Touch"
-        description="Get in touch with Noah Berman for aviation services, aircraft management, flight instruction, or business inquiries. Contact for Freedom Aviation services or collaboration opportunities."
-        keywords="contact Noah Berman, aviation contact, Freedom Aviation contact, flight instructor, aircraft management inquiry, aviation services, business collaboration, pilot contact, aviation consultation"
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "ContactPage",
-          "mainEntity": {
-            "@type": "Person",
-            "name": "Noah Berman"
-          }
-        }}
-      />
+      {showSEO && (
+        <SEO
+          title="Contact Noah Berman — Pilot & Founder | Get in Touch"
+          description="Get in touch with Noah Berman for aviation services, aircraft management, flight instruction, or business inquiries. Contact for Freedom Aviation services or collaboration opportunities."
+          keywords="contact Noah Berman, aviation contact, Freedom Aviation contact, flight instructor, aircraft management inquiry, aviation services, business collaboration, pilot contact, aviation consultation"
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            "mainEntity": {
+              "@type": "Person",
+              "name": "Noah Berman"
+            }
+          }}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

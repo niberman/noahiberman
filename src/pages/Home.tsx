@@ -174,22 +174,22 @@ export default function Home() {
 
       {/* About Section */}
       <div id="about">
-        <About />
+        <About showSEO={false} />
       </div>
 
       {/* Ventures Section */}
       <div id="ventures">
-        <Ventures />
+        <Ventures showSEO={false} />
       </div>
 
       {/* Follow My Flight Section */}
       <div id="follow-my-flight">
-        <FollowMyFlight />
+        <FollowMyFlight showSEO={false} />
       </div>
 
       {/* Contact Section */}
       <div id="contact">
-        <Contact />
+        <Contact showSEO={false} />
       </div>
 
     </div>

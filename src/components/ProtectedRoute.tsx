@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { hasSecretAccess, SECRET_ACCESS_EVENT } from "@/lib/secretAccess";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,22 +10,31 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [secretAccess, setSecretAccess] = useState(() => hasSecretAccess());
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleSecretAccess = () => setSecretAccess(true);
+    window.addEventListener(SECRET_ACCESS_EVENT, handleSecretAccess);
+    return () => window.removeEventListener(SECRET_ACCESS_EVENT, handleSecretAccess);
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
       if (!supabase) {
-        // If Supabase is not configured, allow access (development mode)
-        setIsAuthenticated(true);
+        setIsAuthenticated(secretAccess);
         setIsLoading(false);
         return;
       }
 
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setIsAuthenticated(!!user);
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setIsAuthenticated(!!user || secretAccess);
       } catch (error) {
         console.error("Auth check error:", error);
-        setIsAuthenticated(false);
+        setIsAuthenticated(secretAccess);
       } finally {
         setIsLoading(false);
       }
@@ -32,17 +42,24 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     checkAuth();
 
-    // Listen for auth state changes
-    if (supabase) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setIsAuthenticated(!!session?.user);
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
+    if (!supabase) {
+      return;
     }
-  }, []);
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+      } else if (!secretAccess) {
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [secretAccess]);
 
   if (isLoading) {
     return (

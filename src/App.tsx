@@ -29,7 +29,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Home />} />
               <Route 
-                path="/dashboard" 
+                path="/dashboard/*" 
                 element={
                   <ProtectedRoute>
                     <Dashboard />
@@ -38,6 +38,10 @@ const App = () => (
               />
               <Route
                 path="/Dashboard"
+                element={<Navigate to="/dashboard" replace />}
+              />
+              <Route
+                path="/Dashboard/*"
                 element={<Navigate to="/dashboard" replace />}
               />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />

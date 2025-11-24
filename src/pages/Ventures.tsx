@@ -10,7 +10,11 @@ import { BilingualHeading } from "@/components/BilingualHeading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SEO } from "@/components/SEO";
 
-export default function Ventures() {
+interface PageSectionProps {
+  showSEO?: boolean;
+}
+
+export default function Ventures({ showSEO = true }: PageSectionProps) {
   const statusColors = {
     active: "bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/40",
     completed: "bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-500/40",
@@ -22,28 +26,30 @@ export default function Ventures() {
 
   return (
     <div className="pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
-      <SEO
-        title="Ventures & Projects — Freedom Aviation, The Language School | Aviation & Tech"
-        description="Explore Noah Berman's ventures including Freedom Aviation (premium aircraft management & flight instruction) and The Language School (AI-powered bilingual workforce platform). Building technology solutions that bridge aviation, education, and culture."
-        keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, bilingual education platform, aviation startup, technology ventures, aviation technology, aircraft services, flight training business, bilingual workforce, AI education platform, tech startups"
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Ventures & Projects",
-          "description": "Portfolio of ventures and projects by Noah Berman",
-          "url": "https://noahiberman.com/ventures",
-          "hasPart": ventures.map(venture => ({
-            "@type": "Organization",
-            "name": venture.title,
-            "description": venture.description,
-            "url": venture.link,
-            "founder": {
-              "@type": "Person",
-              "name": "Noah Berman"
-            }
-          }))
-        }}
-      />
+      {showSEO && (
+        <SEO
+          title="Ventures & Projects — Freedom Aviation, The Language School | Aviation & Tech"
+          description="Explore Noah Berman's ventures including Freedom Aviation (premium aircraft management & flight instruction) and The Language School (AI-powered bilingual workforce platform). Building technology solutions that bridge aviation, education, and culture."
+          keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, bilingual education platform, aviation startup, technology ventures, aviation technology, aircraft services, flight training business, bilingual workforce, AI education platform, tech startups"
+          structuredData={{
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Ventures & Projects",
+            "description": "Portfolio of ventures and projects by Noah Berman",
+            "url": "https://noahiberman.com/ventures",
+            "hasPart": ventures.map(venture => ({
+              "@type": "Organization",
+              "name": venture.title,
+              "description": venture.description,
+              "url": venture.link,
+              "founder": {
+                "@type": "Person",
+                "name": "Noah Berman"
+              }
+            }))
+          }}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

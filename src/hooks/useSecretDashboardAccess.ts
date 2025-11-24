@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { markSecretAccessGranted } from "@/lib/secretAccess";
 
 export const useSecretDashboardAccess = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export const useSecretDashboardAccess = () => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.shiftKey && e.key === "D") {
         e.preventDefault();
+        markSecretAccessGranted();
         navigate("/dashboard");
       }
     };
@@ -32,6 +34,7 @@ export const useSecretDashboardAccess = () => {
 
         // If 5 clicks reached, navigate
         if (clickCountRef.current >= 5) {
+          markSecretAccessGranted();
           navigate("/dashboard");
           clickCountRef.current = 0;
           return;
@@ -61,6 +64,7 @@ export const useSecretDashboardAccess = () => {
         // If 3 taps detected within 1 second, navigate
         if (tapTimestampsRef.current.length >= 3) {
           e.preventDefault();
+          markSecretAccessGranted();
           navigate("/dashboard");
           tapTimestampsRef.current = [];
         }
