@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useMemo, Suspense, lazy } from "react";
 import { Plane, MapPin, Clock, Calendar } from "lucide-react";
 import { flightHistory, type Flight } from "@/data/flights";
 import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
+import { extractAirportsFromFlight, mapAirportsToFlights } from "@/lib/flight-airports";
 import type { MapRef, ViewState } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -47,26 +48,14 @@ export function FlightMap() {
   const [animatedRoutes, setAnimatedRoutes] = useState<Set<string>>(new Set());
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Collect all unique airports
+  // Collect all unique airports referenced across every flight (including description waypoints)
   const uniqueAirports = useMemo(() => {
     const airports = new Set<string>();
     flightHistory.forEach((flight) => {
-      // Add origin and destination (trim whitespace)
-      airports.add(flight.route.originCode.trim().toUpperCase());
-      airports.add(flight.route.destinationCode.trim().toUpperCase());
-      
-      // Also extract airports from route description
-      if (flight.description) {
-        const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
-        if (routeMatches) {
-          const routeString = routeMatches[1];
-          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{2,3})\b/g) || [];
-          airportCodes.forEach(code => airports.add(code.toUpperCase().trim()));
-        }
-      }
+      extractAirportsFromFlight(flight).forEach((code) => airports.add(code));
     });
-    return Array.from(airports).filter(code => code.length > 0);
-  }, []);
+    return Array.from(airports).filter((code) => code.length > 0);
+  }, [flightHistory]);
 
   // Get coordinates for all unique airports
   const airportsWithCoords = useMemo(() => {
@@ -82,163 +71,41 @@ export function FlightMap() {
     return airports;
   }, [uniqueAirports]);
 
-  // Process flights into routes with coordinates
-  // Only show routes FROM KAPA (Centennial) to each destination airport
-  const flightRoutes = useMemo<FlightRoute[]>(() => {
-    const routes: FlightRoute[] = [];
-    const kapaCoords = getAirportCoordinates("KAPA");
+  const airportFlights = useMemo(() => mapAirportsToFlights(flightHistory), [flightHistory]);
 
+  // Build hub-and-spoke routes: draw a line from KAPA to every airport ever visited
+  const flightRoutes = useMemo<FlightRoute[]>(() => {
+    const kapaCoords = getAirportCoordinates("KAPA");
     if (!kapaCoords) {
       console.warn("KAPA coordinates not found!");
-      return routes;
+      return [];
     }
 
-    flightHistory.forEach((flight) => {
-      const originCode = flight.route.originCode.toUpperCase().trim();
-      const destCode = flight.route.destinationCode.toUpperCase().trim();
-      
-      // Only process flights that start from KAPA
-      if (originCode !== "KAPA") {
-        return;
-      }
-      
-      // Process routes from description field to find intermediate destinations
-      if (flight.description) {
-        // Match "Route: ..." pattern and extract all airport codes
-        // Handles formats like: "Route: KGXY KFNL 18V KEIK" or "Route: KASE KEGE KLXV"
-        const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
-        if (routeMatches) {
-          const routeString = routeMatches[1].trim();
-          
-          // Extract all airport codes - improved regex to catch all formats
-          // Matches: KXXX (4 chars), XXX (3 chars like 18V), XX (2 chars)
-          // Also handles codes with numbers like K1V6, 1V6, etc.
-          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
-          
-          // Also try matching without word boundaries for edge cases
-          const additionalCodes = routeString.match(/([A-Z][A-Z0-9]{2,4})/g) || [];
-          
-          // Combine and deduplicate codes
-          const allCodes = new Set<string>();
-          [...airportCodes, ...additionalCodes].forEach(code => {
-            const upperCode = code.toUpperCase().trim();
-            // Valid airport codes are 2-4 characters, start with a letter
-            if (upperCode && upperCode.length >= 2 && upperCode.length <= 4 && /^[A-Z]/.test(upperCode)) {
-              allCodes.add(upperCode);
-            }
-          });
-          
-          // Create routes from KAPA to each unique airport in the route
-          const visitedAirports = new Set<string>();
-          
-          // Add all airports from route description (excluding KAPA as it's the origin)
-          allCodes.forEach(code => {
-            if (code !== "KAPA") {
-              visitedAirports.add(code);
-            }
-          });
-          
-          // Add destination if different from KAPA
-          if (destCode && destCode !== "KAPA") {
-            visitedAirports.add(destCode);
-          }
-          
-          // Create a route from KAPA to each visited airport
-          // This ensures every airport in the multi-stop flight gets a line from KAPA
-          visitedAirports.forEach(airportCode => {
-            const destCoords = getAirportCoordinates(airportCode);
-            if (destCoords) {
-              const arc = generateArc(kapaCoords, destCoords, 100);
-              routes.push({
-                flight,
-                originCoords: kapaCoords,
-                destinationCoords: destCoords,
-                destinationCode: airportCode,
-                arc,
-              });
-            } else {
-              console.warn(`Missing coordinates for airport in route: ${airportCode} (from flight ${flight.id})`);
-            }
-          });
-        } else {
-          // Description exists but no route pattern - use destination
-          if (destCode && destCode !== "KAPA") {
-            const destinationCoords = getAirportCoordinates(destCode);
-            if (destinationCoords) {
-              const arc = generateArc(kapaCoords, destinationCoords, 100);
-              routes.push({
-                flight,
-                originCoords: kapaCoords,
-                destinationCoords,
-                destinationCode: destCode,
-                arc,
-              });
-            }
-          }
+    const routes = airportsWithCoords
+      .filter((airport) => airport.code !== "KAPA")
+      .map((airport) => {
+        const representativeFlight = airportFlights.get(airport.code);
+        if (!representativeFlight) {
+          console.warn(`No flight found for airport ${airport.code}`);
+          return null;
         }
-      } else {
-        // No description - use origin -> destination
-        if (destCode && destCode !== "KAPA") {
-          const destinationCoords = getAirportCoordinates(destCode);
-          if (destinationCoords) {
-            const arc = generateArc(kapaCoords, destinationCoords, 100);
-            routes.push({
-              flight,
-              originCoords: kapaCoords,
-              destinationCoords,
-              destinationCode: destCode,
-              arc,
-            });
-          }
-        }
-      }
-    });
 
-    const flightsFromKAPA = flightHistory.filter(f => f.route.originCode.toUpperCase().trim() === "KAPA");
-    console.log(`Found ${flightsFromKAPA.length} flights from KAPA out of ${flightHistory.length} total flights`);
-    console.log(`Processed ${routes.length} flight route segments from KAPA`);
-    
-    if (routes.length === 0 && flightsFromKAPA.length > 0) {
-      console.warn("WARNING: Found flights from KAPA but created 0 routes!");
-      console.log("Sample flights from KAPA:", flightsFromKAPA.slice(0, 3).map(f => ({
-        id: f.id,
-        origin: f.route.originCode,
-        dest: f.route.destinationCode,
-        description: f.description?.substring(0, 50)
-      })));
-    }
-    
-    if (routes.length > 0) {
-      console.log("Sample routes created:", routes.slice(0, 3).map(r => ({
-        destination: r.destinationCode,
-        coords: r.destinationCoords,
-        arcPoints: r.arc.length
-      })));
-    }
-    
-    // Log multi-stop flights for debugging
-    const multiStopFlights = flightsFromKAPA.filter(f => {
-      if (f.description) {
-        const routeMatch = f.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
-        if (routeMatch) {
-          const airports = routeMatch[1].match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
-          return airports.length > 1;
-        }
-      }
-      return false;
-    });
-    
-    if (multiStopFlights.length > 0) {
-      console.log(`Found ${multiStopFlights.length} multi-stop flights from KAPA`);
-      console.log("Sample multi-stop flights:", multiStopFlights.slice(0, 3).map(f => ({
-        id: f.id,
-        route: f.description,
-        destinations: routes.filter(r => r.flight.id === f.id).map(r => r.destinationCode)
-      })));
-    }
-    
+        return {
+          flight: representativeFlight,
+          originCoords: kapaCoords,
+          destinationCoords: airport.coords,
+          destinationCode: airport.code,
+          arc: generateArc(kapaCoords, airport.coords, 100),
+        } satisfies FlightRoute;
+      })
+      .filter((route): route is FlightRoute => route !== null);
+
+    console.log(
+      `Prepared ${routes.length} hub routes from KAPA covering ${airportsWithCoords.length - 1} airports`
+    );
+
     return routes;
-  }, [flightHistory, airportsWithCoords, uniqueAirports]);
+  }, [airportsWithCoords, airportFlights]);
 
   // Show all airports (not just ones with routes from KAPA)
   // Lines will only be drawn from KAPA, but all visited airports are displayed
@@ -310,8 +177,8 @@ export function FlightMap() {
     // Group routes by region (rough clustering)
     const regions: Record<string, FlightRoute[]> = {};
     flightRoutes.forEach((route) => {
-      const [lon] = route.originCoords;
-      const regionKey = lon < -106 ? "west" : lon < -104 ? "central" : "east";
+      const [lon] = route.destinationCoords;
+      const regionKey = lon < -110 ? "west" : lon < -102 ? "central" : "east";
       if (!regions[regionKey]) {
         regions[regionKey] = [];
       }
@@ -338,14 +205,14 @@ export function FlightMap() {
       const routesInRegion = regions[regionKey];
       
       if (routesInRegion.length > 0 && mapRef.current) {
-        const [lon, lat] = routesInRegion[0].originCoords;
+        const [lon, lat] = routesInRegion[0].destinationCoords;
 
         // Smooth camera transition
         mapRef.current.flyTo({
           center: [lon, lat],
-          zoom: 7,
-          pitch: 60,
-          bearing: 0,
+          zoom: 6.5,
+          pitch: 55,
+          bearing: -10,
           duration: 2000,
         });
 
@@ -454,45 +321,151 @@ export function FlightMap() {
             }
           }}
         >
-          {/* Flight Routes - Combined into single GeoJSON source */}
+          {/* Flight Routes - Hub-and-spoke design from KAPA */}
           {flightRoutes.length > 0 && (
-            <Source
-              id="all-flight-routes"
-              type="geojson"
-              data={{
-                type: "FeatureCollection",
-                features: flightRoutes.map((route, routeIndex) => {
-                  const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
-                  return {
-                    type: "Feature" as const,
-                    geometry: {
-                      type: "LineString" as const,
-                      coordinates: routeCoordinates,
-                    },
-                    properties: {
-                      flightId: route.flight.id,
-                      origin: route.flight.route.originCode,
-                      destination: route.destinationCode,
-                      routeIndex,
-                    },
-                  };
-                }).filter(f => f.geometry.coordinates.length >= 2),
-              }}
-            >
-              <Layer
-                id="flight-routes-layer"
-                type="line"
-                paint={{
-                  "line-color": "#a855f7",
-                  "line-width": 3,
-                  "line-opacity": 1,
+            <>
+              {/* Outer glow layer for depth */}
+              <Source
+                id="flight-routes-glow"
+                type="geojson"
+                data={{
+                  type: "FeatureCollection",
+                  features: flightRoutes
+                    .map((route, routeIndex) => {
+                      const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
+                      return {
+                        type: "Feature" as const,
+                        geometry: {
+                          type: "LineString" as const,
+                          coordinates: routeCoordinates,
+                        },
+                        properties: {
+                          flightId: route.flight.id,
+                          origin: "KAPA",
+                          destination: route.destinationCode,
+                          routeIndex,
+                        },
+                      };
+                    })
+                    .filter((f) => f.geometry.coordinates.length >= 2),
                 }}
-                layout={{
-                  "line-cap": "round",
-                  "line-join": "round",
+              >
+                <Layer
+                  id="flight-routes-glow-layer"
+                  type="line"
+                  paint={{
+                    "line-color": "#a855f7",
+                    "line-width": 6,
+                    "line-opacity": 0.12,
+                    "line-blur": 5,
+                  }}
+                  layout={{
+                    "line-cap": "round",
+                    "line-join": "round",
+                  }}
+                />
+              </Source>
+
+              {/* Main route lines with gradient effect */}
+              <Source
+                id="all-flight-routes"
+                type="geojson"
+                lineMetrics
+                data={{
+                  type: "FeatureCollection",
+                  features: flightRoutes
+                    .map((route, routeIndex) => {
+                      const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
+                      return {
+                        type: "Feature" as const,
+                        geometry: {
+                          type: "LineString" as const,
+                          coordinates: routeCoordinates,
+                        },
+                        properties: {
+                          flightId: route.flight.id,
+                          origin: "KAPA",
+                          destination: route.destinationCode,
+                          routeIndex,
+                        },
+                      };
+                    })
+                    .filter((f) => f.geometry.coordinates.length >= 2),
                 }}
-              />
-            </Source>
+              >
+                <Layer
+                  id="flight-routes-layer"
+                  type="line"
+                  paint={{
+                    "line-gradient": [
+                      "interpolate",
+                      ["linear"],
+                      ["line-progress"],
+                      0,
+                      "#c4b5fd",
+                      0.6,
+                      "#a855f7",
+                      1,
+                      "#7c3aed",
+                    ],
+                    "line-width": [
+                      "interpolate",
+                      ["linear"],
+                      ["zoom"],
+                      3, 2.3,
+                      8, 3.2,
+                      12, 4,
+                    ],
+                    "line-opacity": 0.78,
+                  }}
+                  layout={{
+                    "line-cap": "round",
+                    "line-join": "round",
+                  }}
+                />
+              </Source>
+
+              {/* Accent highlight layer */}
+              <Source
+                id="flight-routes-highlight"
+                type="geojson"
+                data={{
+                  type: "FeatureCollection",
+                  features: flightRoutes
+                    .map((route, routeIndex) => {
+                      const routeCoordinates = route.arc.map(([lon, lat]) => [lon, lat] as [number, number]);
+                      return {
+                        type: "Feature" as const,
+                        geometry: {
+                          type: "LineString" as const,
+                          coordinates: routeCoordinates,
+                        },
+                        properties: {
+                          flightId: route.flight.id,
+                          origin: "KAPA",
+                          destination: route.destinationCode,
+                          routeIndex,
+                        },
+                      };
+                    })
+                    .filter((f) => f.geometry.coordinates.length >= 2),
+                }}
+              >
+                <Layer
+                  id="flight-routes-highlight-layer"
+                  type="line"
+                  paint={{
+                    "line-color": "#fdf4ff",
+                    "line-width": 0.8,
+                    "line-opacity": 0.28,
+                  }}
+                  layout={{
+                    "line-cap": "round",
+                    "line-join": "round",
+                  }}
+                />
+              </Source>
+            </>
           )}
           
           {/* Debug overlay */}
@@ -502,51 +475,73 @@ export function FlightMap() {
             </div>
           )}
 
-          {/* Airport Markers - Only show airports with routes */}
-          {airportsToDisplay.map((airport) => (
-            <Marker
-              key={`airport-${airport.code}`}
-              longitude={airport.coords[0]}
-              latitude={airport.coords[1]}
-              anchor="bottom"
-            >
-              <div
-                className="relative transition-all duration-500 opacity-100 scale-100 cursor-pointer"
-                onMouseEnter={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  // Find a flight that uses this airport
-                  const flight = flightHistory.find(
-                    (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                  );
-                  if (flight) {
-                    setTooltip({
-                      flight,
-                      x: rect.left + rect.width / 2,
-                      y: rect.top,
-                    });
-                  }
-                }}
-                onMouseLeave={() => setTooltip(null)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const flight = flightHistory.find(
-                    (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                  );
-                  if (flight) {
-                    setTooltip({
-                      flight,
-                      x: rect.left + rect.width / 2,
-                      y: rect.top,
-                    });
-                  }
-                }}
+          {/* Airport Markers - Show KAPA as home base and all visited airports */}
+          {airportsToDisplay.map((airport) => {
+            const isHomeBase = airport.code === "KAPA";
+            return (
+              <Marker
+                key={`airport-${airport.code}`}
+                longitude={airport.coords[0]}
+                latitude={airport.coords[1]}
+                anchor="bottom"
               >
-                <div className="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-secondary/30 blur-sm animate-pulse-glow"></div>
-                <MapPin className="h-5 w-5 text-secondary drop-shadow-lg" />
-              </div>
-            </Marker>
-          ))}
+                <div
+                  className="relative transition-all duration-500 opacity-100 scale-100 cursor-pointer group"
+                onMouseEnter={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                  const flight =
+                    airportFlights.get(airport.code) ||
+                    flightHistory.find(
+                      (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
+                    );
+                    if (flight) {
+                      setTooltip({
+                        flight,
+                        x: rect.left + rect.width / 2,
+                        y: rect.top,
+                      });
+                    }
+                  }}
+                  onMouseLeave={() => setTooltip(null)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                  const flight =
+                    airportFlights.get(airport.code) ||
+                    flightHistory.find(
+                      (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
+                    );
+                    if (flight) {
+                      setTooltip({
+                        flight,
+                        x: rect.left + rect.width / 2,
+                        y: rect.top,
+                      });
+                    }
+                  }}
+                >
+                  {/* Glow effect */}
+                  <div 
+                    className={`absolute ${isHomeBase ? '-top-4 -left-4 w-8 h-8' : '-top-3 -left-3 w-6 h-6'} rounded-full blur-sm animate-pulse-glow ${
+                      isHomeBase ? 'bg-violet-500/50' : 'bg-secondary/30'
+                    }`}
+                  ></div>
+                  
+                  {/* Home base gets a special icon */}
+                  {isHomeBase ? (
+                    <div className="relative">
+                      <Plane className="h-6 w-6 text-violet-400 drop-shadow-lg animate-pulse" />
+                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-semibold text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Home Base
+                      </div>
+                    </div>
+                  ) : (
+                    <MapPin className="h-5 w-5 text-secondary drop-shadow-lg" />
+                  )}
+                </div>
+              </Marker>
+            );
+          })}
         </Map>
       </Suspense>
 

@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import type { Feature, LineString } from "geojson";
 import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { flightHistory } from "@/data/flights";
 import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
+import { extractAirportsFromFlight } from "@/lib/flight-airports";
 
 interface FlightInfo {
   tail_number: string;
@@ -18,6 +20,8 @@ interface AircraftPosition {
   speed: number;
   timestamp: number;
 }
+
+type RouteFeature = Feature<LineString, { index: number; origin: string; destination: string }>;
 
 export function BackgroundFlightMap() {
   const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
@@ -111,120 +115,147 @@ export function BackgroundFlightMap() {
   const addHistoricalRoutes = () => {
     if (!map.current || !mapLoaded) return;
 
-    // Process flight history to create routes - include ALL flights
-    const routes: any[] = [];
-    const processedRoutes = new Set<string>(); // Track unique routes to avoid duplicates
-    const allAirports = new Set<string>(); // Track all airports
-    
-    flightHistory.forEach((flight, index) => {
-      const originCoords = getAirportCoordinates(flight.route.originCode);
-      const destCoords = getAirportCoordinates(flight.route.destinationCode);
-      
-      // Track all airports
-      allAirports.add(flight.route.originCode);
-      allAirports.add(flight.route.destinationCode);
-      
-      if (originCoords && destCoords && flight.route.originCode !== flight.route.destinationCode) {
-        // Create a unique key for this route (bidirectional)
-        const routeKey1 = `${flight.route.originCode}-${flight.route.destinationCode}`;
-        const routeKey2 = `${flight.route.destinationCode}-${flight.route.originCode}`;
-        
-        // Only add if we haven't seen this route before
-        if (!processedRoutes.has(routeKey1) && !processedRoutes.has(routeKey2)) {
-          const arc = generateArc(originCoords, destCoords, 50);
-          routes.push({
-            type: 'Feature',
-            properties: {
-              index,
-              origin: flight.route.originCode,
-              destination: flight.route.destinationCode
-            },
-            geometry: {
-              type: 'LineString',
-              coordinates: arc
-            }
-          });
-          processedRoutes.add(routeKey1);
-        }
-      }
-    });
-
-    console.log(`Adding ${routes.length} unique flight routes connecting ${allAirports.size} airports`);
-    console.log('Airports:', Array.from(allAirports).sort().join(', '));
-
-    // Add routes as a source
-    if (map.current.getSource('flight-routes')) {
-      map.current.removeLayer('flight-routes-lines');
-      map.current.removeLayer('flight-routes-glow');
-      map.current.removeSource('flight-routes');
+    const kapaCoords = getAirportCoordinates("KAPA");
+    if (!kapaCoords) {
+      console.warn("Cannot render hub routes without KAPA coordinates");
+      return;
     }
 
-    map.current.addSource('flight-routes', {
-      type: 'geojson',
+    const visitedAirports = new Set<string>();
+    flightHistory.forEach((flight) => {
+      extractAirportsFromFlight(flight).forEach((code) => visitedAirports.add(code));
+    });
+    visitedAirports.delete("KAPA");
+
+    const routes: RouteFeature[] = Array.from(visitedAirports)
+      .map((code, index) => {
+        const destinationCoords = getAirportCoordinates(code);
+        if (!destinationCoords) {
+          console.warn(`Missing coordinates for visited airport: ${code}`);
+          return null;
+        }
+
+        const arc = generateArc(kapaCoords, destinationCoords, 50);
+        const feature: RouteFeature = {
+          type: "Feature",
+          properties: {
+            index,
+            origin: "KAPA",
+            destination: code,
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: arc,
+          },
+        };
+
+        return feature;
+      })
+      .filter((feature): feature is RouteFeature => feature !== null);
+
+    console.log(`Adding ${routes.length} hub routes from KAPA to ${visitedAirports.size} airports`);
+
+    // Add routes as a source
+    if (map.current.getSource("flight-routes")) {
+      ["flight-routes-highlight", "flight-routes-lines", "flight-routes-glow"].forEach((layerId) => {
+        if (map.current?.getLayer(layerId)) {
+          map.current.removeLayer(layerId);
+        }
+      });
+      map.current.removeSource("flight-routes");
+    }
+
+    map.current.addSource("flight-routes", {
+      type: "geojson",
+      lineMetrics: true,
       data: {
-        type: 'FeatureCollection',
-        features: routes
-      }
+        type: "FeatureCollection",
+        features: routes,
+      },
     });
 
     // Add glow effect layer underneath
     map.current.addLayer({
-      id: 'flight-routes-glow',
-      type: 'line',
-      source: 'flight-routes',
+      id: "flight-routes-glow",
+      type: "line",
+      source: "flight-routes",
       layout: {
-        'line-cap': 'round',
-        'line-join': 'round'
+        "line-cap": "round",
+        "line-join": "round",
       },
       paint: {
-        'line-color': '#60a5fa',
-        'line-width': 6,
-        'line-opacity': 0.3,
-        'line-blur': 3
-      }
+        "line-color": "#a855f7",
+        "line-width": 6,
+        "line-opacity": 0.12,
+        "line-blur": 5,
+      },
     });
 
     // Add the routes layer with gradient effect on top
     map.current.addLayer({
-      id: 'flight-routes-lines',
-      type: 'line',
-      source: 'flight-routes',
+      id: "flight-routes-lines",
+      type: "line",
+      source: "flight-routes",
       layout: {
-        'line-cap': 'round',
-        'line-join': 'round'
+        "line-cap": "round",
+        "line-join": "round",
       },
       paint: {
-        'line-color': '#60a5fa', // Brighter blue
-        'line-width': 3, // Even thicker for better visibility
-        'line-opacity': 0.75, // More visible
-        'line-blur': 0.5
-      }
+        "line-gradient": [
+          "interpolate",
+          ["linear"],
+          ["line-progress"],
+          0,
+          "#c4b5fd",
+          0.6,
+          "#a855f7",
+          1,
+          "#7c3aed",
+        ],
+        "line-width": 2.8,
+        "line-opacity": 0.7,
+      },
     });
 
-    // Add airport markers
-    const airports = new Set<string>();
-    flightHistory.forEach(flight => {
-      airports.add(flight.route.originCode);
-      airports.add(flight.route.destinationCode);
+    // Accent highlight layer
+    map.current.addLayer({
+      id: "flight-routes-highlight",
+      type: "line",
+      source: "flight-routes",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      paint: {
+        "line-color": "#fdf4ff",
+        "line-width": 0.7,
+        "line-opacity": 0.25,
+      },
     });
 
-    airports.forEach(code => {
+    // Add airport markers (include home base)
+    const markerAirports = new Set<string>(visitedAirports);
+    markerAirports.add("KAPA");
+
+    markerAirports.forEach((code) => {
       const coords = getAirportCoordinates(code);
-      if (coords) {
-        const el = document.createElement('div');
-        el.className = 'airport-marker';
-        el.style.width = '10px';
-        el.style.height = '10px';
-        el.style.borderRadius = '50%';
-        el.style.backgroundColor = '#60a5fa';
-        el.style.border = '2px solid #fff';
-        el.style.opacity = '0.9';
-        el.style.boxShadow = '0 0 12px rgba(96, 165, 250, 1), 0 0 20px rgba(96, 165, 250, 0.5)';
+      if (!coords) return;
 
-        new mapboxgl.Marker(el)
-          .setLngLat(coords as [number, number])
-          .addTo(map.current!);
-      }
+      const isHomeBase = code === "KAPA";
+      const el = document.createElement("div");
+      el.className = "airport-marker";
+      el.style.width = isHomeBase ? "12px" : "8px";
+      el.style.height = el.style.width;
+      el.style.borderRadius = "50%";
+      el.style.backgroundColor = isHomeBase ? "#c084fc" : "#a78bfa";
+      el.style.border = "1px solid rgba(255,255,255,0.65)";
+      el.style.opacity = isHomeBase ? "1" : "0.85";
+      el.style.boxShadow = isHomeBase
+        ? "0 0 14px rgba(160, 113, 255, 0.5)"
+        : "0 0 10px rgba(160, 113, 255, 0.35)";
+      el.title = isHomeBase ? "KAPA (Home Base)" : code;
+
+      new mapboxgl.Marker(el).setLngLat(coords as [number, number]).addTo(map.current!);
     });
   };
 
@@ -233,9 +264,13 @@ export function BackgroundFlightMap() {
     if (!map.current || !aircraftPosition || !mapLoaded) return;
 
     // Clear historical routes when flying
-    if (map.current.getLayer('flight-routes-lines')) {
-      map.current.removeLayer('flight-routes-lines');
-      map.current.removeSource('flight-routes');
+    if (map.current.getSource("flight-routes")) {
+      ["flight-routes-highlight", "flight-routes-lines", "flight-routes-glow"].forEach((layerId) => {
+        if (map.current?.getLayer(layerId)) {
+          map.current.removeLayer(layerId);
+        }
+      });
+      map.current.removeSource("flight-routes");
     }
 
     // Remove existing marker

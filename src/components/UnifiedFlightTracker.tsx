@@ -10,6 +10,10 @@ import { FlightMap } from "@/components/FlightMap";
 import { Suspense } from "react";
 import { flightHistory } from "@/data/flights";
 
+interface UnifiedFlightTrackerProps {
+  showInlineMap?: boolean;
+}
+
 interface FlightInfo {
   tail_number: string;
   flight_status: "on_ground" | "in_flight";
@@ -24,7 +28,7 @@ interface AircraftPosition {
   timestamp: number;
 }
 
-export function UnifiedFlightTracker() {
+export function UnifiedFlightTracker({ showInlineMap = true }: UnifiedFlightTrackerProps) {
   const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
   const [positionHistory, setPositionHistory] = useState<AircraftPosition[]>([]);
@@ -354,7 +358,7 @@ export function UnifiedFlightTracker() {
                     </div>
                   )}
                 </div>
-              ) : (
+              ) : showInlineMap ? (
                 <div className="h-[250px] md:h-[400px] w-full">
                   <Suspense
                     fallback={
@@ -368,6 +372,19 @@ export function UnifiedFlightTracker() {
                   >
                     <FlightMap />
                   </Suspense>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-border/60 bg-card/40 p-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    The full interactive map is now immersive across the entire section above. Scroll back to
+                    “Follow My Flight” to explore every route.
+                  </p>
+                  <button
+                    className="mt-4 inline-flex items-center justify-center rounded-full bg-secondary/20 px-4 py-2 text-sm font-medium text-secondary transition hover:bg-secondary/30"
+                    onClick={() => document.getElementById("flight-map-fullscreen")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    Jump to Map
+                  </button>
                 </div>
               )}
             </>

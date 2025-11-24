@@ -5,12 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown, ChevronRight } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo, useRef } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
 import { UnifiedFlightTracker } from "@/components/UnifiedFlightTracker";
+import { FlightMap } from "@/components/FlightMap";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -118,6 +119,9 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   const [displayedFlights, setDisplayedFlights] = useState(3);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isExperienceOpen, setIsExperienceOpen] = useState(false);
+  const mapSectionRef = useRef<HTMLDivElement>(null);
+  const [mapInView, setMapInView] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -125,6 +129,29 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const node = mapSectionRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setMapInView(entry.isIntersecting);
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(node);
+    return () => {
+      observer.unobserve(node);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapInView) {
+      setMapReady(true);
+    }
+  }, [mapInView]);
 
   // Calculate chart data
   const chartData = useMemo(() => {
@@ -217,7 +244,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   ];
 
   return (
-    <div className="min-h-screen pt-20 md:pt-32 pb-10 md:pb-20">
+    <div className="min-h-screen">
       {showSEO && (
         <SEO
           title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
@@ -232,27 +259,72 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
           }}
         />
       )}
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto mb-8 md:mb-20"
-        >
-          <BilingualHeading 
-            english="Follow My Flight"
-            spanish="Sigue Mi Vuelo"
-            as="h1"
-            className="mb-4 md:mb-6"
-          />
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            Track my current flight in real-time and explore my flight history.
-          </p>
-        </motion.div>
 
-        {/* Unified Flight Tracker - Shows live tracking when flying, flight map when not */}
-        <div className="max-w-6xl mx-auto mb-8 md:mb-20">
-          <UnifiedFlightTracker />
+      {/* Immersive full-screen map */}
+      <section
+        id="flight-map-fullscreen"
+        ref={mapSectionRef}
+        className="relative h-screen w-full overflow-hidden"
+      >
+        <div
+          className={`absolute inset-0 transition-all duration-700 ease-out ${
+            mapInView ? "opacity-100 scale-100" : "opacity-0 scale-110"
+          }`}
+        >
+          {mapReady ? (
+            <Suspense
+              fallback={
+                <div className="flex h-full w-full items-center justify-center bg-card/30">
+                  <div className="text-center">
+                    <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-secondary"></div>
+                    <p className="text-sm text-muted-foreground">Booting up flight map...</p>
+                  </div>
+                </div>
+              }
+            >
+              <FlightMap />
+            </Suspense>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-card/20">
+              <div className="text-center">
+                <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-secondary"></div>
+                <p className="text-sm text-muted-foreground">Preparing interactive map...</p>
+              </div>
+            </div>
+          )}
         </div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-background/30 to-background/90" />
+        <div className="relative z-10 flex h-full flex-col justify-between py-12">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-4xl"
+            >
+              <BilingualHeading
+                english="Follow My Flight"
+                spanish="Sigue Mi Vuelo"
+                as="h1"
+                className="mb-4 md:mb-6 text-primary-foreground drop-shadow-glow"
+              />
+              <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed max-w-2xl">
+                Scroll or pinch to explore every route I’ve flown. The interactive map now takes over the entire
+                canvas so you can zoom in on each airport I've visited.
+              </p>
+            </motion.div>
+          </div>
+          <div className="pb-6 text-center text-xs font-semibold uppercase tracking-[0.5em] text-primary-foreground/70">
+            Scroll to Explore
+          </div>
+        </div>
+      </section>
+
+      <div className="pt-10 md:pt-16 pb-10 md:pb-20">
+        <div className="container mx-auto px-4">
+          {/* Unified Flight Tracker - Shows live tracking when flying, stats otherwise */}
+          <div className="max-w-6xl mx-auto mb-8 md:mb-20">
+            <UnifiedFlightTracker showInlineMap={false} />
+          </div>
 
         {/* Active Flight Section */}
         {activeFlight && (
@@ -563,6 +635,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         </motion.div>
       </div>
     </div>
+  </div>
   );
 }
 

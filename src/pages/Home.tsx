@@ -1,7 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { FlightPath } from "@/components/FlightPath";
 import { SEO } from "@/components/SEO";
 import { useRef, useEffect } from "react";
 import About from "./About";
@@ -83,8 +82,6 @@ export default function Home() {
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
-        <FlightPath />
-        
         <motion.div 
           style={{ opacity, scale }}
           className="container mx-auto px-4 relative z-10"
