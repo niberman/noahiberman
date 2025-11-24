@@ -28,22 +28,299 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      agents: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          name: string;
+          type: 'Content' | 'Engagement' | 'Automation' | 'Analytics' | 'Other';
+          status: 'active' | 'idle' | 'processing' | 'error' | 'disabled';
+          config: Json | null;
+          last_run_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          name: string;
+          type: 'Content' | 'Engagement' | 'Automation' | 'Analytics' | 'Other';
+          status?: 'active' | 'idle' | 'processing' | 'error' | 'disabled';
+          config?: Json | null;
+          last_run_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['agents']['Row']>;
+      };
+      uploads: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          type: 'image' | 'text' | 'video' | 'document' | 'other';
+          image_url: string | null;
+          text: string | null;
+          metadata: Json | null;
+          status: 'pending' | 'processing' | 'completed' | 'failed';
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          type?: 'image' | 'text' | 'video' | 'document' | 'other';
+          image_url?: string | null;
+          text?: string | null;
+          metadata?: Json | null;
+          status?: 'pending' | 'processing' | 'completed' | 'failed';
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['uploads']['Row']>;
+      };
+      generated_posts: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          upload_id: string | null;
+          content: string;
+          platform: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'other';
+          status: 'draft' | 'scheduled' | 'published' | 'archived';
+          metadata: Json | null;
+          scheduled_at: string | null;
+          published_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          upload_id?: string | null;
+          content: string;
+          platform?: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'other';
+          status?: 'draft' | 'scheduled' | 'published' | 'archived';
+          metadata?: Json | null;
+          scheduled_at?: string | null;
+          published_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['generated_posts']['Row']>;
+      };
+      crm_contacts: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          name: string;
+          email: string | null;
+          phone: string | null;
+          company: string | null;
+          position: string | null;
+          notes: string | null;
+          tags: string[] | null;
+          priority: 'low' | 'medium' | 'high';
+          status: 'active' | 'inactive' | 'archived';
+          last_contacted_at: string | null;
+          follow_up_date: string | null;
+          metadata: Json | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          name: string;
+          email?: string | null;
+          phone?: string | null;
+          company?: string | null;
+          position?: string | null;
+          notes?: string | null;
+          tags?: string[] | null;
+          priority?: 'low' | 'medium' | 'high';
+          status?: 'active' | 'inactive' | 'archived';
+          last_contacted_at?: string | null;
+          follow_up_date?: string | null;
+          metadata?: Json | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['crm_contacts']['Row']>;
+      };
+      aircraft_status: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          aircraft_tail_number: string;
+          aircraft_type: string;
+          airport_base: string | null;
+          status: 'On Ground' | 'En Route' | 'Training' | 'Maintenance';
+          location: string | null;
+          metadata: Json | null;
+          last_updated: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          aircraft_tail_number: string;
+          aircraft_type: string;
+          airport_base?: string | null;
+          status?: 'On Ground' | 'En Route' | 'Training' | 'Maintenance';
+          location?: string | null;
+          metadata?: Json | null;
+          last_updated?: string | null;
+          created_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['aircraft_status']['Row']>;
+      };
+      flight_tracking: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          fa_flight_id: string;
+          flight_number: string | null;
+          origin: string;
+          destination: string;
+          departure_time: string | null;
+          arrival_time: string | null;
+          aircraft: string | null;
+          status: 'On Time' | 'Delayed' | 'Departed' | 'Arrived' | 'Cancelled';
+          tracking_data: Json | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          fa_flight_id: string;
+          flight_number?: string | null;
+          origin: string;
+          destination: string;
+          departure_time?: string | null;
+          arrival_time?: string | null;
+          aircraft?: string | null;
+          status?: 'On Time' | 'Delayed' | 'Departed' | 'Arrived' | 'Cancelled';
+          tracking_data?: Json | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['flight_tracking']['Row']>;
+      };
+      ventures: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          role: string;
+          year: string;
+          status: 'active' | 'completed' | 'in-progress';
+          link: string | null;
+          tags: string[] | null;
+          subtitle_en: string | null;
+          subtitle_es: string | null;
+          is_new: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id: string;
+          title: string;
+          description: string;
+          role: string;
+          year: string;
+          status?: 'active' | 'completed' | 'in-progress';
+          link?: string | null;
+          tags?: string[] | null;
+          subtitle_en?: string | null;
+          subtitle_es?: string | null;
+          is_new?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['ventures']['Row']>;
+      };
+      projects: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          category: string;
+          year: string;
+          technologies: string[] | null;
+          link: string | null;
+          image: string | null;
+          venture_link: string | null;
+          venture_name: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id: string;
+          title: string;
+          description: string;
+          category: string;
+          year: string;
+          technologies?: string[] | null;
+          link?: string | null;
+          image?: string | null;
+          venture_link?: string | null;
+          venture_name?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['projects']['Row']>;
+      };
+      flights: {
+        Row: {
+          id: string;
+          date: string;
+          route: Json;
+          aircraft: Json;
+          duration: string | null;
+          status: 'completed' | 'active' | 'upcoming';
+          departure_time: string | null;
+          arrival_time: string | null;
+          altitude: number | null;
+          speed: number | null;
+          position: Json | null;
+          description: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id: string;
+          date: string;
+          route: Json;
+          aircraft: Json;
+          duration?: string | null;
+          status?: 'completed' | 'active' | 'upcoming';
+          departure_time?: string | null;
+          arrival_time?: string | null;
+          altitude?: number | null;
+          speed?: number | null;
+          position?: Json | null;
+          description?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['flights']['Row']>;
+      };
       contact_messages: {
         Row: {
           id: string;
           name: string;
           email: string;
           message: string;
-          created_at: string;
+          created_at: string | null;
         };
         Insert: {
           id?: string;
           name: string;
           email: string;
           message: string;
-          created_at?: string;
+          created_at?: string | null;
         };
-        Update: Partial<Database['public']['Tables']['contact_messages']['Insert']>;
+        Update: Partial<Database['public']['Tables']['contact_messages']['Row']>;
       };
     };
     Views: {

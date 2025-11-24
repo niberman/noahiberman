@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
 import { motion } from "framer-motion";
 
 export function Navigation() {
@@ -84,8 +83,6 @@ export function Navigation() {
                 }`} />
               </a>
             ))}
-            
-            <ThemeToggle />
           </div>
         </div>
       </div>
