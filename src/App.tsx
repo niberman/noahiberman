@@ -10,40 +10,53 @@ import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 import VentureDetail from "./pages/VentureDetail";
 import NotFound from "./pages/NotFound";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SecretDashboardAccess />
-        <div className="min-h-screen flex flex-col relative">
-          <Navigation />
-          <main className="flex-1 relative z-10">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route 
-                path="/dashboard/*" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route
-                path="/Dashboard"
-                element={<Navigate to="/dashboard" replace />}
-              />
-              <Route
-                path="/Dashboard/*"
-                element={<Navigate to="/dashboard" replace />}
-              />
+const App = () => {
+  console.log("App component rendering, current path:", window.location.pathname);
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <SecretDashboardAccess />
+          <div className="min-h-screen flex flex-col relative">
+            <Navigation />
+            <main className="flex-1 relative z-10">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/dashboard/*" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route
+                  path="/Dashboard"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route
+                  path="/Dashboard/*"
+                  element={<Navigate to="/dashboard" replace />}
+                />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />
               <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
               <Route path="/ventures/:id" element={<VentureDetail />} />
@@ -58,6 +71,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

@@ -14,6 +14,7 @@ export const useSecretDashboardAccess = () => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.shiftKey && e.key === "D") {
         e.preventDefault();
+        console.log("Secret keyboard shortcut triggered: Shift + D");
         markSecretAccessGranted();
         navigate("/dashboard");
       }

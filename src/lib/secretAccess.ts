@@ -19,16 +19,20 @@ const checkStorageValue = (storage: Storage | null | undefined) => {
 
 export const markSecretAccessGranted = () => {
   if (typeof window === "undefined") return;
+  console.log("markSecretAccessGranted: Setting secret access in storage");
   setStorageValue(window.sessionStorage);
   setStorageValue(window.localStorage);
+  console.log("markSecretAccessGranted: Dispatching event", SECRET_ACCESS_EVENT);
   window.dispatchEvent(new Event(SECRET_ACCESS_EVENT));
+  console.log("markSecretAccessGranted: Complete. hasSecretAccess:", hasSecretAccess());
 };
 
 export const hasSecretAccess = () => {
   if (typeof window === "undefined") return false;
-  return (
-    checkStorageValue(window.sessionStorage) ||
-    checkStorageValue(window.localStorage)
-  );
+  const sessionHasAccess = checkStorageValue(window.sessionStorage);
+  const localHasAccess = checkStorageValue(window.localStorage);
+  const result = sessionHasAccess || localHasAccess;
+  console.log("hasSecretAccess check: session:", sessionHasAccess, "local:", localHasAccess, "result:", result);
+  return result;
 };
 

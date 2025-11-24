@@ -134,26 +134,28 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
                           </div>
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
                             {venture.link && (
-                              <a
-                                href={venture.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(venture.link, "_blank", "noopener,noreferrer");
+                                }}
                                 className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-border hover:bg-accent active:scale-95 transition-all text-sm font-medium"
                               >
                                 Visit <ExternalLink className="ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                              </a>
+                              </button>
                             )}
                             {venture.companyLink && (
-                              <a
-                                href={venture.companyLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs text-muted-foreground hover:text-foreground active:scale-95 transition-all"
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(venture.companyLink, "_blank", "noopener,noreferrer");
+                                }}
+                                className="text-xs text-muted-foreground hover:text-foreground active:scale-95 transition-all inline-flex items-center gap-1"
                               >
-                                Company Website <ExternalLink className="inline ml-1 h-3 w-3" />
-                              </a>
+                                Company Website <ExternalLink className="h-3 w-3" />
+                              </button>
                             )}
                           </div>
                         </div>

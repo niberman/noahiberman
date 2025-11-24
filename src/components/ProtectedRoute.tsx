@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { hasSecretAccess, SECRET_ACCESS_EVENT } from "@/lib/secretAccess";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,19 +9,11 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [secretAccess, setSecretAccess] = useState(() => hasSecretAccess());
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const handleSecretAccess = () => setSecretAccess(true);
-    window.addEventListener(SECRET_ACCESS_EVENT, handleSecretAccess);
-    return () => window.removeEventListener(SECRET_ACCESS_EVENT, handleSecretAccess);
-  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
       if (!supabase) {
-        setIsAuthenticated(secretAccess);
+        setIsAuthenticated(false);
         setIsLoading(false);
         return;
       }
@@ -31,10 +22,10 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        setIsAuthenticated(!!user || secretAccess);
+        setIsAuthenticated(!!user);
       } catch (error) {
         console.error("Auth check error:", error);
-        setIsAuthenticated(secretAccess);
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
@@ -49,18 +40,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setIsAuthenticated(true);
-      } else if (!secretAccess) {
-        setIsAuthenticated(false);
-      }
+      setIsAuthenticated(!!session?.user);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [secretAccess]);
-
+  }, []);
+  
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-dusk flex items-center justify-center">
@@ -73,7 +60,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
