@@ -9,6 +9,7 @@ import Ventures from "./Ventures";
 import FollowMyFlight from "./FollowMyFlight";
 import Contact from "./Contact";
 import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
+import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,9 @@ export default function Home() {
     <div className="min-h-screen relative">
       {/* Background Flight Map */}
       <BackgroundFlightMap />
+      
+      {/* Live Flight Status Indicator */}
+      <LiveFlightIndicator />
       
       {/* Main Content */}
       <div className="relative z-10">

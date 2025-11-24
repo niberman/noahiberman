@@ -53,7 +53,7 @@ export function BackgroundFlightMap() {
     // Create map with appropriate style and initial view
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-streets-v12', // Satellite for more detail
+      style: 'mapbox://styles/mapbox/dark-v11', // Dark style for faint background
       center: [-105.5, 41.5], // Center on Colorado/Wyoming region
       zoom: window.innerWidth < 768 ? 5.5 : 6.5, // Closer zoom to see routes clearly
       pitch: 45, // More dramatic angle
@@ -64,6 +64,26 @@ export function BackgroundFlightMap() {
 
     map.current.on('load', () => {
       setMapLoaded(true);
+      
+      // Reduce the opacity of all map layers to make them very faint
+      if (map.current) {
+        // Dim all the base map layers
+        const layers = map.current.getStyle().layers;
+        layers?.forEach((layer) => {
+          if (layer.type === 'background') {
+            map.current!.setPaintProperty(layer.id, 'background-opacity', 0.2);
+          } else if (layer.type === 'fill') {
+            map.current!.setPaintProperty(layer.id, 'fill-opacity', 0.1);
+          } else if (layer.type === 'line') {
+            map.current!.setPaintProperty(layer.id, 'line-opacity', 0.15);
+          } else if (layer.type === 'symbol') {
+            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.2);
+            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.2);
+          } else if (layer.type === 'raster') {
+            map.current!.setPaintProperty(layer.id, 'raster-opacity', 0.15);
+          }
+        });
+      }
       
       // Add historical flight routes if not currently flying
       if (!currentFlight || currentFlight.flight_status !== "in_flight") {
@@ -91,32 +111,51 @@ export function BackgroundFlightMap() {
   const addHistoricalRoutes = () => {
     if (!map.current || !mapLoaded) return;
 
-    // Process flight history to create routes
+    // Process flight history to create routes - include ALL flights
     const routes: any[] = [];
+    const processedRoutes = new Set<string>(); // Track unique routes to avoid duplicates
+    const allAirports = new Set<string>(); // Track all airports
+    
     flightHistory.forEach((flight, index) => {
       const originCoords = getAirportCoordinates(flight.route.originCode);
       const destCoords = getAirportCoordinates(flight.route.destinationCode);
       
-      if (originCoords && destCoords) {
-        const arc = generateArc(originCoords, destCoords, 50);
-        routes.push({
-          type: 'Feature',
-          properties: {
-            index,
-            origin: flight.route.originCode,
-            destination: flight.route.destinationCode
-          },
-          geometry: {
-            type: 'LineString',
-            coordinates: arc
-          }
-        });
+      // Track all airports
+      allAirports.add(flight.route.originCode);
+      allAirports.add(flight.route.destinationCode);
+      
+      if (originCoords && destCoords && flight.route.originCode !== flight.route.destinationCode) {
+        // Create a unique key for this route (bidirectional)
+        const routeKey1 = `${flight.route.originCode}-${flight.route.destinationCode}`;
+        const routeKey2 = `${flight.route.destinationCode}-${flight.route.originCode}`;
+        
+        // Only add if we haven't seen this route before
+        if (!processedRoutes.has(routeKey1) && !processedRoutes.has(routeKey2)) {
+          const arc = generateArc(originCoords, destCoords, 50);
+          routes.push({
+            type: 'Feature',
+            properties: {
+              index,
+              origin: flight.route.originCode,
+              destination: flight.route.destinationCode
+            },
+            geometry: {
+              type: 'LineString',
+              coordinates: arc
+            }
+          });
+          processedRoutes.add(routeKey1);
+        }
       }
     });
+
+    console.log(`Adding ${routes.length} unique flight routes connecting ${allAirports.size} airports`);
+    console.log('Airports:', Array.from(allAirports).sort().join(', '));
 
     // Add routes as a source
     if (map.current.getSource('flight-routes')) {
       map.current.removeLayer('flight-routes-lines');
+      map.current.removeLayer('flight-routes-glow');
       map.current.removeSource('flight-routes');
     }
 
@@ -128,7 +167,24 @@ export function BackgroundFlightMap() {
       }
     });
 
-    // Add the routes layer with gradient effect
+    // Add glow effect layer underneath
+    map.current.addLayer({
+      id: 'flight-routes-glow',
+      type: 'line',
+      source: 'flight-routes',
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': '#60a5fa',
+        'line-width': 6,
+        'line-opacity': 0.3,
+        'line-blur': 3
+      }
+    });
+
+    // Add the routes layer with gradient effect on top
     map.current.addLayer({
       id: 'flight-routes-lines',
       type: 'line',
@@ -388,7 +444,29 @@ export function BackgroundFlightMap() {
     <div className="fixed inset-0 w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Lighter gradient overlays for better map visibility */}
+      {/* Flying mode: Dramatic visual overlay */}
+      {currentFlight && currentFlight.flight_status === "in_flight" && (
+        <>
+          {/* Animated border pulse */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 border-4 border-green-500/30 animate-pulse" />
+            <div className="absolute inset-4 border-2 border-green-400/20 animate-ping" style={{ animationDuration: '3s' }} />
+          </div>
+          
+          {/* Corner indicators */}
+          <div className="absolute top-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse">
+            <div className="h-3 w-3 bg-green-400 rounded-full animate-ping" />
+            <span className="text-green-400 font-bold text-xs md:text-sm tracking-wider">LIVE</span>
+          </div>
+          
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse">
+            <div className="h-3 w-3 bg-green-400 rounded-full animate-ping" />
+            <span className="text-green-400 font-bold text-xs md:text-sm tracking-wider">TRACKING</span>
+          </div>
+        </>
+      )}
+      
+      {/* Gradient overlays for better text readability */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top gradient for header - more transparent */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/90 via-background/40 to-transparent" />
@@ -396,9 +474,13 @@ export function BackgroundFlightMap() {
         {/* Bottom gradient for footer - more transparent */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/70 via-background/30 to-transparent" />
         
-        {/* Very subtle side gradients */}
-        <div className="absolute inset-y-0 left-0 w-4 md:w-8 bg-gradient-to-r from-background/20 to-transparent" />
-        <div className="absolute inset-y-0 right-0 w-4 md:w-8 bg-gradient-to-l from-background/20 to-transparent" />
+        {/* Very subtle side gradients - only when not flying */}
+        {(!currentFlight || currentFlight.flight_status !== "in_flight") && (
+          <>
+            <div className="absolute inset-y-0 left-0 w-4 md:w-8 bg-gradient-to-r from-background/20 to-transparent" />
+            <div className="absolute inset-y-0 right-0 w-4 md:w-8 bg-gradient-to-l from-background/20 to-transparent" />
+          </>
+        )}
         
         {/* Subtle vignette effect for depth */}
         <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-background/20" />
@@ -406,19 +488,70 @@ export function BackgroundFlightMap() {
 
       {/* Live flight indicator - more prominent */}
       {currentFlight && currentFlight.flight_status === "in_flight" && aircraftPosition && (
-        <div className="absolute top-24 right-4 md:top-28 md:right-8 bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-md rounded-xl p-4 md:p-5 text-white pointer-events-none animate-fade-in border border-green-500/30 shadow-2xl">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="relative">
-              <div className="h-3 w-3 bg-green-400 rounded-full animate-pulse" />
-              <div className="absolute inset-0 h-3 w-3 bg-green-400 rounded-full animate-ping" />
+        <div className="absolute top-20 md:top-24 right-4 md:right-8 z-50 pointer-events-none animate-fade-in">
+          {/* Glowing background effect */}
+          <div className="absolute inset-0 bg-green-500/30 rounded-2xl blur-2xl animate-pulse" />
+          
+          {/* Main card */}
+          <div className="relative bg-gradient-to-br from-green-500/30 via-green-600/20 to-green-700/10 backdrop-blur-xl rounded-2xl p-5 md:p-6 text-white border-2 border-green-400/50 shadow-2xl">
+            {/* Animated corner accents */}
+            <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-green-400 animate-pulse" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-green-400 animate-pulse" />
+            <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-green-400 animate-pulse" />
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-green-400 animate-pulse" />
+            
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative">
+                <div className="h-4 w-4 bg-green-400 rounded-full animate-pulse" />
+                <div className="absolute inset-0 h-4 w-4 bg-green-400 rounded-full animate-ping" />
+                <div className="absolute inset-0 h-4 w-4 bg-green-400 rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
+              </div>
+              <span className="text-base md:text-lg font-black tracking-widest text-green-300 drop-shadow-lg">
+                ✈ LIVE FLIGHT
+              </span>
             </div>
-            <span className="text-sm md:text-base font-bold tracking-wider">LIVE TRACKING</span>
-          </div>
-          <div className="space-y-1.5 text-sm md:text-base">
-            <p className="font-mono text-lg md:text-xl font-bold text-green-400">{currentFlight.tail_number}</p>
-            <div className="flex items-center gap-4">
-              <p className="text-white/90">{aircraftPosition.altitude.toLocaleString()} ft</p>
-              <p className="text-white/90">{Math.round(aircraftPosition.speed)} kts</p>
+            
+            {/* Flight info */}
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xs text-green-200/80">Aircraft:</span>
+                <p className="font-mono text-xl md:text-2xl font-black text-green-300 drop-shadow-lg tracking-wider">
+                  {currentFlight.tail_number}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-green-400/30">
+                <div>
+                  <p className="text-xs text-green-200/70 mb-1">Altitude</p>
+                  <p className="text-base md:text-lg font-bold text-white">
+                    {aircraftPosition.altitude.toLocaleString()}<span className="text-sm text-green-200/80 ml-1">ft</span>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-green-200/70 mb-1">Speed</p>
+                  <p className="text-base md:text-lg font-bold text-white">
+                    {Math.round(aircraftPosition.speed)}<span className="text-sm text-green-200/80 ml-1">kts</span>
+                  </p>
+                </div>
+              </div>
+              
+              <div className="pt-2 border-t border-green-400/30">
+                <p className="text-xs text-green-200/70 mb-1">Heading</p>
+                <p className="text-base md:text-lg font-bold text-white">
+                  {Math.round(aircraftPosition.heading)}°
+                </p>
+              </div>
+            </div>
+            
+            {/* Status bar */}
+            <div className="mt-4 pt-3 border-t border-green-400/30 flex items-center justify-between">
+              <span className="text-xs text-green-200/70">ADS-B Tracking</span>
+              <div className="flex items-center gap-1">
+                <div className="h-1.5 w-1.5 bg-green-400 rounded-full animate-pulse" />
+                <div className="h-1.5 w-1.5 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                <div className="h-1.5 w-1.5 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+              </div>
             </div>
           </div>
         </div>

@@ -228,4 +228,17 @@ All colors MUST be HSL.
   .bg-radial-gradient {
     background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via, var(--tw-gradient-from)) 50%, var(--tw-gradient-to) 100%);
   }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
+  }
 }
