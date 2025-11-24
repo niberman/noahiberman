@@ -224,7 +224,7 @@ export default function FollowMyFlight() {
           "@type": "WebPage",
           "name": "Follow My Flight",
           "description": "Track flights in real-time and explore aviation history",
-          "url": "https://noahberman.com/follow-my-flight"
+          "url": "https://noahiberman.com/follow-my-flight"
         }}
       />
       <div className="container mx-auto px-4">

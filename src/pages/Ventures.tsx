@@ -31,7 +31,7 @@ export default function Ventures() {
           "@type": "CollectionPage",
           "name": "Ventures & Projects",
           "description": "Portfolio of ventures and projects by Noah Berman",
-          "url": "https://noahberman.com/ventures",
+          "url": "https://noahiberman.com/ventures",
           "hasPart": ventures.map(venture => ({
             "@type": "Organization",
             "name": venture.title,

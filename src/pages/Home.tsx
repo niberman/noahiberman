@@ -52,7 +52,7 @@ export default function Home() {
           "@type": "WebPage",
           "name": "Noah Berman — Home",
           "description": "Commercial pilot and entrepreneur building aviation and technology ventures",
-          "url": "https://noahberman.com/",
+          "url": "https://noahiberman.com/",
           "breadcrumb": {
             "@type": "BreadcrumbList",
             "itemListElement": [
@@ -60,7 +60,7 @@ export default function Home() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://noahberman.com/"
+                "item": "https://noahiberman.com/"
               }
             ]
           }

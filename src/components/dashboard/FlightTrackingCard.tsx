@@ -10,41 +10,45 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Radar, PlaneTakeoff, PlaneLanding, Clock, Loader2 } from "lucide-react";
+import { useTrackFlight } from "@/hooks/useDashboardData";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Radar,
+  PlaneTakeoff,
+  PlaneLanding,
+  Clock,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
+import type { TrackFlightResponse } from "@/types/dashboard";
 
-interface FlightData {
-  flightNumber: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  arrivalTime: string;
-  status: "On Time" | "Delayed" | "Departed" | "Arrived";
-  aircraft: string;
-}
+type FlightData = TrackFlightResponse["flight"];
 
 export const FlightTrackingCard = () => {
   const [flightId, setFlightId] = useState("");
-  const [isTracking, setIsTracking] = useState(false);
   const [flightData, setFlightData] = useState<FlightData | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { toast } = useToast();
+  const trackFlight = useTrackFlight();
 
   const handleTrackFlight = async () => {
     if (!flightId.trim()) return;
+    setErrorMessage(null);
+    setFlightData(null);
 
-    setIsTracking(true);
-    
-    // Simulate API call with mock data
-    setTimeout(() => {
-      setFlightData({
-        flightNumber: flightId.toUpperCase(),
-        origin: "SFO - San Francisco",
-        destination: "LAX - Los Angeles",
-        departureTime: "14:30 PST",
-        arrivalTime: "16:15 PST",
-        status: "Departed",
-        aircraft: "Boeing 737-800",
+    try {
+      const response = await trackFlight.mutateAsync({ flightIdentifier: flightId.trim() });
+      setFlightData(response.flight);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Unable to track this flight.";
+      setErrorMessage(message);
+      toast({
+        variant: "destructive",
+        title: "Tracking failed",
+        description: message,
       });
-      setIsTracking(false);
-    }, 1500);
+    }
   };
 
   const getStatusColor = (status: FlightData["status"]) => {
@@ -57,6 +61,8 @@ export const FlightTrackingCard = () => {
         return "bg-secondary text-secondary-foreground";
       case "Arrived":
         return "bg-muted text-muted-foreground";
+      case "Cancelled":
+        return "bg-destructive/70 text-white";
     }
   };
 
@@ -89,9 +95,9 @@ export const FlightTrackingCard = () => {
           <Button
             className="w-full"
             onClick={handleTrackFlight}
-            disabled={isTracking || !flightId.trim()}
+            disabled={trackFlight.isPending || !flightId.trim()}
           >
-            {isTracking ? (
+            {trackFlight.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Tracking...
@@ -109,7 +115,7 @@ export const FlightTrackingCard = () => {
         {flightData && (
           <div className="space-y-3 animate-fade-in">
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-lg font-mono">{flightData.flightNumber}</h4>
+              <h4 className="font-bold text-lg font-mono">{flightData.flight_number}</h4>
               <Badge className={getStatusColor(flightData.status)} variant="secondary">
                 {flightData.status}
               </Badge>
@@ -121,11 +127,16 @@ export const FlightTrackingCard = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <PlaneTakeoff className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{flightData.origin}</span>
+                    <span className="text-sm font-medium">
+                      {flightData.origin_name} ({flightData.origin})
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
-                    {flightData.departureTime}
+                    {new Date(flightData.departure_time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
                 </div>
 
@@ -135,12 +146,17 @@ export const FlightTrackingCard = () => {
 
                 <div className="flex-1 text-right">
                   <div className="flex items-center justify-end gap-2 mb-1">
-                    <span className="text-sm font-medium">{flightData.destination}</span>
+                    <span className="text-sm font-medium">
+                      {flightData.destination_name} ({flightData.destination})
+                    </span>
                     <PlaneLanding className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground">
                     <Clock className="h-3 w-3" />
-                    {flightData.arrivalTime}
+                    {new Date(flightData.arrival_time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
                 </div>
               </div>
@@ -148,7 +164,7 @@ export const FlightTrackingCard = () => {
               {/* Aircraft */}
               <div className="pt-2 border-t border-border">
                 <p className="text-xs text-muted-foreground">Aircraft</p>
-                <p className="text-sm font-medium">{flightData.aircraft}</p>
+                <p className="text-sm font-medium">{flightData.aircraft || "Unknown"}</p>
               </div>
             </div>
 
@@ -163,9 +179,16 @@ export const FlightTrackingCard = () => {
           </div>
         )}
 
-        {!flightData && !isTracking && (
+        {!flightData && !trackFlight.isPending && !errorMessage && (
           <div className="text-center py-6 text-sm text-muted-foreground">
-            Enter a flight number to start tracking
+            Enter a flight number or FA Flight ID to start tracking.
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <span>{errorMessage}</span>
           </div>
         )}
       </CardContent>

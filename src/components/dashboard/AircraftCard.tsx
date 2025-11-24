@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -17,28 +17,54 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plane, MapPin, Clock } from "lucide-react";
+import { Plane, MapPin, Clock, AlertTriangle } from "lucide-react";
+import {
+  useAircraftStatus,
+  useUpsertAircraftStatus,
+} from "@/hooks/useDashboardData";
+import { useToast } from "@/hooks/use-toast";
+import type { AircraftStatus as AircraftStatusType } from "@/types/dashboard";
 
-interface AircraftStatus {
-  tailNumber: string;
-  aircraftType: string;
-  status: "On Ground" | "En Route" | "Training" | "Maintenance";
-  location: string;
-  lastUpdated: string;
-}
+const defaultFormState = {
+  aircraft_tail_number: "",
+  aircraft_type: "",
+  status: "On Ground" as AircraftStatusType["status"],
+  location: "",
+  airport_base: "",
+};
 
 export const AircraftCard = () => {
-  const [aircraft, setAircraft] = useState<AircraftStatus>({
-    tailNumber: "N12345",
-    aircraftType: "Cessna 172",
-    status: "On Ground",
-    location: "KPAO - Palo Alto",
-    lastUpdated: "2 min ago",
-  });
-
   const [isEditing, setIsEditing] = useState(false);
+  const [formState, setFormState] = useState(defaultFormState);
+  const { toast } = useToast();
+  const { data: aircraft, isLoading, isError, error } = useAircraftStatus();
+  const upsertAircraft = useUpsertAircraftStatus();
 
-  const getStatusColor = (status: AircraftStatus["status"]) => {
+  useEffect(() => {
+    if (aircraft) {
+      setFormState({
+        aircraft_tail_number: aircraft.aircraft_tail_number || "",
+        aircraft_type: aircraft.aircraft_type || "",
+        status: aircraft.status,
+        location: aircraft.location || "",
+        airport_base: aircraft.airport_base || "",
+      });
+    }
+  }, [aircraft]);
+
+  const lastUpdated = useMemo(() => {
+    if (!aircraft?.last_updated) return "Never";
+    try {
+      const date = new Date(aircraft.last_updated);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`;
+    } catch {
+      return aircraft.last_updated;
+    }
+  }, [aircraft]);
+  const getStatusColor = (status: AircraftStatusType["status"]) => {
     switch (status) {
       case "On Ground":
         return "bg-muted text-muted-foreground";
@@ -59,13 +85,33 @@ export const AircraftCard = () => {
             <Plane className="h-5 w-5 text-accent" />
             <CardTitle>Current Aircraft</CardTitle>
           </div>
-          <Badge className={getStatusColor(aircraft.status)} variant="secondary">
-            {aircraft.status}
+          <Badge className={getStatusColor(formState.status)} variant="secondary">
+            {formState.status}
           </Badge>
         </div>
         <CardDescription>Track your aircraft status</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {isLoading && (
+          <div className="space-y-3">
+            <div className="h-20 rounded bg-muted/50 animate-pulse" />
+            <div className="h-16 rounded bg-muted/30 animate-pulse" />
+          </div>
+        )}
+
+        {isError && (
+          <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <span>{error?.message || "Unable to load aircraft status."}</span>
+          </div>
+        )}
+
+        {!isLoading && !isError && !aircraft && !isEditing && (
+          <div className="rounded-md border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+            No aircraft on file yet. Add your aircraft details to unlock quick status updates.
+          </div>
+        )}
+
         {!isEditing ? (
           <>
             {/* Aircraft Info Display */}
@@ -74,11 +120,13 @@ export const AircraftCard = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Tail Number</p>
-                    <p className="font-bold text-lg font-mono">{aircraft.tailNumber}</p>
+                    <p className="font-bold text-lg font-mono">
+                      {aircraft?.aircraft_tail_number || "—"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Aircraft Type</p>
-                    <p className="font-medium">{aircraft.aircraftType}</p>
+                    <p className="font-medium">{aircraft?.aircraft_type || "—"}</p>
                   </div>
                 </div>
               </div>
@@ -87,12 +135,14 @@ export const AircraftCard = () => {
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Location:</span>
-                  <span className="font-medium">{aircraft.location}</span>
+                  <span className="font-medium">
+                    {aircraft?.location || aircraft?.airport_base || "Unknown"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Updated:</span>
-                  <span className="font-medium">{aircraft.lastUpdated}</span>
+                  <span className="font-medium">{lastUpdated}</span>
                 </div>
               </div>
             </div>
@@ -114,9 +164,12 @@ export const AircraftCard = () => {
                 <Label htmlFor="tail">Tail Number</Label>
                 <Input
                   id="tail"
-                  value={aircraft.tailNumber}
+                  value={formState.aircraft_tail_number}
                   onChange={(e) =>
-                    setAircraft({ ...aircraft, tailNumber: e.target.value })
+                    setFormState((prev) => ({
+                      ...prev,
+                      aircraft_tail_number: e.target.value.toUpperCase(),
+                    }))
                   }
                 />
               </div>
@@ -125,9 +178,12 @@ export const AircraftCard = () => {
                 <Label htmlFor="type">Aircraft Type</Label>
                 <Input
                   id="type"
-                  value={aircraft.aircraftType}
+                  value={formState.aircraft_type}
                   onChange={(e) =>
-                    setAircraft({ ...aircraft, aircraftType: e.target.value })
+                    setFormState((prev) => ({
+                      ...prev,
+                      aircraft_type: e.target.value,
+                    }))
                   }
                 />
               </div>
@@ -135,9 +191,12 @@ export const AircraftCard = () => {
               <div className="grid gap-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
-                  value={aircraft.status}
-                  onValueChange={(value: AircraftStatus["status"]) =>
-                    setAircraft({ ...aircraft, status: value })
+                  value={formState.status}
+                  onValueChange={(value: AircraftStatusType["status"]) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      status: value,
+                    }))
                   }
                 >
                   <SelectTrigger id="status">
@@ -156,11 +215,29 @@ export const AircraftCard = () => {
                 <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
-                  value={aircraft.location}
+                  value={formState.location}
                   onChange={(e) =>
-                    setAircraft({ ...aircraft, location: e.target.value })
+                    setFormState((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
                   }
                   placeholder="KPAO - Palo Alto"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="base">Home Airport (Optional)</Label>
+                <Input
+                  id="base"
+                  value={formState.airport_base}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      airport_base: e.target.value,
+                    }))
+                  }
+                  placeholder="KSQL - San Carlos"
                 />
               </div>
 
@@ -176,15 +253,29 @@ export const AircraftCard = () => {
                 <Button
                   size="sm"
                   className="flex-1"
-                  onClick={() => {
-                    setAircraft({
-                      ...aircraft,
-                      lastUpdated: "Just now",
-                    });
-                    setIsEditing(false);
+                  disabled={upsertAircraft.isPending}
+                  onClick={async () => {
+                    try {
+                      await upsertAircraft.mutateAsync(formState);
+                      toast({
+                        title: "Aircraft updated",
+                        description: "Your aircraft status has been saved.",
+                      });
+                      setIsEditing(false);
+                    } catch (mutationError: unknown) {
+                      const message =
+                        mutationError instanceof Error
+                          ? mutationError.message
+                          : "Please try again shortly.";
+                      toast({
+                        variant: "destructive",
+                        title: "Unable to save aircraft",
+                        description: message,
+                      });
+                    }
                   }}
                 >
-                  Save Changes
+                  {upsertAircraft.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </div>

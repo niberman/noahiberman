@@ -1,13 +1,15 @@
 // Dashboard Types
 // Centralized type definitions for the dashboard system
 
+import type { Json } from '@/lib/supabase';
+
 export interface Agent {
   id: string;
   user_id: string;
   name: string;
   type: 'Content' | 'Engagement' | 'Automation' | 'Analytics' | 'Other';
   status: 'active' | 'idle' | 'processing' | 'error' | 'disabled';
-  config?: Record<string, any>;
+  config?: Json;
   last_run_at?: string;
   created_at: string;
   updated_at: string;
@@ -19,7 +21,7 @@ export interface Upload {
   type: 'image' | 'text' | 'video' | 'document' | 'other';
   image_url?: string;
   text?: string;
-  metadata?: Record<string, any>;
+  metadata?: Json;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   created_at: string;
   updated_at: string;
@@ -32,7 +34,7 @@ export interface GeneratedPost {
   content: string;
   platform: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'other';
   status: 'draft' | 'scheduled' | 'published' | 'archived';
-  metadata?: Record<string, any>;
+  metadata?: Json;
   scheduled_at?: string;
   published_at?: string;
   created_at: string;
@@ -53,7 +55,7 @@ export interface CRMContact {
   status: 'active' | 'inactive' | 'archived';
   last_contacted_at?: string;
   follow_up_date?: string;
-  metadata?: Record<string, any>;
+  metadata?: Json;
   created_at: string;
   updated_at: string;
 }
@@ -66,7 +68,7 @@ export interface AircraftStatus {
   airport_base?: string;
   status: 'On Ground' | 'En Route' | 'Training' | 'Maintenance';
   location?: string;
-  metadata?: Record<string, any>;
+  metadata?: Json;
   last_updated: string;
   created_at: string;
 }
@@ -88,7 +90,7 @@ export interface FlightTracking {
     heading?: number;
     latitude?: number;
     longitude?: number;
-    [key: string]: any;
+    [key: string]: Json | undefined;
   };
   created_at: string;
   updated_at: string;
@@ -130,7 +132,7 @@ export interface TrackFlightResponse {
   flightId?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

@@ -2,10 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 
 // Support both Vercel integration variables (SUPABASE_*) and Vite variables (VITE_SUPABASE_*)
 // For client-side access, we need VITE_ prefix, so check both
-const supabaseUrl =
-  import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL;
-const supabaseAnonKey =
-  import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
+export const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL || import.meta.env.SUPABASE_URL || '';
+export const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || '';
 
 // Create Supabase client only if env vars are available
 // This allows the app to load even if Supabase isn't configured yet

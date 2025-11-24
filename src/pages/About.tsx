@@ -129,8 +129,8 @@ export default function About() {
             {/* Horizontal line */}
             <div className="absolute left-0 right-0 top-[72px] h-0.5 bg-gradient-to-r from-secondary via-accent to-secondary/30" />
             
-            <div className="relative overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory scroll-smooth overflow-touch">
-              <div className="flex gap-6 xl:gap-8 px-4 pt-16 pb-2 min-w-min">
+            <div className="relative overflow-x-auto overflow-y-visible pb-8 scrollbar-thin hover:scrollbar-thumb-secondary/50 scrollbar-track-transparent">
+              <div className="flex gap-6 xl:gap-8 px-4 pt-16 pb-4 min-w-min">
                 {[...timeline].reverse().map((item, index) => (
                   <motion.div
                     key={item.id}
@@ -138,7 +138,7 @@ export default function About() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ delay: index * 0.08, duration: 0.4 }}
-                    className="relative flex-shrink-0 w-72 xl:w-80 snap-center"
+                    className="relative flex-shrink-0 w-72 xl:w-80"
                   >
                     {/* Timeline dot */}
                     <div className="absolute left-1/2 top-[-72px] w-5 h-5 bg-secondary rounded-full border-3 border-background transform -translate-x-1/2 shadow-glow z-10">

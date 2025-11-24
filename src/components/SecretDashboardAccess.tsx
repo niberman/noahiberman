@@ -15,10 +15,10 @@ export const SecretDashboardAccess = () => {
 
   return (
     <>
-      {/* Invisible full-screen click zone for secret access */}
+      {/* Invisible top-left hot zone for secret access */}
       <div
         data-secret-zone
-        className="fixed inset-0 opacity-0 pointer-events-auto z-[9999]"
+        className="fixed top-0 left-0 h-24 w-24 opacity-0 pointer-events-auto z-[9999]"
         style={{
           cursor: "default",
           WebkitTapHighlightColor: "transparent",

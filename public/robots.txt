@@ -25,7 +25,7 @@ User-agent: LinkedInBot
 Allow: /
 
 # Sitemap location
-Sitemap: https://noahberman.com/sitemap.xml
+Sitemap: https://noahiberman.com/sitemap.xml
 
 # Crawl delay (optional, adjust if needed)
 Crawl-delay: 1

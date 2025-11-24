@@ -260,6 +260,28 @@ Track a flight by flight number or FA flight ID.
 
 ## 🚀 Setup Instructions
 
+### 0. Supabase CLI Quick Start
+
+All dashboard features (CRM, aircraft tracking, AI post generation, and flight tracking) are wired up through Supabase Edge Functions. Use the Supabase CLI to stand everything up with one command:
+
+```bash
+# Authenticate once
+supabase login
+
+# Link this repo to your Supabase project (replace with your project ref)
+supabase link --project-ref YOUR_PROJECT_REF
+
+# Run local stack, reset the database, and deploy every dashboard function
+npm run supabase:deploy
+```
+
+Behind the scenes `npm run supabase:deploy` executes `scripts/setup-dashboard.sh`, which:
+
+1. Verifies the Supabase CLI is installed.
+2. Starts the local Supabase stack (`supabase start`).
+3. Resets and migrates the database (`supabase db reset --force`).
+4. Deploys all dashboard functions (`generate-post`, `crm-contacts`, `aircraft-status`, `track-flight`).
+
 ### 1. Run Supabase Migrations
 
 ```bash
@@ -285,11 +307,10 @@ supabase functions deploy track-flight
 
 ### 3. Access the Dashboard
 
-Navigate to `/dashboard` in your browser:
+- **Local:** http://localhost:5173/dashboard  
+- **Production:** https://noahiberman.com/dashboard  
 
-```
-http://localhost:5173/dashboard
-```
+`vercel.json` rewrites every path to `index.html`, so deep links like `/dashboard` resolve correctly on the custom domain without additional configuration.
 
 ## 🔐 Security
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,14 +10,25 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Sparkles, Copy, RefreshCw, Save, Image as ImageIcon, Loader2 } from "lucide-react";
+import {
+  Upload,
+  Sparkles,
+  Copy,
+  RefreshCw,
+  Save,
+  Image as ImageIcon,
+  Loader2,
+} from "lucide-react";
+import { useGeneratePost } from "@/hooks/useDashboardData";
+import { useToast } from "@/hooks/use-toast";
 
 export const UploadAgentCard = () => {
   const [textInput, setTextInput] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [generatedPost, setGeneratedPost] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const generatePost = useGeneratePost();
+  const { toast } = useToast();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,31 +44,40 @@ export const UploadAgentCard = () => {
   const handleGenerate = async () => {
     if (!textInput.trim() && !uploadedImage) return;
 
-    setIsGenerating(true);
-
-    // Simulate AI generation with mock data
-    setTimeout(() => {
-      const mockPost = `🚀 Exciting Update!
-
-${textInput || "Just captured this amazing moment. Sometimes the best experiences come from taking a leap of faith."}
-
-What has been your biggest win this week? Drop it in the comments! 👇
-
-#Innovation #Growth #Entrepreneurship`;
-      
-      setGeneratedPost(mockPost);
-      setIsGenerating(false);
-    }, 2000);
+    try {
+      const response = await generatePost.mutateAsync({
+        textInput: textInput.trim() || undefined,
+        imageUrl: uploadedImage || undefined,
+      });
+      setGeneratedPost(response.post);
+      toast({
+        title: "Post ready",
+        description: "Your AI-generated post is ready to share.",
+      });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Please try again shortly.";
+      toast({
+        variant: "destructive",
+        title: "Generation failed",
+        description: message,
+      });
+    }
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedPost);
+    toast({
+      title: "Copied!",
+      description: "The generated post is now on your clipboard.",
+    });
   };
 
   const handleReset = () => {
     setTextInput("");
     setUploadedImage(null);
     setGeneratedPost("");
+    generatePost.reset();
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -140,9 +160,9 @@ What has been your biggest win this week? Drop it in the comments! 👇
             <Button
               className="w-full"
               onClick={handleGenerate}
-              disabled={isGenerating || (!textInput.trim() && !uploadedImage)}
+              disabled={generatePost.isPending || (!textInput.trim() && !uploadedImage)}
             >
-              {isGenerating ? (
+              {generatePost.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Generating...
