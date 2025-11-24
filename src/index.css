@@ -211,4 +211,17 @@ All colors MUST be HSL.
   .hover\:scrollbar-thumb-secondary\/50:hover::-webkit-scrollbar-thumb {
     background: hsl(var(--secondary) / 0.5);
   }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+  }
 }

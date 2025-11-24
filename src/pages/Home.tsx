@@ -8,6 +8,7 @@ import About from "./About";
 import Ventures from "./Ventures";
 import FollowMyFlight from "./FollowMyFlight";
 import Contact from "./Contact";
+import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -43,11 +44,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative">
-      <SEO
-        title="Noah Berman — Pilot, Founder & Builder | Aviation & Technology"
-        description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
-        keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
-        structuredData={{
+      {/* Background Flight Map */}
+      <BackgroundFlightMap />
+      
+      {/* Main Content */}
+      <div className="relative z-10">
+        <SEO
+          title="Noah Berman — Pilot, Founder & Builder | Aviation & Technology"
+          description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
+          keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
+          structuredData={{
           "@context": "https://schema.org",
           "@type": "WebPage",
           "name": "Noah Berman — Home",
@@ -72,7 +78,7 @@ export default function Home() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-dusk" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/70 to-background/95 backdrop-blur-sm" />
         <FlightPath />
         
         <motion.div 
@@ -173,23 +179,24 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <div id="about">
+      <div id="about" className="relative bg-background/95 backdrop-blur-sm">
         <About showSEO={false} />
       </div>
 
       {/* Ventures Section */}
-      <div id="ventures">
+      <div id="ventures" className="relative bg-background/95 backdrop-blur-sm">
         <Ventures showSEO={false} />
       </div>
 
       {/* Follow My Flight Section */}
-      <div id="follow-my-flight">
+      <div id="follow-my-flight" className="relative bg-background/95 backdrop-blur-sm">
         <FollowMyFlight showSEO={false} />
       </div>
 
       {/* Contact Section */}
-      <div id="contact">
+      <div id="contact" className="relative bg-background/95 backdrop-blur-sm">
         <Contact showSEO={false} />
+      </div>
       </div>
 
     </div>
