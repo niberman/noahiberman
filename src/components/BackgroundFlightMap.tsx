@@ -54,10 +54,10 @@ export function BackgroundFlightMap() {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/satellite-streets-v12', // Satellite for more detail
-      center: [-98, 38], // Center of US
-      zoom: window.innerWidth < 768 ? 3.5 : 4.5, // Closer zoom for more detail
+      center: [-105.5, 41.5], // Center on Colorado/Wyoming region
+      zoom: window.innerWidth < 768 ? 5.5 : 6.5, // Closer zoom to see routes clearly
       pitch: 45, // More dramatic angle
-      bearing: -10,
+      bearing: -15,
       interactive: false, // Disable user interaction for background
       attributionControl: false
     });
@@ -70,9 +70,9 @@ export function BackgroundFlightMap() {
         addHistoricalRoutes();
         
         // Add subtle rotation animation for visual interest
-        let bearing = -10;
+        let bearing = -15;
         const rotateCamera = () => {
-          bearing += 0.05;
+          bearing += 0.03; // Slower rotation
           if (map.current && !currentFlight) {
             map.current.setBearing(bearing);
             requestAnimationFrame(rotateCamera);
@@ -139,8 +139,8 @@ export function BackgroundFlightMap() {
       },
       paint: {
         'line-color': '#60a5fa', // Brighter blue
-        'line-width': 2, // Thicker lines
-        'line-opacity': 0.6, // More visible
+        'line-width': 3, // Even thicker for better visibility
+        'line-opacity': 0.75, // More visible
         'line-blur': 0.5
       }
     });
@@ -157,12 +157,13 @@ export function BackgroundFlightMap() {
       if (coords) {
         const el = document.createElement('div');
         el.className = 'airport-marker';
-        el.style.width = '8px';
-        el.style.height = '8px';
+        el.style.width = '10px';
+        el.style.height = '10px';
         el.style.borderRadius = '50%';
         el.style.backgroundColor = '#60a5fa';
-        el.style.opacity = '0.8';
-        el.style.boxShadow = '0 0 10px rgba(96, 165, 250, 0.8)';
+        el.style.border = '2px solid #fff';
+        el.style.opacity = '0.9';
+        el.style.boxShadow = '0 0 12px rgba(96, 165, 250, 1), 0 0 20px rgba(96, 165, 250, 0.5)';
 
         new mapboxgl.Marker(el)
           .setLngLat(coords as [number, number])
@@ -295,12 +296,12 @@ export function BackgroundFlightMap() {
       // Restore historical routes
       addHistoricalRoutes();
       
-      // Reset view to US with better zoom
+      // Reset view to Colorado/Wyoming region with better zoom
       map.current.easeTo({
-        center: [-98, 38],
-        zoom: window.innerWidth < 768 ? 3.5 : 4.5,
+        center: [-105.5, 41.5],
+        zoom: window.innerWidth < 768 ? 5.5 : 6.5,
         pitch: 45,
-        bearing: -10,
+        bearing: -15,
         duration: 2000
       });
     }
