@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown, ChevronRight } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { FlightMap } from "@/components/FlightMap";
-import { AeroAPIFlightTracker } from "@/components/AeroAPIFlightTracker";
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -254,19 +253,14 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         {/* Live Flight Tracker - Shows when flying */}
         <LiveFlightTracker />
 
-        {/* Live Flight Tracking & Interactive Map */}
+        {/* Interactive Flight Map */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
           className="max-w-6xl mx-auto mb-8 md:mb-20"
         >
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-            {/* AeroAPI Live Flight Tracker */}
-            <div>
-              <AeroAPIFlightTracker />
-            </div>
-
+          <div className="max-w-4xl mx-auto">
             {/* Interactive Flight Tracker */}
             <Card className="bg-gradient-card border-border/50">
               <CardHeader className="pb-3 md:pb-6">
