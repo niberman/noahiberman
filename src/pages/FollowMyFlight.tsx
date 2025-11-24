@@ -5,13 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown, ChevronRight } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
-import { FlightMap } from "@/components/FlightMap";
-import { useEffect, useState, useMemo, Suspense } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
-import { LiveFlightTracker } from "@/components/LiveFlightTracker";
+import { UnifiedFlightTracker } from "@/components/UnifiedFlightTracker";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -250,59 +249,10 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
           </p>
         </motion.div>
 
-        {/* Live Flight Tracker - Shows when flying */}
-        <LiveFlightTracker />
-
-        {/* Interactive Flight Map */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="max-w-6xl mx-auto mb-8 md:mb-20"
-        >
-          <div className="max-w-4xl mx-auto">
-            {/* Interactive Flight Tracker */}
-            <Card className="bg-gradient-card border-border/50">
-              <CardHeader className="pb-3 md:pb-6">
-                <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-                  <Plane className="h-4 w-4 md:h-5 md:w-5 text-secondary" />
-                  Interactive Flight Map
-                </CardTitle>
-                <CardDescription className="text-sm">
-                  Explore flight routes on a 3D map ({chartData.airports.length} airports)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[250px] md:h-[300px] w-full">
-                  <Suspense
-                    fallback={
-                      <div className="w-full h-full flex items-center justify-center bg-card/50 rounded-lg">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary mx-auto mb-2"></div>
-                          <p className="text-sm text-muted-foreground">Loading map...</p>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <FlightMap />
-                  </Suspense>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {chartData.airports.slice(0, 12).map((airport, idx) => (
-                    <Badge key={idx} variant="outline" className="text-xs">
-                      {airport}
-                    </Badge>
-                  ))}
-                  {chartData.airports.length > 12 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{chartData.airports.length - 12} more
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.div>
+        {/* Unified Flight Tracker - Shows live tracking when flying, flight map when not */}
+        <div className="max-w-6xl mx-auto mb-8 md:mb-20">
+          <UnifiedFlightTracker />
+        </div>
 
         {/* Active Flight Section */}
         {activeFlight && (
