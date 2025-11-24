@@ -18,8 +18,6 @@ import { SectionRedirect } from "@/components/SectionRedirect";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log("App component rendering, current path:", window.location.pathname);
-  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

@@ -12,6 +12,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
+import { LiveFlightTracker } from "@/components/LiveFlightTracker";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -249,6 +250,9 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
             Track my current flight in real-time and explore my flight history.
           </p>
         </motion.div>
+
+        {/* Live Flight Tracker - Shows when flying */}
+        <LiveFlightTracker />
 
         {/* Live Flight Tracking & Interactive Map */}
         <motion.div

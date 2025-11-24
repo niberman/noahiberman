@@ -30,10 +30,6 @@ interface TooltipData {
 // To configure in Vercel: Go to Project Settings > Environment Variables and add VITE_MAPBOX_TOKEN
 const getMapboxToken = (): string => {
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
-  // Debug: Print token for verification
-  console.log("VITE_MAPBOX_TOKEN:", token || "NOT SET");
-  console.log("Token exists:", !!token);
-  console.log("Token length:", token?.length || 0);
   return token || "";
 };
 

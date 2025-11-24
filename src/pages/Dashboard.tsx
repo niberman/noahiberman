@@ -5,16 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plane, MapPin, Clock, LogOut, Save } from "lucide-react";
+import { Plane, LogOut, Save } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { Switch } from "@/components/ui/switch";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [tailNumber, setTailNumber] = useState("");
-  const [flightStatus, setFlightStatus] = useState<"on_ground" | "in_flight">("on_ground");
-  const [destination, setDestination] = useState("");
-  const [departureTime, setDepartureTime] = useState("");
+  const [isFlying, setIsFlying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -38,9 +37,7 @@ const Dashboard = () => {
 
       if (data && !error) {
         setTailNumber(data.tail_number || "");
-        setFlightStatus(data.flight_status || "on_ground");
-        setDestination(data.destination || "");
-        setDepartureTime(data.departure_time || "");
+        setIsFlying(data.flight_status === "in_flight");
         setLastSaved(data.updated_at ? new Date(data.updated_at) : null);
       }
     } catch (error) {
@@ -59,9 +56,9 @@ const Dashboard = () => {
       const flightData = {
         user_id: user.id,
         tail_number: tailNumber.toUpperCase(),
-        flight_status: flightStatus,
-        destination: destination.toUpperCase(),
-        departure_time: departureTime,
+        flight_status: isFlying ? "in_flight" : "on_ground",
+        destination: null,
+        departure_time: null,
         updated_at: new Date().toISOString()
       };
 
@@ -96,7 +93,7 @@ const Dashboard = () => {
       />
       
       <div className="min-h-screen bg-gradient-dusk pt-24">
-        <div className="container mx-auto px-4 py-12 lg:py-16 max-w-4xl">
+        <div className="container mx-auto px-4 py-12 lg:py-16 max-w-2xl">
           {/* Header */}
           <div className="mb-10 animate-fade-in flex justify-between items-start">
             <div>
@@ -104,7 +101,7 @@ const Dashboard = () => {
                 Flight Command
               </h1>
               <p className="text-white/80 text-lg">
-                Update your aircraft info here - it will display live on your homepage
+                Set your aircraft to display live FlightAware tracking
               </p>
             </div>
             <Button
@@ -123,81 +120,50 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Plane className="h-5 w-5 text-secondary" />
-                  <CardTitle>Current Flight Information</CardTitle>
+                  <CardTitle>Current Aircraft</CardTitle>
                 </div>
                 <Badge 
-                  variant={flightStatus === "in_flight" ? "default" : "secondary"}
-                  className={flightStatus === "in_flight" ? "bg-green-500/20 text-green-400 border-green-500/40" : ""}
+                  variant={isFlying ? "default" : "secondary"}
+                  className={isFlying ? "bg-green-500/20 text-green-400 border-green-500/40" : ""}
                 >
-                  {flightStatus === "in_flight" ? "In Flight" : "On Ground"}
+                  {isFlying ? "Flying" : "Not Flying"}
                 </Badge>
               </div>
               <CardDescription>
-                This information displays live in the "Follow My Flight" section on your homepage
+                FlightAware tracking will display on your homepage when you're flying
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Aircraft Info */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="tail">Tail Number</Label>
-                  <Input
-                    id="tail"
-                    placeholder="N12345"
-                    value={tailNumber}
-                    onChange={(e) => setTailNumber(e.target.value.toUpperCase())}
-                    className="font-mono"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Enter the aircraft registration (e.g., N12345)
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="status">Flight Status</Label>
-                  <select
-                    id="status"
-                    value={flightStatus}
-                    onChange={(e) => setFlightStatus(e.target.value as "on_ground" | "in_flight")}
-                    className="w-full px-3 py-2 bg-background border border-input rounded-md"
-                  >
-                    <option value="on_ground">On Ground</option>
-                    <option value="in_flight">In Flight</option>
-                  </select>
-                </div>
+              {/* Tail Number Input */}
+              <div className="space-y-2">
+                <Label htmlFor="tail">Tail Number</Label>
+                <Input
+                  id="tail"
+                  placeholder="N12345"
+                  value={tailNumber}
+                  onChange={(e) => setTailNumber(e.target.value.toUpperCase())}
+                  className="font-mono text-lg"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter the aircraft registration you're currently flying
+                </p>
               </div>
 
-              {/* Flight Details */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="destination">
-                    <MapPin className="inline h-4 w-4 mr-1" />
-                    Destination Airport
+              {/* Flying Status Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div className="space-y-0.5">
+                  <Label htmlFor="flying-status" className="text-base">
+                    Currently Flying
                   </Label>
-                  <Input
-                    id="destination"
-                    placeholder="KDEN"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value.toUpperCase())}
-                    className="font-mono"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    ICAO or IATA code (e.g., KDEN or DEN)
+                  <p className="text-sm text-muted-foreground">
+                    Toggle on when you're airborne
                   </p>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="departure">
-                    <Clock className="inline h-4 w-4 mr-1" />
-                    Departure Time
-                  </Label>
-                  <Input
-                    id="departure"
-                    type="datetime-local"
-                    value={departureTime}
-                    onChange={(e) => setDepartureTime(e.target.value)}
-                  />
-                </div>
+                <Switch
+                  id="flying-status"
+                  checked={isFlying}
+                  onCheckedChange={setIsFlying}
+                />
               </div>
 
               {/* Save Button */}
@@ -213,7 +179,7 @@ const Dashboard = () => {
                   className="flex items-center gap-2"
                 >
                   <Save className="h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save Flight Info"}
+                  {isSaving ? "Saving..." : "Save"}
                 </Button>
               </div>
             </CardContent>
@@ -225,18 +191,15 @@ const Dashboard = () => {
               <div className="flex items-start gap-3">
                 <Plane className="h-5 w-5 text-secondary mt-0.5" />
                 <div className="space-y-2 text-sm">
-                  <p className="text-white/90">
-                    Your flight information automatically updates on your homepage in the{" "}
-                    <a href="/#follow-my-flight" className="text-secondary hover:underline">
-                      "Follow My Flight" section
-                    </a>
+                  <p className="text-white/90 font-medium">
+                    How it works:
                   </p>
-                  <p className="text-white/70">
-                    Visitors can also search for any aircraft by tail number at{" "}
-                    <a href="/follow-my-flight" className="text-secondary hover:underline">
-                      noahiberman.com/follow-my-flight
-                    </a>
-                  </p>
+                  <ul className="space-y-1 text-white/70">
+                    <li>• Enter your aircraft's tail number</li>
+                    <li>• Toggle "Currently Flying" when you take off</li>
+                    <li>• Live FlightAware tracking appears on your homepage</li>
+                    <li>• Toggle off when you land</li>
+                  </ul>
                 </div>
               </div>
             </CardContent>
