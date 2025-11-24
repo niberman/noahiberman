@@ -53,11 +53,11 @@ export function BackgroundFlightMap() {
     // Create map with appropriate style and initial view
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: 'mapbox://styles/mapbox/satellite-streets-v12', // Satellite for more detail
       center: [-98, 38], // Center of US
-      zoom: window.innerWidth < 768 ? 3 : 4, // Wider view on mobile
-      pitch: 30,
-      bearing: 0,
+      zoom: window.innerWidth < 768 ? 3.5 : 4.5, // Closer zoom for more detail
+      pitch: 45, // More dramatic angle
+      bearing: -10,
       interactive: false, // Disable user interaction for background
       attributionControl: false
     });
@@ -68,6 +68,17 @@ export function BackgroundFlightMap() {
       // Add historical flight routes if not currently flying
       if (!currentFlight || currentFlight.flight_status !== "in_flight") {
         addHistoricalRoutes();
+        
+        // Add subtle rotation animation for visual interest
+        let bearing = -10;
+        const rotateCamera = () => {
+          bearing += 0.05;
+          if (map.current && !currentFlight) {
+            map.current.setBearing(bearing);
+            requestAnimationFrame(rotateCamera);
+          }
+        };
+        rotateCamera();
       }
     });
 
@@ -127,10 +138,10 @@ export function BackgroundFlightMap() {
         'line-join': 'round'
       },
       paint: {
-        'line-color': '#3b82f6',
-        'line-width': 1,
-        'line-opacity': 0.3,
-        'line-blur': 1
+        'line-color': '#60a5fa', // Brighter blue
+        'line-width': 2, // Thicker lines
+        'line-opacity': 0.6, // More visible
+        'line-blur': 0.5
       }
     });
 
@@ -146,11 +157,12 @@ export function BackgroundFlightMap() {
       if (coords) {
         const el = document.createElement('div');
         el.className = 'airport-marker';
-        el.style.width = '6px';
-        el.style.height = '6px';
+        el.style.width = '8px';
+        el.style.height = '8px';
         el.style.borderRadius = '50%';
-        el.style.backgroundColor = '#3b82f6';
-        el.style.opacity = '0.5';
+        el.style.backgroundColor = '#60a5fa';
+        el.style.opacity = '0.8';
+        el.style.boxShadow = '0 0 10px rgba(96, 165, 250, 0.8)';
 
         new mapboxgl.Marker(el)
           .setLngLat(coords as [number, number])
@@ -283,10 +295,12 @@ export function BackgroundFlightMap() {
       // Restore historical routes
       addHistoricalRoutes();
       
-      // Reset view to US
+      // Reset view to US with better zoom
       map.current.easeTo({
         center: [-98, 38],
-        zoom: window.innerWidth < 768 ? 3 : 4,
+        zoom: window.innerWidth < 768 ? 3.5 : 4.5,
+        pitch: 45,
+        bearing: -10,
         duration: 2000
       });
     }
@@ -373,30 +387,38 @@ export function BackgroundFlightMap() {
     <div className="fixed inset-0 w-full h-full">
       <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Gradient overlays for better text readability */}
+      {/* Lighter gradient overlays for better map visibility */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Top gradient for header */}
-        <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-background via-background/80 to-transparent" />
+        {/* Top gradient for header - more transparent */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/90 via-background/40 to-transparent" />
         
-        {/* Bottom gradient for footer */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        {/* Bottom gradient for footer - more transparent */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/70 via-background/30 to-transparent" />
         
-        {/* Side gradients for mobile */}
-        <div className="absolute inset-y-0 left-0 w-8 md:w-16 bg-gradient-to-r from-background/50 to-transparent" />
-        <div className="absolute inset-y-0 right-0 w-8 md:w-16 bg-gradient-to-l from-background/50 to-transparent" />
+        {/* Very subtle side gradients */}
+        <div className="absolute inset-y-0 left-0 w-4 md:w-8 bg-gradient-to-r from-background/20 to-transparent" />
+        <div className="absolute inset-y-0 right-0 w-4 md:w-8 bg-gradient-to-l from-background/20 to-transparent" />
+        
+        {/* Subtle vignette effect for depth */}
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-background/20" />
       </div>
 
-      {/* Live flight indicator */}
+      {/* Live flight indicator - more prominent */}
       {currentFlight && currentFlight.flight_status === "in_flight" && aircraftPosition && (
-        <div className="absolute top-24 right-4 md:top-28 md:right-8 bg-black/70 backdrop-blur-sm rounded-lg p-3 md:p-4 text-white pointer-events-none animate-fade-in">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs md:text-sm font-medium">LIVE TRACKING</span>
+        <div className="absolute top-24 right-4 md:top-28 md:right-8 bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-md rounded-xl p-4 md:p-5 text-white pointer-events-none animate-fade-in border border-green-500/30 shadow-2xl">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="relative">
+              <div className="h-3 w-3 bg-green-400 rounded-full animate-pulse" />
+              <div className="absolute inset-0 h-3 w-3 bg-green-400 rounded-full animate-ping" />
+            </div>
+            <span className="text-sm md:text-base font-bold tracking-wider">LIVE TRACKING</span>
           </div>
-          <div className="space-y-1 text-xs md:text-sm opacity-90">
-            <p className="font-mono">{currentFlight.tail_number}</p>
-            <p>{aircraftPosition.altitude.toLocaleString()} ft</p>
-            <p>{Math.round(aircraftPosition.speed)} kts</p>
+          <div className="space-y-1.5 text-sm md:text-base">
+            <p className="font-mono text-lg md:text-xl font-bold text-green-400">{currentFlight.tail_number}</p>
+            <div className="flex items-center gap-4">
+              <p className="text-white/90">{aircraftPosition.altitude.toLocaleString()} ft</p>
+              <p className="text-white/90">{Math.round(aircraftPosition.speed)} kts</p>
+            </div>
           </div>
         </div>
       )}

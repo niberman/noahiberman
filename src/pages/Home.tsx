@@ -78,7 +78,7 @@ export default function Home() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/70 to-background/95 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
         <FlightPath />
         
         <motion.div 
@@ -179,22 +179,22 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <div id="about" className="relative bg-background/95 backdrop-blur-sm">
+      <div id="about" className="relative bg-background/90 backdrop-blur-xs">
         <About showSEO={false} />
       </div>
 
       {/* Ventures Section */}
-      <div id="ventures" className="relative bg-background/95 backdrop-blur-sm">
+      <div id="ventures" className="relative bg-background/90 backdrop-blur-xs">
         <Ventures showSEO={false} />
       </div>
 
       {/* Follow My Flight Section */}
-      <div id="follow-my-flight" className="relative bg-background/95 backdrop-blur-sm">
+      <div id="follow-my-flight" className="relative bg-background/90 backdrop-blur-xs">
         <FollowMyFlight showSEO={false} />
       </div>
 
       {/* Contact Section */}
-      <div id="contact" className="relative bg-background/95 backdrop-blur-sm">
+      <div id="contact" className="relative bg-background/90 backdrop-blur-xs">
         <Contact showSEO={false} />
       </div>
       </div>

@@ -224,4 +224,8 @@ All colors MUST be HSL.
   .animate-fade-in {
     animation: fade-in 0.5s ease-in-out;
   }
+
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via, var(--tw-gradient-from)) 50%, var(--tw-gradient-to) 100%);
+  }
 }
