@@ -62,8 +62,17 @@ export function BackgroundFlightMap() {
       zoom: window.innerWidth < 768 ? 5.5 : 6.5, // Closer zoom to see routes clearly
       pitch: 45, // More dramatic angle
       bearing: -15,
-      interactive: false, // Disable user interaction for background
-      attributionControl: false
+      interactive: true, // Enable interaction to support scroll
+      attributionControl: false,
+      // Disable most interactions except scroll - allows page scrolling by default
+      // Users can hold Ctrl/Cmd + scroll to zoom the map
+      dragRotate: false,
+      dragPan: false,
+      keyboard: false,
+      doubleClickZoom: false,
+      touchZoomRotate: false,
+      touchPitch: false,
+      scrollZoom: true, // Keep scroll zoom enabled
     });
 
     map.current.on('load', () => {
@@ -233,27 +242,61 @@ export function BackgroundFlightMap() {
       },
     });
 
-    // Add airport markers (include home base)
+    // Count visits to each airport
+    const airportVisits = new Map<string, number>();
+    flightHistory.forEach((flight) => {
+      extractAirportsFromFlight(flight).forEach((code) => {
+        airportVisits.set(code, (airportVisits.get(code) || 0) + 1);
+      });
+    });
+
+    // Add airport markers with labels (include home base)
     const markerAirports = new Set<string>(visitedAirports);
     markerAirports.add("KAPA");
 
     markerAirports.forEach((code) => {
       const coords = getAirportCoordinates(code);
-      if (!coords) return;
+      if (!coords) {
+        console.warn(`Missing coordinates for airport: ${code}`);
+        return;
+      }
 
       const isHomeBase = code === "KAPA";
+      const visitCount = airportVisits.get(code) || 0;
+      
       const el = document.createElement("div");
-      el.className = "airport-marker";
-      el.style.width = isHomeBase ? "12px" : "8px";
-      el.style.height = el.style.width;
-      el.style.borderRadius = "50%";
-      el.style.backgroundColor = isHomeBase ? "#c084fc" : "#a78bfa";
-      el.style.border = "1px solid rgba(255,255,255,0.65)";
-      el.style.opacity = isHomeBase ? "1" : "0.85";
-      el.style.boxShadow = isHomeBase
+      el.className = "airport-marker-with-label";
+      el.style.display = "flex";
+      el.style.flexDirection = "column";
+      el.style.alignItems = "center";
+      el.style.cursor = "pointer";
+      
+      // Create marker dot
+      const dot = document.createElement("div");
+      dot.style.width = isHomeBase ? "12px" : "8px";
+      dot.style.height = dot.style.width;
+      dot.style.borderRadius = "50%";
+      dot.style.backgroundColor = isHomeBase ? "#c084fc" : "#a78bfa";
+      dot.style.border = "1px solid rgba(255,255,255,0.65)";
+      dot.style.boxShadow = isHomeBase
         ? "0 0 14px rgba(160, 113, 255, 0.5)"
         : "0 0 10px rgba(160, 113, 255, 0.35)";
-      el.title = isHomeBase ? "KAPA (Home Base)" : code;
+      
+      // Create label
+      const label = document.createElement("div");
+      label.style.marginTop = "4px";
+      label.style.padding = "2px 6px";
+      label.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
+      label.style.color = isHomeBase ? "#c084fc" : "#a78bfa";
+      label.style.fontSize = "11px";
+      label.style.fontWeight = "600";
+      label.style.borderRadius = "3px";
+      label.style.whiteSpace = "nowrap";
+      label.style.border = `1px solid ${isHomeBase ? "#c084fc" : "#a78bfa"}`;
+      label.textContent = `${code} (${visitCount})`;
+      
+      el.appendChild(dot);
+      el.appendChild(label);
 
       new mapboxgl.Marker(el).setLngLat(coords as [number, number]).addTo(map.current!);
     });
@@ -476,25 +519,39 @@ export function BackgroundFlightMap() {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full">
-      <div ref={mapContainer} className="w-full h-full" />
+    <div className="fixed inset-0 w-full h-full pointer-events-none">
+      <div 
+        ref={mapContainer} 
+        className="w-full h-full pointer-events-auto"
+        onWheel={(e) => {
+          // Only allow map zoom if Ctrl/Cmd key is held, otherwise allow page scroll
+          if (!e.ctrlKey && !e.metaKey) {
+            e.currentTarget.style.pointerEvents = 'none';
+            setTimeout(() => {
+              if (mapContainer.current) {
+                mapContainer.current.style.pointerEvents = 'auto';
+              }
+            }, 100);
+          }
+        }}
+      />
       
       {/* Flying mode: Dramatic visual overlay */}
       {currentFlight && currentFlight.flight_status === "in_flight" && (
         <>
           {/* Animated border pulse */}
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 pointer-events-none z-10">
             <div className="absolute inset-0 border-4 border-green-500/30 animate-pulse" />
             <div className="absolute inset-4 border-2 border-green-400/20 animate-ping" style={{ animationDuration: '3s' }} />
           </div>
           
           {/* Corner indicators */}
-          <div className="absolute top-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse">
+          <div className="absolute top-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse z-10">
             <div className="h-3 w-3 bg-green-400 rounded-full animate-ping" />
             <span className="text-green-400 font-bold text-xs md:text-sm tracking-wider">LIVE</span>
           </div>
           
-          <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse">
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-transparent px-4 py-2 rounded-r-full pointer-events-none animate-pulse z-10">
             <div className="h-3 w-3 bg-green-400 rounded-full animate-ping" />
             <span className="text-green-400 font-bold text-xs md:text-sm tracking-wider">TRACKING</span>
           </div>
@@ -502,7 +559,7 @@ export function BackgroundFlightMap() {
       )}
       
       {/* Gradient overlays for better text readability */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none z-10">
         {/* Top gradient for header - more transparent */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/90 via-background/40 to-transparent" />
         

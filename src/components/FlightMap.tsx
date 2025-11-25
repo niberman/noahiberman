@@ -110,6 +110,17 @@ export function FlightMap() {
   }, [uniqueAirports]);
 
   const airportFlights = useMemo(() => mapAirportsToFlights(flightHistory), [flightHistory]);
+
+  // Count visits to each airport
+  const airportVisits = useMemo(() => {
+    const visits = new Map<string, number>();
+    flightHistory.forEach((flight) => {
+      extractAirportsFromFlight(flight).forEach((code) => {
+        visits.set(code, (visits.get(code) || 0) + 1);
+      });
+    });
+    return visits;
+  }, [flightHistory]);
   
   // Check if currently flying
   const isFlying = currentFlight && currentFlight.flight_status === "in_flight";
@@ -524,7 +535,26 @@ export function FlightMap() {
   }
 
   return (
-    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-glow border border-border/50">
+    <div 
+      className="relative w-full h-full rounded-lg overflow-hidden shadow-glow border border-border/50"
+      onWheel={(e) => {
+        // Only allow map zoom if Ctrl/Cmd key is held, otherwise allow page scroll
+        if (!e.ctrlKey && !e.metaKey) {
+          // Temporarily disable map interactions to allow page scroll
+          if (mapRef.current) {
+            const map = mapRef.current.getMap();
+            if (map) {
+              map.scrollZoom.disable();
+              setTimeout(() => {
+                if (mapRef.current) {
+                  mapRef.current.getMap()?.scrollZoom.enable();
+                }
+              }, 50);
+            }
+          }
+        }
+      }}
+    >
       <Suspense
         fallback={
           <div className="w-full h-full flex items-center justify-center bg-card">
@@ -813,22 +843,24 @@ export function FlightMap() {
           {/* Airport Markers - Show KAPA as home base and all visited airports */}
           {airportsToDisplay.map((airport) => {
             const isHomeBase = airport.code === "KAPA";
+            const visitCount = airportVisits.get(airport.code) || 0;
+            
             return (
               <Marker
                 key={`airport-${airport.code}`}
                 longitude={airport.coords[0]}
                 latitude={airport.coords[1]}
-                anchor="bottom"
+                anchor="center"
               >
                 <div
-                  className="relative transition-all duration-500 opacity-100 scale-100 cursor-pointer group"
-                onMouseEnter={(e) => {
+                  className="relative transition-all duration-500 opacity-100 scale-100 cursor-pointer group flex flex-col items-center"
+                  onMouseEnter={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
-                  const flight =
-                    airportFlights.get(airport.code) ||
-                    flightHistory.find(
-                      (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                    );
+                    const flight =
+                      airportFlights.get(airport.code) ||
+                      flightHistory.find(
+                        (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
+                      );
                     if (flight) {
                       setTooltip({
                         flight,
@@ -838,14 +870,14 @@ export function FlightMap() {
                     }
                   }}
                   onMouseLeave={() => setTooltip(null)}
-                onClick={(e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     const rect = e.currentTarget.getBoundingClientRect();
-                  const flight =
-                    airportFlights.get(airport.code) ||
-                    flightHistory.find(
-                      (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                    );
+                    const flight =
+                      airportFlights.get(airport.code) ||
+                      flightHistory.find(
+                        (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
+                      );
                     if (flight) {
                       setTooltip({
                         flight,
@@ -855,28 +887,33 @@ export function FlightMap() {
                     }
                   }}
                 >
-                  {/* Glow effect */}
+                  {/* Airport dot */}
                   <div 
-                    className={`absolute ${isHomeBase ? '-top-4 -left-4 w-8 h-8' : '-top-3 -left-3 w-6 h-6'} rounded-full blur-sm animate-pulse-glow ${
-                      isHomeBase ? 'bg-violet-500/50' : 'bg-secondary/30'
-                    }`}
-                  ></div>
+                    className={`rounded-full ${isHomeBase ? 'w-3 h-3 bg-violet-400' : 'w-2 h-2 bg-secondary'}`}
+                    style={{
+                      boxShadow: isHomeBase 
+                        ? '0 0 14px rgba(160, 113, 255, 0.5)' 
+                        : '0 0 10px rgba(160, 113, 255, 0.35)',
+                      border: '1px solid rgba(255,255,255,0.65)'
+                    }}
+                  />
                   
-                  {/* Home base gets a special icon */}
-                  {isHomeBase ? (
-                    <div className="relative">
-                      <Plane className="h-6 w-6 text-violet-400 drop-shadow-lg animate-pulse" />
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-semibold text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Home Base
-                      </div>
-                    </div>
-                  ) : (
-                    <MapPin className="h-5 w-5 text-secondary drop-shadow-lg" />
-                  )}
+                  {/* Airport label */}
+                  <div 
+                    className={`mt-1 px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap`}
+                    style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                      color: isHomeBase ? '#c084fc' : '#a78bfa',
+                      border: `1px solid ${isHomeBase ? '#c084fc' : '#a78bfa'}`,
+                      fontSize: '10px'
+                    }}
+                  >
+                    {airport.code} ({visitCount})
+                  </div>
                 </div>
               </Marker>
             );
-          }          )}
+          })}
           
           {/* Navigation Controls */}
           <NavigationControl 
@@ -889,7 +926,7 @@ export function FlightMap() {
           {/* Exploration Instructions Overlay */}
           <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-xl border border-border rounded-lg p-3 shadow-glow pointer-events-none max-w-xs">
             <p className="text-xs text-muted-foreground">
-              <span className="font-semibold text-primary-foreground">Explore:</span> Drag to pan • Pinch/scroll to zoom • Right-click drag to rotate • Shift+drag to tilt
+              <span className="font-semibold text-primary-foreground">Explore:</span> Drag to pan • Ctrl/Cmd + scroll to zoom • Right-click drag to rotate • Shift+drag to tilt
             </p>
           </div>
         </Map>
