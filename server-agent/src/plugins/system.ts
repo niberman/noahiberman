@@ -45,7 +45,7 @@ router.get('/', async (_req, res) => {
         total: primaryDisk.size,
         used: primaryDisk.used,
         free: primaryDisk.available,
-        usagePercent: primaryDisk.use || 0,
+        usagePercent: primaryDisk.size > 0 ? (primaryDisk.used / primaryDisk.size) * 100 : 0,
       },
       uptime: time.uptime,
       hostname: osInfo.hostname,
