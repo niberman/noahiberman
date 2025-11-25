@@ -99,16 +99,28 @@ export function generateArc(
   const [startLon, startLat] = start;
   const [endLon, endLat] = end;
   
+  // Calculate distance to determine appropriate curve height
+  const distance = Math.sqrt(
+    Math.pow(endLon - startLon, 2) + Math.pow(endLat - startLat, 2)
+  );
+  // Scale curve height based on distance (shorter routes = less curve)
+  const curveHeight = Math.min(distance * 0.15, 0.5);
+  
   for (let i = 0; i <= numPoints; i++) {
     const fraction = i / numPoints;
     const lat = startLat + (endLat - startLat) * fraction;
     const lon = startLon + (endLon - startLon) * fraction;
     
-    // Add slight curve for visual appeal
-    const height = Math.sin(fraction * Math.PI) * 0.1;
-    const curvedLat = lat + height;
-    
-    points.push([lon, curvedLat]);
+    // Add curve only for middle points (not start/end)
+    // This ensures line endpoints connect exactly to markers
+    if (i === 0 || i === numPoints) {
+      points.push([lon, lat]);
+    } else {
+      // Add slight curve for visual appeal
+      const height = Math.sin(fraction * Math.PI) * curveHeight;
+      const curvedLat = lat + height;
+      points.push([lon, curvedLat]);
+    }
   }
   
   return points;

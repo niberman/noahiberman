@@ -3,14 +3,13 @@ import { activeFlight, flightHistory } from "@/data/flights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, MapPin, Clock, TrendingUp, Radio, Navigation, ChevronDown, ChevronRight } from "lucide-react";
+import { Plane, MapPin, Clock, TrendingUp, Navigation, ChevronDown, ChevronRight } from "lucide-react";
 import { BilingualHeading } from "@/components/BilingualHeading";
-import { Suspense, useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
-import { FlightMap } from "@/components/FlightMap";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -119,8 +118,6 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isExperienceOpen, setIsExperienceOpen] = useState(false);
   const mapSectionRef = useRef<HTMLDivElement>(null);
-  const [mapInView, setMapInView] = useState(false);
-  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -128,29 +125,6 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const node = mapSectionRef.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setMapInView(entry.isIntersecting);
-      },
-      { threshold: 0.4 }
-    );
-
-    observer.observe(node);
-    return () => {
-      observer.unobserve(node);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (mapInView) {
-      setMapReady(true);
-    }
-  }, [mapInView]);
 
   // Calculate chart data
   const chartData = useMemo(() => {
@@ -243,7 +217,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pointer-events-none">
       {showSEO && (
         <SEO
           title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
@@ -259,41 +233,14 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         />
       )}
 
-      {/* Immersive full-screen map */}
+      {/* Immersive full-screen map section - uses the BackgroundFlightMap */}
       <section
         id="flight-map-fullscreen"
         ref={mapSectionRef}
-        className="relative h-screen w-full overflow-hidden"
+        className="relative h-screen w-full overflow-hidden pointer-events-none"
       >
-        <div
-          className={`absolute inset-0 transition-all duration-700 ease-out ${
-            mapInView ? "opacity-100 scale-100" : "opacity-0 scale-110"
-          }`}
-        >
-          {mapReady ? (
-            <Suspense
-              fallback={
-                <div className="flex h-full w-full items-center justify-center bg-card/30">
-                  <div className="text-center">
-                    <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-secondary"></div>
-                    <p className="text-sm text-muted-foreground">Booting up flight map...</p>
-                  </div>
-                </div>
-              }
-            >
-              <FlightMap />
-            </Suspense>
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-card/20">
-              <div className="text-center">
-                <div className="mx-auto mb-3 h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-secondary"></div>
-                <p className="text-sm text-muted-foreground">Preparing interactive map...</p>
-              </div>
-            </div>
-          )}
-        </div>
-        {/* Overlay with pointer-events-none to allow map interaction */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-background/20 to-background/90" />
+        {/* Reduced overlay to let the background map show through more prominently */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/70" />
         <div className="relative z-10 flex h-full flex-col justify-between py-12 pointer-events-none">
           <div className="container mx-auto px-4 pointer-events-auto">
             <motion.div
@@ -319,7 +266,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         </div>
       </section>
 
-      <div className="pt-10 md:pt-16 pb-10 md:pb-20">
+      <div className="pt-10 md:pt-16 pb-10 md:pb-20 pointer-events-auto">
         <div className="container mx-auto px-4">
         {/* Active Flight Section */}
         {activeFlight && (

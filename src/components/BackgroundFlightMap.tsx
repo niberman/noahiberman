@@ -31,10 +31,83 @@ export function BackgroundFlightMap() {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [isInFlightSection, setIsInFlightSection] = useState(false);
+  const rotationRef = useRef<number | null>(null);
+  const airportVisitsRef = useRef<Map<string, number>>(new Map());
+  const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
+  const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadCurrentFlight();
   }, []);
+
+  // Detect when the Follow My Flight section is in view
+  useEffect(() => {
+    const flightSection = document.getElementById('follow-my-flight');
+    if (!flightSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInFlightSection(entry.isIntersecting && entry.intersectionRatio > 0.3);
+      },
+      { threshold: [0, 0.3, 0.5, 0.7, 1] }
+    );
+
+    observer.observe(flightSection);
+    return () => observer.disconnect();
+  }, []);
+
+  // Enable/disable map interactions and rotation based on section visibility
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    if (isInFlightSection) {
+      // Stop rotation when user is interacting with the map
+      if (rotationRef.current) {
+        cancelAnimationFrame(rotationRef.current);
+        rotationRef.current = null;
+      }
+      // Reset to flat view for better marker/line alignment
+      map.current.easeTo({
+        pitch: 0,
+        bearing: 0,
+        duration: 500
+      });
+      // Enable full interactions when in Follow My Flight section
+      map.current.dragPan.enable();
+      map.current.dragRotate.enable();
+      map.current.scrollZoom.enable();
+      map.current.doubleClickZoom.enable();
+      map.current.touchZoomRotate.enable();
+      map.current.touchPitch.enable();
+      map.current.keyboard.enable();
+    } else {
+      // Resume rotation with 3D perspective when leaving
+      map.current.easeTo({
+        pitch: 45,
+        duration: 500
+      });
+      // Restart rotation animation
+      let bearing = map.current.getBearing();
+      const rotateCamera = () => {
+        bearing += 0.02;
+        if (map.current && !isInFlightSection) {
+          map.current.setBearing(bearing);
+          rotationRef.current = requestAnimationFrame(rotateCamera);
+        }
+      };
+      rotateCamera();
+      // Disable interactions when in other sections
+      map.current.dragPan.disable();
+      map.current.dragRotate.disable();
+      map.current.scrollZoom.disable();
+      map.current.doubleClickZoom.disable();
+      map.current.touchZoomRotate.disable();
+      map.current.touchPitch.disable();
+      map.current.keyboard.disable();
+    }
+  }, [isInFlightSection, mapLoaded]);
 
   // Fetch live position data when we have a tail number
   useEffect(() => {
@@ -102,13 +175,48 @@ export function BackgroundFlightMap() {
       if (!currentFlight || currentFlight.flight_status !== "in_flight") {
         addHistoricalRoutes();
         
-        // Add subtle rotation animation for visual interest
+        // Set up hover handlers for airport circles
+        map.current.on('mouseenter', 'airport-circles', (e) => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = 'pointer';
+          }
+          if (e.features && e.features[0]) {
+            const props = e.features[0].properties as { code: string; count: number };
+            setHoveredAirport({
+              code: props.code,
+              count: props.count,
+              x: e.point.x,
+              y: e.point.y,
+            });
+          }
+        });
+
+        map.current.on('mouseleave', 'airport-circles', () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = '';
+          }
+          setHoveredAirport(null);
+        });
+
+        map.current.on('mousemove', 'airport-circles', (e) => {
+          if (e.features && e.features[0]) {
+            const props = e.features[0].properties as { code: string; count: number };
+            setHoveredAirport({
+              code: props.code,
+              count: props.count,
+              x: e.point.x,
+              y: e.point.y,
+            });
+          }
+        });
+        
+        // Add subtle rotation animation for visual interest (only when NOT in flight section)
         let bearing = -15;
         const rotateCamera = () => {
-          bearing += 0.03; // Slower rotation
-          if (map.current && !currentFlight) {
+          bearing += 0.02; // Slower rotation
+          if (map.current && !currentFlight && !isInFlightSection) {
             map.current.setBearing(bearing);
-            requestAnimationFrame(rotateCamera);
+            rotationRef.current = requestAnimationFrame(rotateCamera);
           }
         };
         rotateCamera();
@@ -249,91 +357,56 @@ export function BackgroundFlightMap() {
       });
     });
 
-    // Add airport markers with labels (include home base)
+    // Add airport markers using native Mapbox layers for perfect alignment
     const markerAirports = new Set<string>(visitedAirports);
     markerAirports.add("KAPA");
 
-    // Add CSS for hover effect if not already present
-    if (!document.head.querySelector('style[data-airport-marker-hover]')) {
-      const style = document.createElement('style');
-      style.setAttribute('data-airport-marker-hover', 'true');
-      style.textContent = `
-        .airport-marker-container {
-          position: relative;
-          cursor: pointer;
-        }
-        .airport-marker-container .airport-marker-label {
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%) translateY(-8px);
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.2s ease;
-          white-space: nowrap;
-        }
-        .airport-marker-container:hover .airport-marker-label {
-          opacity: 1;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
+    // Create GeoJSON features for airport points
+    const airportFeatures: GeoJSON.Feature<GeoJSON.Point>[] = [];
     markerAirports.forEach((code) => {
       const coords = getAirportCoordinates(code);
-      if (!coords) {
-        return;
-      }
-
-      const isHomeBase = code === "KAPA";
-      const visitCount = airportVisits.get(code) || 0;
-      const color = isHomeBase ? "#c084fc" : "#a78bfa";
+      if (!coords) return;
       
-      // Container element
-      const container = document.createElement("div");
-      container.className = "airport-marker-container";
-      
-      // Just the dot (always visible)
-      const dot = document.createElement("div");
-      dot.style.width = isHomeBase ? "12px" : "8px";
-      dot.style.height = dot.style.width;
-      dot.style.borderRadius = "50%";
-      dot.style.backgroundColor = color;
-      dot.style.border = "2px solid white";
-      dot.style.boxShadow = "0 2px 6px rgba(0,0,0,0.5)";
-      
-      // Label (shows on hover)
-      const label = document.createElement("div");
-      label.className = "airport-marker-label";
-      label.style.display = "flex";
-      label.style.alignItems = "center";
-      label.style.gap = "4px";
-      label.style.padding = "4px 8px";
-      label.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-      label.style.color = color;
-      label.style.fontSize = "11px";
-      label.style.fontWeight = "700";
-      label.style.borderRadius = "4px";
-      label.style.border = `2px solid ${color}`;
-      label.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
-      
-      const labelDot = document.createElement("span");
-      labelDot.style.width = "6px";
-      labelDot.style.height = "6px";
-      labelDot.style.borderRadius = "50%";
-      labelDot.style.backgroundColor = color;
-      
-      const text = document.createElement("span");
-      text.textContent = `${code} (${visitCount})`;
-      
-      label.appendChild(labelDot);
-      label.appendChild(text);
-      
-      container.appendChild(dot);
-      container.appendChild(label);
-
-      new mapboxgl.Marker(container).setLngLat(coords as [number, number]).addTo(map.current!);
+      airportFeatures.push({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: coords,
+        },
+        properties: {
+          code,
+          count: airportVisits.get(code) || 0,
+          isHomeBase: code === "KAPA",
+        },
+      });
     });
+
+    // Add airport points source
+    map.current.addSource("airport-points", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: airportFeatures,
+      },
+    });
+
+    // Add circle layer for airport dots - these render on the map canvas
+    // so they align perfectly with lines at any pitch/rotation
+    map.current.addLayer({
+      id: "airport-circles",
+      type: "circle",
+      source: "airport-points",
+      paint: {
+        "circle-radius": ["case", ["get", "isHomeBase"], 8, 5],
+        "circle-color": ["case", ["get", "isHomeBase"], "#c084fc", "#a78bfa"],
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#ffffff",
+      },
+    });
+
+    // Store airport data for hover tooltip
+    airportVisitsRef.current = airportVisits;
+    airportFeaturesRef.current = airportFeatures;
   };
 
   // Update live aircraft position on map
@@ -553,21 +626,10 @@ export function BackgroundFlightMap() {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full pointer-events-none">
+    <div className={`fixed inset-0 w-full h-full ${isInFlightSection ? 'pointer-events-auto z-0' : 'pointer-events-none'}`}>
       <div 
         ref={mapContainer} 
-        className="w-full h-full pointer-events-auto"
-        onWheel={(e) => {
-          // Only allow map zoom if Ctrl/Cmd key is held, otherwise allow page scroll
-          if (!e.ctrlKey && !e.metaKey) {
-            e.currentTarget.style.pointerEvents = 'none';
-            setTimeout(() => {
-              if (mapContainer.current) {
-                mapContainer.current.style.pointerEvents = 'auto';
-              }
-            }, 100);
-          }
-        }}
+        className="w-full h-full"
       />
       
       {/* Flying mode: Dramatic visual overlay */}
@@ -679,6 +741,29 @@ export function BackgroundFlightMap() {
                 <div className="h-1.5 w-1.5 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Airport hover tooltip */}
+      {hoveredAirport && (
+        <div
+          ref={tooltipRef}
+          className="fixed z-50 bg-black/95 backdrop-blur-xl border-2 border-purple-500/70 rounded-lg px-3 py-2 shadow-xl pointer-events-none"
+          style={{
+            left: hoveredAirport.x,
+            top: hoveredAirport.y,
+            transform: 'translate(-50%, -100%) translateY(-12px)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${hoveredAirport.code === 'KAPA' ? 'bg-purple-400' : 'bg-purple-300'}`} />
+            <span className={`text-sm font-bold ${hoveredAirport.code === 'KAPA' ? 'text-purple-400' : 'text-purple-300'}`}>
+              {hoveredAirport.code}
+            </span>
+            <span className="text-purple-300/70 text-sm">
+              ({hoveredAirport.count})
+            </span>
           </div>
         </div>
       )}

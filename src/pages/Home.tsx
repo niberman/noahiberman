@@ -50,8 +50,8 @@ export default function Home() {
       {/* Live Flight Status Indicator */}
       <LiveFlightIndicator />
       
-      {/* Main Content */}
-      <div className="relative z-10">
+      {/* Main Content - pointer-events-none allows map interaction, children re-enable */}
+      <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
           title="Noah Berman — Pilot, Founder & Builder | Aviation & Technology"
           description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
@@ -189,8 +189,8 @@ export default function Home() {
         <Ventures showSEO={false} />
       </div>
 
-      {/* Follow My Flight Section */}
-      <div id="follow-my-flight" className="relative bg-background/90 backdrop-blur-xs">
+      {/* Follow My Flight Section - transparent to show background map */}
+      <div id="follow-my-flight" className="relative pointer-events-none">
         <FollowMyFlight showSEO={false} />
       </div>
 
