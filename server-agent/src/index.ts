@@ -16,8 +16,20 @@ const API_KEY = process.env.API_KEY;
 const ENABLED_PLUGINS = (process.env.ENABLED_PLUGINS || 'system,docker,services,logs,shell,linkedin').split(',');
 
 // Middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000', 
+    'https://noahiberman.com',
+    'https://www.noahiberman.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // API Key authentication
