@@ -293,9 +293,10 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
             </div>
           )}
         </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-background/30 to-background/90" />
-        <div className="relative z-10 flex h-full flex-col justify-between py-12">
-          <div className="container mx-auto px-4">
+        {/* Overlay with pointer-events-none to allow map interaction */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-background/20 to-background/90" />
+        <div className="relative z-10 flex h-full flex-col justify-between py-12 pointer-events-none">
+          <div className="container mx-auto px-4 pointer-events-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -308,12 +309,12 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
                 className="mb-4 md:mb-6 text-primary-foreground drop-shadow-glow"
               />
               <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed max-w-2xl">
-                Scroll or pinch to explore every route I’ve flown. The interactive map now takes over the entire
-                canvas so you can zoom in on each airport I've visited.
+                Explore every route I've flown on this fully interactive 3D map. 
+                Pinch to zoom, drag to pan, and rotate the view to see my flight paths from any angle.
               </p>
             </motion.div>
           </div>
-          <div className="pb-6 text-center text-xs font-semibold uppercase tracking-[0.5em] text-primary-foreground/70">
+          <div className="pb-6 text-center text-xs font-semibold uppercase tracking-[0.5em] text-primary-foreground/70 pointer-events-auto">
             Scroll to Explore
           </div>
         </div>

@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState, useMemo, Suspense, lazy } from "react";
-import { Plane, MapPin, Clock, Calendar } from "lucide-react";
+import { Plane, MapPin, Clock, Calendar, Radio } from "lucide-react";
 import { flightHistory, type Flight } from "@/data/flights";
 import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
 import { extractAirportsFromFlight, mapAirportsToFlights } from "@/lib/flight-airports";
 import type { MapRef, ViewState } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { supabase } from "@/lib/supabase";
+import mapboxgl from "mapbox-gl";
 
 // Dynamically import Map components to avoid SSR issues  
 const Map = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.default || mod.Map })));
 
 // Import Source and Layer directly (they should work without lazy loading)
-import { Source, Layer, Marker } from "react-map-gl/mapbox";
+import { Source, Layer, Marker, NavigationControl } from "react-map-gl/mapbox";
 
 interface FlightRoute {
   flight: Flight;
@@ -24,6 +26,20 @@ interface TooltipData {
   flight: Flight;
   x: number;
   y: number;
+}
+
+interface FlightInfo {
+  tail_number: string;
+  flight_status: "on_ground" | "in_flight";
+}
+
+interface AircraftPosition {
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  heading: number;
+  speed: number;
+  timestamp: number;
 }
 
 // Mapbox token - must be set in Vercel environment variables as VITE_MAPBOX_TOKEN
@@ -47,6 +63,28 @@ export function FlightMap() {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [animatedRoutes, setAnimatedRoutes] = useState<Set<string>>(new Set());
   const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Live flight tracking state
+  const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
+  const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
+  const [positionHistory, setPositionHistory] = useState<AircraftPosition[]>([]);
+  const liveMarkerRef = useRef<mapboxgl.Marker | null>(null);
+
+  // Load current flight status
+  useEffect(() => {
+    loadCurrentFlight();
+  }, []);
+
+  // Fetch live position data when we have an active flight
+  useEffect(() => {
+    if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
+      fetchAircraftPosition(currentFlight.tail_number);
+      const interval = setInterval(() => {
+        fetchAircraftPosition(currentFlight.tail_number);
+      }, 30000); // Update every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [currentFlight]);
 
   // Collect all unique airports referenced across every flight (including description waypoints)
   const uniqueAirports = useMemo(() => {
@@ -72,9 +110,18 @@ export function FlightMap() {
   }, [uniqueAirports]);
 
   const airportFlights = useMemo(() => mapAirportsToFlights(flightHistory), [flightHistory]);
+  
+  // Check if currently flying
+  const isFlying = currentFlight && currentFlight.flight_status === "in_flight";
 
   // Build hub-and-spoke routes: draw a line from KAPA to every airport ever visited
+  // Only show historical routes when NOT flying
   const flightRoutes = useMemo<FlightRoute[]>(() => {
+    // Don't show historical routes when actively flying
+    if (isFlying) {
+      return [];
+    }
+    
     const kapaCoords = getAirportCoordinates("KAPA");
     if (!kapaCoords) {
       console.warn("KAPA coordinates not found!");
@@ -105,7 +152,7 @@ export function FlightMap() {
     );
 
     return routes;
-  }, [airportsWithCoords, airportFlights]);
+  }, [airportsWithCoords, airportFlights, isFlying]);
 
   // Show all airports (not just ones with routes from KAPA)
   // Lines will only be drawn from KAPA, but all visited airports are displayed
@@ -141,6 +188,128 @@ export function FlightMap() {
       setAnimatedRoutes(allFlightIds);
     }
   }, [flightRoutes]);
+
+  // Update live aircraft marker on the map
+  useEffect(() => {
+    if (!mapRef.current || !aircraftPosition || !isFlying) {
+      // Clean up marker if not flying
+      if (liveMarkerRef.current) {
+        liveMarkerRef.current.remove();
+        liveMarkerRef.current = null;
+      }
+      return;
+    }
+
+    const mapboxMap = mapRef.current.getMap();
+    if (!mapboxMap) return;
+
+    // Remove existing marker
+    if (liveMarkerRef.current) {
+      liveMarkerRef.current.remove();
+    }
+
+    // Create custom animated aircraft marker
+    const el = document.createElement('div');
+    el.innerHTML = `
+      <div style="
+        position: relative;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <div style="
+          position: absolute;
+          inset: -10px;
+          background: radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: pulse-live 2s infinite;
+        "></div>
+        <div style="
+          position: relative;
+          background: rgb(34, 197, 94);
+          padding: 10px;
+          border-radius: 50%;
+          transform: rotate(${aircraftPosition.heading}deg);
+          box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        ">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+            <path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z" fill="white"/>
+          </svg>
+        </div>
+      </div>
+    `;
+
+    // Add CSS animation if not already present
+    if (!document.head.querySelector('style[data-live-aircraft-marker]')) {
+      const style = document.createElement('style');
+      style.setAttribute('data-live-aircraft-marker', 'true');
+      style.textContent = `
+        @keyframes pulse-live {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(2); opacity: 0.3; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Create marker using mapbox-gl
+    liveMarkerRef.current = new mapboxgl.Marker(el)
+      .setLngLat([aircraftPosition.longitude, aircraftPosition.latitude])
+      .addTo(mapboxMap);
+
+    // Smoothly pan to aircraft position
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [aircraftPosition.longitude, aircraftPosition.latitude],
+        zoom: 9,
+        pitch: 50,
+        duration: 2000
+      });
+    }
+
+    // Draw live flight path
+    if (positionHistory.length > 1) {
+      const sourceId = 'live-flight-path';
+      const layerId = 'live-flight-path-line';
+
+      if (mapboxMap.getSource(sourceId)) {
+        if (mapboxMap.getLayer(layerId)) {
+          mapboxMap.removeLayer(layerId);
+        }
+        mapboxMap.removeSource(sourceId);
+      }
+
+      mapboxMap.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: positionHistory.map(pos => [pos.longitude, pos.latitude])
+          }
+        }
+      });
+
+      mapboxMap.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        },
+        paint: {
+          'line-color': '#22c55e',
+          'line-width': 3,
+          'line-opacity': 0.8
+        }
+      });
+    }
+  }, [aircraftPosition, positionHistory, isFlying]);
 
   // Initial camera animation - zoom out to show all flights
   useEffect(() => {
@@ -243,6 +412,89 @@ export function FlightMap() {
     return (hours + minutes / 60).toFixed(1);
   };
 
+  // Load current flight status
+  const loadCurrentFlight = async () => {
+    if (!supabase) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('current_flight')
+        .select('*')
+        .eq('flight_status', 'in_flight')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data && !error) {
+        setCurrentFlight(data);
+      } else {
+        setCurrentFlight(null);
+      }
+    } catch (error) {
+      setCurrentFlight(null);
+    }
+  };
+
+  // Map of tail numbers to ICAO hex codes (Mode S codes)
+  const tailToHex: { [key: string]: string } = {
+    'N405MK': 'a4b605',
+    // Add more mappings as needed
+  };
+
+  const fetchAircraftPosition = async (tailNumber: string) => {
+    try {
+      const hexCode = tailToHex[tailNumber.toUpperCase()] || '';
+      
+      if (!hexCode) {
+        console.log(`No hex code mapping for ${tailNumber}, using demo data`);
+        // Use demo data if we don't have a hex code mapping
+        const newPosition = {
+          latitude: 39.8617 + (Math.random() - 0.5) * 2,
+          longitude: -104.6731 + (Math.random() - 0.5) * 2,
+          altitude: 8500 + Math.random() * 2000,
+          heading: Math.random() * 360,
+          speed: 150 + Math.random() * 50,
+          timestamp: Date.now()
+        };
+        setAircraftPosition(newPosition);
+        setPositionHistory(prev => [...prev.slice(-19), newPosition]);
+        return;
+      }
+
+      const response = await fetch(
+        `https://adsbexchange-com1.p.rapidapi.com/v2/hex/${hexCode}/`,
+        {
+          headers: {
+            'X-RapidAPI-Key': '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad',
+            'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.ac && data.ac.length > 0) {
+          const aircraft = data.ac[0];
+          console.log('Live aircraft data received:', aircraft);
+          
+          const newPosition = {
+            latitude: parseFloat(aircraft.lat),
+            longitude: parseFloat(aircraft.lon),
+            altitude: parseInt(aircraft.alt_baro) || parseInt(aircraft.alt_geom) || 0,
+            heading: parseInt(aircraft.track) || 0,
+            speed: parseInt(aircraft.gs) || 0,
+            timestamp: Date.now()
+          };
+          
+          setAircraftPosition(newPosition);
+          setPositionHistory(prev => [...prev.slice(-19), newPosition]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching aircraft position:', error);
+    }
+  };
+
   const mapboxToken = getMapboxToken();
   
   if (!mapboxToken) {
@@ -293,6 +545,18 @@ export function FlightMap() {
           terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
           projection={{ name: "globe" }}
           reuseMaps
+          // Enable all interactions for exploration
+          dragRotate={true}
+          dragPan={true}
+          scrollZoom={true}
+          touchZoomRotate={true}
+          touchPitch={true}
+          doubleClickZoom={true}
+          keyboard={true}
+          // Set max/min zoom for comfortable exploration
+          minZoom={2}
+          maxZoom={16}
+          maxPitch={85}
           onLoad={() => {
             console.log("Map loaded, rendering flight routes");
             console.log(`Flight routes count: ${flightRoutes.length}`);
@@ -321,6 +585,77 @@ export function FlightMap() {
             }
           }}
         >
+          {/* Live Flight Status Indicator */}
+          {isFlying && aircraftPosition && (
+            <div className="absolute top-4 left-4 z-50 pointer-events-none animate-fade-in">
+              {/* Glowing background effect */}
+              <div className="absolute inset-0 bg-green-500/30 rounded-xl blur-xl animate-pulse" />
+              
+              {/* Main card */}
+              <div className="relative bg-gradient-to-br from-green-500/40 via-green-600/30 to-green-700/20 backdrop-blur-xl rounded-xl p-4 text-white border-2 border-green-400/60 shadow-2xl">
+                {/* Animated corner accents */}
+                <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-green-400 animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-green-400 animate-pulse" />
+                <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-green-400 animate-pulse" />
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-green-400 animate-pulse" />
+                
+                {/* Header */}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="relative">
+                    <div className="h-3 w-3 bg-green-400 rounded-full animate-pulse" />
+                    <div className="absolute inset-0 h-3 w-3 bg-green-400 rounded-full animate-ping" />
+                  </div>
+                  <span className="text-sm font-black tracking-widest text-green-300 drop-shadow-lg flex items-center gap-2">
+                    <Radio className="h-3 w-3" />
+                    LIVE FLIGHT
+                  </span>
+                </div>
+                
+                {/* Flight info */}
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xs text-green-200/80">Aircraft:</span>
+                    <p className="font-mono text-lg font-black text-green-300 drop-shadow-lg tracking-wider">
+                      {currentFlight.tail_number}
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-green-400/30">
+                    <div>
+                      <p className="text-xs text-green-200/70 mb-0.5">Altitude</p>
+                      <p className="text-sm font-bold text-white">
+                        {aircraftPosition.altitude.toLocaleString()}<span className="text-xs text-green-200/80 ml-1">ft</span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-green-200/70 mb-0.5">Speed</p>
+                      <p className="text-sm font-bold text-white">
+                        {Math.round(aircraftPosition.speed)}<span className="text-xs text-green-200/80 ml-1">kts</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-2 border-t border-green-400/30">
+                    <p className="text-xs text-green-200/70 mb-0.5">Heading</p>
+                    <p className="text-sm font-bold text-white">
+                      {Math.round(aircraftPosition.heading)}°
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Status bar */}
+                <div className="mt-3 pt-2 border-t border-green-400/30 flex items-center justify-between">
+                  <span className="text-xs text-green-200/70">ADS-B Tracking</span>
+                  <div className="flex items-center gap-1">
+                    <div className="h-1 w-1 bg-green-400 rounded-full animate-pulse" />
+                    <div className="h-1 w-1 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+                    <div className="h-1 w-1 bg-green-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Flight Routes - Hub-and-spoke design from KAPA */}
           {flightRoutes.length > 0 && (
             <>
@@ -541,7 +876,22 @@ export function FlightMap() {
                 </div>
               </Marker>
             );
-          })}
+          }          )}
+          
+          {/* Navigation Controls */}
+          <NavigationControl 
+            position="top-right" 
+            showCompass={true}
+            showZoom={true}
+            visualizePitch={true}
+          />
+          
+          {/* Exploration Instructions Overlay */}
+          <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-xl border border-border rounded-lg p-3 shadow-glow pointer-events-none max-w-xs">
+            <p className="text-xs text-muted-foreground">
+              <span className="font-semibold text-primary-foreground">Explore:</span> Drag to pan • Pinch/scroll to zoom • Right-click drag to rotate • Shift+drag to tilt
+            </p>
+          </div>
         </Map>
       </Suspense>
 

@@ -241,4 +241,32 @@ All colors MUST be HSL.
   .animate-shimmer {
     animation: shimmer 3s infinite;
   }
+  
+  /* Map touch gesture support - enable smooth pinch-to-zoom */
+  .mapboxgl-canvas-container,
+  .mapboxgl-canvas {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+  
+  /* Custom map control styling */
+  .mapboxgl-ctrl-group {
+    @apply bg-card/95 backdrop-blur-xl border-border rounded-lg shadow-glow;
+  }
+  
+  .mapboxgl-ctrl-group button {
+    @apply text-primary-foreground hover:bg-secondary/20 transition-colors;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .mapboxgl-ctrl-compass {
+    @apply text-secondary;
+  }
+  
+  /* Ensure map is interactive and not blocked */
+  .mapboxgl-map {
+    position: relative;
+    z-index: 1;
+  }
 }
+

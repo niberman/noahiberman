@@ -81,8 +81,23 @@ export function UnifiedFlightTracker({ showInlineMap = true }: UnifiedFlightTrac
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/satellite-streets-v12',
       center: [aircraftPosition?.longitude || -104.6731, aircraftPosition?.latitude || 39.8617],
-      zoom: 10
+      zoom: 10,
+      // Enable all interactions
+      dragRotate: true,
+      dragPan: true,
+      scrollZoom: true,
+      touchZoomRotate: true,
+      touchPitch: true,
+      doubleClickZoom: true,
+      keyboard: true,
     });
+
+    // Add navigation controls for better UX
+    map.current.addControl(new mapboxgl.NavigationControl({
+      showCompass: true,
+      showZoom: true,
+      visualizePitch: true
+    }), 'top-right');
 
     return () => {
       map.current?.remove();
