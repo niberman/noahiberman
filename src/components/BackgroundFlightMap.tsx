@@ -162,7 +162,6 @@ export function BackgroundFlightMap() {
       })
       .filter((feature): feature is RouteFeature => feature !== null);
 
-    console.log(`Adding ${routes.length} hub routes from KAPA to ${visitedAirports.size} airports`);
 
     // Add routes as a source
     if (map.current.getSource("flight-routes")) {
@@ -254,51 +253,86 @@ export function BackgroundFlightMap() {
     const markerAirports = new Set<string>(visitedAirports);
     markerAirports.add("KAPA");
 
+    // Add CSS for hover effect if not already present
+    if (!document.head.querySelector('style[data-airport-marker-hover]')) {
+      const style = document.createElement('style');
+      style.setAttribute('data-airport-marker-hover', 'true');
+      style.textContent = `
+        .airport-marker-container {
+          position: relative;
+          cursor: pointer;
+        }
+        .airport-marker-container .airport-marker-label {
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%) translateY(-8px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+          white-space: nowrap;
+        }
+        .airport-marker-container:hover .airport-marker-label {
+          opacity: 1;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     markerAirports.forEach((code) => {
       const coords = getAirportCoordinates(code);
       if (!coords) {
-        console.warn(`Missing coordinates for airport: ${code}`);
         return;
       }
 
       const isHomeBase = code === "KAPA";
       const visitCount = airportVisits.get(code) || 0;
+      const color = isHomeBase ? "#c084fc" : "#a78bfa";
       
-      const el = document.createElement("div");
-      el.className = "airport-marker-with-label";
-      el.style.display = "flex";
-      el.style.flexDirection = "column";
-      el.style.alignItems = "center";
-      el.style.cursor = "pointer";
+      // Container element
+      const container = document.createElement("div");
+      container.className = "airport-marker-container";
       
-      // Create marker dot
+      // Just the dot (always visible)
       const dot = document.createElement("div");
       dot.style.width = isHomeBase ? "12px" : "8px";
       dot.style.height = dot.style.width;
       dot.style.borderRadius = "50%";
-      dot.style.backgroundColor = isHomeBase ? "#c084fc" : "#a78bfa";
-      dot.style.border = "1px solid rgba(255,255,255,0.65)";
-      dot.style.boxShadow = isHomeBase
-        ? "0 0 14px rgba(160, 113, 255, 0.5)"
-        : "0 0 10px rgba(160, 113, 255, 0.35)";
+      dot.style.backgroundColor = color;
+      dot.style.border = "2px solid white";
+      dot.style.boxShadow = "0 2px 6px rgba(0,0,0,0.5)";
       
-      // Create label
+      // Label (shows on hover)
       const label = document.createElement("div");
-      label.style.marginTop = "4px";
-      label.style.padding = "2px 6px";
-      label.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
-      label.style.color = isHomeBase ? "#c084fc" : "#a78bfa";
+      label.className = "airport-marker-label";
+      label.style.display = "flex";
+      label.style.alignItems = "center";
+      label.style.gap = "4px";
+      label.style.padding = "4px 8px";
+      label.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+      label.style.color = color;
       label.style.fontSize = "11px";
-      label.style.fontWeight = "600";
-      label.style.borderRadius = "3px";
-      label.style.whiteSpace = "nowrap";
-      label.style.border = `1px solid ${isHomeBase ? "#c084fc" : "#a78bfa"}`;
-      label.textContent = `${code} (${visitCount})`;
+      label.style.fontWeight = "700";
+      label.style.borderRadius = "4px";
+      label.style.border = `2px solid ${color}`;
+      label.style.boxShadow = "0 2px 8px rgba(0,0,0,0.5)";
       
-      el.appendChild(dot);
-      el.appendChild(label);
+      const labelDot = document.createElement("span");
+      labelDot.style.width = "6px";
+      labelDot.style.height = "6px";
+      labelDot.style.borderRadius = "50%";
+      labelDot.style.backgroundColor = color;
+      
+      const text = document.createElement("span");
+      text.textContent = `${code} (${visitCount})`;
+      
+      label.appendChild(labelDot);
+      label.appendChild(text);
+      
+      container.appendChild(dot);
+      container.appendChild(label);
 
-      new mapboxgl.Marker(el).setLngLat(coords as [number, number]).addTo(map.current!);
+      new mapboxgl.Marker(container).setLngLat(coords as [number, number]).addTo(map.current!);
     });
   };
 

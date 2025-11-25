@@ -1,0 +1,2 @@
+export { LinkedInAgentCard } from './LinkedInAgentCard';
+

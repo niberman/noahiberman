@@ -9,7 +9,8 @@ import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 
 // Dynamically import Map components to avoid SSR issues  
-const Map = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.default || mod.Map })));
+// Named MapboxMap to avoid collision with native JavaScript Map
+const MapboxMap = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.default || mod.Map })));
 
 // Import Source and Layer directly (they should work without lazy loading)
 import { Source, Layer, Marker, NavigationControl } from "react-map-gl/mapbox";
@@ -24,6 +25,13 @@ interface FlightRoute {
 
 interface TooltipData {
   flight: Flight;
+  x: number;
+  y: number;
+}
+
+interface AirportTooltip {
+  code: string;
+  count: number;
   x: number;
   y: number;
 }
@@ -61,6 +69,7 @@ export function FlightMap() {
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
   });
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [airportTooltip, setAirportTooltip] = useState<AirportTooltip | null>(null);
   const [animatedRoutes, setAnimatedRoutes] = useState<Set<string>>(new Set());
   const [isInitialized, setIsInitialized] = useState(false);
   
@@ -126,13 +135,8 @@ export function FlightMap() {
   const isFlying = currentFlight && currentFlight.flight_status === "in_flight";
 
   // Build hub-and-spoke routes: draw a line from KAPA to every airport ever visited
-  // Only show historical routes when NOT flying
+  // Always show historical routes (live tracking overlays on top)
   const flightRoutes = useMemo<FlightRoute[]>(() => {
-    // Don't show historical routes when actively flying
-    if (isFlying) {
-      return [];
-    }
-    
     const kapaCoords = getAirportCoordinates("KAPA");
     if (!kapaCoords) {
       console.warn("KAPA coordinates not found!");
@@ -158,9 +162,6 @@ export function FlightMap() {
       })
       .filter((route): route is FlightRoute => route !== null);
 
-    console.log(
-      `Prepared ${routes.length} hub routes from KAPA covering ${airportsWithCoords.length - 1} airports`
-    );
 
     return routes;
   }, [airportsWithCoords, airportFlights, isFlying]);
@@ -565,7 +566,7 @@ export function FlightMap() {
           </div>
         }
       >
-        <Map
+        <MapboxMap
           ref={mapRef}
           {...viewState}
           onMove={(evt) => setViewState(evt.viewState)}
@@ -588,19 +589,6 @@ export function FlightMap() {
           maxZoom={16}
           maxPitch={85}
           onLoad={() => {
-            console.log("Map loaded, rendering flight routes");
-            console.log(`Flight routes count: ${flightRoutes.length}`);
-            console.log(`Airports to display: ${airportsToDisplay.length}`);
-            console.log(`Bounds: ${bounds?.minLon}, ${bounds?.minLat} to ${bounds?.maxLon}, ${bounds?.maxLat}`);
-            
-            if (flightRoutes.length > 0) {
-              console.log("Sample route:", {
-                origin: flightRoutes[0].flight.route.originCode,
-                destination: flightRoutes[0].destinationCode,
-                coordinates: flightRoutes[0].arc.length,
-              });
-            }
-            
             if (airportsToDisplay.length > 0 && mapRef.current && bounds) {
               mapRef.current.fitBounds(
                 [
@@ -614,6 +602,32 @@ export function FlightMap() {
               );
             }
           }}
+          onMouseMove={(e) => {
+            if (!mapRef.current) return;
+            const features = mapRef.current.queryRenderedFeatures(e.point, {
+              layers: ["airport-circles"],
+            });
+            if (features.length > 0) {
+              const feature = features[0];
+              const props = feature.properties as { code: string; count: number };
+              setAirportTooltip({
+                code: props.code,
+                count: props.count,
+                x: e.point.x,
+                y: e.point.y,
+              });
+              mapRef.current.getCanvas().style.cursor = "pointer";
+            } else {
+              setAirportTooltip(null);
+              if (mapRef.current) {
+                mapRef.current.getCanvas().style.cursor = "";
+              }
+            }
+          }}
+          onMouseLeave={() => {
+            setAirportTooltip(null);
+          }}
+          interactiveLayerIds={["airport-circles"]}
         >
           {/* Live Flight Status Indicator */}
           {isFlying && aircraftPosition && (
@@ -833,87 +847,38 @@ export function FlightMap() {
             </>
           )}
           
-          {/* Debug overlay */}
-          {flightRoutes.length === 0 && (
-            <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50">
-              No routes to display (flightRoutes.length: {flightRoutes.length})
-            </div>
-          )}
-
-          {/* Airport Markers - Show KAPA as home base and all visited airports */}
-          {airportsToDisplay.map((airport) => {
-            const isHomeBase = airport.code === "KAPA";
-            const visitCount = airportVisits.get(airport.code) || 0;
-            
-            return (
-              <Marker
-                key={`airport-${airport.code}`}
-                longitude={airport.coords[0]}
-                latitude={airport.coords[1]}
-                anchor="center"
-              >
-                <div
-                  className="relative transition-all duration-500 opacity-100 scale-100 cursor-pointer group flex flex-col items-center"
-                  onMouseEnter={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const flight =
-                      airportFlights.get(airport.code) ||
-                      flightHistory.find(
-                        (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                      );
-                    if (flight) {
-                      setTooltip({
-                        flight,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                      });
-                    }
-                  }}
-                  onMouseLeave={() => setTooltip(null)}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const flight =
-                      airportFlights.get(airport.code) ||
-                      flightHistory.find(
-                        (f) => f.route.originCode === airport.code || f.route.destinationCode === airport.code
-                      );
-                    if (flight) {
-                      setTooltip({
-                        flight,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                      });
-                    }
-                  }}
-                >
-                  {/* Airport dot */}
-                  <div 
-                    className={`rounded-full ${isHomeBase ? 'w-3 h-3 bg-violet-400' : 'w-2 h-2 bg-secondary'}`}
-                    style={{
-                      boxShadow: isHomeBase 
-                        ? '0 0 14px rgba(160, 113, 255, 0.5)' 
-                        : '0 0 10px rgba(160, 113, 255, 0.35)',
-                      border: '1px solid rgba(255,255,255,0.65)'
-                    }}
-                  />
-                  
-                  {/* Airport label */}
-                  <div 
-                    className={`mt-1 px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap`}
-                    style={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                      color: isHomeBase ? '#c084fc' : '#a78bfa',
-                      border: `1px solid ${isHomeBase ? '#c084fc' : '#a78bfa'}`,
-                      fontSize: '10px'
-                    }}
-                  >
-                    {airport.code} ({visitCount})
-                  </div>
-                </div>
-              </Marker>
-            );
-          })}
+          {/* Airport Circles - hover for details */}
+          <Source
+            id="airport-labels"
+            type="geojson"
+            data={{
+              type: "FeatureCollection",
+              features: airportsToDisplay.map((airport) => ({
+                type: "Feature" as const,
+                geometry: {
+                  type: "Point" as const,
+                  coordinates: airport.coords,
+                },
+                properties: {
+                  code: airport.code,
+                  count: airportVisits.get(airport.code) || 0,
+                  isHomeBase: airport.code === "KAPA",
+                },
+              })),
+            }}
+          >
+            {/* Circle markers for airports - hover to see details */}
+            <Layer
+              id="airport-circles"
+              type="circle"
+              paint={{
+                "circle-radius": ["case", ["get", "isHomeBase"], 10, 6],
+                "circle-color": ["case", ["get", "isHomeBase"], "#c084fc", "#a78bfa"],
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#ffffff",
+              }}
+            />
+          </Source>
           
           {/* Navigation Controls */}
           <NavigationControl 
@@ -929,10 +894,11 @@ export function FlightMap() {
               <span className="font-semibold text-primary-foreground">Explore:</span> Drag to pan • Ctrl/Cmd + scroll to zoom • Right-click drag to rotate • Shift+drag to tilt
             </p>
           </div>
-        </Map>
+        </MapboxMap>
       </Suspense>
 
       {/* Tooltip */}
+      {/* Flight route tooltip */}
       {tooltip && (
         <div
           className="absolute z-30 bg-card/95 backdrop-blur-xl border border-border rounded-lg p-4 shadow-glow pointer-events-none"
@@ -969,6 +935,32 @@ export function FlightMap() {
                 {parseFlightHours(tooltip.flight.duration)} hours
               </span>
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Airport hover tooltip */}
+      {airportTooltip && (
+        <div
+          className="absolute z-30 bg-card/95 backdrop-blur-xl border border-secondary/50 rounded-lg px-3 py-2 shadow-glow pointer-events-none"
+          style={{
+            left: airportTooltip.x,
+            top: airportTooltip.y,
+            transform: "translate(-50%, -100%) translateY(-12px)",
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <div 
+              className={`w-2 h-2 rounded-full ${
+                airportTooltip.code === "KAPA" ? "bg-[#c084fc]" : "bg-[#a78bfa]"
+              }`} 
+            />
+            <span className="text-sm font-bold text-primary-foreground">
+              {airportTooltip.code}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              ({airportTooltip.count} {airportTooltip.count === 1 ? "visit" : "visits"})
+            </span>
           </div>
         </div>
       )}

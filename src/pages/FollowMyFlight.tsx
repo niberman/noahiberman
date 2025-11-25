@@ -10,7 +10,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
-import { UnifiedFlightTracker } from "@/components/UnifiedFlightTracker";
 import { FlightMap } from "@/components/FlightMap";
 
 interface PageSectionProps {
@@ -322,11 +321,6 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
 
       <div className="pt-10 md:pt-16 pb-10 md:pb-20">
         <div className="container mx-auto px-4">
-          {/* Unified Flight Tracker - Shows live tracking when flying, stats otherwise */}
-          <div className="max-w-6xl mx-auto mb-8 md:mb-20">
-            <UnifiedFlightTracker showInlineMap={false} />
-          </div>
-
         {/* Active Flight Section */}
         {activeFlight && (
           <motion.div
