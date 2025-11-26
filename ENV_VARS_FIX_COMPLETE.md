@@ -110,3 +110,5 @@ console.log('Has Anon Key:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 Ready for deployment!
 
+
+

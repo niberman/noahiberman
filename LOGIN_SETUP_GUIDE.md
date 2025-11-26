@@ -123,3 +123,5 @@ For production:
 3. Enable MFA (Multi-Factor Authentication) if available
 4. Set up proper RLS (Row Level Security) policies in Supabase
 
+
+

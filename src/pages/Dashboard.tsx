@@ -33,7 +33,7 @@ const Dashboard = () => {
         .from('current_flight')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data && !error) {
         setTailNumber(data.tail_number || "");
@@ -92,48 +92,50 @@ const Dashboard = () => {
         description="Flight tracking command center"
       />
       
-      <div className="min-h-screen bg-gradient-dusk pt-24">
-        <div className="container mx-auto px-4 py-12 lg:py-16 max-w-2xl">
+      <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
+        <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-2xl">
           {/* Header */}
-          <div className="mb-10 animate-fade-in flex justify-between items-start">
-            <div>
-              <h1 className="font-display text-5xl md:text-6xl font-bold text-white mb-3">
-                Flight Command
-              </h1>
-              <p className="text-white/80 text-lg">
-                Set your aircraft to display live FlightAware tracking
-              </p>
+          <div className="mb-8 sm:mb-10 animate-fade-in">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
+              <div>
+                <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 sm:mb-3">
+                  Flight Command
+                </h1>
+                <p className="text-white/80 text-base sm:text-lg">
+                  Set your aircraft to display live FlightAware tracking
+                </p>
+              </div>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="flex items-center gap-2 w-full sm:w-auto justify-center"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
           </div>
 
           {/* Main Flight Card */}
           <Card className="bg-card/95 backdrop-blur animate-slide-up">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Plane className="h-5 w-5 text-secondary" />
-                  <CardTitle>Current Aircraft</CardTitle>
+                  <Plane className="h-5 w-5 text-secondary flex-shrink-0" />
+                  <CardTitle className="text-lg sm:text-xl">Current Aircraft</CardTitle>
                 </div>
                 <Badge 
                   variant={isFlying ? "default" : "secondary"}
-                  className={isFlying ? "bg-green-500/20 text-green-400 border-green-500/40" : ""}
+                  className={`${isFlying ? "bg-green-500/20 text-green-400 border-green-500/40" : ""} w-fit`}
                 >
                   {isFlying ? "Flying" : "Not Flying"}
                 </Badge>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 FlightAware tracking will display on your homepage when you're flying
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-5 sm:space-y-6">
               {/* Tail Number Input */}
               <div className="space-y-2">
                 <Label htmlFor="tail">Tail Number</Label>
@@ -142,7 +144,7 @@ const Dashboard = () => {
                   placeholder="N12345"
                   value={tailNumber}
                   onChange={(e) => setTailNumber(e.target.value.toUpperCase())}
-                  className="font-mono text-lg"
+                  className="font-mono text-base sm:text-lg"
                 />
                 <p className="text-xs text-muted-foreground">
                   Enter the aircraft registration you're currently flying
@@ -150,12 +152,12 @@ const Dashboard = () => {
               </div>
 
               {/* Flying Status Toggle */}
-              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                <div className="space-y-0.5">
-                  <Label htmlFor="flying-status" className="text-base">
+              <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50">
+                <div className="space-y-0.5 flex-1 mr-4">
+                  <Label htmlFor="flying-status" className="text-sm sm:text-base">
                     Currently Flying
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Toggle on when you're airborne
                   </p>
                 </div>
@@ -163,12 +165,13 @@ const Dashboard = () => {
                   id="flying-status"
                   checked={isFlying}
                   onCheckedChange={setIsFlying}
+                  className="flex-shrink-0"
                 />
               </div>
 
               {/* Save Button */}
-              <div className="flex items-center justify-between pt-4 border-t">
-                <div className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-4 border-t">
+                <div className="text-xs sm:text-sm text-muted-foreground">
                   {lastSaved && (
                     <>Last updated: {lastSaved.toLocaleTimeString()}</>
                   )}
@@ -176,7 +179,7 @@ const Dashboard = () => {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !tailNumber}
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <Save className="h-4 w-4" />
                   {isSaving ? "Saving..." : "Save"}
@@ -186,10 +189,10 @@ const Dashboard = () => {
           </Card>
 
           {/* Info Card */}
-          <Card className="mt-6 bg-secondary/10 border-secondary/20">
-            <CardContent className="pt-6">
+          <Card className="mt-5 sm:mt-6 bg-secondary/10 border-secondary/20">
+            <CardContent className="pt-5 sm:pt-6">
               <div className="flex items-start gap-3">
-                <Plane className="h-5 w-5 text-secondary mt-0.5" />
+                <Plane className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
                 <div className="space-y-2 text-sm">
                   <p className="text-white/90 font-medium">
                     How it works:

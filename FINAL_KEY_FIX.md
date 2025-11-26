@@ -41,3 +41,5 @@ Instead of the old error:
 ## Why Two Keys?
 You likely regenerated your Supabase anon key at some point, but only updated `VITE_SUPABASE_ANON_KEY` and forgot to update `SUPABASE_ANON_KEY`. Now both are synchronized with the current, working key.
 
+
+

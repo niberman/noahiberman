@@ -10,6 +10,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
+import { UnifiedFlightTracker } from "@/components/UnifiedFlightTracker";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -241,7 +242,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
       >
         {/* Reduced overlay to let the background map show through more prominently */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/70" />
-        <div className="relative z-10 flex h-full flex-col justify-between py-12 pointer-events-none">
+        <div className="relative z-10 flex h-full flex-col justify-between py-8 sm:py-12 pointer-events-none">
           <div className="container mx-auto px-4 pointer-events-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -252,15 +253,15 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
                 english="Follow My Flight"
                 spanish="Sigue Mi Vuelo"
                 as="h1"
-                className="mb-4 md:mb-6 text-primary-foreground drop-shadow-glow"
+                className="mb-3 sm:mb-4 md:mb-6 text-primary-foreground drop-shadow-glow"
               />
-              <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed max-w-2xl">
+              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 leading-relaxed max-w-2xl">
                 Explore every route I've flown on this fully interactive 3D map. 
                 Pinch to zoom, drag to pan, and rotate the view to see my flight paths from any angle.
               </p>
             </motion.div>
           </div>
-          <div className="pb-6 text-center text-xs font-semibold uppercase tracking-[0.5em] text-primary-foreground/70 pointer-events-auto">
+          <div className="pb-4 sm:pb-6 text-center text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] sm:tracking-[0.5em] text-primary-foreground/70 pointer-events-auto">
             Scroll to Explore
           </div>
         </div>
@@ -268,6 +269,10 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
 
       <div className="pt-10 md:pt-16 pb-10 md:pb-20 pointer-events-auto">
         <div className="container mx-auto px-4">
+        
+        {/* Live Flight Tracking Card - only shown when flying */}
+        <UnifiedFlightTracker showInlineMap={false} />
+        
         {/* Active Flight Section */}
         {activeFlight && (
           <motion.div

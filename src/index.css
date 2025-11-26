@@ -120,6 +120,16 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground font-sans antialiased;
     position: relative;
+    /* iOS safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    /* Prevent text size adjustment on orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Better touch scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
   
   body::before {
@@ -135,6 +145,20 @@ All colors MUST be HSL.
   }
   
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+  
+  /* Improve tap targets on mobile */
+  button, a {
+    -webkit-tap-highlight-color: rgba(270, 60%, 50%, 0.2);
+    tap-highlight-color: rgba(270, 60%, 50%, 0.2);
+  }
+  
+  /* Better font rendering on mobile */
+  @media (max-width: 640px) {
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
 }
 
 @layer utilities {
@@ -224,6 +248,49 @@ All colors MUST be HSL.
   .animate-fade-in {
     animation: fade-in 0.5s ease-in-out;
   }
+  
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
 
   .bg-radial-gradient {
     background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via, var(--tw-gradient-from)) 50%, var(--tw-gradient-to) 100%);
@@ -240,6 +307,32 @@ All colors MUST be HSL.
 
   .animate-shimmer {
     animation: shimmer 3s infinite;
+  }
+  
+  /* Gradient utilities */
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-gradient-dusk {
+    background: var(--gradient-dusk);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  /* Shadow utilities */
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .drop-shadow-glow {
+    filter: drop-shadow(0 0 30px hsl(270 60% 50% / 0.6));
   }
   
   /* Map touch gesture support - enable smooth pinch-to-zoom */
@@ -267,6 +360,14 @@ All colors MUST be HSL.
   .mapboxgl-map {
     position: relative;
     z-index: 1;
+  }
+  
+  /* Better touch targets on mobile */
+  @media (max-width: 640px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
   }
 }
 

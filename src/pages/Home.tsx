@@ -79,12 +79,12 @@ export default function Home() {
       <section 
         id="home"
         ref={heroRef}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
         <motion.div 
           style={{ opacity, scale }}
-          className="container mx-auto px-4 relative z-10"
+          className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -101,7 +101,7 @@ export default function Home() {
                 stiffness: 100,
                 damping: 15
               }}
-              className="inline-block mb-8 h-20 w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
+              className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
             >
               <img 
                 src="/logo.png" 
@@ -114,7 +114,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-6xl md:text-8xl font-display font-bold mb-6 text-primary-foreground text-balance"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight"
             >
               Pilot. Founder. Builder.
             </motion.h1>
@@ -123,12 +123,12 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.8 }}
-              className="space-y-3 mb-10"
+              className="space-y-2 sm:space-y-3 mb-8 sm:mb-10"
             >
-              <p className="text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance">
+              <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                 The sky is not the limit
               </p>
-              <p className="text-xl md:text-2xl text-secondary font-display italic">
+              <p className="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">
                 El cielo no es el límite
               </p>
             </motion.div>
@@ -137,21 +137,21 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-5 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4"
             >
               <Button
                 onClick={() => scrollToSection("ventures")}
                 size="lg"
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-lg px-10 py-6 rounded-full transition-all hover:scale-105"
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
               >
-                View Ventures <ArrowRight className="ml-2 h-5 w-5" />
+                View Ventures <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
               
               <Button
                 onClick={() => scrollToSection("contact")}
                 size="lg"
                 variant="outline"
-                className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-lg px-10 py-6 rounded-full transition-all hover:scale-105"
+                className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
               >
                 Get in Touch
               </Button>
@@ -161,7 +161,7 @@ export default function Home() {
         
         <motion.div 
           style={{ y }}
-          className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2"
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}

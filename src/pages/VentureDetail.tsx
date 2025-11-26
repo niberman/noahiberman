@@ -48,7 +48,7 @@ export default function VentureDetail() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20">
       <SEO
         title={currentSEO.title}
         description={currentSEO.description}
@@ -70,9 +70,9 @@ export default function VentureDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+          <nav className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
             <Link 
               to="/" 
               onClick={(e) => {
@@ -84,7 +84,7 @@ export default function VentureDetail() {
               Ventures
             </Link>
             <span>/</span>
-            <span className="text-foreground">{venture.title}</span>
+            <span className="text-foreground truncate">{venture.title}</span>
           </nav>
         </motion.div>
 
@@ -92,12 +92,13 @@ export default function VentureDetail() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <Button
             asChild
             variant="ghost"
-            className="gap-2 hover:text-secondary"
+            size="sm"
+            className="gap-2 hover:text-secondary -ml-2"
           >
             <Link 
               to="/"
@@ -116,41 +117,43 @@ export default function VentureDetail() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto mb-16"
+          className="max-w-4xl mx-auto mb-12 sm:mb-14 md:mb-16"
         >
-          <div className="bg-gradient-card rounded-3xl shadow-elegant border border-border/50 p-10 md:p-12">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
+          <div className="bg-gradient-card rounded-2xl sm:rounded-3xl shadow-elegant border border-border/50 p-6 sm:p-8 md:p-10 lg:p-12">
+            <div className="flex flex-col gap-6 mb-6">
               <div className="flex-1">
-                <div className="flex items-center gap-4 mb-3 flex-wrap">
-                  <h1 className="text-5xl font-display font-bold">
+                <div className="flex flex-col gap-3 mb-3">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold">
                     {venture.title}
                   </h1>
-                  <Badge className={`${statusColors[venture.status]} border text-sm px-3 py-1`}>
-                    {venture.status}
-                  </Badge>
-                  {venture.isNew && (
-                    <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-500/40 border text-sm px-3 py-1">
-                      NEW
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge className={`${statusColors[venture.status]} border text-xs sm:text-sm px-2.5 sm:px-3 py-1`}>
+                      {venture.status}
                     </Badge>
-                  )}
+                    {venture.isNew && (
+                      <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-500/40 border text-xs sm:text-sm px-2.5 sm:px-3 py-1">
+                        NEW
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xl text-muted-foreground mb-2">{venture.role}</p>
-                <p className="text-lg text-secondary font-display italic mb-2">{venture.year}</p>
+                <p className="text-lg sm:text-xl text-muted-foreground mb-2">{venture.role}</p>
+                <p className="text-base sm:text-lg text-secondary font-display italic mb-2">{venture.year}</p>
                 {venture.subtitleEn && venture.subtitleEs && (
                   <div className="mb-4">
-                    <p className="text-xl text-muted-foreground italic">{venture.subtitleEn}</p>
-                    <p className="text-lg text-secondary font-display italic">{venture.subtitleEs}</p>
+                    <p className="text-lg sm:text-xl text-muted-foreground italic">{venture.subtitleEn}</p>
+                    <p className="text-base sm:text-lg text-secondary font-display italic">{venture.subtitleEs}</p>
                   </div>
                 )}
               </div>
               
-              <div className="flex flex-col items-end gap-2 shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3">
                 {venture.link && (
                   <Button 
                     asChild 
                     variant="secondary"
                     size="lg"
-                    className="rounded-full hover:scale-105 transition-transform"
+                    className="rounded-full hover:scale-105 active:scale-95 transition-transform w-full sm:w-auto"
                   >
                     <a href={venture.link} target="_blank" rel="noopener noreferrer">
                       Visit <ExternalLink className="ml-2 h-4 w-4" />
@@ -162,7 +165,7 @@ export default function VentureDetail() {
                     href={venture.companyLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-center sm:text-left py-2 sm:py-0 sm:self-center"
                   >
                     Company Website <ExternalLink className="inline ml-1 h-3 w-3" />
                   </a>
@@ -170,16 +173,16 @@ export default function VentureDetail() {
               </div>
             </div>
 
-            <p className="text-xl mb-8 leading-relaxed text-foreground/90">
+            <p className="text-lg sm:text-xl mb-6 sm:mb-8 leading-relaxed text-foreground/90">
               {venture.description}
             </p>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {venture.tags.map((tag) => (
                 <Badge 
                   key={tag} 
                   variant="secondary"
-                  className="text-sm px-4 py-2 rounded-full"
+                  className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"
                 >
                   {tag}
                 </Badge>
