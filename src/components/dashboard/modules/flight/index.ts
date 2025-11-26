@@ -1,2 +1,0 @@
-export { FlightControlCard } from './FlightControlCard';
-
