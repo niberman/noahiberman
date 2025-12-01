@@ -32,31 +32,30 @@ export function BackgroundFlightMap() {
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isInFlightSection, setIsInFlightSection] = useState(false);
-  const [isMapInteractive, setIsMapInteractive] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(false);
   const rotationRef = useRef<number | null>(null);
   const airportVisitsRef = useRef<Map<string, number>>(new Map());
   const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
   const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // Handle click to make map interactive
-  const handleMapClick = () => {
-    if (!isMapInteractive) {
-      setIsMapInteractive(true);
+  // Require explicit user action to enable interactive mode
+  useEffect(() => {
+    if (!isInFlightSection && isInteractive) {
+      setIsInteractive(false);
     }
-  };
+  }, [isInFlightSection, isInteractive]);
 
-  // Handle escape key to exit interactive mode
+  // Allow escape key to exit interactive mode quickly
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMapInteractive) {
-        setIsMapInteractive(false);
+      if (e.key === "Escape" && isInteractive) {
+        setIsInteractive(false);
       }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMapInteractive]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isInteractive]);
 
   useEffect(() => {
     loadCurrentFlight();
@@ -80,10 +79,12 @@ export function BackgroundFlightMap() {
   }, []);
 
   // Enable/disable map interactions based on click-to-interact ONLY (not scroll position)
+  const shouldEnableInteractions = isInFlightSection && isInteractive;
+
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    if (isMapInteractive) {
+    if (shouldEnableInteractions) {
       // Stop rotation when user is interacting with the map
       if (rotationRef.current) {
         cancelAnimationFrame(rotationRef.current);
@@ -109,16 +110,18 @@ export function BackgroundFlightMap() {
         pitch: 45,
         duration: 500
       });
-      // Restart rotation animation
-      let bearing = map.current.getBearing();
-      const rotateCamera = () => {
-        bearing += 0.02;
-        if (map.current && !isMapInteractive) {
-          map.current.setBearing(bearing);
-          rotationRef.current = requestAnimationFrame(rotateCamera);
-        }
-      };
-      rotateCamera();
+      // Restart rotation animation only once per disable cycle
+      if (!rotationRef.current) {
+        let bearing = map.current.getBearing();
+        const rotateCamera = () => {
+          bearing += 0.02;
+          if (map.current && !shouldEnableInteractions) {
+            map.current.setBearing(bearing);
+            rotationRef.current = requestAnimationFrame(rotateCamera);
+          }
+        };
+        rotationRef.current = requestAnimationFrame(rotateCamera);
+      }
       // Disable interactions
       map.current.dragPan.disable();
       map.current.dragRotate.disable();
@@ -128,7 +131,7 @@ export function BackgroundFlightMap() {
       map.current.touchPitch.disable();
       map.current.keyboard.disable();
     }
-  }, [isMapInteractive, mapLoaded]);
+  }, [shouldEnableInteractions, mapLoaded]);
 
   // Fetch live position data when we have a tail number
   useEffect(() => {
@@ -237,7 +240,7 @@ export function BackgroundFlightMap() {
         let bearing = -15;
         const rotateCamera = () => {
           bearing += 0.02; // Slower rotation
-          if (map.current && !currentFlight && !isMapInteractive) {
+          if (map.current && !currentFlight && !isInFlightSection) {
             map.current.setBearing(bearing);
             rotationRef.current = requestAnimationFrame(rotateCamera);
           }
@@ -651,17 +654,18 @@ export function BackgroundFlightMap() {
     }
   };
 
-  // Map is only interactive when user explicitly clicks "Explore Map"
-  const shouldBeInteractive = isMapInteractive;
+  const isMapCardActive = isInFlightSection;
 
   return (
     <>
       {/* The map container - z-index changes based on interactive state */}
       <div 
-        className={`fixed inset-0 w-full h-full transition-all duration-300 ${
-          shouldBeInteractive 
-            ? 'pointer-events-auto z-[100]' // Above content when interactive
-            : 'pointer-events-none z-0'      // Below content when not interactive
+        className={`fixed inset-0 w-full h-full transition-all duration-700 ${
+          isMapCardActive
+            ? shouldEnableInteractions
+              ? 'pointer-events-auto z-[100]'
+              : 'pointer-events-none z-[60]'
+            : 'pointer-events-none z-0'
         }`}
       >
         <div 
@@ -669,31 +673,8 @@ export function BackgroundFlightMap() {
           className="w-full h-full"
         />
         
-        {/* Exit interactive mode button - shown when manually made interactive */}
-        {isMapInteractive && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsMapInteractive(false);
-            }}
-            className="absolute top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 mt-16 sm:mt-20 z-[110] 
-                       bg-black/90 hover:bg-black active:bg-black backdrop-blur-xl 
-                       rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 
-                       text-white text-sm sm:text-base font-semibold 
-                       transition-all active:scale-95
-                       flex items-center gap-2.5 
-                       shadow-2xl border border-white/30
-                       min-h-[48px]"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <span>Exit Map</span>
-          </button>
-        )}
-        
-        {/* Mobile instruction hint - shown briefly when map becomes interactive */}
-        {isMapInteractive && (
+        {/* Instruction hint while actively interacting */}
+        {shouldEnableInteractions && (
           <div className="absolute bottom-[env(safe-area-inset-bottom,24px)] left-1/2 -translate-x-1/2 mb-4 z-[110] pointer-events-none">
             <div className="bg-black/70 backdrop-blur-md rounded-full px-4 py-2 text-white/80 text-xs sm:text-sm font-medium animate-pulse">
               Pinch to zoom • Drag to pan
@@ -724,7 +705,7 @@ export function BackgroundFlightMap() {
         )}
         
         {/* Gradient overlays for better text readability - only when NOT interactive */}
-        {!shouldBeInteractive && (
+        {!shouldEnableInteractions && (
           <div className="absolute inset-0 pointer-events-none">
             {/* Top gradient for header */}
             <div className="absolute top-0 left-0 right-0 h-24 sm:h-32 bg-gradient-to-b from-background/90 via-background/40 to-transparent" />
@@ -764,12 +745,12 @@ export function BackgroundFlightMap() {
           </div>
         </div>
       )}
-      
-      {/* Click to interact button - ALWAYS visible and clickable (high z-index) */}
-      {!shouldBeInteractive && (
+
+      {/* CTA button to require explicit user action before map consumes scroll gestures */}
+      {isMapCardActive && !shouldEnableInteractions && (
         <button
-          onClick={handleMapClick}
-          className="fixed bottom-[env(safe-area-inset-bottom,20px)] left-1/2 -translate-x-1/2 mb-4 sm:mb-6 z-[50] 
+          onClick={() => setIsInteractive(true)}
+          className="fixed bottom-[env(safe-area-inset-bottom,20px)] left-1/2 -translate-x-1/2 mb-4 sm:mb-6 z-[120] 
                      bg-secondary hover:bg-secondary/90 active:bg-secondary/80 
                      backdrop-blur-xl rounded-full 
                      px-6 sm:px-7 py-3.5 sm:py-4 
@@ -780,11 +761,32 @@ export function BackgroundFlightMap() {
                      min-h-[52px] min-w-[160px] justify-center"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m6 0l-3 3m3-3l-3-3m9 3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>Explore Map</span>
+          <span>Click to Explore Map</span>
         </button>
       )}
+
+      {/* Exit affordance when interactive */}
+      {shouldEnableInteractions && (
+        <button
+          onClick={() => setIsInteractive(false)}
+          className="fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 mt-16 sm:mt-20 z-[120] 
+                     bg-black/90 hover:bg-black active:bg-black/90 backdrop-blur-xl 
+                     rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 
+                     text-white text-sm sm:text-base font-semibold 
+                     transition-all active:scale-95
+                     flex items-center gap-2.5 
+                     shadow-2xl border border-white/30
+                     min-h-[48px]"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>Exit Map</span>
+        </button>
+      )}
+      
     </>
   );
 }

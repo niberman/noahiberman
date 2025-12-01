@@ -16,6 +16,9 @@ export function Navigation() {
     { path: "/#contact", label: "Contact", id: "contact" },
   ];
 
+  // Note: Navigation already handles hash navigation correctly
+  // Links scroll to sections on homepage or navigate + scroll from other pages
+
   const updateHash = (hash?: string) => {
     const newUrl = hash ? `/#${hash}` : "/";
     window.history.replaceState(null, "", newUrl);
