@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Plane, MapPin } from "lucide-react";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect, lazy, Suspense } from "react";
+import { useRef, useEffect } from "react";
 import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -12,9 +12,6 @@ import { VenturesSectionContent } from "@/components/sections/VenturesSection";
 import { FollowFlightSectionContent } from "@/components/sections/FollowFlightSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { aboutContent, flightStats } from "@/data/about";
-
-// Lazy load the full flight map section for performance
-const FollowMyFlight = lazy(() => import("./FollowMyFlight"));
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -307,22 +304,6 @@ export default function Home() {
           >
             <FollowFlightSectionContent />
           </CollapsibleSection>
-        </div>
-
-        {/* ========================================
-            FULL FLIGHT MAP SECTION (Lazy loaded)
-            ======================================== */}
-        <div className="relative pointer-events-none">
-          <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="text-center">
-                <Plane className="h-12 w-12 text-secondary animate-float mx-auto mb-4" />
-                <p className="text-muted-foreground">Loading flight map...</p>
-              </div>
-            </div>
-          }>
-            <FollowMyFlight showSEO={false} />
-          </Suspense>
         </div>
 
         {/* ========================================

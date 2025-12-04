@@ -1,21 +1,18 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Plane, MapPin, ExternalLink } from "lucide-react";
+import { Plane, MapPin, ArrowUp } from "lucide-react";
 import { flightStats } from "@/data/about";
 
 export function FollowFlightSectionContent() {
-  const scrollToMap = () => {
-    const mapSection = document.getElementById("flight-map-fullscreen");
-    if (mapSection) {
-      mapSection.scrollIntoView({ behavior: "smooth" });
-    }
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="space-y-6">
       <p className="text-base sm:text-lg text-foreground/90 leading-relaxed">
         Every flight I've taken is logged and visualized on an interactive 3D map. 
-        Explore my routes across the country, from local training flights to cross-country adventures.
+        The flight map is always visible in the background — scroll to the top or interact with the map behind this page to explore my routes.
       </p>
 
       {/* Stats cards */}
@@ -59,6 +56,29 @@ export function FollowFlightSectionContent() {
         </motion.div>
       </div>
 
+      {/* Additional flight details */}
+      <div className="bg-background/40 rounded-xl border border-border/30 p-4">
+        <h4 className="text-sm font-semibold text-primary-foreground mb-3">Flight Experience</h4>
+        <ul className="space-y-2 text-sm text-muted-foreground">
+          <li className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+            Commercial Pilot, Instrument Rated
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+            Helicopter Private Pilot
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+            Commercial Multi-Engine Rating
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
+            Mountain flying experience across Colorado
+          </li>
+        </ul>
+      </div>
+
       {/* CTA Button */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -66,20 +86,22 @@ export function FollowFlightSectionContent() {
         transition={{ delay: 0.3, duration: 0.3 }}
       >
         <Button
-          onClick={scrollToMap}
+          onClick={scrollToTop}
           size="lg"
-          className="w-full sm:w-auto bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-8 py-6 text-base font-medium"
+          variant="outline"
+          className="w-full sm:w-auto border-secondary/50 text-secondary hover:bg-secondary/10 rounded-full px-8 py-6 text-base font-medium"
         >
-          <MapPin className="mr-2 h-5 w-5" />
-          Open Full Flight Map
+          <ArrowUp className="mr-2 h-5 w-5" />
+          View Background Map
         </Button>
       </motion.div>
 
-      {/* Map preview hint */}
+      {/* Map hint */}
       <p className="text-sm text-muted-foreground">
-        The flight map is visible as the background throughout this page. 
-        Scroll down to the dedicated map section for the full immersive experience.
+        💡 The interactive flight map is rendered as the page background. Pinch to zoom, drag to pan, and explore all my flight routes.
       </p>
     </div>
   );
 }
+
+
