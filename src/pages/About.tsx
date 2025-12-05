@@ -19,7 +19,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
     <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-8 sm:pb-12 md:pb-16 lg:pb-20">
       {showSEO && (
         <SEO
-          title="About Noah Berman — Commercial Pilot & Entrepreneur | Aviation Journey"
+          title="About Noah Berman — Founder, Pilot, Engineer, Visionary | Aviation Journey"
           description="Learn about Noah Berman's journey from private pilot to FAA Commercial Pilot with multi-engine and helicopter ratings. Building Freedom Aviation and bridging aviation, technology, and culture. Studied in Spain, fluent in Spanish and English."
           keywords="Noah Berman about, aviation career, commercial pilot journey, flight training, bilingual pilot, Freedom Aviation founder, University of Deusto Spain, entrepreneur, aviation timeline, pilot certifications, multi-engine rating, helicopter pilot license, instrument rating"
           structuredData={{
@@ -42,7 +42,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
         >
           <div className="bg-gradient-card p-6 sm:p-8 md:p-10 lg:p-12 rounded-2xl sm:rounded-3xl shadow-glow space-y-8 sm:space-y-10">
             <div className="space-y-4 sm:space-y-6">
-              <BilingualHeading 
+              <BilingualHeading
                 english="About Me"
                 spanish="Sobre Mí"
                 as="h1"
@@ -88,17 +88,17 @@ export default function About({ showSEO = true }: PageSectionProps) {
           viewport={{ once: true }}
           className="max-w-7xl mx-auto"
         >
-          <BilingualHeading 
+          <BilingualHeading
             english="Journey"
             spanish="El Viaje"
             className="mb-8 sm:mb-10 md:mb-12 text-center"
           />
-          
+
           {/* Mobile & Tablet: Vertical Timeline */}
           <div className="relative lg:hidden">
             {/* Vertical line for mobile/tablet */}
             <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-secondary via-accent to-secondary/30" />
-            
+
             <div className="space-y-8 sm:space-y-10">
               {[...timeline].reverse().map((item, index) => (
                 <motion.div
@@ -113,7 +113,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
                   <div className="absolute left-[18px] sm:left-[26px] top-3 w-4 h-4 sm:w-5 sm:h-5 bg-secondary rounded-full border-2 sm:border-3 border-background transform -translate-x-1/2 shadow-glow z-10">
                     <div className="absolute inset-0 bg-secondary rounded-full animate-pulse-glow" />
                   </div>
-                  
+
                   {/* Content card */}
                   <div className="bg-gradient-card p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-elegant transition-all duration-300 active:scale-[0.98]">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -134,7 +134,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
           <div className="hidden lg:block relative">
             {/* Horizontal line */}
             <div className="absolute left-0 right-0 top-[72px] h-0.5 bg-gradient-to-r from-secondary via-accent to-secondary/30" />
-            
+
             <div className="relative overflow-x-auto overflow-y-visible pb-8 scrollbar-thin hover:scrollbar-thumb-secondary/50 scrollbar-track-transparent">
               <div className="flex gap-6 xl:gap-8 px-4 pt-16 pb-4 min-w-min">
                 {[...timeline].reverse().map((item, index) => (
@@ -150,7 +150,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
                     <div className="absolute left-1/2 top-[-72px] w-5 h-5 bg-secondary rounded-full border-3 border-background transform -translate-x-1/2 shadow-glow z-10">
                       <div className="absolute inset-0 bg-secondary rounded-full animate-pulse-glow" />
                     </div>
-                    
+
                     {/* Content card */}
                     <div className="bg-gradient-card p-5 xl:p-6 rounded-2xl shadow-elegant hover:shadow-warm transition-all duration-300 hover:scale-[1.02] group">
                       <div className="flex items-center gap-2 mb-2">
@@ -166,7 +166,7 @@ export default function About({ showSEO = true }: PageSectionProps) {
                 ))}
               </div>
             </div>
-            
+
             {/* Scroll indicator for desktop */}
             <div className="flex justify-center mt-6 gap-2">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

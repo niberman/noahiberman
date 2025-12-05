@@ -25,16 +25,16 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const result = await submitMessage.mutateAsync({
         name: formData.name,
         email: formData.email,
         message: formData.message,
       });
-      
+
       console.log("Contact message submitted successfully:", result);
-      
+
       toast({
         title: "Message sent!",
         description: "Thanks for reaching out. I'll get back to you soon.",
@@ -42,14 +42,14 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       console.error("Error submitting message:", error);
-      
+
       // Handle different error types
-      const errorMessage = error instanceof Error 
-        ? error.message 
+      const errorMessage = error instanceof Error
+        ? error.message
         : typeof error === 'object' && error !== null && 'message' in error
-        ? String(error.message)
-        : "Failed to send message. Please try again or contact directly.";
-      
+          ? String(error.message)
+          : "Failed to send message. Please try again or contact directly.";
+
       const errorDetails = error instanceof Error ? {
         message: error.message,
         name: error.name,
@@ -60,9 +60,9 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
         details: 'details' in error ? String(error.details) : undefined,
         hint: 'hint' in error ? String(error.hint) : undefined,
       } : {};
-      
+
       console.error("Error details:", errorDetails);
-      
+
       toast({
         title: "Error sending message",
         description: errorMessage,
@@ -75,7 +75,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
     <div className="py-16 sm:py-20 md:py-24 lg:py-32">
       {showSEO && (
         <SEO
-          title="Contact Noah Berman — Pilot & Founder | Get in Touch"
+          title="Contact Noah Berman — Founder, Pilot, Engineer, Visionary | Get in Touch"
           description="Get in touch with Noah Berman for aviation services, aircraft management, flight instruction, or business inquiries. Contact for Freedom Aviation services or collaboration opportunities."
           keywords="contact Noah Berman, aviation contact, Freedom Aviation contact, flight instructor, aircraft management inquiry, aviation services, business collaboration, pilot contact, aviation consultation"
           structuredData={{
@@ -94,7 +94,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-16 text-center"
         >
-          <BilingualHeading 
+          <BilingualHeading
             english="Get in Touch"
             spanish="Conectemos"
             as="h1"
@@ -153,8 +153,8 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
                         className="text-sm sm:text-base resize-none"
                       />
                     </div>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="w-full text-sm sm:text-base py-5 sm:py-6 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
                       size="lg"
                       disabled={submitMessage.isPending}
@@ -240,7 +240,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button 
+                    <Button
                       className="w-full text-xs sm:text-sm py-4 sm:py-5 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
                       size="lg"
                     >

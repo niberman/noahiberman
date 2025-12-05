@@ -31,7 +31,7 @@ export default function VentureDetail() {
   const seoConfig = {
     "freedom-aviation": {
       title: "Freedom Aviation — Premium Aircraft Management & Flight Instruction",
-      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction. Founded by Noah Berman, ATP-rated commercial pilot. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
+      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction. Founded by Noah Berman, Founder, Pilot, Engineer, Visionary. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
       keywords: "Freedom Aviation, aircraft management, flight instruction, aviation services, flight training, ATP flight instructor, commercial pilot, aircraft ownership services, aviation company",
     },
     "language-school": {
@@ -73,8 +73,8 @@ export default function VentureDetail() {
           className="mb-6 sm:mb-8"
         >
           <nav className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               onClick={(e) => {
                 e.preventDefault();
                 window.location.href = "/#ventures";
@@ -100,7 +100,7 @@ export default function VentureDetail() {
             size="sm"
             className="gap-2 hover:text-secondary -ml-2"
           >
-            <Link 
+            <Link
               to="/"
               onClick={(e) => {
                 e.preventDefault();
@@ -146,11 +146,11 @@ export default function VentureDetail() {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
                 {venture.link && (
-                  <Button 
-                    asChild 
+                  <Button
+                    asChild
                     variant="secondary"
                     size="lg"
                     className="rounded-full hover:scale-105 active:scale-95 transition-transform w-full sm:w-auto"
@@ -179,8 +179,8 @@ export default function VentureDetail() {
 
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {venture.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
+                <Badge
+                  key={tag}
                   variant="secondary"
                   className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"
                 >
@@ -199,12 +199,12 @@ export default function VentureDetail() {
             transition={{ delay: 0.2 }}
             className="max-w-6xl mx-auto"
           >
-            <BilingualHeading 
+            <BilingualHeading
               english="Related Projects"
               spanish="Proyectos Relacionados"
               className="mb-12"
             />
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               {relatedProjects.map((project, index) => (
                 <motion.div
@@ -245,9 +245,9 @@ export default function VentureDetail() {
                           </p>
                           <div className="flex flex-wrap gap-2">
                             {project.technologies.map((tech) => (
-                              <Badge 
-                                key={tech} 
-                                variant="secondary" 
+                              <Badge
+                                key={tech}
+                                variant="secondary"
                                 className="text-xs px-2 py-1 rounded-full"
                               >
                                 {tech}
@@ -255,7 +255,7 @@ export default function VentureDetail() {
                             ))}
                           </div>
                         </div>
-                        
+
                         {project.link && (
                           <a
                             href={project.link}

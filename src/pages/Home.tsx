@@ -19,7 +19,7 @@ export default function Home() {
     target: heroRef,
     offset: ["start start", "end start"]
   });
-  
+
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
@@ -49,14 +49,14 @@ export default function Home() {
     <div className="min-h-screen relative">
       {/* Background Flight Map */}
       <BackgroundFlightMap />
-      
+
       {/* Live Flight Status Indicator */}
       <LiveFlightIndicator />
-      
+
       {/* Main Content - pointer-events-none allows map interaction, children re-enable */}
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
-          title="Noah Berman — Pilot, Founder & Builder | Aviation & Technology"
+          title="Noah Berman — Founder, Pilot, Engineer, Visionary | Aviation & Technology"
           description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
           keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
           structuredData={{
@@ -82,13 +82,13 @@ export default function Home() {
         {/* ========================================
             HERO SECTION (No expansion)
             ======================================== */}
-        <section 
+        <section
           id="home"
           ref={heroRef}
           className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
-          <motion.div 
+          <motion.div
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
           >
@@ -102,7 +102,7 @@ export default function Home() {
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ 
+                transition={{
                   delay: 0.3,
                   type: "spring",
                   stiffness: 100,
@@ -110,9 +110,9 @@ export default function Home() {
                 }}
                 className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
               >
-                <img 
-                  src="/logo.png" 
-                  alt="Logo" 
+                <img
+                  src="/logo.png"
+                  alt="Logo"
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
               </motion.div>
@@ -126,17 +126,17 @@ export default function Home() {
               >
                 Noah Berman
               </motion.p>
-              
+
               {/* Tagline */}
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight"
               >
-                Pilot. Founder. Builder.
+                Founder, Pilot, Engineer, Visionary
               </motion.h1>
-              
+
               {/* Sub-tagline */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -161,7 +161,7 @@ export default function Home() {
               >
                 {aboutContent.oneLiner}
               </motion.p>
-              
+
               {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -177,7 +177,7 @@ export default function Home() {
                 >
                   View Ventures <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
-                
+
                 {/* Secondary: Follow My Flight */}
                 <Button
                   onClick={() => scrollToSection("follow-my-flight")}
@@ -201,9 +201,9 @@ export default function Home() {
               </motion.div>
             </motion.div>
           </motion.div>
-          
+
           {/* Scroll indicator */}
-          <motion.div 
+          <motion.div
             style={{ y }}
             className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2"
           >

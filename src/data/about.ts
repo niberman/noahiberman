@@ -87,7 +87,7 @@ export interface FocusArea {
 
 export const aboutContent = {
   intro: "I'm a bilingual pilot and engineer forging solutions where aviation, technology, and culture intersect.",
-  expandedBio: "I'm Noah Berman — a pilot, engineer, and entrepreneur with experience in aviation training, software development, and international education. I build ventures that expand opportunity and push the boundaries of human mobility.",
+  expandedBio: "I'm Noah Berman — a Founder, Pilot, Engineer, Visionary with experience in aviation training, software development, and international education. I build ventures that expand opportunity and push the boundaries of human mobility.",
   oneLiner: "I build companies at the intersection of aviation, technology, and global mobility.",
   mission: "My mission is to build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.",
   focusAreas: [
@@ -107,7 +107,7 @@ export const aboutContent = {
       title: "Technology",
       spanish: "Tecnología",
       description: "Building software solutions that solve real problems for real people.",
-      expandedContent: "Builder of modern software solutions solving real-world problems in aviation and education. Recent work includes the Freedom Aviation Dashboard and The Language School platform (React, TypeScript, Supabase, OpenAI, Vercel).",
+      expandedContent: "Engineer of modern software solutions solving real-world problems in aviation and education. Recent work includes the Freedom Aviation Dashboard and The Language School platform (React, TypeScript, Supabase, OpenAI, Vercel).",
     },
     {
       title: "Entrepreneurship",
