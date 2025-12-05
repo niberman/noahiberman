@@ -46,7 +46,7 @@ export function LiveFlightIndicator() {
       setIsLoading(false);
       return;
     }
-    
+
     try {
       const { data, error } = await supabase
         .from('current_flight')
@@ -117,15 +117,15 @@ export function LiveFlightIndicator() {
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 100, scale: 0.8 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="fixed top-[72px] sm:top-20 md:top-24 right-2 sm:right-4 z-50 w-44 sm:w-48 md:w-56"
+        className="fixed top-[72px] sm:top-20 md:top-24 right-2 sm:right-4 z-[105] w-44 sm:w-48 md:w-56"
       >
         <Card className="bg-gradient-to-br from-green-500/95 via-green-600/95 to-green-700/95 backdrop-blur-xl border-2 border-green-400/50 shadow-2xl overflow-hidden">
           {/* Animated background effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-          
+
           {/* Pulsing glow effect */}
           <div className="absolute -inset-1 bg-green-400 blur-xl opacity-30 animate-pulse" />
-          
+
           <div className="relative p-2.5 sm:p-3">
             {/* Header */}
             <div className="flex items-center gap-2 mb-2">

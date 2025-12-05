@@ -7,7 +7,7 @@ export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
   const sectionLinks = [
     { path: "/", label: "Home", id: "home" },
     { path: "/#about", label: "About", id: "about" },
@@ -60,19 +60,19 @@ export function Navigation() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"
+      className="fixed top-0 left-0 right-0 z-[110] bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"
     >
       <div className="container mx-auto px-4 py-4 sm:py-5">
         <div className="flex items-center justify-between">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center gap-2 sm:gap-3 group"
             onClick={(e) => scrollToSection(e, "/", "home")}
           >
             <div className="h-6 w-6 sm:h-7 sm:w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative flex-shrink-0">
-              <img 
-                src="/logo.png" 
-                alt="Logo" 
+              <img
+                src="/logo.png"
+                alt="Logo"
                 className="absolute inset-0 w-full h-full object-contain origin-center"
               />
             </div>
@@ -80,7 +80,7 @@ export function Navigation() {
               Noah Berman
             </span>
           </Link>
-          
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8 lg:gap-10">
             {sectionLinks.map((link) => (
@@ -88,16 +88,14 @@ export function Navigation() {
                 key={link.path}
                 href={link.path}
                 onClick={(e) => scrollToSection(e, link.path, link.id)}
-                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${
-                  location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
+                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
                     ? "text-secondary"
                     : "text-muted-foreground"
-                }`}
+                  }`}
               >
                 {link.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${
-                  location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash) ? "w-full" : "w-0 group-hover:w-full"
-                }`} />
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash) ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
               </a>
             ))}
           </div>
@@ -133,11 +131,10 @@ export function Navigation() {
                   key={link.path}
                   href={link.path}
                   onClick={(e) => scrollToSection(e, link.path, link.id)}
-                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${
-                    location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
+                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
                       ? "bg-secondary/20 text-secondary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </a>
