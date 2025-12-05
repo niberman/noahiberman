@@ -183,16 +183,16 @@ export function BackgroundFlightMap() {
         const layers = map.current.getStyle().layers;
         layers?.forEach((layer) => {
           if (layer.type === 'background') {
-            map.current!.setPaintProperty(layer.id, 'background-opacity', 0.2);
+            map.current!.setPaintProperty(layer.id, 'background-opacity', 0.4);
           } else if (layer.type === 'fill') {
-            map.current!.setPaintProperty(layer.id, 'fill-opacity', 0.1);
+            map.current!.setPaintProperty(layer.id, 'fill-opacity', 0.3);
           } else if (layer.type === 'line') {
-            map.current!.setPaintProperty(layer.id, 'line-opacity', 0.15);
+            map.current!.setPaintProperty(layer.id, 'line-opacity', 0.4);
           } else if (layer.type === 'symbol') {
-            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.2);
-            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.2);
+            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.5);
+            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.5);
           } else if (layer.type === 'raster') {
-            map.current!.setPaintProperty(layer.id, 'raster-opacity', 0.15);
+            map.current!.setPaintProperty(layer.id, 'raster-opacity', 0.4);
           }
         });
       }
@@ -664,7 +664,7 @@ export function BackgroundFlightMap() {
           isMapCardActive
             ? shouldEnableInteractions
               ? 'pointer-events-auto z-[100]'
-              : 'pointer-events-none z-[60]'
+              : 'pointer-events-none z-0'
             : 'pointer-events-none z-0'
         }`}
       >
