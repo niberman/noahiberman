@@ -50,7 +50,13 @@ echo "  → Deploying aircraft-status..."
 supabase functions deploy aircraft-status
 
 echo "  → Deploying track-flight..."
+
+echo "  → Deploying track-flight..."
 supabase functions deploy track-flight
+
+echo "  → Deploying linkedin-agent..."
+supabase functions deploy linkedin-agent
+
 
 echo ""
 echo "✅ Dashboard setup complete!"

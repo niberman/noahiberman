@@ -1,146 +1,123 @@
-# Welcome to your Lovable project
+# Aviator Founder Folio
 
-## Project info
+> **Founder, Pilot, Engineer, Visionary**
 
-**URL**: https://lovable.dev/projects/bfadf460-6ad7-404d-9f0b-aa1d666b1c6b
+![Aviator Founder Folio Banner](https://images.unsplash.com/photo-1474302770737-173ee21bab63?q=80&w=2000&auto=format&fit=crop)
 
-## How can I edit this code?
+## Overview
 
-There are several ways of editing your application.
+Welcome to the digital headquarters of **Noah Liberman**.
 
-**Use Lovable**
+I am a bilingual pilot and engineer forging solutions where aviation, technology, and culture intersect. This platform is more than just a portfolio—it's a live demonstration of my mission to build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/bfadf460-6ad7-404d-9f0b-aa1d666b1c6b) and start prompting.
+This project showcases a modern, high-performance web application that integrates real-time data, 3D mapping, and AI-powered tools to create a seamless user experience.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Immersive Experience
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Interactive 3D Flight Map
+The centerpiece of this application is a custom-built 3D flight tracking experience.
+*   **Ambient Mode**: A 3D globe rotates gently in the background, visualizing global connectivity.
+*   **Live Transformation**: As you scroll to the "Follow My Flight" section, the background map seamlessly transitions into an interactive card, allowing you to pan, zoom, and explore flight paths.
+*   **Real-Time Tracking**: When I am flying, the map updates live with my aircraft's position, altitude, and speed using ADS-B data.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Design System
+Built with a "Command Center" aesthetic in mind, utilizing dark modes, glassmorphism, and precision typography (Inter & Playfair Display) to reflect the precision of aviation and engineering.
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Command Center Dashboard
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Behind the public facing site lies a powerful **Owner Dashboard** (`/dashboard`), designed to manage my ventures and digital presence.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### AI Agents
+A suite of custom AI tools powered by OpenAI:
+*   **LinkedIn Post Generator**: Crafts professional updates based on my latest activities.
+*   **Auto-Scheduler**: Intelliigently plans content distribution.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### Aircraft Command
+*   **Live Status**: Updates the public site with my current status (On Ground, En Route, Training).
+*   **Telematics**: Manages aircraft tail number and tracking configurations.
 
-**Edit a file directly in GitHub**
+### Personal CRM & Analytics
+*   A custom-built CRM to manage professional relationships and networking, secured by Supabase Row Level Security (RLS).
+*   Tracks follow-ups, meeting notes, and connection history.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## Technology Stack
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This project is built on a modern, type-safe stack designed for performance and scalability.
 
-## What technologies are used for this project?
+**Frontend:**
+*   **React 18** & **Vite**: Blazing fast development and production builds.
+*   **TypeScript**: Rigorous type safety for complex data handling.
+*   **Tailwind CSS**: Utility-first styling for rapid UI development.
+*   **Shadcn/UI**: Accessible, re-usable component library.
+*   **Mapbox GL**: Advanced WebGL mapping visualizations.
+*   **Framer Motion**: Smooth, complex animations and transitions.
 
-This project is built with:
+**Backend & Infrastructure:**
+*   **Supabase**: The open source Firebase alternative.
+    *   **PostgreSQL**: Robust relational database.
+    *   **Edge Functions**: Serverless compute for AI and third-party API integrations.
+    *   **Row Level Security (RLS)**: Enterprise-grade data security.
+*   **Vercel**: Edge-first deployment platform.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## Getting Started
 
-Simply open [Lovable](https://lovable.dev/projects/bfadf460-6ad7-404d-9f0b-aa1d666b1c6b) and click on Share -> Publish.
+If you wish to run this project locally:
 
-### Environment Variables
+### Prerequisites
+*   Node.js (v18+)
+*   npm or bun
 
-For Vercel deployment, make sure to set the following environment variables:
+### Installation
 
-- `VITE_MAPBOX_TOKEN`: Your Mapbox access token (get one at https://account.mapbox.com/)
-- `VITE_SUPABASE_URL`: Your Supabase project URL (get from https://app.supabase.com/project/_/settings/api)
-- `VITE_SUPABASE_ANON_KEY`: Your Supabase anon/public key (get from https://app.supabase.com/project/_/settings/api)
-- `VITE_AEROAPI_TAIL_NUMBER`: Your aircraft tail number (e.g., N12345) - set this when you're flying to enable live flight tracking
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd aviator-founder-folio
+    ```
 
-**Note**: Mapbox tokens are client-side tokens meant to be bundled into the JavaScript. This is expected behavior and the tokens include URL restrictions for security.
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-**Important for Vercel + Supabase Integration**: 
-If you've connected Supabase through Vercel's integration panel, Vercel may automatically add `SUPABASE_URL` and `SUPABASE_ANON_KEY`. However, for client-side access in Vite, you need the `VITE_` prefix. 
+3.  **Environment Setup**
+    Create a `.env` file in the root directory with the following keys:
+    ```env
+    VITE_MAPBOX_TOKEN=pk.eyJ...
+    VITE_SUPABASE_URL=https://...supabase.co
+    VITE_SUPABASE_ANON_KEY=...
+    ```
 
-After connecting through Vercel's integration:
-1. Go to your Vercel project settings → Environment Variables
-2. Verify that `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set (they should be automatically created)
-3. If not, manually add them using the values from your Supabase dashboard
-4. Redeploy your application after adding/changing environment variables
+4.  **Database Setup**
+    We have included a script to automate the Supabase setup:
+    ```bash
+    ./scripts/setup-dashboard.sh
+    ```
 
-## Supabase Setup
+5.  **Run Development Server**
+    ```bash
+    npm run dev
+    ```
 
-This project is configured to use Supabase as the backend. Follow these steps to set it up:
+---
 
-1. **Create a Supabase project** (if you haven't already):
-   - Go to https://app.supabase.com/
-   - Create a new project
-   - Wait for the project to be fully provisioned
+## Deployment
 
-2. **Get your API credentials**:
-   - Navigate to Project Settings > API
-   - Copy your Project URL and anon/public key
+This project is optimized for deployment on **Vercel**.
 
-3. **Set up environment variables**:
-   - Create a `.env` file in the root directory (copy from `.env.example`)
-   - Add your Supabase credentials:
-     ```
-     VITE_SUPABASE_URL=your_supabase_project_url
-     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-     ```
+1.  Connect your GitHub repository to Vercel.
+2.  Configure the build settings (Framework Preset: Vite).
+3.  Add the environment variables in the Vercel dashboard.
+4.  Deploy!
 
-4. **Create your database tables**:
-   - In your Supabase dashboard, go to SQL Editor
-   - Create tables matching your data models (ventures, flights, projects, etc.)
-   - You can use the existing TypeScript interfaces in `src/data/` as a reference for your schema
+---
 
-5. **Use Supabase hooks**:
-   - Import and use the provided hooks in `src/hooks/`:
-     - `useVentures()`, `useVenture(id)`, `useCreateVenture()`, etc.
-     - `useFlights()`, `useActiveFlight()`, `useCreateFlight()`, etc.
-     - `useProjects()`, `useProjectsByCategory()`, etc.
-   - These hooks are built on top of React Query and provide caching, refetching, and error handling out of the box.
-
-6. **Example usage**:
-   ```tsx
-   import { useVentures } from '@/hooks/use-supabase-ventures';
-   
-   function VenturesPage() {
-     const { data: ventures, isLoading, error } = useVentures();
-     
-     if (isLoading) return <div>Loading...</div>;
-     if (error) return <div>Error: {error.message}</div>;
-     
-     return (
-       <div>
-         {ventures?.map(venture => (
-           <div key={venture.id}>{venture.title}</div>
-         ))}
-       </div>
-     );
-   }
-   ```
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+© 2025 Noah Liberman. All rights reserved.
