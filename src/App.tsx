@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { AmbientSound } from "@/components/AmbientSound";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
@@ -64,7 +63,6 @@ const App = () => {
             </Routes>
           </main>
           <Footer />
-          <AmbientSound />
         </div>
       </BrowserRouter>
     </TooltipProvider>

@@ -12,6 +12,7 @@ import { VenturesSectionContent } from "@/components/sections/VenturesSection";
 import { FollowFlightSectionContent } from "@/components/sections/FollowFlightSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { aboutContent, flightStats } from "@/data/about";
+import { BrandWordsString } from "@/data/brand";
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -56,7 +57,7 @@ export default function Home() {
       {/* Main Content - pointer-events-none allows map interaction, children re-enable */}
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
-          title="Noah Berman — Founder, Pilot, Engineer, Visionary | Aviation & Technology"
+          title={`Noah Berman — ${BrandWordsString} | Aviation & Technology`}
           description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
           keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
           structuredData={{
@@ -134,7 +135,7 @@ export default function Home() {
                 transition={{ delay: 0.5, duration: 0.8 }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight"
               >
-                Founder, Pilot, Engineer, Visionary
+                {BrandWordsString}
               </motion.h1>
 
               {/* Sub-tagline */}
@@ -151,16 +152,6 @@ export default function Home() {
                   El cielo no es el límite
                 </p>
               </motion.div>
-
-              {/* One-line bio */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.85, duration: 0.6 }}
-                className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 px-4"
-              >
-                {aboutContent.oneLiner}
-              </motion.p>
 
               {/* CTAs */}
               <motion.div
@@ -180,7 +171,13 @@ export default function Home() {
 
                 {/* Secondary: Follow My Flight */}
                 <Button
-                  onClick={() => scrollToSection("follow-my-flight")}
+                  onClick={() => {
+                    scrollToSection("follow-my-flight");
+                    // After scrolling, enable interactive map mode
+                    setTimeout(() => {
+                      window.dispatchEvent(new CustomEvent("enableFlightMapInteractive"));
+                    }, 600);
+                  }}
                   size="lg"
                   variant="outline"
                   className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
@@ -224,8 +221,8 @@ export default function Home() {
         </section>
 
         {/* ========================================
-            WHAT I DO SECTION (Collapsible)
-            ======================================== */}
+            WHAT I DO SECTION (Collapsible) - COMMENTED OUT
+            ========================================
         <div className="relative bg-background/90 backdrop-blur-xs">
           <CollapsibleSection
             id="what-i-do"
@@ -240,6 +237,7 @@ export default function Home() {
             <WhatIDoContent />
           </CollapsibleSection>
         </div>
+        */}
 
         {/* ========================================
             ABOUT ME SECTION (Collapsible)
@@ -249,10 +247,7 @@ export default function Home() {
             title="About Me"
             subtitle="Sobre Mí"
             collapsedContent={
-              <div>
-                <p className="mb-2">{aboutContent.intro}</p>
-                <p className="text-sm text-secondary/80">Expand to see my journey.</p>
-              </div>
+              <p>{aboutContent.intro}</p>
             }
           >
             <AboutMeContent />
@@ -267,10 +262,7 @@ export default function Home() {
             title="Ventures"
             subtitle="Proyectos"
             collapsedContent={
-              <div>
-                <p className="mb-2">I build and operate companies that combine aviation, technology, and education.</p>
-                <p className="text-sm text-secondary/80">Expand to see current ventures.</p>
-              </div>
+              <p>I build and operate companies that combine aviation, technology, and education.</p>
             }
           >
             <VenturesSectionContent />

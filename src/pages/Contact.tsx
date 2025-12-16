@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { useSubmitContactMessage } from "@/hooks/use-supabase-contact";
 import { SEO } from "@/components/SEO";
+import { BrandWordsString } from "@/data/brand";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -75,7 +76,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
     <div className="py-16 sm:py-20 md:py-24 lg:py-32">
       {showSEO && (
         <SEO
-          title="Contact Noah Berman — Founder, Pilot, Engineer, Visionary | Get in Touch"
+          title={`Contact Noah Berman — ${BrandWordsString} | Get in Touch`}
           description="Get in touch with Noah Berman for aviation services, aircraft management, flight instruction, or business inquiries. Contact for Freedom Aviation services or collaboration opportunities."
           keywords="contact Noah Berman, aviation contact, Freedom Aviation contact, flight instructor, aircraft management inquiry, aviation services, business collaboration, pilot contact, aviation consultation"
           structuredData={{

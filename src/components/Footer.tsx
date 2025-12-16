@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Github, Linkedin, Mail } from "lucide-react";
+import { BrandWordsString } from "@/data/brand";
 
 export function Footer() {
   const location = useLocation();
@@ -37,7 +38,7 @@ export function Footer() {
               <h3 className="font-display font-bold text-xl sm:text-2xl text-primary-foreground">Noah Berman</h3>
             </div>
             <p className="text-base sm:text-lg text-primary-foreground/80 mb-3">
-              Founder, Pilot, Engineer, Visionary
+              {BrandWordsString}
             </p>
             <p className="text-lg sm:text-xl font-display italic text-secondary mb-4 sm:mb-6">
               "El cielo no es el límite."

@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Plane, MapPin, ArrowUp } from "lucide-react";
+import { Plane, MapPin } from "lucide-react";
 import { flightStats } from "@/data/about";
 
 export function FollowFlightSectionContent() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const enableMapInteraction = () => {
+    window.dispatchEvent(new CustomEvent("enableFlightMapInteractive"));
   };
 
   return (
@@ -86,13 +86,13 @@ export function FollowFlightSectionContent() {
         transition={{ delay: 0.3, duration: 0.3 }}
       >
         <Button
-          onClick={scrollToTop}
+          onClick={enableMapInteraction}
           size="lg"
           variant="outline"
           className="w-full sm:w-auto border-secondary/50 text-secondary hover:bg-secondary/10 rounded-full px-8 py-6 text-base font-medium"
         >
-          <ArrowUp className="mr-2 h-5 w-5" />
-          View Background Map
+          <MapPin className="mr-2 h-5 w-5" />
+          Explore Flight Map
         </Button>
       </motion.div>
 

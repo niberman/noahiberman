@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { BrandWordsString } from "@/data/brand";
 
 interface SEOProps {
   title?: string;
@@ -12,7 +13,7 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = "Noah Berman — Colorado-Based Founder, Pilot, Engineer, Visionary | Aviation & Technology",
+  title = `Noah Berman — Colorado-Based ${BrandWordsString} | Aviation & Technology`,
   description = "Commercial pilot, bilingual entrepreneur, and founder based in Colorado. Building Freedom Aviation, The Language School platform, and innovative aviation technology solutions.",
   keywords = "Noah Berman, Colorado pilot, aviation Colorado, commercial pilot, Freedom Aviation, flight instructor Colorado, bilingual entrepreneur, aviation technology, aircraft management Colorado",
   image = "https://noahiberman.com/og-image.png",

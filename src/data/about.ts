@@ -1,3 +1,5 @@
+import { BrandWordsString } from "./brand";
+
 export interface TimelineItem {
   id: string;
   year: string;
@@ -87,7 +89,7 @@ export interface FocusArea {
 
 export const aboutContent = {
   intro: "I'm a bilingual pilot and engineer forging solutions where aviation, technology, and culture intersect.",
-  expandedBio: "I'm Noah Berman — a Founder, Pilot, Engineer, Visionary with experience in aviation training, software development, and international education. I build ventures that expand opportunity and push the boundaries of human mobility.",
+  expandedBio: `I'm Noah Berman — a ${BrandWordsString} with experience in aviation training, software development, and international education. I build ventures that expand opportunity and push the boundaries of human mobility.`,
   oneLiner: "I build companies at the intersection of aviation, technology, and global mobility.",
   mission: "My mission is to build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.",
   focusAreas: [

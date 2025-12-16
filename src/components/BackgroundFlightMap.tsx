@@ -57,6 +57,15 @@ export function BackgroundFlightMap() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isInteractive]);
 
+  // Listen for custom event to enable interactive mode from other components
+  useEffect(() => {
+    const handleEnableInteractive = () => {
+      setIsInteractive(true);
+    };
+    window.addEventListener("enableFlightMapInteractive", handleEnableInteractive);
+    return () => window.removeEventListener("enableFlightMapInteractive", handleEnableInteractive);
+  }, []);
+
   useEffect(() => {
     loadCurrentFlight();
   }, []);

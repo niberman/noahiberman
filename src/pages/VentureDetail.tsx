@@ -8,6 +8,7 @@ import { ExternalLink, ArrowLeft, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { SEO } from "@/components/SEO";
+import { BrandWordsString } from "@/data/brand";
 import NotFound from "./NotFound";
 
 export default function VentureDetail() {
@@ -31,7 +32,7 @@ export default function VentureDetail() {
   const seoConfig = {
     "freedom-aviation": {
       title: "Freedom Aviation — Premium Aircraft Management & Flight Instruction",
-      description: "Freedom Aviation delivers concierge-level aircraft management and expert flight instruction. Founded by Noah Berman, Founder, Pilot, Engineer, Visionary. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.",
+      description: `Freedom Aviation delivers concierge-level aircraft management and expert flight instruction. Founded by Noah Berman, ${BrandWordsString}. Premium aviation services, modern tools, and professional aircraft management for owner-pilots.`,
       keywords: "Freedom Aviation, aircraft management, flight instruction, aviation services, flight training, ATP flight instructor, commercial pilot, aircraft ownership services, aviation company",
     },
     "language-school": {
