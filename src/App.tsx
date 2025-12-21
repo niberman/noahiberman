@@ -10,7 +10,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import VentureDetail from "./pages/VentureDetail";
 import NotFound from "./pages/NotFound";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
@@ -56,7 +55,6 @@ const App = () => {
                 />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />
               <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
-              <Route path="/ventures/:id" element={<VentureDetail />} />
               <Route path="/follow-my-flight" element={<SectionRedirect sectionId="follow-my-flight" />} />
               <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
               <Route path="*" element={<NotFound />} />
