@@ -9,6 +9,7 @@ import { Plane, LogOut, Save } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
+import AgentControl from "@/components/AgentsControl";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -207,6 +208,11 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Agent Control */}
+          <div className="mt-8 sm:mt-10">
+            <AgentControl />
+          </div>
         </div>
       </div>
     </>

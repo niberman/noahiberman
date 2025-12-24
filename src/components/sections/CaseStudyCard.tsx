@@ -154,3 +154,5 @@ export function CaseStudyCard({ venture, index }: CaseStudyCardProps) {
   );
 }
 
+
+
