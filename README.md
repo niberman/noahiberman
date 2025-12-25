@@ -6,7 +6,7 @@
 
 ## Overview
 
-Welcome to the digital headquarters of **Noah Liberman**.
+Welcome to the digital headquarters of **Noah Berman**.
 
 I am a bilingual pilot and engineer forging solutions where aviation, technology, and culture intersect. This platform is more than just a portfolio—it's a live demonstration of my mission to build companies that create meaningful impact, expand human opportunity, and open pathways to global freedom and mobility.
 
