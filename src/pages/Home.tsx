@@ -8,6 +8,7 @@ import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { WhatIDoContent } from "@/components/sections/WhatIDo";
 import { AboutMeContent } from "@/components/sections/AboutMe";
+import { BlogSectionContent } from "@/components/sections/BlogSection";
 import { VenturesSectionContent } from "@/components/sections/VenturesSection";
 import { FollowFlightSectionContent } from "@/components/sections/FollowFlightSection";
 import { ContactSection } from "@/components/sections/ContactSection";
@@ -251,6 +252,21 @@ export default function Home() {
             }
           >
             <AboutMeContent />
+          </CollapsibleSection>
+        </div>
+
+        {/* ========================================
+            BLOG SECTION (Collapsible)
+            ======================================== */}
+        <div id="blog" className="relative bg-background/90 backdrop-blur-xs">
+          <CollapsibleSection
+            title="Blog"
+            subtitle="Publicaciones"
+            collapsedContent={
+              <p>Thoughts on aviation, technology, entrepreneurship, and life at altitude.</p>
+            }
+          >
+            <BlogSectionContent />
           </CollapsibleSection>
         </div>
 

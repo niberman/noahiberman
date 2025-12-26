@@ -322,6 +322,35 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['contact_messages']['Row']>;
       };
+      blog_posts: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          excerpt: string | null;
+          content: string | null;
+          images: BlogImage[];
+          tags: string[] | null;
+          is_published: boolean;
+          published_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          excerpt?: string | null;
+          content?: string | null;
+          images?: BlogImage[];
+          tags?: string[] | null;
+          is_published?: boolean;
+          published_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['blog_posts']['Row']>;
+      };
     };
     Views: {
       [_ in never]: never;
@@ -333,5 +362,27 @@ export interface Database {
       [_ in never]: never;
     };
   };
+}
+
+// Blog types
+export interface BlogImage {
+  url: string;
+  alt?: string;
+  caption?: string;
+  order: number;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  images: BlogImage[];
+  tags: string[] | null;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 

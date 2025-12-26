@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import AgentControl from "@/components/AgentsControl";
+import BlogPostManager from "@/components/dashboard/BlogPostManager";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -208,6 +209,11 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Blog Post Manager */}
+          <div className="mt-8 sm:mt-10">
+            <BlogPostManager />
+          </div>
 
           {/* Agent Control */}
           <div className="mt-8 sm:mt-10">
