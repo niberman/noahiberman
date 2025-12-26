@@ -11,6 +11,7 @@ export function Navigation() {
   const sectionLinks = [
     { path: "/", label: "Home", id: "home" },
     { path: "/#about", label: "About", id: "about" },
+    { path: "/#blog", label: "Blog", id: "blog" },
     { path: "/#ventures", label: "Ventures", id: "ventures" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight" },
     { path: "/#contact", label: "Contact", id: "contact" },

@@ -68,3 +68,5 @@ DROP POLICY IF EXISTS "Allow authenticated delete on blog-images" ON storage.obj
 CREATE POLICY "Allow authenticated delete on blog-images" ON storage.objects
   FOR DELETE USING (bucket_id = 'blog-images' AND auth.role() = 'authenticated');
 
+
+

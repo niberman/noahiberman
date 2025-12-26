@@ -62,6 +62,15 @@ export function Footer() {
               </li>
               <li>
                 <a
+                  href="#blog"
+                  onClick={(e) => scrollToSection(e, "blog")}
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
                   href="#ventures"
                   onClick={(e) => scrollToSection(e, "ventures")}
                   className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
