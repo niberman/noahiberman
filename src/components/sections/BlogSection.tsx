@@ -12,6 +12,7 @@ import {
 import { useBlogPosts } from "@/hooks/use-supabase-blog";
 import type { BlogPost, BlogImage } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 
 interface ImageGalleryProps {
   images: BlogImage[];
@@ -171,13 +172,8 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="prose prose-invert prose-sm max-w-none mb-4 pt-4 border-t border-border/30">
-                  {/* Simple markdown-like rendering for content */}
-                  {post.content.split("\n\n").map((paragraph, i) => (
-                    <p key={i} className="mb-3 text-foreground/80">
-                      {paragraph}
-                    </p>
-                  ))}
+                <div className="mb-4 pt-4 border-t border-border/30">
+                  <MarkdownRenderer content={post.content} />
                 </div>
               </motion.div>
             )}

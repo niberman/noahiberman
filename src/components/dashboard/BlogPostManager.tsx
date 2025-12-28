@@ -3,9 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { RichTextEditor } from "@/components/RichTextEditor";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -415,15 +416,12 @@ export default function BlogPostManager() {
             {/* Content */}
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) =>
+                  setFormData((prev) => ({ ...prev, content }))
                 }
-                placeholder="Write your post content here (supports Markdown)"
-                rows={8}
-                className="font-mono text-sm"
+                placeholder="Write your post content here..."
               />
             </div>
 
@@ -449,6 +447,7 @@ export default function BlogPostManager() {
                   accept="image/*"
                   multiple
                   className="hidden"
+                  aria-label="Upload images"
                   onChange={(e) => handleFileUpload(e.target.files)}
                 />
                 {isUploading ? (

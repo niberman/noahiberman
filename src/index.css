@@ -371,3 +371,104 @@ All colors MUST be HSL.
   }
 }
 
+/* TipTap Editor Styles */
+@layer components {
+  .tiptap-editor {
+    @apply min-h-[200px] p-4 rounded-lg border border-border bg-background text-foreground;
+  }
+  
+  .tiptap-editor:focus-within {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+  
+  .tiptap-editor .ProseMirror {
+    @apply outline-none min-h-[180px];
+  }
+  
+  .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+    @apply text-muted-foreground pointer-events-none float-left h-0;
+    content: attr(data-placeholder);
+  }
+  
+  .tiptap-editor .ProseMirror h1 {
+    @apply text-2xl font-display font-bold text-primary-foreground mb-4;
+  }
+  
+  .tiptap-editor .ProseMirror h2 {
+    @apply text-xl font-display font-bold text-primary-foreground mb-3;
+  }
+  
+  .tiptap-editor .ProseMirror h3 {
+    @apply text-lg font-display font-semibold text-primary-foreground mb-2;
+  }
+  
+  .tiptap-editor .ProseMirror p {
+    @apply mb-3 text-foreground/90 leading-relaxed;
+  }
+  
+  .tiptap-editor .ProseMirror ul,
+  .tiptap-editor .ProseMirror ol {
+    @apply pl-6 mb-3 text-foreground/90;
+  }
+  
+  .tiptap-editor .ProseMirror ul {
+    @apply list-disc;
+  }
+  
+  .tiptap-editor .ProseMirror ol {
+    @apply list-decimal;
+  }
+  
+  .tiptap-editor .ProseMirror li {
+    @apply mb-1;
+  }
+  
+  .tiptap-editor .ProseMirror li::marker {
+    @apply text-secondary;
+  }
+  
+  .tiptap-editor .ProseMirror blockquote {
+    @apply border-l-4 border-secondary bg-secondary/5 pl-4 py-2 my-4 italic text-foreground/80;
+  }
+  
+  .tiptap-editor .ProseMirror code {
+    @apply bg-secondary/10 text-secondary px-1.5 py-0.5 rounded text-sm font-mono;
+  }
+  
+  .tiptap-editor .ProseMirror pre {
+    @apply bg-muted/50 border border-border/50 rounded-lg p-4 my-4 overflow-x-auto;
+  }
+  
+  .tiptap-editor .ProseMirror pre code {
+    @apply bg-transparent p-0 text-foreground/90;
+  }
+  
+  .tiptap-editor .ProseMirror a {
+    @apply text-secondary underline hover:text-secondary/80 transition-colors;
+  }
+  
+  .tiptap-editor .ProseMirror hr {
+    @apply border-border/50 my-6;
+  }
+  
+  .tiptap-toolbar {
+    @apply flex flex-wrap gap-1 p-2 border-b border-border bg-muted/30 rounded-t-lg;
+  }
+  
+  .tiptap-toolbar button {
+    @apply p-2 rounded hover:bg-secondary/20 transition-colors text-foreground/70 hover:text-foreground min-h-0 min-w-0;
+  }
+  
+  .tiptap-toolbar button.is-active {
+    @apply bg-secondary/20 text-secondary;
+  }
+  
+  .tiptap-toolbar button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  .tiptap-toolbar .separator {
+    @apply w-px h-6 bg-border mx-1 self-center;
+  }
+}
+
