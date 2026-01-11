@@ -42,3 +42,6 @@ CREATE TRIGGER on_contact_message_insert
   EXECUTE FUNCTION notify_new_contact_message();
 
 
+
+
+

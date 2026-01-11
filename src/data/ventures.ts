@@ -36,7 +36,7 @@ export const ventures: Venture[] = [
     role: "Technical Co-Founder",
     year: "2025",
     status: "completed",
-    link: "https://lang-school-connect-david2792.replit.app",
+    link: "https://thelanguageschool.us",
     companyLink: "https://thelanguageschool.us",
     tags: ["Education", "AI", "Bilingual", "Startup"],
     subtitleEn: "Transforming language learning into opportunity.",

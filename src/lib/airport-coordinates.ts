@@ -34,6 +34,12 @@ export const airportCoordinates: Record<string, [number, number]> = {
   'KBIL': [-108.542, 45.8077], // Billings
   'KRAP': [-103.057, 44.0453], // Rapid City (SD)
   
+  // Utah airports
+  'U96': [-109.7556, 38.2194], // Fry Canyon (on route to Page)
+  
+  // Arizona airports
+  'KPGA': [-111.4483, 36.9261], // Page Municipal
+  
   // Nebraska airports
   'KBFF': [-103.5956, 41.8744], // Scottsbluff
   

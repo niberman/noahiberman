@@ -29,6 +29,23 @@ export const activeFlight: Flight | null = null;
 
 export const flightHistory: Flight[] = [
   {
+    id: "flight-2026-01-10-pga",
+    date: "2026-01-10",
+    route: {
+      origin: "Centennial",
+      originCode: "KAPA",
+      destination: "Page",
+      destinationCode: "KPGA",
+    },
+    aircraft: {
+      type: "Cessna Aircraft T182T Turbo Skylane",
+      registration: "N625HA",
+    },
+    duration: "3h 30m",
+    status: "completed",
+    description: "Route: KAPA U96 KPGA",
+  },
+  {
     id: "flight-2025-10-30",
     date: "2025-10-30",
     route: {
