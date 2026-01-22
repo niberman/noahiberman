@@ -7,9 +7,11 @@ Complete file tree showing all new and modified files for the dashboard system.
 ```
 aviator-founder-folio/
 │
-├── 📄 DASHBOARD_README.md           ← Complete documentation
-├── 📄 DASHBOARD_SUMMARY.md          ← What was built
+├── 📄 README.md                     ← Project overview
 ├── 📄 QUICKSTART.md                 ← 5-minute setup guide
+├── 📄 DASHBOARD_README.md           ← Dashboard documentation
+├── 📄 DASHBOARD_STRUCTURE.md        ← This file
+├── 📄 CHANGELOG.md                  ← History of changes
 │
 ├── scripts/
 │   └── 📄 setup-dashboard.sh        ← Automated setup script (executable)
@@ -118,9 +120,8 @@ aviator-founder-folio/
 - `supabase/functions/track-flight/deno.json`
 - `supabase/functions/track-flight/index.ts`
 
-#### Documentation & Scripts (4 files)
+#### Documentation & Scripts (3 files)
 - `DASHBOARD_README.md`
-- `DASHBOARD_SUMMARY.md`
 - `QUICKSTART.md`
 - `scripts/setup-dashboard.sh`
 

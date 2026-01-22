@@ -74,13 +74,18 @@ If you wish to run this project locally:
 ### Prerequisites
 *   Node.js (v18+)
 *   npm or bun
+*   Supabase CLI (for database setup)
 
-### Installation
+### Quick Start
+
+See `QUICKSTART.md` for a 5-minute setup guide.
+
+### Manual Installation
 
 1.  **Clone the repository**
     ```bash
     git clone <repository-url>
-    cd aviator-founder-folio
+    cd <project-directory>
     ```
 
 2.  **Install dependencies**
@@ -89,15 +94,15 @@ If you wish to run this project locally:
     ```
 
 3.  **Environment Setup**
-    Create a `.env` file in the root directory with the following keys:
+    Create a `.env` file in the root directory (use `.env.example` as template):
     ```env
-    VITE_MAPBOX_TOKEN=pk.eyJ...
-    VITE_SUPABASE_URL=https://...supabase.co
-    VITE_SUPABASE_ANON_KEY=...
+    VITE_MAPBOX_TOKEN=your_mapbox_token
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
 
 4.  **Database Setup**
-    We have included a script to automate the Supabase setup:
+    Run the automated setup script:
     ```bash
     ./scripts/setup-dashboard.sh
     ```
@@ -106,6 +111,8 @@ If you wish to run this project locally:
     ```bash
     npm run dev
     ```
+
+Visit `http://localhost:5173` to see your application.
 
 ---
 
@@ -117,6 +124,15 @@ This project is optimized for deployment on **Vercel**.
 2.  Configure the build settings (Framework Preset: Vite).
 3.  Add the environment variables in the Vercel dashboard.
 4.  Deploy!
+
+---
+
+## Documentation
+
+*   **QUICKSTART.md** - 5-minute quick start guide
+*   **DASHBOARD_README.md** - Dashboard features and API documentation
+*   **DASHBOARD_STRUCTURE.md** - File organization and structure
+*   **CHANGELOG.md** - History of fixes and improvements
 
 ---
 

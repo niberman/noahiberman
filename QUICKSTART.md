@@ -223,7 +223,8 @@ Set these in your hosting platform:
 ## Support
 
 - 📖 Full documentation: `DASHBOARD_README.md`
-- 📊 Implementation details: `DASHBOARD_SUMMARY.md`
+- 📊 File structure: `DASHBOARD_STRUCTURE.md`
+- 📝 Change history: `CHANGELOG.md`
 - 💬 Check function logs for debugging
 - 🔍 Use browser DevTools for frontend issues
 
@@ -240,5 +241,4 @@ Set these in your hosting platform:
 🎉 **You're ready to go!** Navigate to `/dashboard` and start building your command center.
 
 For detailed information, see `DASHBOARD_README.md`.
-
 
