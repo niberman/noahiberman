@@ -1,0 +1,5 @@
+# FaceFusion dependencies are installed via its own installer
+# Run: cd facefusion && python install.py --onnxruntime default --skip-conda
+
+# This project uses FaceFusion as a submodule/subdirectory
+# See facefusion/requirements.txt for full dependencies

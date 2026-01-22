@@ -370,9 +370,7 @@ export interface BlogImage {
   alt?: string;
   caption?: string;
   order: number;
-}
-
-export interface BlogPost {
+}export interface BlogPost {
   id: string;
   title: string;
   slug: string;

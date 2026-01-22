@@ -1,0 +1,62 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Output files
+output/
+
+# Input/source photos (large files)
+raw_photos/
+reference_faces/
+
+# Model weights (large files - download separately)
+models/
+gfpgan/weights/
+*.onnx
+*.pth
+*.pt
+*.bin
+*.safetensors
+
+# InsightFace cache
+.insightface/
+
+# FaceFusion
+facefusion/
+.facefusion/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/
