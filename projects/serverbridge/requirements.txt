@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-openai
-mss
-Pillow
-pyautogui
-python-dotenv
-python-multipart
-aiofiles

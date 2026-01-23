@@ -1,0 +1,7 @@
+# iNoah Brain Dependencies
+fastapi>=0.100.0
+uvicorn>=0.22.0
+Pillow>=9.0.0
+
+# Note: Also requires inoah-core to be installed
+# pip install -e ../inoah-core
