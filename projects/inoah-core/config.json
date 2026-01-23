@@ -76,7 +76,7 @@
     }
   },
   "browser": {
-    "headless": true,
+    "headless": false,
     "user_data_dir": "../inoah-hands/user_data",
     "viewport": {"width": 1920, "height": 1080},
     "slow_mo": 100
@@ -89,6 +89,12 @@
       "thinking_pause_max_ms": 12000,
       "session_break_interval": [15, 25],
       "session_break_duration_ms": [30000, 120000]
+    },
+    "messaging": {
+      "response_delay_min_ms": 2000,
+      "response_delay_max_ms": 8000,
+      "typing_speed_cpm": 300,
+      "max_response_length": 280
     }
   },
   "personas": {

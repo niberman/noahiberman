@@ -4,13 +4,11 @@ Uses vision AI to analyze profiles and make swipe decisions.
 """
 
 import sys
-import io
 import time
 import random
 from pathlib import Path
 from typing import Optional
 
-import httpx
 from PIL import Image
 
 # Add inoah-core to path for development
@@ -19,11 +17,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "inoah-core" / "src"))
 from inoah_core import (
     get_logger,
     get_config,
-    get_service_config,
-    get_api_secret,
     get_identity,
     LLMClient,
 )
+
+from browser_controller import get_browser_controller
 
 
 class DatingAutomator:
@@ -37,6 +35,9 @@ class DatingAutomator:
     def __init__(self):
         self.logger = get_logger("dating-automator")
         self.llm = LLMClient()
+        
+        # Browser controller
+        self.browser = get_browser_controller()
         
         # Load identity
         self.identity = get_identity()
@@ -52,8 +53,6 @@ class DatingAutomator:
         
         # Running state
         self._running = False
-        self._use_browser = True
-        self._browser_launched = False
         
         # Humanization settings
         self._load_humanize_config()
@@ -113,90 +112,9 @@ class DatingAutomator:
         self._swipes_since_break = 0
         self._next_break_at = random.randint(self.break_interval_min, self.break_interval_max)
     
-    def _get_hands_client(self) -> tuple[str, dict]:
-        """Get the hands service URL and headers."""
-        config = get_service_config("inoah-hands")
-        port = config.get("port", 8000)
-        api_secret = get_api_secret()
-        
-        base_url = f"http://localhost:{port}"
-        headers = {"X-Agent-Key": api_secret}
-        
-        return base_url, headers
-    
     def get_screenshot(self) -> Image.Image:
-        """Get screenshot from inoah-hands service."""
-        base_url, headers = self._get_hands_client()
-        
-        with httpx.Client(timeout=10.0) as client:
-            if self._use_browser:
-                response = client.get(f"{base_url}/browser/screenshot", headers=headers)
-            else:
-                response = client.get(f"{base_url}/screenshot", headers=headers)
-            
-            if response.status_code != 200:
-                raise RuntimeError(f"Screenshot failed: {response.status_code}")
-            
-            return Image.open(io.BytesIO(response.content))
-    
-    def _browser_press(self, key: str, humanize: bool = True):
-        """Send key press to browser via hands service."""
-        base_url, headers = self._get_hands_client()
-        headers["Content-Type"] = "application/json"
-        
-        with httpx.Client(timeout=10.0) as client:
-            response = client.post(
-                f"{base_url}/browser/press",
-                headers=headers,
-                json={"key": key, "humanize": humanize}
-            )
-            
-            if response.status_code != 200:
-                raise RuntimeError(f"Browser press failed: {response.status_code}")
-            
-            return response.json()
-    
-    def _screen_press(self, key: str):
-        """Send key press via screen control."""
-        base_url, headers = self._get_hands_client()
-        headers["Content-Type"] = "application/json"
-        
-        with httpx.Client(timeout=10.0) as client:
-            response = client.post(
-                f"{base_url}/key",
-                headers=headers,
-                json={"key": key}
-            )
-            
-            if response.status_code != 200:
-                raise RuntimeError(f"Key press failed: {response.status_code}")
-            
-            return response.json()
-    
-    def _launch_browser(self, url: str = "https://tinder.com") -> dict:
-        """Launch browser via hands service."""
-        base_url, headers = self._get_hands_client()
-        headers["Content-Type"] = "application/json"
-        
-        with httpx.Client(timeout=60.0) as client:
-            response = client.post(
-                f"{base_url}/browser/launch",
-                headers=headers,
-                json={"url": url}
-            )
-            
-            if response.status_code != 200:
-                raise RuntimeError(f"Browser launch failed: {response.status_code}")
-            
-            return response.json()
-    
-    def _close_browser(self) -> dict:
-        """Close browser via hands service."""
-        base_url, headers = self._get_hands_client()
-        
-        with httpx.Client(timeout=10.0) as client:
-            response = client.post(f"{base_url}/browser/close", headers=headers)
-            return response.json() if response.status_code == 200 else {"status": "error"}
+        """Get screenshot from browser."""
+        return self.browser.screenshot()
     
     def get_identity_context(self) -> str:
         """Get formatted identity context string."""
@@ -266,24 +184,14 @@ Be selective but reasonable. Look for genuine compatibility signals."""
     def swipe_right(self):
         """Execute a right swipe (like)."""
         self.logger.info("Swiping RIGHT (like)")
-        
-        if self._use_browser:
-            self._browser_press("right")
-        else:
-            self._screen_press("right")
-        
+        self.browser.press("right")
         self.stats["liked"] += 1
         self._swipes_since_break += 1
     
     def swipe_left(self):
         """Execute a left swipe (pass)."""
         self.logger.info("Swiping LEFT (pass)")
-        
-        if self._use_browser:
-            self._browser_press("left")
-        else:
-            self._screen_press("left")
-        
+        self.browser.press("left")
         self.stats["passed"] += 1
         self._swipes_since_break += 1
     
@@ -372,27 +280,22 @@ Be selective but reasonable. Look for genuine compatibility signals."""
         self.logger.info(f"Swipe loop ended. Stats: {self.stats}")
         self._running = False
     
-    def run(self, max_swipes: Optional[int] = None, use_browser: bool = True):
+    def run(self, max_swipes: Optional[int] = None):
         """
         Main run method.
         
         Args:
             max_swipes: Maximum number of swipes
-            use_browser: If True, use Playwright browser; else use screen capture
         """
-        self._use_browser = use_browser
-        
-        if use_browser:
-            self.logger.info("Launching browser...")
-            try:
-                result = self._launch_browser()
-                if result.get("status") == "error":
-                    return {"status": "error", "message": "Browser launch failed"}
-                self._browser_launched = True
-                time.sleep(3)
-            except Exception as e:
-                self.logger.error(f"Browser launch failed: {e}")
-                return {"status": "error", "message": str(e)}
+        self.logger.info("Launching browser...")
+        try:
+            result = self.browser.launch()
+            if result.get("status") == "error":
+                return {"status": "error", "message": result.get("message", "Browser launch failed")}
+            time.sleep(3)
+        except Exception as e:
+            self.logger.error(f"Browser launch failed: {e}")
+            return {"status": "error", "message": str(e)}
         
         self._running = True
         
@@ -400,11 +303,8 @@ Be selective but reasonable. Look for genuine compatibility signals."""
             self.run_swipe_loop(max_swipes)
         finally:
             self._running = False
-            
-            if self._browser_launched:
-                self.logger.info("Closing browser...")
-                self._close_browser()
-                self._browser_launched = False
+            self.logger.info("Closing browser...")
+            self.browser.close()
         
         return {"status": "completed", "stats": self.stats}
     
@@ -420,8 +320,7 @@ Be selective but reasonable. Look for genuine compatibility signals."""
         """Get current status and statistics."""
         return {
             "running": self._running,
-            "mode": "browser" if self._use_browser else "screen",
-            "browser_launched": self._browser_launched,
+            "browser_launched": self.browser.is_launched,
             "stats": self.stats.copy(),
             "next_break_in": self._next_break_at - self._swipes_since_break,
             "has_preferences": self._preference_context is not None

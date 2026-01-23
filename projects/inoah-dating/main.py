@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "inoah-core" / "src"))
 from inoah_core import get_logger, get_service_config, get_api_secret
 
 from automator import get_dating_automator
+from message_responder import get_message_responder
 from training_recorder import get_training_recorder
 from preference_analyzer import get_preference_analyzer
 from training_loader import get_training_loader
@@ -35,7 +36,10 @@ api_key_header = APIKeyHeader(name="X-Agent-Key", auto_error=False)
 # Request/Response models
 class SwipeStartRequest(BaseModel):
     max_swipes: Optional[int] = None
-    use_browser: bool = True
+
+
+class MessagesStartRequest(BaseModel):
+    max_responses: Optional[int] = None
 
 
 class TrainingRecordRequest(BaseModel):
@@ -113,14 +117,12 @@ async def swipe_start(
     # Run in background
     background_tasks.add_task(
         automator.run,
-        max_swipes=request.max_swipes,
-        use_browser=request.use_browser
+        max_swipes=request.max_swipes
     )
     
     return {
         "status": "started",
-        "max_swipes": request.max_swipes,
-        "mode": "browser" if request.use_browser else "screen"
+        "max_swipes": request.max_swipes
     }
 
 
@@ -159,6 +161,78 @@ async def swipe_reset(api_key: str = Security(verify_api_key)):
 
 
 # =============================================================================
+# Messaging Endpoints
+# =============================================================================
+
+@app.post("/messages/start")
+async def messages_start(
+    request: MessagesStartRequest,
+    background_tasks: BackgroundTasks,
+    api_key: str = Security(verify_api_key)
+):
+    """
+    Start automated message responding in the background.
+    Analyzes profiles and conversations to generate personalized replies.
+    """
+    responder = get_message_responder()
+    
+    if responder.is_running:
+        raise HTTPException(status_code=409, detail="Message responder already running")
+    
+    # Run in background
+    background_tasks.add_task(
+        responder.run,
+        max_responses=request.max_responses
+    )
+    
+    return {
+        "status": "started",
+        "max_responses": request.max_responses
+    }
+
+
+@app.post("/messages/stop")
+async def messages_stop(api_key: str = Security(verify_api_key)):
+    """Stop the message responder."""
+    responder = get_message_responder()
+    result = responder.stop()
+    return result
+
+
+@app.get("/messages/status")
+async def messages_status():
+    """Get message responder status and statistics."""
+    responder = get_message_responder()
+    return responder.get_status()
+
+
+@app.post("/messages/respond")
+async def messages_respond_single(api_key: str = Security(verify_api_key)):
+    """
+    Respond to a single conversation.
+    Useful for testing or manual control.
+    """
+    responder = get_message_responder()
+    
+    # Launch browser if needed
+    if not responder.browser.is_launched:
+        result = responder.browser.launch(responder.MESSAGES_URL)
+        if result.get("status") == "error":
+            raise HTTPException(status_code=500, detail="Failed to launch browser")
+    
+    result = responder.respond_single()
+    return result
+
+
+@app.post("/messages/reset")
+async def messages_reset(api_key: str = Security(verify_api_key)):
+    """Reset message responder statistics."""
+    responder = get_message_responder()
+    responder.reset_stats()
+    return {"status": "reset", "stats": responder.get_status()}
+
+
+# =============================================================================
 # Training Data Endpoints
 # =============================================================================
 
@@ -183,7 +257,7 @@ async def training_record(
 ):
     """
     Record a labeled training sample.
-    Gets screenshot from inoah-hands and stores with label.
+    Gets screenshot from browser and stores with label.
     """
     recorder = get_training_recorder()
     

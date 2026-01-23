@@ -9,6 +9,7 @@ import sys
 import time
 import signal
 import subprocess
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -84,6 +85,74 @@ def check_lmstudio() -> bool:
         return False
 
 
+def load_config() -> dict:
+    """Load configuration from inoah-core/config.json."""
+    config_path = PROJECTS_DIR / "inoah-core" / "config.json"
+    if config_path.exists():
+        with open(config_path, "r") as f:
+            return json.load(f)
+    return {}
+
+
+def check_cloudflared() -> bool:
+    """Check if cloudflared is installed and available."""
+    try:
+        result = subprocess.run(
+            ["cloudflared", "--version"],
+            capture_output=True,
+            text=True
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
+
+
+def start_cloudflare_tunnel() -> Optional[subprocess.Popen]:
+    """Start the Cloudflare tunnel using config from inoah-core."""
+    config = load_config()
+    cloudflare_config = config.get("cloudflare", {})
+    tunnel_id = cloudflare_config.get("tunnel_id")
+    hostname = cloudflare_config.get("agent_hostname", "agent.noahiberman.com")
+    
+    if not tunnel_id:
+        print("  [!] No tunnel_id found in config.json")
+        return None
+    
+    print(f"  Starting Cloudflare tunnel...")
+    print(f"    Tunnel ID: {tunnel_id}")
+    print(f"    Hostname: {hostname}")
+    
+    try:
+        env = os.environ.copy()
+        
+        process = subprocess.Popen(
+            ["cloudflared", "tunnel", "run", tunnel_id],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+        
+        # Wait a bit and check if it started
+        time.sleep(2)
+        
+        if process.poll() is not None:
+            # Process exited
+            output = process.stdout.read() if process.stdout else ""
+            print(f"    [!] Failed to start tunnel: {output[:200]}")
+            return None
+        
+        print(f"    [+] Tunnel started (PID: {process.pid})")
+        return process
+        
+    except FileNotFoundError:
+        print("    [!] cloudflared not found in PATH")
+        return None
+    except Exception as e:
+        print(f"    [!] Exception: {e}")
+        return None
+
+
 def kill_port(port: int):
     """Kill any process using the specified port."""
     try:
@@ -141,8 +210,9 @@ def start_service(service: dict) -> Optional[subprocess.Popen]:
     
     # Add inoah-core to PYTHONPATH
     core_path = PROJECTS_DIR / "inoah-core" / "src"
+    path_sep = ";" if sys.platform == "win32" else ":"
     if "PYTHONPATH" in env:
-        env["PYTHONPATH"] = f"{core_path}:{env['PYTHONPATH']}"
+        env["PYTHONPATH"] = f"{core_path}{path_sep}{env['PYTHONPATH']}"
     else:
         env["PYTHONPATH"] = str(core_path)
     
@@ -165,7 +235,7 @@ def start_service(service: dict) -> Optional[subprocess.Popen]:
         if process.poll() is not None:
             # Process exited
             output = process.stdout.read() if process.stdout else ""
-            print(f"    [!] Failed to start: {output[:200]}")
+            print(f"    [!] Failed to start: {output[:500]}")
             return None
         
         print(f"    [+] Started (PID: {process.pid})")
@@ -206,6 +276,15 @@ def main():
         print("        Services requiring LLM will fail")
         print("        Start LM Studio and load a model on port 1234")
     
+    # Check cloudflared
+    print("\n[*] Checking cloudflared availability...")
+    cloudflared_available = check_cloudflared()
+    if cloudflared_available:
+        print("    [+] cloudflared is installed")
+    else:
+        print("    [!] WARNING: cloudflared is not installed or not in PATH")
+        print("        Tunnel will not be started")
+    
     # Register signal handlers
     signal.signal(signal.SIGINT, shutdown)
     signal.signal(signal.SIGTERM, shutdown)
@@ -221,10 +300,26 @@ def main():
     started_count = len([p for p in processes if p is not None])
     
     print(f"\n[*] Started {started_count}/{len(SERVICES)} services")
+    
+    # Start Cloudflare tunnel
+    tunnel_process = None
+    config = load_config()
+    cloudflare_config = config.get("cloudflare", {})
+    tunnel_hostname = cloudflare_config.get("agent_hostname", "")
+    
+    if cloudflared_available:
+        print("\n[*] Starting Cloudflare tunnel...")
+        tunnel_process = start_cloudflare_tunnel()
+        if tunnel_process:
+            processes.append(tunnel_process)
+    
     print("\n" + "=" * 60)
     print("Service URLs:")
     for service in SERVICES:
         print(f"  {service['name']}: http://localhost:{service['port']}")
+    if tunnel_process and tunnel_hostname:
+        print(f"\nCloudflare Tunnel:")
+        print(f"  Public URL: https://{tunnel_hostname}")
     print("=" * 60)
     
     print("\nPress Ctrl+C to stop all services...")
