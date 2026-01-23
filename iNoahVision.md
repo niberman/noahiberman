@@ -12,7 +12,7 @@ Location: Your Home Server (~/Development/noahiberman).
 
 Role: The Operating System. It holds your personality ("Blunt/No Emojis"), your biographical context, and the Master Control logic.
 
-Hardware: Local GPU (Sovereign & Uncensored).
+Hardware: Local GPU (Sovereign & Uncensored)
 
 The Spokes (The Assets):
 
