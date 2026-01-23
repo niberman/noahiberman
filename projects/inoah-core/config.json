@@ -64,7 +64,13 @@
   },
   "cloudflare": {
     "tunnel_id": "fa6f10d0-5642-4a86-9cf3-80b0ecfaf737",
-    "agent_hostname": "agent.noahiberman.com"
+    "agent_hostname": "agent.noahiberman.com",
+    "ingress": [
+      {
+        "hostname": "agent.noahiberman.com",
+        "service": "http://localhost:8000"
+      }
+    ]
   },
   "training_data": {
     "base_dir": "training_data",

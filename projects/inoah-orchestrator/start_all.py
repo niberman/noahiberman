@@ -107,26 +107,94 @@ def check_cloudflared() -> bool:
         return False
 
 
+def generate_cloudflared_config(tunnel_id: str, ingress_rules: list) -> Path:
+    """Generate cloudflared config.yml file with ingress rules."""
+    # Determine cloudflared config directory
+    if sys.platform == "win32":
+        cloudflared_dir = Path(os.environ.get("USERPROFILE", "")) / ".cloudflared"
+    else:
+        cloudflared_dir = Path.home() / ".cloudflared"
+    
+    cloudflared_dir.mkdir(parents=True, exist_ok=True)
+    
+    config_path = cloudflared_dir / "config.yml"
+    credentials_path = cloudflared_dir / f"{tunnel_id}.json"
+    
+    # Build config content
+    config_lines = [
+        f"tunnel: {tunnel_id}",
+        f"credentials-file: {credentials_path}",
+        "",
+        "ingress:"
+    ]
+    
+    # Add ingress rules from config
+    for rule in ingress_rules:
+        hostname = rule.get("hostname")
+        service = rule.get("service")
+        if hostname and service:
+            config_lines.append(f"  - hostname: {hostname}")
+            config_lines.append(f"    service: {service}")
+    
+    # Add catch-all rule (required by cloudflared)
+    config_lines.append("  - service: http_status:404")
+    
+    config_content = "\n".join(config_lines)
+    
+    # Write config file
+    with open(config_path, "w") as f:
+        f.write(config_content)
+    
+    return config_path
+
+
 def start_cloudflare_tunnel() -> Optional[subprocess.Popen]:
     """Start the Cloudflare tunnel using config from inoah-core."""
     config = load_config()
     cloudflare_config = config.get("cloudflare", {})
     tunnel_id = cloudflare_config.get("tunnel_id")
     hostname = cloudflare_config.get("agent_hostname", "agent.noahiberman.com")
+    ingress_rules = cloudflare_config.get("ingress", [])
     
     if not tunnel_id:
         print("  [!] No tunnel_id found in config.json")
         return None
     
+    # If no ingress rules defined, use default routing to inoah-hands
+    if not ingress_rules:
+        ingress_rules = [{"hostname": hostname, "service": "http://localhost:8000"}]
+    
     print(f"  Starting Cloudflare tunnel...")
     print(f"    Tunnel ID: {tunnel_id}")
     print(f"    Hostname: {hostname}")
+    
+    # Generate cloudflared config file
+    try:
+        config_path = generate_cloudflared_config(tunnel_id, ingress_rules)
+        print(f"    Config file: {config_path}")
+        
+        # Check if credentials file exists
+        if sys.platform == "win32":
+            cloudflared_dir = Path(os.environ.get("USERPROFILE", "")) / ".cloudflared"
+        else:
+            cloudflared_dir = Path.home() / ".cloudflared"
+        
+        credentials_path = cloudflared_dir / f"{tunnel_id}.json"
+        if not credentials_path.exists():
+            print(f"    [!] Credentials file not found: {credentials_path}")
+            print(f"    [!] Run: cloudflared tunnel login")
+            print(f"    [!] Then: cloudflared tunnel create <tunnel-name>")
+            return None
+            
+    except Exception as e:
+        print(f"    [!] Failed to generate config: {e}")
+        return None
     
     try:
         env = os.environ.copy()
         
         process = subprocess.Popen(
-            ["cloudflared", "tunnel", "run", tunnel_id],
+            ["cloudflared", "tunnel", "--config", str(config_path), "run", tunnel_id],
             env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -143,6 +211,7 @@ def start_cloudflare_tunnel() -> Optional[subprocess.Popen]:
             return None
         
         print(f"    [+] Tunnel started (PID: {process.pid})")
+        print(f"    [+] Public URL: https://{hostname}")
         return process
         
     except FileNotFoundError:
