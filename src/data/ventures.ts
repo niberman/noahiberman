@@ -32,7 +32,7 @@ export const ventures: Venture[] = [
   {
     id: "language-school",
     title: "The Language School",
-    description: "Partnered with The Language School to digitize its proven English-fluency curriculum and build an AI-driven bilingual workforce platform connecting Spanish-speaking adults with U.S. employers. Product delivered",
+    description: "Partnered with The Language School to digitize its proven English-fluency curriculum and build an AI-driven bilingual workforce platform connecting Spanish-speaking adults with U.S. employers.",
     role: "Technical Co-Founder",
     year: "2025",
     status: "completed",

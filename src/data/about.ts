@@ -73,7 +73,7 @@ export const timeline: TimelineItem[] = [
     id: "language-school",
     year: "2025",
     title: "Technical Co-Founder, The Language School Platform",
-    description: "Built the prototype for the Language School platform and then passed it off to professional developers; continue teaching ESL through Spanish.",
+    description: "Built the prototype for the Language School educational platform, and teach ESL through Spanish.",
     type: "business",
     category: "Business & Work",
   },
@@ -152,6 +152,6 @@ export const groupedTimeline = {
 
 // Flight stats (can be updated dynamically if needed)
 export const flightStats = {
-  totalHours: "513.2+",
-  totalFlights: "292+",
+  totalHours: "562+",
+  totalFlights: "300+",
 };

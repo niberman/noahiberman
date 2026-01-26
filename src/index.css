@@ -471,3 +471,49 @@ All colors MUST be HSL.
     @apply w-px h-6 bg-border mx-1 self-center;
   }
 }
+/* iOS Optimizations */
+@layer utilities {
+  /* iOS safe area support */
+  @supports (padding: max(0px)) {
+    .safe-area-padding {
+      padding-left: max(0px, env(safe-area-inset-left));
+      padding-right: max(0px, env(safe-area-inset-right));
+    }
+  }
+
+  /* iOS keyboard and scroll optimizations */
+  @supports (-webkit-touch-callout: none) {
+    /* Prevent overscroll on iOS */
+    .overscroll-behavior-contain {
+      overscroll-behavior: contain;
+    }
+
+    /* Smooth scrolling on iOS */
+    .ios-smooth-scroll {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Fix iOS input zoom */
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      font-size: 16px !important;
+    }
+
+    /* Prevent iOS tap highlight */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+
+  /* Dynamic viewport height for mobile browsers */
+  .dvh-full {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .min-dvh-screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}

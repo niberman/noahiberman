@@ -25,6 +25,7 @@ export function InoahChatWidget() {
   const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [lastSentAt, setLastSentAt] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const canSend = useMemo(
     () => !isLoading && input.trim().length > 0,
@@ -37,6 +38,31 @@ export function InoahChatWidget() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen]);
+
+  // iOS: Prevent body scroll when chat is open
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent body scroll on iOS
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    }
+    
+    return () => {
+      // Cleanup on unmount
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
+  }, [isOpen]);
 
   const appendMessage = (message: ChatMessage) => {
     setMessages((prev) => [...prev, message]);
@@ -107,6 +133,10 @@ export function InoahChatWidget() {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6 flex items-center gap-3"
+            style={{ 
+              bottom: 'max(1rem, env(safe-area-inset-bottom))',
+              right: 'max(1rem, env(safe-area-inset-right))'
+            }}
           >
             {/* CTA Tooltip */}
             <motion.div
@@ -144,7 +174,11 @@ export function InoahChatWidget() {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent
           side="right"
-          className="w-full sm:max-w-md p-0 flex flex-col h-full"
+          className="w-full sm:max-w-md p-0 flex flex-col h-full safe-area-padding"
+          style={{
+            height: '100dvh', // Dynamic viewport height for mobile
+            paddingBottom: 'env(safe-area-inset-bottom)'
+          }}
         >
           <SheetHeader className="px-6 py-4 border-b border-border/60 bg-muted/20">
             <div className="flex items-center justify-between">
@@ -163,7 +197,13 @@ export function InoahChatWidget() {
           </SheetHeader>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <div 
+            className="flex-1 overflow-y-auto px-6 py-4 space-y-4 overscroll-behavior-contain"
+            style={{ 
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth'
+            }}
+          >
             <ChatMessages messages={messages} isTyping={isLoading} />
             <div ref={messagesEndRef} />
           </div>
@@ -194,8 +234,13 @@ export function InoahChatWidget() {
             </div>
           </div>
 
-          {/* Input Area */}
-          <div className="px-6 pb-6 border-t border-border/60 pt-4 bg-background">
+          {/* Input Area - iOS optimized */}
+          <div 
+            className="px-6 pb-6 border-t border-border/60 pt-4 bg-background sticky bottom-0"
+            style={{
+              paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))'
+            }}
+          >
             <ChatInput
               value={input}
               onChange={setInput}
