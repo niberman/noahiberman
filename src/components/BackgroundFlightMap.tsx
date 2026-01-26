@@ -6,6 +6,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { flightHistory } from "@/data/flights";
 import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
 import { extractAirportsFromFlight } from "@/lib/flight-airports";
+import { setMapController, type MapFlyToOptions } from "@/lib/mapController";
 
 interface FlightInfo {
   tail_number: string;
@@ -38,6 +39,38 @@ export function BackgroundFlightMap() {
   const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
   const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const pendingFlyToRef = useRef<MapFlyToOptions | null>(null);
+
+  // Expose a lightweight controller for scrollytelling / sections
+  useEffect(() => {
+    const applyFlyTo = ({ lat, lng, zoom, pitch, bearing, durationMs }: MapFlyToOptions) => {
+      if (!map.current) return;
+      if (rotationRef.current) {
+        cancelAnimationFrame(rotationRef.current);
+        rotationRef.current = null;
+      }
+      map.current.flyTo({
+        center: [lng, lat],
+        zoom,
+        pitch,
+        bearing,
+        duration: durationMs,
+        essential: true,
+      });
+    };
+
+    setMapController({
+      flyTo: (options) => {
+        if (!map.current) {
+          pendingFlyToRef.current = options;
+          return;
+        }
+        applyFlyTo(options);
+      },
+    });
+
+    return () => setMapController(null);
+  }, []);
 
   // Require explicit user action to enable interactive mode
   useEffect(() => {
@@ -185,6 +218,20 @@ export function BackgroundFlightMap() {
 
     map.current.on('load', () => {
       setMapLoaded(true);
+
+      // Apply any queued scrollytelling command that arrived before map init
+      if (pendingFlyToRef.current && map.current) {
+        const { lat, lng, zoom, pitch, bearing, durationMs } = pendingFlyToRef.current;
+        pendingFlyToRef.current = null;
+        map.current.flyTo({
+          center: [lng, lat],
+          zoom,
+          pitch,
+          bearing,
+          duration: durationMs,
+          essential: true,
+        });
+      }
       
       // Reduce the opacity of all map layers to make them very faint
       if (map.current) {

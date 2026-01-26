@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface CaseStudyCardProps {
   venture: Venture;
   index: number;
+  variant?: "default" | "sidebar";
 }
 
 const statusColors = {
@@ -16,13 +17,118 @@ const statusColors = {
   "in-progress": "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
 };
 
-export function CaseStudyCard({ venture, index }: CaseStudyCardProps) {
+export function CaseStudyCard({ venture, index, variant = "default" }: CaseStudyCardProps) {
+  const isSidebar = variant === "sidebar";
+  if (isSidebar) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05, duration: 0.3, ease: "easeOut" }}
+        className="w-full"
+      >
+        <div
+          className={cn(
+            "w-full rounded-xl border border-border/40 p-4",
+            "bg-gradient-to-br from-background/80 via-background/60 to-background/40",
+            "hover:border-secondary/50 hover:shadow-glow transition-all duration-300",
+            "backdrop-blur-sm overflow-hidden",
+            "group cursor-pointer"
+          )}
+          onClick={() => {
+            if (venture.link) {
+              window.open(venture.link, "_blank", "noopener,noreferrer");
+            }
+          }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start gap-3">
+                {venture.logo ? (
+                  <img
+                    src={venture.logo}
+                    alt=""
+                    className="h-9 w-9 object-contain rounded-md bg-background/20 p-1 flex-shrink-0"
+                  />
+                ) : null}
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base font-display font-bold text-primary-foreground leading-snug break-words group-hover:text-secondary transition-colors">
+                    {venture.title}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted-foreground break-words">
+                    {venture.role}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Badge
+              className={cn(
+                statusColors[venture.status],
+                "border text-[10px] px-2 py-0.5 shrink-0"
+              )}
+            >
+              {venture.year}
+            </Badge>
+          </div>
+
+          <p className="mt-3 text-sm text-foreground/90 leading-relaxed break-words">
+            {venture.description}
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {venture.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] px-2 py-0.5 bg-secondary/10 text-secondary rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <Button
+              size="sm"
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-4 text-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (venture.link) {
+                  window.open(venture.link, "_blank", "noopener,noreferrer");
+                }
+              }}
+            >
+              Visit Live Site
+              <ArrowRight className="ml-1.5 h-3 w-3" />
+            </Button>
+
+            {venture.companyLink && venture.companyLink !== venture.link && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(venture.companyLink, "_blank", "noopener,noreferrer");
+                }}
+                className="inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-secondary transition-colors"
+              >
+                Company Site <ExternalLink className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay: index * 0.08, duration: 0.4, ease: "easeOut" }}
-      className="col-span-1 sm:col-span-2 row-span-1 sm:row-span-2"
+      className={cn(
+        "w-full",
+        !isSidebar && "col-span-1 sm:col-span-2 row-span-1 sm:row-span-2"
+      )}
     >
       <div
         className={cn(

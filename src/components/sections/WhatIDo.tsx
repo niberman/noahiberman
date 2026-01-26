@@ -9,9 +9,11 @@ interface PillarCardProps {
   isOpen: boolean;
   onToggle: () => void;
   index: number;
+  variant?: "default" | "sidebar";
 }
 
-function PillarCard({ area, isOpen, onToggle, index }: PillarCardProps) {
+function PillarCard({ area, isOpen, onToggle, index, variant }: PillarCardProps) {
+  const isSidebar = variant === "sidebar";
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -26,12 +28,18 @@ function PillarCard({ area, isOpen, onToggle, index }: PillarCardProps) {
           isOpen ? "border-secondary/40" : "border-border/40"
         )}
       >
-        <div className="p-4 sm:p-5 md:p-6">
+        <div className={cn("p-4", !isSidebar && "sm:p-5 md:p-6")}>
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-2">
-                <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground">
+              <div className={cn(
+                "flex flex-col gap-1 mb-2",
+                !isSidebar && "sm:flex-row sm:items-center sm:justify-between sm:gap-2"
+              )}>
+                <h3 className={cn(
+                  "font-semibold text-primary-foreground",
+                  isSidebar ? "text-lg" : "text-lg sm:text-xl"
+                )}>
                   {area.title}
                 </h3>
                 <span className="text-xs font-medium uppercase tracking-wider sm:tracking-widest text-secondary/80">
@@ -46,7 +54,10 @@ function PillarCard({ area, isOpen, onToggle, index }: PillarCardProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-muted-foreground leading-relaxed text-sm sm:text-base"
+                    className={cn(
+                      "text-muted-foreground leading-relaxed text-sm",
+                      !isSidebar && "sm:text-base"
+                    )}
                   >
                     {area.description}
                   </motion.p>
@@ -102,15 +113,21 @@ function PillarCard({ area, isOpen, onToggle, index }: PillarCardProps) {
   );
 }
 
-export function WhatIDoContent() {
+export function WhatIDoContent({ variant }: { variant?: "default" | "sidebar" }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const isSidebar = variant === "sidebar";
 
   const handleToggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2">
+    <div
+      className={cn(
+        "grid gap-3 grid-cols-1",
+        !isSidebar && "sm:gap-4 md:gap-6 sm:grid-cols-2"
+      )}
+    >
       {aboutContent.focusAreas.map((area, index) => (
         <PillarCard
           key={area.title}
@@ -118,6 +135,7 @@ export function WhatIDoContent() {
           isOpen={openIndex === index}
           onToggle={() => handleToggle(index)}
           index={index}
+          variant={variant}
         />
       ))}
     </div>

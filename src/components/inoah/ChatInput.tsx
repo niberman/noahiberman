@@ -17,13 +17,13 @@ export function ChatInput({ value, onChange, onSend, disabled }: ChatInputProps)
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full max-w-full">
       <Textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Ask iNoah anything about Noah, his work, or his worldview..."
-        className="min-h-[96px] resize-none"
+        className="min-h-[96px] resize-none w-full max-w-full"
         disabled={disabled}
       />
       <div className="flex items-center justify-between text-xs text-muted-foreground">

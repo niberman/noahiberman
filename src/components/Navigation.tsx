@@ -1,12 +1,30 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const height = Math.ceil(el.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--app-nav-height", `${height}px`);
+      window.dispatchEvent(new CustomEvent("app-nav-height-changed", { detail: { height } }));
+    };
+
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    update();
+
+    return () => ro.disconnect();
+  }, []);
 
   const sectionLinks = [
     { path: "/", label: "Home", id: "home", type: "section" as const },
@@ -83,6 +101,7 @@ export function Navigation() {
 
   return (
     <motion.nav
+      ref={navRef}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="fixed top-0 left-0 right-0 z-[110] bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"

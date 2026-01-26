@@ -10,6 +10,7 @@ interface BentoCardProps {
   item: Venture;
   size: BentoSize;
   index: number;
+  variant?: "default" | "sidebar";
 }
 
 const statusColors = {
@@ -18,7 +19,8 @@ const statusColors = {
   "in-progress": "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
 };
 
-export function BentoCard({ item, size, index }: BentoCardProps) {
+export function BentoCard({ item, size, index, variant = "default" }: BentoCardProps) {
+  const isSidebar = variant === "sidebar";
   const venture = item;
   const logo = venture.logo;
 
@@ -46,20 +48,111 @@ export function BentoCard({ item, size, index }: BentoCardProps) {
     return <div className="h-full group">{children}</div>;
   };
 
+  if (isSidebar) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05, duration: 0.3, ease: "easeOut" }}
+        className="w-full"
+      >
+        <CardWrapper>
+          <div
+            className={cn(
+              "w-full rounded-xl border border-border/40 p-4",
+              "bg-gradient-to-br from-background/80 via-background/60 to-background/40",
+              "backdrop-blur-sm overflow-hidden",
+              "hover:border-secondary/50 hover:shadow-glow transition-all duration-300"
+            )}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start gap-3">
+                  {logo ? (
+                    <img
+                      src={logo}
+                      alt=""
+                      className="h-9 w-9 object-contain rounded-md bg-background/20 p-1 flex-shrink-0"
+                    />
+                  ) : null}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display font-bold leading-snug text-base text-primary-foreground break-words">
+                      {venture.title}
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground break-words">
+                      {venture.role}
+                    </p>
+                    <p className="text-xs text-secondary font-display italic">
+                      {venture.year}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-end gap-1 shrink-0">
+                <Badge
+                  className={cn(
+                    statusColors[venture.status],
+                    "border text-[10px] px-1.5 py-0.5"
+                  )}
+                >
+                  {venture.status}
+                </Badge>
+                {venture.isNew ? (
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40 border text-[10px] px-1.5 py-0.5">
+                    NEW
+                  </Badge>
+                ) : null}
+              </div>
+            </div>
+
+            <p className="mt-3 text-sm text-foreground/90 leading-relaxed break-words">
+              {venture.description}
+            </p>
+
+            {venture.tags?.length ? (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {venture.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="rounded-full text-[10px] px-2 py-0.5"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+
+            {venture.link ? (
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-xs text-secondary font-medium inline-flex items-center gap-1">
+                  Visit <ExternalLink className="h-3 w-3" />
+                </span>
+              </div>
+            ) : null}
+          </div>
+        </CardWrapper>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay: index * 0.08, duration: 0.4, ease: "easeOut" }}
       className={cn(
-        "col-span-1",
-        sizeClasses[size]
+        "w-full",
+        !isSidebar && "col-span-1",
+        !isSidebar && sizeClasses[size]
       )}
     >
       <CardWrapper>
         <div
           className={cn(
-            "h-full rounded-xl sm:rounded-2xl border border-border/40 p-4 sm:p-5 lg:p-6",
+            "h-full rounded-xl border border-border/40 p-4",
+            !isSidebar && "sm:rounded-2xl sm:p-5 lg:p-6",
             "bg-gradient-to-br from-background/80 via-background/60 to-background/40",
             "hover:border-secondary/50 hover:shadow-glow transition-all duration-300",
             "backdrop-blur-sm",
@@ -84,9 +177,10 @@ export function BentoCard({ item, size, index }: BentoCardProps) {
                 <h3
                   className={cn(
                     "font-display font-bold group-hover:text-secondary transition-colors leading-tight",
-                    size === "large" && "text-xl sm:text-2xl lg:text-3xl",
-                    size === "medium" && "text-lg sm:text-xl lg:text-2xl",
-                    size === "small" && "text-base sm:text-lg"
+                    isSidebar && "text-lg",
+                    !isSidebar && size === "large" && "text-xl sm:text-2xl lg:text-3xl",
+                    !isSidebar && size === "medium" && "text-lg sm:text-xl lg:text-2xl",
+                    !isSidebar && size === "small" && "text-base sm:text-lg"
                   )}
                 >
                   {item.title}

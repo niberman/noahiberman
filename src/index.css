@@ -8,6 +8,8 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Set by Navigation at runtime; used to avoid fixed-element overlap */
+    --app-nav-height: 96px;
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
 

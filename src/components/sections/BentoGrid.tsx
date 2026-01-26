@@ -14,11 +14,19 @@ export interface BentoItem {
 
 interface BentoGridProps {
   items: BentoItem[];
+  variant?: "default" | "sidebar";
 }
 
-export function BentoGrid({ items }: BentoGridProps) {
+export function BentoGrid({ items, variant = "default" }: BentoGridProps) {
+  const isSidebar = variant === "sidebar";
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 auto-rows-[minmax(180px,auto)]">
+    <div
+      className={
+        isSidebar
+          ? "flex flex-col gap-4"
+          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 auto-rows-[minmax(180px,auto)]"
+      }
+    >
       {items.map((item, index) => {
         // Render CaseStudyCard for case study items
         if (item.isCaseStudy) {
@@ -27,6 +35,7 @@ export function BentoGrid({ items }: BentoGridProps) {
               key={item.id}
               venture={item.data}
               index={index}
+              variant={variant}
             />
           );
         }
@@ -38,6 +47,7 @@ export function BentoGrid({ items }: BentoGridProps) {
             item={item.data}
             size={item.size}
             index={index}
+            variant={variant}
           />
         );
       })}

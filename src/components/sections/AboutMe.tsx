@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { aboutContent, groupedTimeline } from "@/data/about";
+import { cn } from "@/lib/utils";
 
 const typeColors = {
   aviation: "bg-secondary/20 text-secondary border-secondary/40",
@@ -8,19 +9,30 @@ const typeColors = {
   personal: "bg-muted text-muted-foreground border-muted-foreground/40",
 };
 
-export function AboutMeContent() {
+export function AboutMeContent({ variant }: { variant?: "default" | "sidebar" }) {
+  const isSidebar = variant === "sidebar";
   return (
-    <div className="space-y-8 sm:space-y-10">
+    <div className={cn(isSidebar ? "space-y-6" : "space-y-8 sm:space-y-10")}>
       {/* Bio paragraph */}
       <div className="space-y-4">
-        <p className="text-lg sm:text-xl text-foreground/90 leading-relaxed">
+        <p
+          className={cn(
+            "text-foreground/90 leading-relaxed",
+            isSidebar ? "text-base" : "text-lg sm:text-xl"
+          )}
+        >
           {aboutContent.expandedBio}
         </p>
       </div>
 
       {/* Timeline grouped by category */}
-      <div className="space-y-8">
-        <h3 className="text-xl sm:text-2xl font-display font-semibold text-primary-foreground">
+      <div className={cn(isSidebar ? "space-y-6" : "space-y-8")}>
+        <h3
+          className={cn(
+            "font-display font-semibold text-primary-foreground",
+            isSidebar ? "text-lg" : "text-xl sm:text-2xl"
+          )}
+        >
           My Journey
         </h3>
 
@@ -30,17 +42,23 @@ export function AboutMeContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: categoryIndex * 0.1, duration: 0.4 }}
-            className="space-y-4"
+            className={cn(isSidebar ? "space-y-3" : "space-y-4")}
           >
             {/* Category header */}
-            <h4 className="text-lg font-semibold text-secondary flex items-center gap-3">
+            <h4 className={cn(
+              "font-semibold text-secondary flex items-center gap-3",
+              isSidebar ? "text-base" : "text-lg"
+            )}>
               <span className="h-px flex-1 bg-border/50 max-w-8" />
               {category}
               <span className="h-px flex-1 bg-border/50" />
             </h4>
 
             {/* Timeline items */}
-            <div className="space-y-3 pl-4 border-l-2 border-secondary/30">
+            <div className={cn(
+              "space-y-3 border-l-2 border-secondary/30",
+              isSidebar ? "pl-3" : "pl-4"
+            )}>
               {items.map((item, index) => (
                 <motion.div
                   key={item.id}

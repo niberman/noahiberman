@@ -8,8 +8,10 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { useSubmitContactMessage } from "@/hooks/use-supabase-contact";
+import { cn } from "@/lib/utils";
 
-export function ContactSection() {
+export function ContactSection({ variant }: { variant?: "default" | "sidebar" }) {
+  const isSidebar = variant === "sidebar";
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -53,40 +55,60 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 lg:py-32 scroll-mt-24 relative bg-background/90 backdrop-blur-xs">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section
+      id="contact"
+      className={cn(
+        "relative",
+        isSidebar
+          ? "py-6 scroll-mt-0 bg-transparent"
+          : "py-16 sm:py-20 md:py-24 lg:py-32 scroll-mt-[var(--app-nav-height)] bg-background/90 backdrop-blur-xs"
+      )}
+    >
+      <div className={cn(isSidebar ? "px-0" : "container mx-auto px-4 sm:px-6")}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-16 text-center"
+          className={cn(
+            "mx-auto text-center",
+            isSidebar ? "mb-6 text-left" : "max-w-3xl mb-10 sm:mb-12 md:mb-16"
+          )}
         >
           <BilingualHeading 
             english="Get in Touch"
             spanish="Conectemos"
             as="h2"
             className="mb-4"
+            variant={isSidebar ? "compact" : "default"}
           />
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed px-4">
+          <p className={cn(
+            "text-muted-foreground leading-relaxed",
+            isSidebar ? "text-sm px-0" : "text-base sm:text-lg px-4"
+          )}>
             Whether you want to talk aviation, technology, or a potential collaboration, I'd love to hear from you.
           </p>
         </motion.div>
 
-        <div className="max-w-6xl mx-auto">
+        <div className={cn(isSidebar ? "mx-auto" : "max-w-6xl mx-auto")}>
           {/* Main Contact Section */}
-          <div className="grid lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-8">
+          <div className={cn(
+            isSidebar ? "flex flex-col gap-4" : "grid lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-8"
+          )}>
             {/* Contact Form - Takes 2 columns on large screens */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="lg:col-span-2"
+              className={cn(!isSidebar && "lg:col-span-2")}
             >
               <Card className="bg-gradient-card border-border/50 shadow-elegant h-full">
                 <CardHeader>
-                  <CardTitle className="text-xl sm:text-2xl font-display">Send a Message</CardTitle>
-                  <CardDescription className="text-sm sm:text-base">
+                  <CardTitle className={cn(
+                    "font-display",
+                    isSidebar ? "text-lg" : "text-xl sm:text-2xl"
+                  )}>Send a Message</CardTitle>
+                  <CardDescription className={cn(isSidebar ? "text-xs" : "text-sm sm:text-base")}>
                     Fill out the form and I'll get back to you as soon as possible.
                   </CardDescription>
                 </CardHeader>
@@ -98,7 +120,10 @@ export function ContactSection() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
-                        className="text-sm sm:text-base py-5 sm:py-6"
+                        className={cn(
+                          "text-sm",
+                          isSidebar ? "py-4" : "sm:text-base py-5 sm:py-6"
+                        )}
                       />
                     </div>
                     <div>
@@ -108,7 +133,10 @@ export function ContactSection() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
-                        className="text-sm sm:text-base py-5 sm:py-6"
+                        className={cn(
+                          "text-sm",
+                          isSidebar ? "py-4" : "sm:text-base py-5 sm:py-6"
+                        )}
                       />
                     </div>
                     <div>
@@ -118,12 +146,18 @@ export function ContactSection() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
-                        className="text-sm sm:text-base resize-none"
+                        className={cn(
+                          "text-sm resize-none",
+                          !isSidebar && "sm:text-base"
+                        )}
                       />
                     </div>
                     <Button 
                       type="submit" 
-                      className="w-full text-sm sm:text-base py-5 sm:py-6 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
+                      className={cn(
+                        "w-full rounded-full active:scale-95 transition-transform bg-secondary hover:bg-secondary/90",
+                        isSidebar ? "text-sm py-4" : "text-sm sm:text-base py-5 sm:py-6 md:hover:scale-105"
+                      )}
                       size="lg"
                       disabled={submitMessage.isPending}
                     >
@@ -140,12 +174,12 @@ export function ContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="space-y-5 sm:space-y-6"
+              className={cn(isSidebar ? "space-y-4" : "space-y-5 sm:space-y-6")}
             >
               <Card className="bg-gradient-card border-border/50 shadow-elegant">
                 <CardHeader>
-                  <CardTitle className="text-lg sm:text-xl font-display">Direct Contact</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">
+                  <CardTitle className={cn("font-display", isSidebar ? "text-base" : "text-lg sm:text-xl")}>Direct Contact</CardTitle>
+                  <CardDescription className={cn(isSidebar ? "text-xs" : "text-xs sm:text-sm")}>
                     Reach out directly through these channels.
                   </CardDescription>
                 </CardHeader>

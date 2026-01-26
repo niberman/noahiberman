@@ -82,7 +82,7 @@ interface FlightData {
   scheduled_in_local?: string;
   estimated_in_local?: string;
   actual_in_local?: string;
-  foresight_predictions?: any;
+  foresight_predictions?: unknown;
 }
 
 interface AeroAPIResponse {
