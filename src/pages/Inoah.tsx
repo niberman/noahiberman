@@ -99,8 +99,13 @@ export default function Inoah() {
             title="Meet iNoah (Beta)"
             description="A public-facing RAG chat experience that mirrors Noah's personality, projects, and perspective."
             footer={
-              <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-                iNoah is a beta system running on Noah's home server via LM Studio. Responses can be imperfect.
+              <div className="space-y-3">
+                <div className="rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm text-foreground">
+                  <strong>💡 Tip:</strong> iNoah is also available as a chat widget in the bottom-right corner on every page!
+                </div>
+                <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+                  iNoah is a beta system running on Noah's home server via LM Studio. Responses can be imperfect.
+                </div>
               </div>
             }
           >

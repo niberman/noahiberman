@@ -43,9 +43,7 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
 
   // For Markdown content, use ReactMarkdown
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
+    <div
       className={cn(
         "prose prose-invert prose-sm sm:prose-base max-w-none",
         "prose-headings:font-display prose-headings:text-primary-foreground",
@@ -65,23 +63,28 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
         "prose-td:border-border",
         className
       )}
-      components={{
-        a: ({ href, children, ...props }) => {
-          const isExternal = href?.startsWith("http");
-          return (
-            <a
-              href={href}
-              target={isExternal ? "_blank" : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-              {...props}
-            >
-              {children}
-            </a>
-          );
-        },
-      }}
     >
-      {content}
-    </ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
+        components={{
+          a: ({ href, children, ...props }) => {
+            const isExternal = href?.startsWith("http");
+            return (
+              <a
+                href={href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                {...props}
+              >
+                {children}
+              </a>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }

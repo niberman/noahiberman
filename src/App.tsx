@@ -7,6 +7,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { InoahChatWidget } from "@/components/inoah/InoahChatWidget";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -24,6 +25,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <SecretDashboardAccess />
+          <InoahChatWidget />
           <div className="min-h-screen flex flex-col relative">
             <Navigation />
             <main className="flex-1 relative z-10">
