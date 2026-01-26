@@ -106,18 +106,36 @@ export function InoahChatWidget() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6"
+            className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6 flex items-center gap-3"
           >
-            <Button
-              onClick={() => setIsOpen(true)}
-              size="lg"
-              className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 bg-secondary text-secondary-foreground relative z-10"
-              aria-label="Open iNoah chat"
+            {/* CTA Tooltip */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ delay: 1, duration: 0.5 }}
+              className="hidden sm:flex items-center gap-2 bg-secondary text-secondary-foreground px-4 py-2 rounded-full shadow-lg pointer-events-none"
             >
-              <MessageCircle className="h-6 w-6" />
-            </Button>
-            {/* Pulse animation ring */}
-            <span className="absolute inset-0 rounded-full bg-secondary animate-ping opacity-20 pointer-events-none" />
+              <span className="text-sm font-medium whitespace-nowrap">
+                Ask iNoah anything
+              </span>
+              <span className="text-xs opacity-70">👋</span>
+            </motion.div>
+
+            <div className="relative">
+              <Button
+                onClick={() => setIsOpen(true)}
+                size="lg"
+                className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 bg-secondary text-secondary-foreground relative z-10"
+                aria-label="Open iNoah chat"
+              >
+                <MessageCircle className="h-6 w-6" />
+              </Button>
+              {/* Pulse animation ring */}
+              <span className="absolute inset-0 rounded-full bg-secondary animate-ping opacity-20 pointer-events-none" />
+              {/* Notification badge */}
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-background pointer-events-none" />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
