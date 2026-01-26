@@ -10,3 +10,9 @@ entrypoint = "./functions/notify_contact_message/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/notify_contact_message/*.html" ]
+
+[functions.inoah-chat]
+enabled = true
+# Public endpoint - auth handled via rate limiting + optional Turnstile
+verify_jwt = false
+entrypoint = "./functions/inoah-chat/index.ts"

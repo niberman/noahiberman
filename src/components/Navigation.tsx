@@ -9,23 +9,47 @@ export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sectionLinks = [
-    { path: "/", label: "Home", id: "home" },
-    { path: "/#about", label: "About", id: "about" },
-    { path: "/#blog", label: "Blog", id: "blog" },
-    { path: "/#ventures", label: "Ventures", id: "ventures" },
-    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight" },
-    { path: "/#contact", label: "Contact", id: "contact" },
+    { path: "/", label: "Home", id: "home", type: "section" as const },
+    { path: "/#about", label: "About", id: "about", type: "section" as const },
+    { path: "/#blog", label: "Blog", id: "blog", type: "section" as const },
+    { path: "/#ventures", label: "Ventures", id: "ventures", type: "section" as const },
+    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" as const },
+    { path: "/#contact", label: "Contact", id: "contact", type: "section" as const },
+    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" as const },
   ];
 
   // Note: Navigation already handles hash navigation correctly
   // Links scroll to sections on homepage or navigate + scroll from other pages
+  const isLinkActive = (path: string, id: string, type: "section" | "page") => {
+    if (type === "page") {
+      return location.pathname === path;
+    }
+    return (
+      location.hash === `#${id}` ||
+      (path === "/" && location.pathname === "/" && !location.hash)
+    );
+  };
 
   const updateHash = (hash?: string) => {
     const newUrl = hash ? `/#${hash}` : "/";
     window.history.replaceState(null, "", newUrl);
   };
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, path: string, id: string) => {
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    path: string,
+    id: string,
+    type: "section" | "page"
+  ) => {
+    if (type === "page") {
+      e.preventDefault();
+      if (location.pathname !== path) {
+        navigate(path);
+      }
+      setIsMenuOpen(false);
+      return;
+    }
+
     if (path === "/") {
       e.preventDefault();
       if (location.pathname !== "/") {
@@ -88,14 +112,14 @@ export function Navigation() {
               <a
                 key={link.path}
                 href={link.path}
-                onClick={(e) => scrollToSection(e, link.path, link.id)}
-                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
+                onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${isLinkActive(link.path, link.id, link.type)
                     ? "text-secondary"
                     : "text-muted-foreground"
                   }`}
               >
                 {link.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash) ? "w-full" : "w-0 group-hover:w-full"
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${isLinkActive(link.path, link.id, link.type) ? "w-full" : "w-0 group-hover:w-full"
                   }`} />
               </a>
             ))}
@@ -131,8 +155,8 @@ export function Navigation() {
                 <a
                   key={link.path}
                   href={link.path}
-                  onClick={(e) => scrollToSection(e, link.path, link.id)}
-                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${location.hash === `#${link.id}` || (link.path === "/" && location.pathname === "/" && !location.hash)
+                onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                className={`block px-4 py-3 rounded-lg font-medium transition-all ${isLinkActive(link.path, link.id, link.type)
                       ? "bg-secondary/20 text-secondary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}

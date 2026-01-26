@@ -101,6 +101,15 @@ See `QUICKSTART.md` for a 5-minute setup guide.
     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
     ```
 
+    **Optional: iNoah public chat**
+    ```env
+    VITE_SUPABASE_FUNCTIONS_URL=your_supabase_url
+    VITE_INOAH_FUNCTION_PATH=/functions/v1/inoah-chat
+    ```
+    The Edge Function expects server-side secrets:
+    - `INOAH_AGENT_KEY` (required)
+    - `TURNSTILE_SECRET` (optional)
+
 4.  **Database Setup**
     Run the automated setup script:
     ```bash

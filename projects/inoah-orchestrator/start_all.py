@@ -276,6 +276,7 @@ def start_service(service: dict) -> Optional[subprocess.Popen]:
     # Set environment
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
+    env.setdefault("AGENT_SECRET_KEY", "1234")
     
     # Add inoah-core to PYTHONPATH
     core_path = PROJECTS_DIR / "inoah-core" / "src"

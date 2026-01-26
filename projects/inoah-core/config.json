@@ -68,7 +68,7 @@
     "ingress": [
       {
         "hostname": "agent.noahiberman.com",
-        "service": "http://localhost:8000"
+        "service": "http://localhost:8001"
       }
     ]
   },
