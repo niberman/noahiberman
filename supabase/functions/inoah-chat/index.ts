@@ -8,6 +8,26 @@ const corsHeaders = {
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 12;
+const BLOCKED_PATTERNS: RegExp[] = [
+  /update\s+(my|your|the)?\s*config/i,
+  /modify\s+(my|your|the)?\s*config/i,
+  /change\s+(my|your|the)?\s*config/i,
+  /update\s+(my|your|the)?\s*profile/i,
+  /modify\s+(my|your|the)?\s*profile/i,
+  /change\s+(my|your|the)?\s*profile/i,
+  /update\s+(my|your|the)?\s*rag/i,
+  /modify\s+(my|your|the)?\s*rag/i,
+  /change\s+(my|your|the)?\s*rag/i,
+  /update\s+(my|your|the)?\s*memory/i,
+  /modify\s+(my|your|the)?\s*memory/i,
+  /write\s+file/i,
+  /edit\s+file/i,
+  /save\s+file/i,
+  /run\s+code/i,
+  /execute\s+code/i,
+  /system\s+prompt/i,
+  /config\.json/i,
+];
 
 type RateBucket = {
   count: number;
@@ -61,6 +81,22 @@ const verifyTurnstile = async (token: string, ip: string) => {
   return data?.success === true;
 };
 
+const isBlockedPrompt = (prompt: string) =>
+  BLOCKED_PATTERNS.some((pattern) => pattern.test(prompt));
+
+const blockedResponse = () =>
+  new Response(
+    JSON.stringify({
+      status: "blocked",
+      response:
+        "I can’t make updates or changes. If you want something updated, I can explain the process or pass the request along.",
+    }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    }
+  );
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -108,6 +144,10 @@ serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (isBlockedPrompt(prompt)) {
+      return blockedResponse();
     }
 
     const turnstileSecret = Deno.env.get("TURNSTILE_SECRET");
