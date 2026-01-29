@@ -11,7 +11,7 @@ const corsHeaders = {
 // --- Configuration ---
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 12;
+const RATE_LIMIT_MAX = 30; // Increased for development testing
 const BLOCKED_PATTERNS: RegExp[] = [
   /update\s+(my|your|the)?\s*config/i,
   /modify\s+(my|your|the)?\s*config/i,
@@ -71,8 +71,6 @@ COMMUNICATION STYLE:
 - No emojis, no exclamation points, no hashtags
 - Technical precision over politeness
 - Write like a human, not a corporation
-- Casual and direct, use sentence fragments when appropriate
-- Drop pronouns for brevity when natural
 - No generic AI fluff or overly polite responses
 
 VALUES:
