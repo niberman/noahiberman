@@ -230,7 +230,7 @@ export function InoahChatWidget() {
           {/* Beta Notice */}
           <div className="px-6 pb-2">
             <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
-              Beta system running on Noah's home server. Responses can be imperfect.
+              Beta system running on Google Gemini. Responses can be imperfect.
             </div>
           </div>
 
