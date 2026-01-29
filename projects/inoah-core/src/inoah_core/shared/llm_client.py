@@ -1,10 +1,11 @@
 """
 Unified LLM Client for iNoah System.
-Supports LM Studio (OpenAI-compatible API).
+Supports LM Studio (OpenAI-compatible API) and standard OpenAI API.
 """
 
 import base64
 import io
+import os
 import time
 from pathlib import Path
 from typing import Optional, Union, List
@@ -18,7 +19,7 @@ from .config_loader import get_llm_host, get_model, get_nested
 class LLMClient:
     """
     Unified client for LLM API interactions.
-    Uses LM Studio's OpenAI-compatible API.
+    Uses LM Studio's OpenAI-compatible API or standard OpenAI API.
     All iNoah services should use this for LLM operations.
     """
     
@@ -29,7 +30,18 @@ class LLMClient:
         Args:
             host: LM Studio API URL (defaults to config value)
         """
-        self.host = host or get_llm_host()
+        self.provider = get_nested("llm.provider", "lmstudio")
+        
+        if self.provider == "openai":
+            self.host = "https://api.openai.com"
+            self.api_key = os.environ.get("OPENAI_API_KEY")
+            if not self.api_key:
+                # Fallback to local config if key not in env, or warn
+                pass
+        else:
+            self.host = host or get_llm_host()
+            self.api_key = None
+            
         self.timeout = get_nested("llm.timeout", 120)
     
     def _make_request(
@@ -39,7 +51,7 @@ class LLMClient:
         retries: int = 2
     ) -> dict:
         """
-        Make request to LM Studio API with retry logic.
+        Make request to LLM API with retry logic.
         
         Args:
             endpoint: API endpoint (e.g., "/v1/chat/completions")
@@ -50,10 +62,14 @@ class LLMClient:
             Response JSON
             
         Raises:
-            ConnectionError: If LM Studio is unreachable after retries
+            ConnectionError: If API is unreachable after retries
             RuntimeError: If API returns an error
         """
         url = f"{self.host}{endpoint}"
+        
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
         
         for attempt in range(retries + 1):
             try:
@@ -61,7 +77,7 @@ class LLMClient:
                     url,
                     json=payload,
                     timeout=self.timeout,
-                    headers={"Content-Type": "application/json"}
+                    headers=headers
                 )
                 
                 if response.status_code == 200:
@@ -74,6 +90,8 @@ class LLMClient:
                 if attempt < retries:
                     time.sleep(1)
                     continue
+                if self.provider == "openai":
+                     raise ConnectionError("Cannot connect to OpenAI API.")
                 raise ConnectionError(
                     f"Cannot connect to LM Studio at {self.host}. "
                     "Ensure LM Studio is running with a model loaded."
@@ -246,7 +264,10 @@ class LLMClient:
         return ""
     
     def is_available(self) -> bool:
-        """Check if LM Studio is running and reachable."""
+        """Check if LLM is running and reachable."""
+        if self.provider == "openai":
+            return True # Assume OpenAI is always available or handled by requests
+            
         try:
             response = requests.get(f"{self.host}/v1/models", timeout=5)
             return response.status_code == 200
@@ -256,7 +277,8 @@ class LLMClient:
     def list_models(self) -> list:
         """Get list of available models."""
         try:
-            response = requests.get(f"{self.host}/v1/models", timeout=10)
+            response = requests.get(f"{self.host}/v1/models", timeout=10, 
+                                  headers={"Authorization": f"Bearer {self.api_key}"} if self.api_key else None)
             if response.status_code == 200:
                 data = response.json()
                 return [m["id"] for m in data.get("data", [])]

@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
   "llm": {
-    "provider": "lmstudio",
-    "host": "http://localhost:1234",
+    "provider": "openai",
+    "_comment_host": "http://localhost:1234",
     "models": {
-      "reasoning": "local-model",
-      "vision": "local-model"
+      "reasoning": "gpt-4o-mini",
+      "vision": "gpt-4o-mini"
     },
     "timeout": 120
   },
