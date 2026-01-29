@@ -202,9 +202,10 @@ serve(async (req) => {
     // 5. Initialize Clients
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!; // Use service role for vector search
-    const openaiKey = Deno.env.get("OPENAI_API_KEY")!;
+    // SWITCH TO GEMINI API KEY
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
 
-    if (!supabaseUrl || !supabaseKey || !openaiKey) {
+    if (!supabaseUrl || !supabaseKey || !geminiKey) {
       console.error("Missing environment variables");
       return new Response(JSON.stringify({ error: "Server configuration error." }), {
         status: 500,
@@ -213,38 +214,25 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const openai = new OpenAI({ apiKey: openaiKey });
+    // Initialize OpenAI client with Google's Base URL
+    const openai = new OpenAI({
+      apiKey: geminiKey,
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    });
 
     // 6. RAG: Retrieve Context (if requested)
     let contextString = "";
     if (include_context) {
       try {
-        // Generate embedding for the prompt
+        // Generate embedding for the prompt using Google's embedding model
+        // Note: Using text-embedding-004 for Gemini compatibility (768 dimensions)
         const embeddingResponse = await openai.embeddings.create({
-          model: "text-embedding-3-small",
+          model: "text-embedding-004",
           input: prompt,
         });
         const embedding = embeddingResponse.data[0].embedding;
 
-        // Query memories
-        // Note: Using match_memories RPC if defined, or direct select if logic permits.
-        // Since we didn't define a specific RPC in the migration (just table), we can use the library if enabled,
-        // or we need to add a match function.
-        // Direct query on table with pgvector usually requires an RPC for similarity search in Supabase JS client.
-        // Let's assume we need to use a raw query or add the RPC.
-        // Actually, for simplicity without adding more RPCs to migration right now, 
-        // I will add the RPC to the migration in a follow-up if needed, 
-        // OR I can use the standard `rpc` call if I defined it. 
-        // Wait, I didn't define a `match_memories` function in step 1. I only created the table and index.
-        // Supabase JS client needs an RPC to sort by similarity.
-        
-        // I should have added the RPC in Step 1. I will handle this by defining the RPC in a new migration file quickly, 
-        // or just add it here if I can run SQL. But I can't run SQL from here easily.
-        // I'll proceed with writing this code assuming `match_memories` exists, 
-        // and I will add a step to create that RPC in the migration plan or just append it to the previous migration file 
-        // (since I haven't "committed" it to a repo yet effectively).
-        // Actually, I can just append the RPC creation to the file `20260129000000_create_memory_tables.sql` I just wrote.
-        
+        // Query memories (requires DB schema update to 768 dimensions)
         const { data: memories, error: matchError } = await supabase.rpc("match_memories", {
           query_embedding: embedding,
           match_threshold: 0.5,
@@ -260,13 +248,13 @@ serve(async (req) => {
       }
     }
 
-    // 7. Generate Response
+    // 7. Generate Response using Gemini Flash
     const finalSystemPrompt = contextString
       ? `${SYSTEM_PROMPT}\n\nCONTEXT FROM MEMORY:\n${contextString}`
       : SYSTEM_PROMPT;
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gemini-2.0-flash",
       messages: [
         { role: "system", content: finalSystemPrompt },
         { role: "user", content: prompt },

@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
   "llm": {
-    "provider": "openai",
+    "provider": "gemini",
     "_comment_host": "http://localhost:1234",
     "models": {
-      "reasoning": "gpt-4o-mini",
-      "vision": "gpt-4o-mini"
+      "reasoning": "gemini-2.0-flash",
+      "vision": "gemini-2.0-flash"
     },
     "timeout": 120
   },

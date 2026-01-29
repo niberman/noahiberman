@@ -1,6 +1,6 @@
 """
 Unified LLM Client for iNoah System.
-Supports LM Studio (OpenAI-compatible API) and standard OpenAI API.
+Supports LM Studio (OpenAI-compatible API), standard OpenAI API, and Google Gemini (OpenAI-compatible).
 """
 
 import base64
@@ -19,7 +19,7 @@ from .config_loader import get_llm_host, get_model, get_nested
 class LLMClient:
     """
     Unified client for LLM API interactions.
-    Uses LM Studio's OpenAI-compatible API or standard OpenAI API.
+    Uses LM Studio's OpenAI-compatible API, standard OpenAI API, or Google Gemini.
     All iNoah services should use this for LLM operations.
     """
     
@@ -35,9 +35,9 @@ class LLMClient:
         if self.provider == "openai":
             self.host = "https://api.openai.com"
             self.api_key = os.environ.get("OPENAI_API_KEY")
-            if not self.api_key:
-                # Fallback to local config if key not in env, or warn
-                pass
+        elif self.provider == "gemini":
+            self.host = "https://generativelanguage.googleapis.com/v1beta/openai"
+            self.api_key = os.environ.get("GEMINI_API_KEY")
         else:
             self.host = host or get_llm_host()
             self.api_key = None
@@ -65,7 +65,26 @@ class LLMClient:
             ConnectionError: If API is unreachable after retries
             RuntimeError: If API returns an error
         """
-        url = f"{self.host}{endpoint}"
+        # Handle trailing slash in host if present, to avoid double slashes or missing slashes
+        # The openai endpoint usually expects /v1/chat/completions
+        # Google's base url ends in /openai/, so we need to be careful with path joining
+        
+        base_url = self.host.rstrip("/")
+        if self.provider == "gemini":
+            # Google endpoint structure is .../openai/chat/completions (no v1 segment in the openai path itself usually, 
+            # OR it mimics OpenAI structure exactly. 
+            # Documentation says: POST https://generativelanguage.googleapis.com/v1beta/openai/chat/completions
+            # The standard OpenAI client appends /chat/completions to base_url.
+            # Here we are manually constructing the url.
+            # If endpoint is "/v1/chat/completions" (standard), we need to adapt for Google if it doesn't match.
+            # Google: .../v1beta/openai/chat/completions. 
+            # If self.host is .../v1beta/openai, and endpoint is /v1/chat/completions, we get .../openai/v1/chat/completions which is WRONG.
+            # We need to strip /v1 prefix if provider is Gemini and endpoint starts with /v1
+            
+            if endpoint.startswith("/v1/"):
+                endpoint = endpoint[3:] # Remove /v1
+            
+        url = f"{base_url}{endpoint}"
         
         headers = {"Content-Type": "application/json"}
         if self.api_key:
@@ -90,8 +109,8 @@ class LLMClient:
                 if attempt < retries:
                     time.sleep(1)
                     continue
-                if self.provider == "openai":
-                     raise ConnectionError("Cannot connect to OpenAI API.")
+                if self.provider in ["openai", "gemini"]:
+                     raise ConnectionError(f"Cannot connect to {self.provider} API.")
                 raise ConnectionError(
                     f"Cannot connect to LM Studio at {self.host}. "
                     "Ensure LM Studio is running with a model loaded."
@@ -265,8 +284,8 @@ class LLMClient:
     
     def is_available(self) -> bool:
         """Check if LLM is running and reachable."""
-        if self.provider == "openai":
-            return True # Assume OpenAI is always available or handled by requests
+        if self.provider in ["openai", "gemini"]:
+            return True # Assume Cloud APIs are always available
             
         try:
             response = requests.get(f"{self.host}/v1/models", timeout=5)
@@ -277,7 +296,13 @@ class LLMClient:
     def list_models(self) -> list:
         """Get list of available models."""
         try:
-            response = requests.get(f"{self.host}/v1/models", timeout=10, 
+            # For Gemini/OpenAI, this call might differ, but assuming OpenAI compat:
+            endpoint = "/v1/models"
+            if self.provider == "gemini":
+                endpoint = "/models" # Google has a different models endpoint, but let's see if /v1/models works on the openai bridge.
+                # Actually for simplicity, we might just return empty or catch error.
+            
+            response = requests.get(f"{self.host}{endpoint}", timeout=10, 
                                   headers={"Authorization": f"Bearer {self.api_key}"} if self.api_key else None)
             if response.status_code == 200:
                 data = response.json()

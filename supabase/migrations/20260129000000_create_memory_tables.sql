@@ -3,7 +3,7 @@ create table if not exists memories (
   id uuid primary key default gen_random_uuid(),
   content text not null,
   metadata jsonb default '{}'::jsonb,
-  embedding vector(1536),
+  embedding vector(768),
   collection text not null,
   created_at timestamp with time zone default now()
 );
@@ -25,7 +25,7 @@ create policy "Allow service role to manage memories"
 
 -- Create similarity search function
 create or replace function match_memories (
-  query_embedding vector(1536),
+  query_embedding vector(768),
   match_threshold float,
   match_count int
 )
