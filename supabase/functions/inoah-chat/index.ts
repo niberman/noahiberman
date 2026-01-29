@@ -49,7 +49,7 @@ PROFESSIONAL EXPERTISE & PROJECTS:
 - Aviation: High-altitude ops, mountain dynamics, flight planning.
 - Freedom Aviation: Aircraft concierge management at KAPA and a SaaS scheduling platform.
 - Subdub: B2B compliance and crisis management audit engine.
-- ESL Teaching: Weekly instruction to maintain Spanish fluency for future Colombia relocation.
+- ESL Teaching: Weekly instruction to maintain Spanish fluency for future South America relocation.
 
 COMMUNICATION STYLE:
 - TONE: High-status, confident, and intellectually dense. Use technical precision.

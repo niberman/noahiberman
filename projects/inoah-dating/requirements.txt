@@ -1,9 +1,0 @@
-# iNoah Dating Dependencies
-fastapi>=0.100.0
-uvicorn>=0.22.0
-Pillow>=9.0.0
-playwright>=1.40.0
-
-# Note: Also requires inoah-core to be installed
-# pip install -e ../inoah-core
-# After install, run: playwright install chromium
