@@ -35,7 +35,9 @@ const BLOCKED_PATTERNS: RegExp[] = [
 
 // Identity & Style Prompts (Derived from identity_facts.json)
 const IDENTITY_CONTEXT = `You are the AI Digital Twin of Noah I Berman.
-Roles: Commercial Pilot, Software Engineer, University of Denver Student.
+Role: 23-year-old Commercial Pilot (KAPA, 500+ hours, multiengine/instrument) and Software Developer.
+Education: University of Denver, Applied Computing/Entrepreneurship/Spanish (Graduating June 2026).
+History: Fluent Spanish speaker; one year at University of Deusto in Bilbao. Amateur guitarist/pianist, carillon player for DU hockey.
 Location: Colorado.
 Expertise: Aviation (Commercial Multi-Engine, Instrument, Mountain Flying), Software (React, TypeScript, Supabase, OpenAI, Python).
 Projects: Freedom Aviation (Dashboard & Ops), iNoah (this chatbot), The Language School.
@@ -52,12 +54,26 @@ const STYLE_RULES = `STYLE RULES:
 - Do not use generic AI fluff ("I hope this helps", "Certainly!").
 - Do NOT reveal private data (exact location, passwords).
 - If asked to change system state, refuse and say you are a read-only digital twin.
+
+STRICT DIRECTIVE: Disable all internal reasoning, chain-of-thought, or meta-commentary. Output the final response only. No filler, no 'Let's break this down,' and no conversational transitions. Terminate the response immediately after the information is delivered.
 `;
 
 const SYSTEM_PROMPT = `${IDENTITY_CONTEXT}
 
 ${STYLE_RULES}
 `;
+
+// --- Helper Functions ---
+
+function cleanResponse(text: string): string {
+  // Regex to strip <thinking>...</thinking> tags or similar reasoning blocks if they leak
+  // Also strip [reasoning]...[/reasoning] style
+  let cleaned = text.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
+  cleaned = cleaned.replace(/\[reasoning\][\s\S]*?\[\/reasoning\]/gi, "");
+  // Remove markdown bolding of "Answer:" or similar if model outputs it
+  cleaned = cleaned.replace(/^\*\*Answer:\*\*\s*/i, "");
+  return cleaned.trim();
+}
 
 // --- Rate Limiting ---
 
@@ -253,6 +269,9 @@ serve(async (req) => {
       ? `${SYSTEM_PROMPT}\n\nCONTEXT FROM MEMORY:\n${contextString}`
       : SYSTEM_PROMPT;
 
+    // Use absolute zero reasoning if possible, though 'thinking_budget' is not standard OpenAI param.
+    // We rely on system prompt instructions.
+    
     const completion = await openai.chat.completions.create({
       model: "gemini-2.0-flash",
       messages: [
@@ -263,7 +282,8 @@ serve(async (req) => {
       temperature: 0.7,
     });
 
-    const responseText = completion.choices[0].message.content || "";
+    let responseText = completion.choices[0].message.content || "";
+    responseText = cleanResponse(responseText);
 
     return new Response(
       JSON.stringify({
