@@ -104,7 +104,7 @@ export default function Inoah() {
                   <strong>💡 Tip:</strong> iNoah is also available as a chat widget in the bottom-right corner on every page!
                 </div>
                 <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-                  iNoah is a beta system running on Noah's home server via LM Studio. Responses can be imperfect.
+                  iNoah is a beta system running on the google gemini api. Responses can be imperfect.
                 </div>
               </div>
             }
