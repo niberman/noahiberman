@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -152,7 +153,12 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
 
           {/* Title */}
           <h3 className="text-xl sm:text-2xl font-display font-bold text-primary-foreground mb-2">
-            {post.title}
+            <Link
+              to={`/blog/${post.slug}`}
+              className="hover:text-secondary transition-colors"
+            >
+              {post.title}
+            </Link>
           </h3>
 
           {/* Excerpt */}

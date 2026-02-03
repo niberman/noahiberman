@@ -18,7 +18,7 @@ export function CollapsibleSection({
   subtitle,
   collapsedContent,
   children,
-  defaultOpen = false,
+  defaultOpen = true,
   className,
   id,
 }: CollapsibleSectionProps) {
