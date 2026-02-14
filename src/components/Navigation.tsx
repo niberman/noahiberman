@@ -8,19 +8,23 @@ export function Navigation() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const sectionLinks = [
-    { path: "/", label: "Home", id: "home", type: "section" as const },
-    { path: "/#about", label: "About", id: "about", type: "section" as const },
-    { path: "/#blog", label: "Blog", id: "blog", type: "section" as const },
-    { path: "/#ventures", label: "Ventures", id: "ventures", type: "section" as const },
-    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" as const },
-    { path: "/#contact", label: "Contact", id: "contact", type: "section" as const },
-    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" as const },
+  const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
+    { path: "/", label: "Home", id: "home", type: "section" },
+    { path: "/#about", label: "About", id: "about", type: "section" },
+    { path: "/#blog", label: "Blog", id: "blog", type: "section" },
+    { path: "/#ventures", label: "Ventures", id: "ventures", type: "section" },
+    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
+    { path: "/#contact", label: "Contact", id: "contact", type: "section" },
+    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
+    ...(import.meta.env.VITE_ENABLE_CHAT_LINK === "true"
+      ? [{ path: "https://chat.noahiberman.com", label: "Sovereign Chat", id: "chat", type: "external" as const }]
+      : []),
   ];
 
   // Note: Navigation already handles hash navigation correctly
   // Links scroll to sections on homepage or navigate + scroll from other pages
-  const isLinkActive = (path: string, id: string, type: "section" | "page") => {
+  const isLinkActive = (path: string, id: string, type: "section" | "page" | "external") => {
+    if (type === "external") return false;
     if (type === "page") {
       return location.pathname === path;
     }
@@ -39,8 +43,14 @@ export function Navigation() {
     e: React.MouseEvent<HTMLAnchorElement>,
     path: string,
     id: string,
-    type: "section" | "page"
+    type: "section" | "page" | "external"
   ) => {
+    if (type === "external") {
+      // Let the browser handle native <a href> navigation
+      setIsMenuOpen(false);
+      return;
+    }
+
     if (type === "page") {
       e.preventDefault();
       if (location.pathname !== path) {
@@ -113,6 +123,7 @@ export function Navigation() {
                 key={link.path}
                 href={link.path}
                 onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                {...(link.type === "external" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${isLinkActive(link.path, link.id, link.type)
                     ? "text-secondary"
                     : "text-muted-foreground"
@@ -155,8 +166,9 @@ export function Navigation() {
                 <a
                   key={link.path}
                   href={link.path}
-                onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
-                className={`block px-4 py-3 rounded-lg font-medium transition-all ${isLinkActive(link.path, link.id, link.type)
+                  onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                  {...(link.type === "external" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${isLinkActive(link.path, link.id, link.type)
                       ? "bg-secondary/20 text-secondary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}

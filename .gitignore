@@ -29,3 +29,7 @@ dist-ssr
 
 # Disabled projects folder
 projects.disabled/
+
+# Chat infrastructure
+infrastructure/chat/data/
+infrastructure/chat/.env.chat

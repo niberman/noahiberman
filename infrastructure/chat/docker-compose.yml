@@ -1,0 +1,64 @@
+version: "3.8"
+
+# ============================================================================
+# iNoah Sovereign Chat — Open WebUI + LM Studio + Cloudflare Tunnel
+# ============================================================================
+# Usage:
+#   cp .env.chat.example .env.chat   # fill in your secrets
+#   docker compose up -d
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Open WebUI — LM Studio as primary OpenAI-compatible backend
+  # --------------------------------------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: inoah-chat
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/app/backend/data
+    env_file:
+      - .env.chat
+    environment:
+      # Disable Ollama integration entirely
+      OLLAMA_BASE_URL: ""
+      # Point to LM Studio on the host machine
+      OPENAI_API_BASE_URL: ${LM_STUDIO_URL:-http://host.docker.internal:1234/v1}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-lm-studio}
+      # Custom branding
+      WEBUI_NAME: "iNoah"
+      # Secret key forwarded from .env.chat
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY}
+    networks:
+      - chat-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # --------------------------------------------------------------------------
+  # Cloudflared — Secure tunnel to chat.noahiberman.com
+  # --------------------------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: inoah-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    depends_on:
+      open-webui:
+        condition: service_healthy
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
