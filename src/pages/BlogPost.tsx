@@ -123,7 +123,7 @@ export default function BlogPost() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">Post not found</p>
         <Button asChild variant="outline">
-          <Link to="/#blog">
+          <Link to="/blog">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Blog
           </Link>
@@ -149,7 +149,7 @@ export default function BlogPost() {
             className="mb-8"
           >
             <Button asChild variant="ghost" size="sm">
-              <Link to="/#blog">
+              <Link to="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Blog
               </Link>
@@ -240,7 +240,7 @@ export default function BlogPost() {
             className="mt-12 pt-8 border-t border-border/50"
           >
             <Button asChild variant="outline">
-              <Link to="/#blog">
+              <Link to="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to all posts
               </Link>

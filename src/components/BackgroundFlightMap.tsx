@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import type { Feature, LineString } from "geojson";
 import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { flightHistory } from "@/data/flights";
-import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
+import { flightHistory as staticFlightHistory } from "@/data/flights";
+import { generateArc } from "@/lib/airport-coordinates";
 import { extractAirportsFromFlight } from "@/lib/flight-airports";
+import { useFlights } from "@/hooks/use-supabase-flights";
+import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 
 interface FlightInfo {
   tail_number: string;
@@ -24,6 +26,14 @@ interface AircraftPosition {
 type RouteFeature = Feature<LineString, { index: number; origin: string; destination: string }>;
 
 export function BackgroundFlightMap() {
+  const { data: supabaseFlights } = useFlights();
+  const { lookupMap: airportCoordsMap } = useAirportLookupMap();
+  const flightHistory = useMemo(() => supabaseFlights ?? staticFlightHistory, [supabaseFlights]);
+
+  const getAirportCoordinates = (code: string): [number, number] | null => {
+    return airportCoordsMap[code.toUpperCase()] || null;
+  };
+
   const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
   const [positionHistory, setPositionHistory] = useState<AircraftPosition[]>([]);
@@ -266,6 +276,14 @@ export function BackgroundFlightMap() {
     };
   }, []);
 
+  // Re-draw routes when Supabase data loads/changes
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+    if (!currentFlight || currentFlight.flight_status !== "in_flight") {
+      addHistoricalRoutes();
+    }
+  }, [flightHistory, airportCoordsMap, mapLoaded]);
+
   // Add historical flight routes to the map
   const addHistoricalRoutes = () => {
     if (!map.current || !mapLoaded) return;
@@ -418,6 +436,16 @@ export function BackgroundFlightMap() {
         },
       });
     });
+
+    // Clean up existing airport sources/layers before re-adding
+    if (map.current.getSource("airport-points")) {
+      ["airport-labels", "airport-circles", "airport-glow"].forEach((layerId) => {
+        if (map.current?.getLayer(layerId)) {
+          map.current.removeLayer(layerId);
+        }
+      });
+      map.current.removeSource("airport-points");
+    }
 
     // Add airport points source
     map.current.addSource("airport-points", {

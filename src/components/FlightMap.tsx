@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, useMemo, Suspense, lazy } from "react";
 import { Plane, MapPin, Clock, Calendar, Radio } from "lucide-react";
-import { flightHistory, type Flight } from "@/data/flights";
-import { getAirportCoordinates, generateArc } from "@/lib/airport-coordinates";
+import { flightHistory as staticFlightHistory, type Flight } from "@/data/flights";
+import { generateArc } from "@/lib/airport-coordinates";
 import { extractAirportsFromFlight, mapAirportsToFlights } from "@/lib/flight-airports";
+import { useFlights } from "@/hooks/use-supabase-flights";
+import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 import type { MapRef, ViewState } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/lib/supabase";
@@ -59,6 +61,14 @@ const getMapboxToken = (): string => {
 };
 
 export function FlightMap() {
+  const { data: supabaseFlights } = useFlights();
+  const { lookupMap: airportCoordsMap } = useAirportLookupMap();
+  const flightHistory = supabaseFlights ?? staticFlightHistory;
+
+  const getAirportCoordinates = (code: string): [number, number] | null => {
+    return airportCoordsMap[code.toUpperCase()] || null;
+  };
+
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState<ViewState>({
     longitude: -105.27,

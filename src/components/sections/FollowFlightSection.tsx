@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Plane, MapPin } from "lucide-react";
-import { flightStats } from "@/data/about";
+import { useFlightStats } from "@/hooks/use-flight-stats";
 
 export function FollowFlightSectionContent() {
+  const { stats } = useFlightStats();
   const enableMapInteraction = () => {
     window.dispatchEvent(new CustomEvent("enableFlightMapInteractive"));
   };
@@ -30,7 +31,7 @@ export function FollowFlightSectionContent() {
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Hours</p>
               <p className="text-2xl sm:text-3xl font-bold text-primary-foreground">
-                {flightStats.totalHours}
+                {stats.totalHoursDisplay}
               </p>
             </div>
           </div>
@@ -49,7 +50,7 @@ export function FollowFlightSectionContent() {
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Flights</p>
               <p className="text-2xl sm:text-3xl font-bold text-primary-foreground">
-                {flightStats.totalFlights}
+                {stats.totalFlightsDisplay}
               </p>
             </div>
           </div>

@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Inoah from "./pages/Inoah";
 import Logo from "./pages/Logo";
+import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
@@ -60,6 +61,7 @@ const App = () => {
                   path="/Dashboard/*"
                   element={<Navigate to="/dashboard" replace />}
                 />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />
               <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />

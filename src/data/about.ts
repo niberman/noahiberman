@@ -102,7 +102,7 @@ export const aboutContent = {
         "Commercial Pilot, Instrument Rated",
         "Helicopter Private Pilot",
         "Commercial Multi-Engine",
-        "513+ hours, 292+ flights",
+        "560+ hours, 290+ flights",
       ],
     },
     {

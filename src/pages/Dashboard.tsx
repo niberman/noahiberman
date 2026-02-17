@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
+import FlightLogManager from "@/components/dashboard/FlightLogManager";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ const Dashboard = () => {
       />
       
       <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
-        <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-2xl">
+        <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-3xl">
           {/* Header */}
           <div className="mb-8 sm:mb-10 animate-fade-in">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
@@ -209,6 +210,11 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Flight Log Manager */}
+          <div className="mt-8 sm:mt-10">
+            <FlightLogManager />
+          </div>
 
           {/* Blog Post Manager */}
           <div className="mt-8 sm:mt-10">

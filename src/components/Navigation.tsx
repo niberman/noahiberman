@@ -11,7 +11,7 @@ export function Navigation() {
   const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
     { path: "/", label: "Home", id: "home", type: "section" },
     { path: "/#about", label: "About", id: "about", type: "section" },
-    { path: "/#blog", label: "Blog", id: "blog", type: "section" },
+    { path: "/blog", label: "Blog", id: "blog", type: "page" },
     { path: "/#ventures", label: "Ventures", id: "ventures", type: "section" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
     { path: "/#contact", label: "Contact", id: "contact", type: "section" },

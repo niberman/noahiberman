@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { activeFlight, flightHistory } from "@/data/flights";
+import { activeFlight, flightHistory as staticFlightHistory, type Flight } from "@/data/flights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SEO } from "@/components/SEO";
 import { UnifiedFlightTracker } from "@/components/UnifiedFlightTracker";
+import { useFlights } from "@/hooks/use-supabase-flights";
+import { useFlightStats } from "@/hooks/use-flight-stats";
 
 interface PageSectionProps {
   showSEO?: boolean;
@@ -18,11 +20,8 @@ interface PageSectionProps {
 
 const FLIGHTS_PER_PAGE = 25;
 
-// Mountain airports
-const MOUNTAIN_AIRPORTS = ['KLXV', 'KASE', 'KTEX', 'KEGE', 'KSBS', '1V6', 'KAEJ', 'KANK'];
-
 // Individual flight card component with collapsible details
-const FlightCard = ({ flight, index }: { flight: typeof flightHistory[0], index: number }) => {
+const FlightCard = ({ flight, index }: { flight: Flight, index: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -114,6 +113,10 @@ const FlightCard = ({ flight, index }: { flight: typeof flightHistory[0], index:
 };
 
 export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
+  const { data: supabaseFlights } = useFlights();
+  const flightHistory = supabaseFlights ?? staticFlightHistory;
+  const { stats } = useFlightStats();
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [displayedFlights, setDisplayedFlights] = useState(3);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
@@ -129,67 +132,27 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
 
   // Calculate chart data
   const chartData = useMemo(() => {
-    // Aircraft types distribution
     const aircraftTypes: Record<string, number> = {};
     
-    // Flight categories
-    let mountainFlying = 0;
-    let totalHours = 0;
-    
     flightHistory.forEach(flight => {
-      // Count aircraft types
-      const aircraftType = flight.aircraft.type 
+      const aircraftType = flight.aircraft?.type 
         ? flight.aircraft.type.split(' ').slice(-2).join(' ') || flight.aircraft.type
-        : 'Unknown'; // Get last 2 words (e.g., "172 Skyhawk")
+        : 'Unknown';
       aircraftTypes[aircraftType] = (aircraftTypes[aircraftType] || 0) + 1;
-      
-      // Parse duration
-      const duration = flight.duration || '';
-      const hoursMatch = duration.match(/(\d+)h/);
-      const minutesMatch = duration.match(/(\d+)m/);
-      const hours = hoursMatch ? parseFloat(hoursMatch[1]) : 0;
-      const minutes = minutesMatch ? parseFloat(minutesMatch[1]) : 0;
-      const flightHours = hours + minutes / 60;
-      totalHours += flightHours;
-      
-      // Check for mountain flying
-      const route = flight.route.originCode + ' ' + flight.route.destinationCode + ' ' + (flight.description || '');
-      const isMountainFlying = MOUNTAIN_AIRPORTS.some(airport => route.includes(airport));
-      if (isMountainFlying) {
-        mountainFlying += flightHours;
-      }
     });
 
-    // Format aircraft data for chart
     const aircraftData = Object.entries(aircraftTypes)
       .map(([type, count]) => ({ type, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 8);
 
-    // Collect all unique airports (including from route descriptions)
-    const airports = new Set<string>();
-    flightHistory.forEach(flight => {
-      airports.add(flight.route.originCode.trim().toUpperCase());
-      airports.add(flight.route.destinationCode.trim().toUpperCase());
-      
-      // Also extract airports from route description
-      if (flight.description) {
-        const routeMatches = flight.description.match(/Route:\s*([A-Z0-9\s-]+)/i);
-        if (routeMatches) {
-          const routeString = routeMatches[1];
-          const airportCodes = routeString.match(/\b([A-Z][A-Z0-9]{1,3})\b/g) || [];
-          airportCodes.forEach(code => airports.add(code.toUpperCase().trim()));
-        }
-      }
-    });
-
     return {
       aircraftData,
-      totalHours: totalHours.toFixed(1),
-      mountainFlying: mountainFlying.toFixed(1),
-      airports: Array.from(airports),
+      totalHours: stats.totalHours,
+      mountainFlying: stats.mountainHours,
+      airports: { length: stats.uniqueAirports },
     };
-  }, [flightHistory]);
+  }, [flightHistory, stats]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { 

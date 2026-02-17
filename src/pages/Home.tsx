@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Plane, MapPin } from "lucide-react";
+import { ArrowRight, Plane, MapPin, MessageCircle, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useRef, useEffect } from "react";
 import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
@@ -8,14 +9,16 @@ import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { WhatIDoContent } from "@/components/sections/WhatIDo";
 import { AboutMeContent } from "@/components/sections/AboutMe";
-import { BlogSectionContent } from "@/components/sections/BlogSection";
 import { VenturesSectionContent } from "@/components/sections/VenturesSection";
 import { FollowFlightSectionContent } from "@/components/sections/FollowFlightSection";
 import { ContactSection } from "@/components/sections/ContactSection";
-import { aboutContent, flightStats } from "@/data/about";
+import { aboutContent } from "@/data/about";
 import { BrandWordsString } from "@/data/brand";
+import { useFlightStats } from "@/hooks/use-flight-stats";
 
 export default function Home() {
+  const { stats: flightStats } = useFlightStats();
+  const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -161,30 +164,25 @@ export default function Home() {
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4"
               >
-                {/* Primary: View Ventures */}
+                {/* Primary: Chat with iNoah */}
                 <Button
-                  onClick={() => scrollToSection("ventures")}
+                  onClick={() => navigate("/inoah")}
                   size="lg"
                   className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                 >
-                  View Ventures <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  Chat with iNoah
                 </Button>
 
-                {/* Secondary: Follow My Flight */}
+                {/* Secondary: Blog */}
                 <Button
-                  onClick={() => {
-                    scrollToSection("follow-my-flight");
-                    // After scrolling, enable interactive map mode
-                    setTimeout(() => {
-                      window.dispatchEvent(new CustomEvent("enableFlightMapInteractive"));
-                    }, 600);
-                  }}
+                  onClick={() => navigate("/blog")}
                   size="lg"
                   variant="outline"
                   className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                 >
-                  <Plane className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Follow My Flight
+                  <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  Blog
                 </Button>
 
                 {/* Tertiary: Get in Touch */}
@@ -256,21 +254,6 @@ export default function Home() {
         </div>
 
         {/* ========================================
-            BLOG SECTION (Collapsible)
-            ======================================== */}
-        <div id="blog" className="relative bg-background/90 backdrop-blur-xs">
-          <CollapsibleSection
-            title="Blog"
-            subtitle="Publicaciones"
-            collapsedContent={
-              <p>Thoughts on aviation, technology, entrepreneurship, and life at altitude.</p>
-            }
-          >
-            <BlogSectionContent />
-          </CollapsibleSection>
-        </div>
-
-        {/* ========================================
             VENTURES SECTION (Collapsible)
             ======================================== */}
         <div id="ventures" className="relative bg-background/90 backdrop-blur-xs">
@@ -300,11 +283,11 @@ export default function Home() {
                 <div className="flex items-center gap-4 text-sm">
                   <span className="flex items-center gap-1.5">
                     <Plane className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalHours}</strong> hours
+                    <strong>{flightStats.totalHoursDisplay}</strong> hours
                   </span>
                   <span className="flex items-center gap-1.5">
                     <MapPin className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalFlights}</strong> flights
+                    <strong>{flightStats.totalFlightsDisplay}</strong> flights
                   </span>
                 </div>
               </div>

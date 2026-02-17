@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { aboutContent, groupedTimeline } from "@/data/about";
+import { useFlightStats } from "@/hooks/use-flight-stats";
 
 const typeColors = {
   aviation: "bg-secondary/20 text-secondary border-secondary/40",
@@ -9,6 +10,8 @@ const typeColors = {
 };
 
 export function AboutMeContent() {
+  const { stats } = useFlightStats();
+
   return (
     <div className="space-y-8 sm:space-y-10">
       {/* Bio paragraph */}
@@ -69,7 +72,7 @@ export function AboutMeContent() {
         {/* Current totals note */}
         <div className="bg-secondary/10 rounded-xl p-4 border border-secondary/20">
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-secondary">Current totals:</span> 513.2+ hours, 292+ flights
+            <span className="font-semibold text-secondary">Current totals:</span> {stats.totalHoursDisplay} hours, {stats.totalFlightsDisplay} flights
           </p>
         </div>
       </div>
