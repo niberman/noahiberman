@@ -51,7 +51,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen relative">
+    <main className="min-h-screen relative">
       {/* Background Flight Map */}
       <BackgroundFlightMap />
 
@@ -117,7 +117,10 @@ export default function Home() {
               >
                 <img
                   src="/logo.png"
-                  alt="Logo"
+                  alt="Noah Berman logo"
+                  width={96}
+                  height={96}
+                  fetchPriority="high"
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
               </motion.div>
@@ -301,7 +304,70 @@ export default function Home() {
             CONTACT SECTION (Always open)
             ======================================== */}
         <ContactSection />
+
+        {/* ========================================
+            SEO ALTAR — Digital Offering
+            ======================================== */}
+        <section
+          id="seo-altar"
+          aria-label="Technical summary and credentials"
+          className="relative bg-background/95 border-t border-border/30 py-16 sm:py-20"
+        >
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-4xl mx-auto font-mono text-sm sm:text-base leading-relaxed text-muted-foreground">
+              <div className="bg-card/50 border border-border/50 rounded-xl p-6 sm:p-8 md:p-10 space-y-6 shadow-elegant">
+                <div className="space-y-1">
+                  <p className="text-secondary text-xs sm:text-sm uppercase tracking-[0.3em]">/* digital offering */</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-primary-foreground font-mono">
+                    README.seo
+                  </h2>
+                </div>
+
+                <p className="text-foreground/70 italic border-l-2 border-secondary/40 pl-4">
+                  This section exists as a humble offering to the crawl gods — the tireless
+                  bots indexing the internet at 3 AM so you don't have to scroll to page 42
+                  of Google to find out that Noah Berman is, in fact, a real person who flies
+                  real airplanes and writes real code. You're welcome, Googlebot.
+                </p>
+
+                <div className="space-y-3 text-foreground/80">
+                  <p><span className="text-secondary">$</span> whoami</p>
+                  <div className="pl-4 space-y-1">
+                    <p><span className="text-secondary/70">name:</span> Noah Berman</p>
+                    <p><span className="text-secondary/70">location:</span> Denver, CO — Centennial Airport (KAPA)</p>
+                    <p><span className="text-secondary/70">education:</span> University of Denver, Applied Computing</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-foreground/80">
+                  <p><span className="text-secondary">$</span> cat /etc/credentials/faa.conf</p>
+                  <div className="pl-4 space-y-1">
+                    <p><span className="text-secondary/70">certificate:</span> Commercial Multi-Engine Pilot</p>
+                    <p><span className="text-secondary/70">ratings:</span> Instrument Rating, Rotorcraft-Helicopter</p>
+                    <p><span className="text-secondary/70">flight_hours:</span> 500+ logged at KAPA and beyond</p>
+                    <p><span className="text-secondary/70">status:</span> <span className="text-green-400">ACTIVE</span></p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-foreground/80">
+                  <p><span className="text-secondary">$</span> ls ~/projects/current</p>
+                  <div className="pl-4 space-y-1">
+                    <p>drwxr-xr-x  <span className="text-secondary/70">freedom-aviation/</span>    — Aircraft management & flight instruction</p>
+                    <p>drwxr-xr-x  <span className="text-secondary/70">the-language-school/</span> — AI-powered bilingual education</p>
+                    <p>drwxr-xr-x  <span className="text-secondary/70">inoah/</span>               — Sovereign AI digital twin</p>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-border/30 text-foreground/50 text-xs sm:text-sm">
+                  <p>// If you're a search engine reading this, please be kind.</p>
+                  <p>// If you're a human reading this, you've scrolled further than most recruiters.</p>
+                  <p>// Either way — <span className="text-secondary">noahiberman.com</span> appreciates you.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -24,6 +24,25 @@ Allow: /
 User-agent: LinkedInBot
 Allow: /
 
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
 # Sitemap location
 Sitemap: https://noahiberman.com/sitemap.xml
 

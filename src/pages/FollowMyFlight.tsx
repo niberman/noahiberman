@@ -181,12 +181,12 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   ];
 
   return (
-    <div className="min-h-screen pointer-events-none">
+    <main className="min-h-screen pointer-events-none">
       {showSEO && (
         <SEO
-          title="Follow My Flight — Track Noah Berman's Flights | Pilot Flight Tracking"
-          description="Track Noah Berman's current flight in real-time and explore flight history. Live flight tracking, logbook, and aviation statistics from a commercial pilot. Follow flights in real-time with live data."
-          keywords="flight tracking, live flight tracker, pilot flights, aviation tracking, flight logbook, real-time flight tracking, pilot flight history, Noah Berman flights, commercial pilot, flight statistics, aviation experience, mountain flying"
+          title="Follow My Flight | Noah Berman"
+          description="Track Noah Berman's flights in real-time and explore flight history from a Denver-based commercial pilot and software engineer."
+          keywords="flight tracking, live flight tracker, pilot flights Denver, aviation tracking, flight logbook, Noah Berman flights, commercial pilot, AI systems"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "WebPage",
@@ -510,9 +510,9 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
                   {/* Flight History Section */}
                   <div className="mt-8 pt-8 border-t border-border/50">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                      <h3 className="text-xl md:text-2xl font-display font-bold text-primary-foreground">
+                      <h2 className="text-xl md:text-2xl font-display font-bold text-primary-foreground">
                         Flight History
-                      </h3>
+                      </h2>
                       <Badge variant="outline" className="text-sm w-fit">
                         {displayedFlights} of {flightHistory.length} flights
                       </Badge>
@@ -545,7 +545,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         </motion.div>
       </div>
     </div>
-  </div>
+  </main>
   );
 }
 

@@ -119,6 +119,7 @@ export function CollapsibleSection({
                   <div className="px-6 sm:px-8 md:px-10 pb-6 sm:pb-8">
                     <button
                       onClick={() => setIsOpen(false)}
+                      aria-label={`Collapse ${title} section`}
                       className="text-sm text-secondary/80 hover:text-secondary font-medium flex items-center gap-2 transition-colors"
                     >
                       <ChevronDown className="h-4 w-4 rotate-180" />

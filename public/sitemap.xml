@@ -2,83 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  
+
   <!-- Homepage -->
   <url>
     <loc>https://noahiberman.com/</loc>
-    <lastmod>2025-11-24</lastmod>
+    <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/" />
   </url>
-  
-  <!-- Dashboard -->
+
+  <!-- Blog -->
   <url>
-    <loc>https://noahiberman.com/dashboard</loc>
-    <lastmod>2025-11-24</lastmod>
+    <loc>https://noahiberman.com/blog</loc>
+    <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/dashboard" />
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/blog" />
   </url>
-  
-  <!-- About Section -->
+
+  <!-- iNoah -->
   <url>
-    <loc>https://noahiberman.com/about</loc>
-    <lastmod>2025-11-24</lastmod>
+    <loc>https://noahiberman.com/inoah</loc>
+    <lastmod>2026-03-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/about" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/about" />
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/inoah" />
   </url>
-  
-  <!-- Ventures Section -->
-  <url>
-    <loc>https://noahiberman.com/ventures</loc>
-    <lastmod>2025-11-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/ventures" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/ventures" />
-  </url>
-  
+
   <!-- Freedom Aviation Venture Detail -->
   <url>
     <loc>https://noahiberman.com/ventures/freedom-aviation</loc>
-    <lastmod>2025-11-24</lastmod>
+    <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/ventures/freedom-aviation" />
   </url>
-  
+
   <!-- The Language School Venture Detail -->
   <url>
     <loc>https://noahiberman.com/ventures/language-school</loc>
-    <lastmod>2025-11-24</lastmod>
+    <lastmod>2026-03-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/ventures/language-school" />
     <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/ventures/language-school" />
   </url>
-  
-  <!-- Follow My Flight Section -->
-  <url>
-    <loc>https://noahiberman.com/follow-my-flight</loc>
-    <lastmod>2025-11-24</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/follow-my-flight" />
-  </url>
-  
-  <!-- Contact Section -->
-  <url>
-    <loc>https://noahiberman.com/contact</loc>
-    <lastmod>2025-11-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/contact" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/contact" />
-  </url>
-  
-</urlset>
 
+</urlset>

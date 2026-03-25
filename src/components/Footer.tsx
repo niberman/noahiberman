@@ -31,7 +31,10 @@ export function Footer() {
               <div className="h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded relative flex-shrink-0">
                 <img
                   src="/logo.png"
-                  alt="Logo"
+                  alt="Noah Berman logo"
+                  width={32}
+                  height={32}
+                  loading="lazy"
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
               </div>

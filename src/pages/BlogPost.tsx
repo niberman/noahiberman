@@ -135,8 +135,21 @@ export default function BlogPost() {
   return (
     <>
       <SEO
-        title={`${post.title} | Blog`}
-        description={post.excerpt || `Read ${post.title}`}
+        title={`${post.title} | Noah Berman`}
+        description={post.excerpt || `Read ${post.title} by Noah Berman`}
+        type="article"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.excerpt || "",
+          "author": {
+            "@type": "Person",
+            "name": "Noah Berman"
+          },
+          "datePublished": post.published_at || undefined,
+          "url": `https://noahiberman.com/blog/${slug}`
+        }}
       />
 
       <article className="min-h-screen pt-24 pb-16">

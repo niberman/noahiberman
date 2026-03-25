@@ -73,12 +73,12 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
   };
 
   return (
-    <div className="py-16 sm:py-20 md:py-24 lg:py-32">
+    <main className="py-16 sm:py-20 md:py-24 lg:py-32">
       {showSEO && (
         <SEO
-          title={`Contact Noah Berman — ${BrandWordsString} | Get in Touch`}
-          description="Get in touch with Noah Berman for aviation services, aircraft management, flight instruction, or business inquiries. Contact for Freedom Aviation services or collaboration opportunities."
-          keywords="contact Noah Berman, aviation contact, Freedom Aviation contact, flight instructor, aircraft management inquiry, aviation services, business collaboration, pilot contact, aviation consultation"
+          title="Contact | Noah Berman"
+          description="Get in touch with Noah Berman — Denver-based commercial pilot and software engineer. Aviation services, AI systems, and collaborations."
+          keywords="contact Noah Berman, aviation contact Denver, Freedom Aviation, AI systems, software engineer, business collaboration, pilot contact"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "ContactPage",
@@ -263,9 +263,9 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
             <Card className="bg-gradient-dusk text-primary-foreground border-secondary/20 shadow-glow">
               <CardContent className="pt-5 sm:pt-6 pb-5 sm:pb-6">
                 <div className="text-center max-w-2xl mx-auto px-4">
-                  <h3 className="text-xl sm:text-2xl font-display text-primary-foreground mb-2">
+                  <h2 className="text-xl sm:text-2xl font-display text-primary-foreground mb-2">
                     Let's Build Together
-                  </h3>
+                  </h2>
                   <p className="text-base sm:text-lg font-display italic text-secondary mb-3 sm:mb-4">
                     Construyamos Juntos
                   </p>
@@ -278,6 +278,6 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
           </motion.div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

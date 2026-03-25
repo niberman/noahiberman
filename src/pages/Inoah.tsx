@@ -80,10 +80,10 @@ export default function Inoah() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <SEO
-        title="iNoah, the Digital Twin"
-        description="Chat with iNoah, a beta digital twin trained on Noah Berman's personality, values, and work."
+        title="iNoah | Noah Berman"
+        description="Chat with iNoah, an AI digital twin of Noah Berman. Ask about aviation, AI systems, Denver ventures, and technology projects."
         canonical="https://noahiberman.com/inoah"
       />
       <section className="container mx-auto px-4 pt-28 pb-16">
@@ -122,6 +122,6 @@ export default function Inoah() {
           </ChatShell>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

@@ -7,13 +7,11 @@ import { SEO } from "@/components/SEO";
 
 export default function Blog() {
   return (
-    <>
+      <main className="min-h-screen pt-24 pb-16">
       <SEO
-        title="Blog"
-        description="Thoughts on aviation, technology, entrepreneurship, and life at altitude."
+        title="Blog | Noah Berman"
+        description="Aviation, AI systems, and technology insights from Noah Berman — a Denver-based commercial pilot, software engineer, and entrepreneur."
       />
-
-      <div className="min-h-screen pt-24 pb-16">
         <div className="container max-w-5xl mx-auto px-4 sm:px-6">
           {/* Back to home */}
           <motion.div
@@ -57,7 +55,6 @@ export default function Blog() {
             <BlogSectionContent />
           </motion.div>
         </div>
-      </div>
-    </>
+      </main>
   );
 }

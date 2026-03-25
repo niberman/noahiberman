@@ -25,28 +25,40 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
   const allProjects = [...projects, ...otherProjects];
 
   return (
-    <div className="pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
+    <main className="pt-8 sm:pt-12 md:pt-16 lg:pt-20 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
       {showSEO && (
         <SEO
-          title="Ventures & Projects — Freedom Aviation, The Language School | Aviation & Tech"
-          description="Explore Noah Berman's ventures including Freedom Aviation (premium aircraft management & flight instruction) and The Language School (AI-powered bilingual workforce platform). Building technology solutions that bridge aviation, education, and culture."
-          keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, bilingual education platform, aviation startup, technology ventures, aviation technology, aircraft services, flight training business, bilingual workforce, AI education platform, tech startups"
+          title="Ventures & Projects | Noah Berman"
+          description="Explore Noah Berman's ventures: Freedom Aviation for aircraft management and The Language School for AI-powered education. Denver-based aviation and tech."
+          keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, AI systems, Denver aviation, technology ventures, software engineer"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "CollectionPage",
             "name": "Ventures & Projects",
             "description": "Portfolio of ventures and projects by Noah Berman",
             "url": "https://noahiberman.com/ventures",
-            "hasPart": ventures.map(venture => ({
-              "@type": "Organization",
-              "name": venture.title,
-              "description": venture.description,
-              "url": venture.link,
-              "founder": {
-                "@type": "Person",
-                "name": "Noah Berman"
-              }
-            }))
+            "hasPart": [
+              ...ventures.map(venture => ({
+                "@type": "Organization",
+                "name": venture.title,
+                "description": venture.description,
+                "url": venture.link,
+                "founder": {
+                  "@type": "Person",
+                  "name": "Noah Berman"
+                }
+              })),
+              ...allProjects.filter(p => p.technologies.length > 0).map(project => ({
+                "@type": "SoftwareSourceCode",
+                "name": project.title,
+                "description": project.description,
+                "programmingLanguage": project.technologies,
+                "author": {
+                  "@type": "Person",
+                  "name": "Noah Berman"
+                }
+              }))
+            ]
           }}
         />
       )}
@@ -136,6 +148,7 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
                             {venture.link && (
                               <button
                                 type="button"
+                                aria-label={`Visit ${venture.title} website`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(venture.link, "_blank", "noopener,noreferrer");
@@ -148,6 +161,7 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
                             {venture.companyLink && (
                               <button
                                 type="button"
+                                aria-label={`Visit ${venture.title} company website`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(venture.companyLink, "_blank", "noopener,noreferrer");
@@ -275,6 +289,6 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

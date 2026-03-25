@@ -31,7 +31,7 @@ const App = () => {
           <InoahChatWidget />
           <div className="min-h-screen flex flex-col relative">
             <Navigation />
-            <main className="flex-1 relative z-10">
+            <div className="flex-1 relative z-10">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
@@ -69,7 +69,7 @@ const App = () => {
               <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
+          </div>
           <Footer />
         </div>
       </BrowserRouter>

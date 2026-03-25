@@ -107,7 +107,9 @@ export function Navigation() {
             <div className="h-6 w-6 sm:h-7 sm:w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative flex-shrink-0">
               <img
                 src="/logo.png"
-                alt="Logo"
+                alt="Noah Berman logo"
+                width={28}
+                height={28}
                 className="absolute inset-0 w-full h-full object-contain origin-center"
               />
             </div>
