@@ -5,7 +5,7 @@ import io
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from email import policy
 from hashlib import sha1
 from typing import Any
@@ -18,6 +18,70 @@ LOGGER = logging.getLogger(__name__)
 IMAP_HOST = "imap.gmail.com"
 FORE_FLIGHT_FROM = "team@foreflight.com"
 FORE_FLIGHT_SUBJECT = "Logbook"
+
+
+def _imap_since_date(days: int) -> str:
+    """
+    Return an IMAP SINCE date string like '25-Mar-2026'.
+    Uses UTC to avoid timezone surprises.
+    """
+    days = max(1, int(days))
+    dt = datetime.now(UTC) - timedelta(days=days)
+    return dt.strftime("%d-%b-%Y")
+
+
+def _looks_like_foreflight_csv(payload: bytes) -> bool:
+    if not payload:
+        return False
+    head = payload[:64 * 1024].decode("utf-8-sig", errors="replace")
+    # ForeFlight exports include a Flights table with these column names.
+    return ("Date" in head) and ("AircraftID" in head) and ("From" in head) and ("To" in head)
+
+
+def _extract_foreflight_csv_attachments(
+    parsed_msg: email.message.EmailMessage,
+) -> list[tuple[str, bytes, dict[str, str]]]:
+    """
+    Extract candidate CSV payloads from an email.
+    Accepts common variants: inline disposition, missing filename, content-type based CSV.
+    Returns: (display_name, payload_bytes, meta)
+    """
+    candidates: list[tuple[str, bytes, dict[str, str]]] = []
+
+    for msg_part in parsed_msg.walk():
+        if msg_part.is_multipart():
+            continue
+
+        filename = msg_part.get_filename() or ""
+        disposition = msg_part.get_content_disposition() or ""
+        content_type = (msg_part.get_content_type() or "").lower()
+
+        payload = msg_part.get_payload(decode=True) or b""
+        if not payload:
+            continue
+
+        name_lc = filename.lower()
+        is_csv_name = bool(name_lc) and name_lc.endswith(".csv")
+        is_csv_type = content_type in {"text/csv", "application/csv", "application/vnd.ms-excel"}
+        is_attachmentish = disposition in {"attachment", "inline", ""}  # Gmail sometimes omits this.
+        is_csv_sniff = _looks_like_foreflight_csv(payload)
+
+        if not is_attachmentish:
+            continue
+
+        if not (is_csv_name or is_csv_type or is_csv_sniff):
+            continue
+
+        display_name = filename or f"part-{len(candidates) + 1}.csv"
+        meta = {
+            "filename": filename or "(none)",
+            "disposition": disposition or "(none)",
+            "content_type": content_type or "(none)",
+            "bytes": str(len(payload)),
+        }
+        candidates.append((display_name, payload, meta))
+
+    return candidates
 
 
 def _parse_total_time(value: str) -> str:
@@ -286,17 +350,31 @@ def sync_monthly_logbook_from_email() -> None:
         mail.login(gmail_user, gmail_password)
         mail.select("INBOX")
 
-        search_criteria = f'(UNSEEN FROM "{FORE_FLIGHT_FROM}" SUBJECT "{FORE_FLIGHT_SUBJECT}")'
-        status, search_data = mail.search(None, search_criteria)
+        # Recovery-friendly: process recent messages even if they've been opened.
+        since_days = int(os.getenv("FORE_FLIGHT_SINCE_DAYS", "60"))
+        since_date = _imap_since_date(since_days)
+
+        primary = f'(SINCE "{since_date}" FROM "foreflight.com" SUBJECT "{FORE_FLIGHT_SUBJECT}")'
+        status, search_data = mail.search(None, primary)
         if status != "OK":
             LOGGER.warning("Gmail search failed with status: %s", status)
             return
 
         message_ids = search_data[0].split() if search_data and search_data[0] else []
         if not message_ids:
+            fallback = f'(SINCE "{since_date}" FROM "{FORE_FLIGHT_FROM}" SUBJECT "{FORE_FLIGHT_SUBJECT}")'
+            status, search_data = mail.search(None, fallback)
+            if status != "OK":
+                LOGGER.warning("Gmail search failed with status: %s", status)
+                return
+            message_ids = search_data[0].split() if search_data and search_data[0] else []
+
+        if not message_ids:
             # Monthly cadence: no message most days is normal.
             return
 
+        # Fetch & sort newest-first (best-effort based on Date header).
+        parsed_messages: list[tuple[datetime, bytes, email.message.EmailMessage]] = []
         for message_id in message_ids:
             fetch_status, msg_data = mail.fetch(message_id, "(RFC822)")
             if fetch_status != "OK" or not msg_data:
@@ -311,30 +389,45 @@ def sync_monthly_logbook_from_email() -> None:
                 continue
 
             parsed_msg = email.message_from_bytes(raw_email, policy=policy.default)
+            msg_date = parsed_msg.get("date")
+            dt: datetime | None = None
+            try:
+                dt = msg_date.datetime if msg_date and hasattr(msg_date, "datetime") else None
+            except Exception:
+                dt = None
 
-            processed = False
-            for msg_part in parsed_msg.walk():
-                filename = msg_part.get_filename()
-                disposition = msg_part.get_content_disposition()
-                if disposition != "attachment" or not filename:
-                    continue
-                if not filename.lower().endswith(".csv"):
-                    continue
+            parsed_messages.append((dt or datetime.min.replace(tzinfo=UTC), message_id, parsed_msg))
 
-                payload = msg_part.get_payload(decode=True)
-                if not payload:
-                    continue
+        parsed_messages.sort(key=lambda item: item[0], reverse=True)
 
-                csv_buffer = io.BytesIO(payload)
-                import_logbook_data(csv_buffer)
+        for _, message_id, parsed_msg in parsed_messages:
+            LOGGER.info(
+                "ForeFlight email candidate: from=%s subject=%s date=%s id=%s",
+                parsed_msg.get("from"),
+                parsed_msg.get("subject"),
+                parsed_msg.get("date"),
+                message_id.decode(errors="replace") if isinstance(message_id, (bytes, bytearray)) else str(message_id),
+            )
 
-                # Mark seen only after successful processing/import.
-                mail.store(message_id, "+FLAGS", "\\Seen")
-                processed = True
-                break
+            candidates = _extract_foreflight_csv_attachments(parsed_msg)
+            if not candidates:
+                LOGGER.warning(
+                    "No CSV attachment found in matching email id=%s",
+                    message_id.decode(errors="replace") if isinstance(message_id, (bytes, bytearray)) else str(message_id),
+                )
+                continue
 
-            if not processed:
-                LOGGER.warning("No CSV attachment found in matching email id=%s", message_id.decode())
+            # Prefer the largest CSV payload (often the real export vs small fragments).
+            candidates.sort(key=lambda item: len(item[1]), reverse=True)
+            name, payload, meta = candidates[0]
+            LOGGER.info("Selected ForeFlight CSV part: name=%s meta=%s", name, meta)
+
+            csv_buffer = io.BytesIO(payload)
+            import_logbook_data(csv_buffer)
+
+            # Mark seen only after successful processing/import.
+            mail.store(message_id, "+FLAGS", "\\Seen")
+            break
 
     except Exception:
         LOGGER.exception("Monthly logbook sync failed.")
