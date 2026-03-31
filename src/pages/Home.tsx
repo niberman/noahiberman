@@ -240,6 +240,31 @@ export default function Home() {
           </CollapsibleSection>
         </div>
         */}
+          <div id="follow-my-flight" className="relative bg-background/90 backdrop-blur-xs">
+          <CollapsibleSection
+            title="Follow My Flight"
+            subtitle="Sigue Mi Vuelo"
+            collapsedContent={
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <p className="flex-1">
+                  Explore my flight history on an interactive 3D map showing every route I've flown.
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1.5">
+                    <Plane className="h-4 w-4 text-secondary" />
+                    <strong>{flightStats.totalHoursDisplay}</strong> hours
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4 text-secondary" />
+                    <strong>{flightStats.totalFlightsDisplay}</strong> flights
+                  </span>
+                </div>
+              </div>
+            }
+          >
+            <FollowFlightSectionContent />
+          </CollapsibleSection>
+        </div>
 
         {/* ========================================
             ABOUT ME SECTION (Collapsible)
@@ -274,31 +299,7 @@ export default function Home() {
         {/* ========================================
             FOLLOW MY FLIGHT SECTION (Collapsible)
             ======================================== */}
-        <div id="follow-my-flight" className="relative bg-background/90 backdrop-blur-xs">
-          <CollapsibleSection
-            title="Follow My Flight"
-            subtitle="Sigue Mi Vuelo"
-            collapsedContent={
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <p className="flex-1">
-                  Explore my flight history on an interactive 3D map showing every route I've flown.
-                </p>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1.5">
-                    <Plane className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalHoursDisplay}</strong> hours
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalFlightsDisplay}</strong> flights
-                  </span>
-                </div>
-              </div>
-            }
-          >
-            <FollowFlightSectionContent />
-          </CollapsibleSection>
-        </div>
+      
 
         {/* ========================================
             CONTACT SECTION (Always open)
