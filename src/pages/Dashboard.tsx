@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
+import SchedulerManager from "@/components/dashboard/SchedulerManager";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -219,6 +220,11 @@ const Dashboard = () => {
           {/* Blog Post Manager */}
           <div className="mt-8 sm:mt-10">
             <BlogPostManager />
+          </div>
+
+          {/* Scheduler Manager */}
+          <div className="mt-8 sm:mt-10">
+            <SchedulerManager />
           </div>
 
           {/* Agent Control */}

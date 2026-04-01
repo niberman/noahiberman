@@ -2,3 +2,6 @@ fastapi
 uvicorn
 apscheduler
 pytest
+httpx
+supabase
+pydantic

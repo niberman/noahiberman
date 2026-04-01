@@ -16,6 +16,7 @@ import Inoah from "./pages/Inoah";
 import Logo from "./pages/Logo";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Book from "./pages/Book";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ const App = () => {
                   path="/Dashboard/*"
                   element={<Navigate to="/dashboard" replace />}
                 />
+              <Route path="/book/:slug" element={<Book />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/about" element={<SectionRedirect sectionId="about" />} />
