@@ -170,6 +170,34 @@ export function useAvailableSlots(slug: string, startDate: string, days = 14) {
       const resp = await fetch(
         `${API_BASE}/scheduling/slots/${slug}?start_date=${startDate}&days=${days}`
       );
+      // #region agent log
+      fetch("http://127.0.0.1:7784/ingest/66016851-02fb-4e62-b504-27870528b6d0", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Debug-Session-Id": "951172",
+        },
+        body: JSON.stringify({
+          sessionId: "951172",
+          location: "use-scheduling.ts:useAvailableSlots",
+          message: "slots_fetch_response",
+          data: {
+            ok: resp.ok,
+            status: resp.status,
+            slug,
+            apiBaseHost: (() => {
+              try {
+                return new URL(API_BASE).host;
+              } catch {
+                return "invalid_api_base";
+              }
+            })(),
+          },
+          timestamp: Date.now(),
+          hypothesisId: "H4",
+        }),
+      }).catch(() => {});
+      // #endregion
       if (!resp.ok) throw new Error("Failed to fetch slots");
       const data = await resp.json();
       return data as { slug: string; meeting: MeetingInfo; slots: SlotData[] };
@@ -196,6 +224,23 @@ export function useBookSlot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slot_start, guest_name, guest_email }),
       });
+      // #region agent log
+      fetch("http://127.0.0.1:7784/ingest/66016851-02fb-4e62-b504-27870528b6d0", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Debug-Session-Id": "951172",
+        },
+        body: JSON.stringify({
+          sessionId: "951172",
+          location: "use-scheduling.ts:useBookSlot",
+          message: "book_fetch_response",
+          data: { ok: resp.ok, status: resp.status, slug },
+          timestamp: Date.now(),
+          hypothesisId: "H4",
+        }),
+      }).catch(() => {});
+      // #endregion
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         throw new Error(err.error || "Booking failed");
