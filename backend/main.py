@@ -1,10 +1,24 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load env files before service imports (they read os.environ at import time).
+_backend_dir = Path(__file__).resolve().parent
+_repo_root = _backend_dir.parent
+for _path, _override in (
+    (_repo_root / ".env", False),
+    (_repo_root / ".env.local", True),
+    (_backend_dir / ".env", True),
+):
+    if _path.is_file():
+        load_dotenv(_path, override=_override)
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from services.logbook_sync import sync_monthly_logbook_from_email
@@ -74,7 +88,31 @@ def scheduling_auth_url():
 @app.get("/scheduling/auth/callback")
 async def scheduling_auth_callback(code: str = Query(...)):
     """Handle the Google OAuth callback, persist the refresh token, then redirect."""
-    await exchange_code(code)
+    # region agent log
+    from services.debug_agent import agent_log
+
+    agent_log(
+        "main.py:scheduling_auth_callback",
+        "oauth_callback_hit",
+        {"has_code": bool(code)},
+        "H2",
+    )
+    # endregion
+    try:
+        await exchange_code(code)
+        # region agent log
+        agent_log("main.py:scheduling_auth_callback", "oauth_exchange_ok", {}, "H2")
+        # endregion
+    except Exception as exc:
+        # region agent log
+        agent_log(
+            "main.py:scheduling_auth_callback",
+            "oauth_exchange_fail",
+            {"exc_type": type(exc).__name__},
+            "H2",
+        )
+        # endregion
+        raise
     return RedirectResponse(url="/scheduling/auth/success")
 
 
@@ -90,11 +128,51 @@ async def get_slots(
     days: int = Query(14, ge=1, le=60),
 ):
     """Return available time slots for a meeting type."""
-    meeting = SchedulingService.get_meeting_type(slug)
+    # region agent log
+    from services.debug_agent import agent_log
+
+    agent_log(
+        "main.py:get_slots",
+        "entry",
+        {"slug": slug, "start_date": start_date, "days": days},
+        "H1",
+    )
+    # endregion
+    try:
+        meeting = SchedulingService.get_meeting_type(slug)
+    except Exception as exc:
+        # region agent log
+        agent_log(
+            "main.py:get_slots",
+            "get_meeting_type_failed",
+            {"exc_type": type(exc).__name__},
+            "H3",
+        )
+        # endregion
+        raise
+    # region agent log
+    agent_log(
+        "main.py:get_slots",
+        "meeting_loaded",
+        {"has_meeting": bool(meeting)},
+        "H3",
+    )
+    # endregion
     if not meeting:
-        return {"error": "Meeting type not found or inactive."}, 404
+        return JSONResponse(
+            status_code=404,
+            content={"error": "Meeting type not found or inactive."},
+        )
 
     slots = await SchedulingService.get_available_slots(slug, start_date, days)
+    # region agent log
+    agent_log(
+        "main.py:get_slots",
+        "slots_ready",
+        {"slot_count": len(slots)},
+        "H1",
+    )
+    # endregion
     return {
         "slug": slug,
         "meeting": {
@@ -116,6 +194,16 @@ class BookingRequest(BaseModel):
 @app.post("/scheduling/book/{slug}")
 async def book_slot(slug: str, body: BookingRequest):
     """Book a specific slot for a meeting type."""
+    # region agent log
+    from services.debug_agent import agent_log
+
+    agent_log(
+        "main.py:book_slot",
+        "entry",
+        {"slug": slug, "has_slot_start": bool(body.slot_start)},
+        "H5",
+    )
+    # endregion
     try:
         result = await SchedulingService.book(
             slug=slug,
@@ -123,6 +211,32 @@ async def book_slot(slug: str, body: BookingRequest):
             guest_name=body.guest_name,
             guest_email=body.guest_email,
         )
+        # region agent log
+        agent_log(
+            "main.py:book_slot",
+            "book_ok",
+            {"has_event_id": bool(result.get("event_id"))},
+            "H5",
+        )
+        # endregion
         return {"status": "booked", "event": result}
     except ValueError as exc:
-        return {"error": str(exc)}, 409
+        # region agent log
+        agent_log(
+            "main.py:book_slot",
+            "book_conflict",
+            {"exc_type": "ValueError"},
+            "H5",
+        )
+        # endregion
+        return JSONResponse(status_code=409, content={"error": str(exc)})
+    except Exception as exc:
+        # region agent log
+        agent_log(
+            "main.py:book_slot",
+            "book_error",
+            {"exc_type": type(exc).__name__},
+            "H5",
+        )
+        # endregion
+        raise

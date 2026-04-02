@@ -13,26 +13,28 @@ from zoneinfo import ZoneInfo
 import httpx
 from supabase import create_client, Client
 
+from .debug_agent import agent_log
+
 LOGGER = logging.getLogger(__name__)
 
-GOOGLE_CLIENT_ID = os.environ["GOOGLE_CLIENT_ID"]
-GOOGLE_CLIENT_SECRET = os.environ["GOOGLE_CLIENT_SECRET"]
-GOOGLE_REDIRECT_URI = os.environ.get(
-    "GOOGLE_REDIRECT_URI", "http://localhost:8000/scheduling/auth/callback"
-)
 GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/calendar.readonly",
     "https://www.googleapis.com/auth/calendar.events",
 ]
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_SERVICE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+
+def _env(key: str, default: str | None = None) -> str:
+    """Read an env var, raising at call time (not import time) if missing."""
+    val = os.environ.get(key, default)
+    if val is None:
+        raise RuntimeError(f"Missing required environment variable: {key}")
+    return val
 
 DAY_KEYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 
 def _supabase() -> Client:
-    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    return create_client(_env("SUPABASE_URL"), _env("SUPABASE_SERVICE_ROLE_KEY"))
 
 
 # ---------------------------------------------------------------------------
@@ -41,8 +43,8 @@ def _supabase() -> Client:
 
 def get_auth_url() -> str:
     params = {
-        "client_id": GOOGLE_CLIENT_ID,
-        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "client_id": _env("GOOGLE_CLIENT_ID"),
+        "redirect_uri": _env("GOOGLE_REDIRECT_URI", "http://localhost:8000/scheduling/auth/callback"),
         "response_type": "code",
         "scope": " ".join(GOOGLE_SCOPES),
         "access_type": "offline",
@@ -59,9 +61,9 @@ async def exchange_code(code: str) -> dict:
             "https://oauth2.googleapis.com/token",
             data={
                 "code": code,
-                "client_id": GOOGLE_CLIENT_ID,
-                "client_secret": GOOGLE_CLIENT_SECRET,
-                "redirect_uri": GOOGLE_REDIRECT_URI,
+                "client_id": _env("GOOGLE_CLIENT_ID"),
+                "client_secret": _env("GOOGLE_CLIENT_SECRET"),
+                "redirect_uri": _env("GOOGLE_REDIRECT_URI", "http://localhost:8000/scheduling/auth/callback"),
                 "grant_type": "authorization_code",
             },
         )
@@ -98,8 +100,8 @@ async def _get_access_token() -> str:
             "https://oauth2.googleapis.com/token",
             data={
                 "refresh_token": refresh_token,
-                "client_id": GOOGLE_CLIENT_ID,
-                "client_secret": GOOGLE_CLIENT_SECRET,
+                "client_id": _env("GOOGLE_CLIENT_ID"),
+                "client_secret": _env("GOOGLE_CLIENT_SECRET"),
                 "grant_type": "refresh_token",
             },
         )
@@ -266,6 +268,14 @@ class SchedulingService:
         rules = profile["rules"]
         duration = meeting["duration_min"]
         buffer = meeting["buffer_min"]
+        # region agent log
+        agent_log(
+            "scheduling.py:get_available_slots",
+            "meeting_profile",
+            {"timezone": profile.get("timezone"), "duration_min": duration, "buffer_min": buffer},
+            "H3",
+        )
+        # endregion
 
         base = datetime.strptime(start_date, "%Y-%m-%d")
         now_utc = datetime.now(ZoneInfo("UTC"))
@@ -284,8 +294,24 @@ class SchedulingService:
         range_start = min(s[0] for s in all_slots).astimezone(ZoneInfo("UTC"))
         range_end = max(s[1] for s in all_slots).astimezone(ZoneInfo("UTC"))
 
-        access_token = await _get_access_token()
-        busy = await _fetch_busy_ranges(access_token, range_start, range_end)
+        # If Google Calendar is connected, subtract busy times. Otherwise
+        # return all profile slots (graceful degradation before OAuth setup).
+        busy: list[tuple[datetime, datetime]] = []
+        google_connected = False
+        try:
+            access_token = await _get_access_token()
+            busy = await _fetch_busy_ranges(access_token, range_start, range_end)
+            google_connected = True
+        except RuntimeError:
+            LOGGER.warning("Google Calendar not connected; returning raw profile slots.")
+        # region agent log
+        agent_log(
+            "scheduling.py:get_available_slots",
+            "google_freebusy",
+            {"google_connected": google_connected, "busy_segments": len(busy), "raw_slot_count": len(all_slots)},
+            "H2",
+        )
+        # endregion
 
         # Convert slots to UTC for comparison with busy ranges.
         utc_slots = [
@@ -298,6 +324,14 @@ class SchedulingService:
         # Filter out past slots.
         available = [(s, e) for s, e in available if s > now_utc]
 
+        # region agent log
+        agent_log(
+            "scheduling.py:get_available_slots",
+            "final_slots",
+            {"available_after_filter": len(available)},
+            "H1",
+        )
+        # endregion
         return [
             {"start": s.isoformat(), "end": e.isoformat()}
             for s, e in available
@@ -315,6 +349,14 @@ class SchedulingService:
         # Verify the slot is still free.
         access_token = await _get_access_token()
         busy = await _fetch_busy_ranges(access_token, start_dt, end_dt)
+        # region agent log
+        agent_log(
+            "scheduling.py:book",
+            "pre_book_busy",
+            {"busy_segments": len(busy)},
+            "H5",
+        )
+        # endregion
         if busy:
             raise ValueError("Selected slot is no longer available.")
 
@@ -335,6 +377,14 @@ class SchedulingService:
             location=location,
             attendee_email=guest_email,
         )
+        # region agent log
+        agent_log(
+            "scheduling.py:book",
+            "calendar_event_created",
+            {"has_id": bool(event.get("id"))},
+            "H5",
+        )
+        # endregion
 
         return {
             "event_id": event.get("id"),
