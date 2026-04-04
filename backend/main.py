@@ -102,68 +102,19 @@ class OAuthExchangeRequest(BaseModel):
 @app.post("/scheduling/auth/exchange")
 async def scheduling_auth_exchange(body: OAuthExchangeRequest):
     """Exchange an OAuth code for tokens and persist the refresh token."""
-    # region agent log
-    from services.debug_agent import agent_log
-
-    agent_log(
-        "main.py:scheduling_auth_exchange",
-        "oauth_exchange_entry",
-        {"has_code": bool(body.code)},
-        "H2",
-    )
-    # endregion
-    try:
-        await exchange_code(body.code)
-        # region agent log
-        agent_log("main.py:scheduling_auth_exchange", "oauth_exchange_ok", {}, "H2")
-        # endregion
-        return {"status": "ok", "message": "Google Calendar connected."}
-    except Exception as exc:
-        # region agent log
-        agent_log(
-            "main.py:scheduling_auth_exchange",
-            "oauth_exchange_fail",
-            {"exc_type": type(exc).__name__},
-            "H2",
-        )
-        # endregion
-        raise
+    await exchange_code(body.code)
+    return {"status": "ok", "message": "Google Calendar connected."}
 
 
 @app.get("/scheduling/auth/callback")
 async def scheduling_auth_callback(code: str = Query(...)):
     """Handle the Google OAuth callback, persist the refresh token, then redirect."""
-    # region agent log
-    from services.debug_agent import agent_log
-
-    agent_log(
-        "main.py:scheduling_auth_callback",
-        "oauth_callback_hit",
-        {"has_code": bool(code)},
-        "H2",
-    )
-    # endregion
     try:
         await exchange_code(code)
-        # region agent log
-        agent_log("main.py:scheduling_auth_callback", "oauth_exchange_ok", {}, "H2")
-        # endregion
+        return RedirectResponse(url="/dashboard?calendar_connected=true")
     except Exception as exc:
-        # region agent log
-        agent_log(
-            "main.py:scheduling_auth_callback",
-            "oauth_exchange_fail",
-            {"exc_type": type(exc).__name__},
-            "H2",
-        )
-        # endregion
-        raise
-    return RedirectResponse(url="/scheduling/auth/success")
-
-
-@app.get("/scheduling/auth/success")
-def scheduling_auth_success():
-    return {"status": "ok", "message": "Google Calendar connected."}
+        LOGGER.error("OAuth callback exchange failed: %s", exc)
+        return RedirectResponse(url="/dashboard?calendar_error=true")
 
 
 @app.get("/scheduling/meeting-types")
@@ -180,36 +131,7 @@ async def get_slots(
     days: int = Query(14, ge=1, le=60),
 ):
     """Return available time slots for a meeting type."""
-    # region agent log
-    from services.debug_agent import agent_log
-
-    agent_log(
-        "main.py:get_slots",
-        "entry",
-        {"slug": slug, "start_date": start_date, "days": days},
-        "H1",
-    )
-    # endregion
-    try:
-        meeting = SchedulingService.get_meeting_type(slug)
-    except Exception as exc:
-        # region agent log
-        agent_log(
-            "main.py:get_slots",
-            "get_meeting_type_failed",
-            {"exc_type": type(exc).__name__},
-            "H3",
-        )
-        # endregion
-        raise
-    # region agent log
-    agent_log(
-        "main.py:get_slots",
-        "meeting_loaded",
-        {"has_meeting": bool(meeting)},
-        "H3",
-    )
-    # endregion
+    meeting = SchedulingService.get_meeting_type(slug)
     if not meeting:
         return JSONResponse(
             status_code=404,
@@ -217,14 +139,6 @@ async def get_slots(
         )
 
     slots = await SchedulingService.get_available_slots(slug, start_date, days)
-    # region agent log
-    agent_log(
-        "main.py:get_slots",
-        "slots_ready",
-        {"slot_count": len(slots)},
-        "H1",
-    )
-    # endregion
     return {
         "slug": slug,
         "meeting": {
@@ -246,16 +160,6 @@ class BookingRequest(BaseModel):
 @app.post("/scheduling/book/{slug}")
 async def book_slot(slug: str, body: BookingRequest):
     """Book a specific slot for a meeting type."""
-    # region agent log
-    from services.debug_agent import agent_log
-
-    agent_log(
-        "main.py:book_slot",
-        "entry",
-        {"slug": slug, "has_slot_start": bool(body.slot_start)},
-        "H5",
-    )
-    # endregion
     try:
         result = await SchedulingService.book(
             slug=slug,
@@ -263,32 +167,6 @@ async def book_slot(slug: str, body: BookingRequest):
             guest_name=body.guest_name,
             guest_email=body.guest_email,
         )
-        # region agent log
-        agent_log(
-            "main.py:book_slot",
-            "book_ok",
-            {"has_event_id": bool(result.get("event_id"))},
-            "H5",
-        )
-        # endregion
         return {"status": "booked", "event": result}
     except ValueError as exc:
-        # region agent log
-        agent_log(
-            "main.py:book_slot",
-            "book_conflict",
-            {"exc_type": "ValueError"},
-            "H5",
-        )
-        # endregion
         return JSONResponse(status_code=409, content={"error": str(exc)})
-    except Exception as exc:
-        # region agent log
-        agent_log(
-            "main.py:book_slot",
-            "book_error",
-            {"exc_type": type(exc).__name__},
-            "H5",
-        )
-        # endregion
-        raise

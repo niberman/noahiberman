@@ -9,10 +9,6 @@
   },
   "rewrites": [
     {
-      "source": "/scheduling/auth/callback",
-      "destination": "/index.html"
-    },
-    {
       "source": "/health",
       "destination": "/api/index"
     },

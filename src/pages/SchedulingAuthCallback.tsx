@@ -51,7 +51,7 @@ export default function SchedulingAuthCallback() {
               <div className="mx-auto mb-4">
                 {exchangeCode.isSuccess ? (
                   <CheckCircle2 className="h-14 w-14 text-green-400" />
-                ) : error || exchangeCode.isError || !code || apiMisconfigured ? (
+                ) : error || exchangeCode.isError || !code ? (
                   <AlertCircle className="h-14 w-14 text-destructive" />
                 ) : (
                   <Loader2 className="h-14 w-14 animate-spin text-secondary" />
