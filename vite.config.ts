@@ -25,10 +25,6 @@ export default defineConfig(({ mode }) => ({
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
 
-          if (id.includes("/react-dom/") || id.includes("/react/")) {
-            return "react";
-          }
-
           if (
             id.includes("mapbox-gl") ||
             id.includes("react-map-gl")
@@ -38,22 +34,6 @@ export default defineConfig(({ mode }) => ({
 
           if (id.includes("@tiptap/") || id.includes("prosemirror")) {
             return "editor";
-          }
-
-          if (
-            id.includes("framer-motion") ||
-            id.includes("recharts") ||
-            id.includes("embla-carousel-react")
-          ) {
-            return "visuals";
-          }
-
-          if (id.includes("@radix-ui/")) {
-            return "radix";
-          }
-
-          if (id.includes("react-day-picker") || id.includes("date-fns")) {
-            return "dates";
           }
 
           return "vendor";
