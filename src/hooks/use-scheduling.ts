@@ -148,8 +148,28 @@ export function useDeleteMeetingType() {
 }
 
 // ---------------------------------------------------------------------------
-// Public booking: slots + booking (calls FastAPI backend)
+// Public booking: catalog, slots + booking (calls FastAPI backend)
 // ---------------------------------------------------------------------------
+
+export interface PublicMeetingTypeSummary {
+  slug: string;
+  name: string;
+  duration_min: number;
+  description: string | null;
+  location_type: string;
+}
+
+export function usePublicMeetingTypes() {
+  return useQuery({
+    queryKey: ["scheduling-meeting-types-public"],
+    queryFn: async () => {
+      const resp = await fetch(`${API_BASE}/scheduling/meeting-types`);
+      if (!resp.ok) throw new Error("Failed to load meeting types");
+      const data = await resp.json();
+      return data as { meeting_types: PublicMeetingTypeSummary[] };
+    },
+  });
+}
 
 export interface SlotData {
   start: string;

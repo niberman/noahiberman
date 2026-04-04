@@ -2,6 +2,8 @@ fastapi
 uvicorn
 apscheduler
 pytest
+pytest-asyncio
+respx
 httpx
 supabase
 pydantic

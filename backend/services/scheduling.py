@@ -256,6 +256,19 @@ class SchedulingService:
         return result.data
 
     @staticmethod
+    def list_active_meeting_types() -> list[dict]:
+        """Public catalog fields only (no profile rules or internal ids)."""
+        sb = _supabase()
+        result = (
+            sb.table("meeting_types")
+            .select("slug, name, duration_min, description, location_type")
+            .eq("is_active", True)
+            .order("name")
+            .execute()
+        )
+        return result.data or []
+
+    @staticmethod
     async def get_available_slots(slug: str, start_date: str, days: int = 14) -> list[dict]:
         """
         Return available slots for the given meeting type over [start_date, start_date + days).

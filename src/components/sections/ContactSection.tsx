@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -204,19 +205,16 @@ export function ContactSection() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <a
-                    href="https://calendly.com/noahberman14/meeting-with-noah-clone"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Button
+                    asChild
+                    className="w-full text-xs sm:text-sm py-4 sm:py-5 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
+                    size="lg"
                   >
-                    <Button 
-                      className="w-full text-xs sm:text-sm py-4 sm:py-5 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
-                      size="lg"
-                    >
+                    <Link to="/book">
                       <Calendar className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      Book Meeting
-                    </Button>
-                  </a>
+                      Book meeting
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>

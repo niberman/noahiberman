@@ -121,6 +121,13 @@ def scheduling_auth_success():
     return {"status": "ok", "message": "Google Calendar connected."}
 
 
+@app.get("/scheduling/meeting-types")
+def list_public_meeting_types():
+    """Active meeting types for the public booking landing page."""
+    meetings = SchedulingService.list_active_meeting_types()
+    return {"meeting_types": meetings}
+
+
 @app.get("/scheduling/slots/{slug}")
 async def get_slots(
     slug: str,

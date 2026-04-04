@@ -1,0 +1,106 @@
+{
+  "version": "2.0.0",
+  "llm": {
+    "provider": "lmstudio",
+    "host": "http://localhost:1234",
+    "models": {
+      "reasoning": "local-model",
+      "vision": "local-model"
+    },
+    "timeout": 120
+  },
+  "services": {
+    "inoah-hands": {
+      "port": 8000,
+      "host": "0.0.0.0",
+      "monitor_index": 1
+    },
+    "inoah-brain": {
+      "port": 8001,
+      "host": "0.0.0.0"
+    },
+    "inoah-brain-public": {
+      "port": 8003,
+      "host": "0.0.0.0"
+    },
+    "inoah-photo": {
+      "port": 8002,
+      "host": "0.0.0.0"
+    },
+    "inoah-dating": {
+      "port": 8010,
+      "host": "0.0.0.0"
+    },
+    "inoah-social": {
+      "port": 8011,
+      "host": "0.0.0.0"
+    }
+  },
+  "paths": {
+    "memory": "./memory/chromadb_data",
+    "photo_raw": "../inoah-photo/raw_photos",
+    "photo_output": "../inoah-photo/output",
+    "reference_faces": "../inoah-photo/reference_faces",
+    "facefusion_dir": "../inoah-photo/facefusion",
+    "training_data": "../inoah-dating/training_data"
+  },
+  "identity": {
+    "name": "Noah",
+    "context": [
+      "Commercial Pilot",
+      "University of Denver Student",
+      "Engineer",
+      "Colorado Resident",
+      "Spanish Fluency"
+    ],
+    "style_rules": [
+      "No emojis",
+      "Technical precision",
+      "Blunt tone",
+      "No exclamation points",
+      "No hashtags inline",
+      "Professional, high-status"
+    ]
+  },
+  "cloudflare": {
+    "tunnel_id": "fa6f10d0-5642-4a86-9cf3-80b0ecfaf737",
+    "agent_hostname": "agent.noahiberman.com"
+  },
+  "training_data": {
+    "base_dir": "training_data",
+    "dating": {
+      "platform": "tinder",
+      "image_quality": 90,
+      "auto_analyze_threshold": 30,
+      "auto_sync_to_memory": true
+    }
+  },
+  "browser": {
+    "headless": true,
+    "user_data_dir": "../inoah-hands/user_data",
+    "viewport": {"width": 1920, "height": 1080},
+    "slow_mo": 100
+  },
+  "dating": {
+    "humanize": {
+      "swipe_delay_min_ms": 1500,
+      "swipe_delay_max_ms": 8000,
+      "thinking_pause_min_ms": 3000,
+      "thinking_pause_max_ms": 12000,
+      "session_break_interval": [15, 25],
+      "session_break_duration_ms": [30000, 120000]
+    }
+  },
+  "personas": {
+    "private": {
+      "name": "Sovereign Assistant",
+      "system_prompt": "You are Noah's private Exocortex. Be blunt, direct, and efficient. You have full access to tools and the system. Execute commands immediately.",
+      "allow_tools": true
+    },
+    "public": {
+      "name": "iNoah Digital Twin",
+      "system_prompt": "You are the AI Digital Twin of Noah I Berman (Commercial Pilot & Software Engineer). Speak professionally but approachably. You represent his public brand. Do NOT reveal private data (passwords, location). Do NOT use tools. If asked about controversial topics, pivot to aviation or tech.",
+      "allow_tools": false
+    }
+  }
+}
