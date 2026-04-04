@@ -18,6 +18,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Book from "./pages/Book";
 import BookLanding from "./pages/BookLanding";
+import SchedulingAuthCallback from "./pages/SchedulingAuthCallback";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
 const queryClient = new QueryClient();
@@ -63,22 +64,26 @@ const App = () => {
                   path="/Dashboard/*"
                   element={<Navigate to="/dashboard" replace />}
                 />
-              <Route path="/book" element={<BookLanding />} />
-              <Route path="/book/:slug" element={<Book />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/about" element={<SectionRedirect sectionId="about" />} />
-              <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
-              <Route path="/follow-my-flight" element={<SectionRedirect sectionId="follow-my-flight" />} />
-              <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                <Route path="/book" element={<BookLanding />} />
+                <Route path="/book/:slug" element={<Book />} />
+                <Route
+                  path="/scheduling/auth/callback"
+                  element={<SchedulingAuthCallback />}
+                />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/about" element={<SectionRedirect sectionId="about" />} />
+                <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
+                <Route path="/follow-my-flight" element={<SectionRedirect sectionId="follow-my-flight" />} />
+                <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 

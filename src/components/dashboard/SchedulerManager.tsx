@@ -57,6 +57,9 @@ import {
   useCreateMeetingType,
   useUpdateMeetingType,
   useDeleteMeetingType,
+  useSchedulingAuthStatus,
+  getSchedulingAuthUrl,
+  schedulingApiNeedsPublicBase,
 } from "@/hooks/use-scheduling";
 
 // ---------------------------------------------------------------------------
@@ -225,6 +228,7 @@ export default function SchedulerManager() {
   const createMeeting = useCreateMeetingType();
   const updateMeeting = useUpdateMeetingType();
   const deleteMeeting = useDeleteMeetingType();
+  const { data: authStatus, isLoading: authLoading } = useSchedulingAuthStatus();
 
   // Profile editor state
   const [profileEditorOpen, setProfileEditorOpen] = useState(false);
@@ -240,6 +244,9 @@ export default function SchedulerManager() {
 
   // Copy-to-clipboard feedback
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
+  const [authLaunchError, setAuthLaunchError] = useState<string | null>(null);
+  const apiNeedsPublicBase = schedulingApiNeedsPublicBase();
 
   // Profile CRUD handlers
   const openProfileEditor = (profile?: (typeof profiles extends (infer T)[] | undefined ? T : never)) => {
@@ -332,6 +339,22 @@ export default function SchedulerManager() {
     setTimeout(() => setCopiedSlug(null), 2000);
   };
 
+  const handleConnectGoogleCalendar = async () => {
+    try {
+      setIsConnectingGoogle(true);
+      setAuthLaunchError(null);
+      const url = await getSchedulingAuthUrl();
+      window.location.assign(url);
+    } catch (error) {
+      setAuthLaunchError(
+        error instanceof Error
+          ? error.message
+          : "Failed to start Google Calendar connection."
+      );
+      setIsConnectingGoogle(false);
+    }
+  };
+
   const isLoading = profilesLoading || meetingsLoading;
 
   return (
@@ -371,6 +394,62 @@ export default function SchedulerManager() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-6 rounded-lg border border-border/60 bg-muted/30 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Google Calendar</span>
+                  <Badge
+                    variant="outline"
+                    className={
+                      authStatus?.connected
+                        ? "border-green-500/40 text-green-400"
+                        : "border-amber-500/40 text-amber-400"
+                    }
+                  >
+                    {authLoading
+                      ? "Checking..."
+                      : authStatus?.connected
+                      ? "Connected"
+                      : "Not connected"}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Connect your Google Calendar so busy times are excluded and
+                  booked meetings create calendar invites.
+                </p>
+              </div>
+              <Button
+                type="button"
+                onClick={handleConnectGoogleCalendar}
+                disabled={isConnectingGoogle || apiNeedsPublicBase}
+                className="min-h-[44px] w-full sm:w-auto"
+              >
+                {isConnectingGoogle ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <Link2 className="mr-2 h-4 w-4" />
+                    {authStatus?.connected ? "Reconnect" : "Connect"}
+                  </>
+                )}
+              </Button>
+            </div>
+            {authLaunchError ? (
+              <p className="mt-3 text-sm text-destructive">{authLaunchError}</p>
+            ) : null}
+            {apiNeedsPublicBase ? (
+              <p className="mt-3 text-sm text-destructive">
+                `VITE_API_BASE` is still pointing at localhost. Set it to your
+                deployed backend URL before connecting Google Calendar from
+                production.
+              </p>
+            ) : null}
+          </div>
+
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

@@ -148,8 +148,70 @@ export function useDeleteMeetingType() {
 }
 
 // ---------------------------------------------------------------------------
-// Public booking: catalog, slots + booking (calls FastAPI backend)
+// Scheduling auth + public booking (calls FastAPI backend)
 // ---------------------------------------------------------------------------
+
+export function getSchedulingApiBase() {
+  return API_BASE;
+}
+
+export function schedulingApiNeedsPublicBase() {
+  try {
+    const apiUrl = new URL(API_BASE);
+    const currentHost = window.location.hostname;
+    const apiHost = apiUrl.hostname;
+    const currentIsLocal =
+      currentHost === "localhost" || currentHost === "127.0.0.1";
+    const apiIsLocal = apiHost === "localhost" || apiHost === "127.0.0.1";
+
+    return !currentIsLocal && apiIsLocal;
+  } catch {
+    return false;
+  }
+}
+
+export interface SchedulingAuthStatus {
+  connected: boolean;
+}
+
+export async function getSchedulingAuthUrl() {
+  const resp = await fetch(`${API_BASE}/scheduling/auth/url`);
+  if (!resp.ok) throw new Error("Failed to start Google Calendar connection");
+  const data = await resp.json();
+  return data.url as string;
+}
+
+export function useSchedulingAuthStatus() {
+  return useQuery({
+    queryKey: ["scheduling-auth-status"],
+    queryFn: async () => {
+      const resp = await fetch(`${API_BASE}/scheduling/auth/status`);
+      if (!resp.ok) throw new Error("Failed to load Google Calendar status");
+      return (await resp.json()) as SchedulingAuthStatus;
+    },
+  });
+}
+
+export function useExchangeSchedulingAuthCode() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (code: string) => {
+      const resp = await fetch(`${API_BASE}/scheduling/auth/exchange`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || "Google Calendar connection failed");
+      }
+      return (await resp.json()) as { status: string; message: string };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["scheduling-auth-status"] });
+    },
+  });
+}
 
 export interface PublicMeetingTypeSummary {
   slug: string;

@@ -242,6 +242,15 @@ class SchedulingService:
     """Stateless service. Each method fetches what it needs from Supabase/Google."""
 
     @staticmethod
+    def is_google_calendar_connected() -> bool:
+        """True when a refresh token has been stored."""
+        sb = _supabase()
+        result = sb.table("scheduling_auth").select("refresh_token").limit(1).execute()
+        if not result.data:
+            return False
+        return bool(result.data[0].get("refresh_token"))
+
+    @staticmethod
     def get_meeting_type(slug: str) -> dict:
         sb = _supabase()
         result = (

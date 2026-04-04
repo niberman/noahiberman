@@ -85,6 +85,47 @@ def scheduling_auth_url():
     return {"url": get_auth_url()}
 
 
+@app.get("/scheduling/auth/status")
+def scheduling_auth_status():
+    """Return whether Google Calendar has been connected."""
+    return {"connected": SchedulingService.is_google_calendar_connected()}
+
+
+class OAuthExchangeRequest(BaseModel):
+    code: str
+
+
+@app.post("/scheduling/auth/exchange")
+async def scheduling_auth_exchange(body: OAuthExchangeRequest):
+    """Exchange an OAuth code for tokens and persist the refresh token."""
+    # region agent log
+    from services.debug_agent import agent_log
+
+    agent_log(
+        "main.py:scheduling_auth_exchange",
+        "oauth_exchange_entry",
+        {"has_code": bool(body.code)},
+        "H2",
+    )
+    # endregion
+    try:
+        await exchange_code(body.code)
+        # region agent log
+        agent_log("main.py:scheduling_auth_exchange", "oauth_exchange_ok", {}, "H2")
+        # endregion
+        return {"status": "ok", "message": "Google Calendar connected."}
+    except Exception as exc:
+        # region agent log
+        agent_log(
+            "main.py:scheduling_auth_exchange",
+            "oauth_exchange_fail",
+            {"exc_type": type(exc).__name__},
+            "H2",
+        )
+        # endregion
+        raise
+
+
 @app.get("/scheduling/auth/callback")
 async def scheduling_auth_callback(code: str = Query(...)):
     """Handle the Google OAuth callback, persist the refresh token, then redirect."""

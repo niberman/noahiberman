@@ -32,6 +32,30 @@ def test_list_public_meeting_types() -> None:
     assert resp.json() == {"meeting_types": rows}
 
 
+def test_scheduling_auth_status() -> None:
+    with patch.object(
+        SchedulingService,
+        "is_google_calendar_connected",
+        staticmethod(lambda: True),
+    ):
+        resp = client.get("/scheduling/auth/status")
+
+    assert resp.status_code == 200
+    assert resp.json() == {"connected": True}
+
+
+def test_scheduling_auth_exchange() -> None:
+    async def fake_exchange(code: str):
+        assert code == "oauth-code"
+        return {"refresh_token": "stored"}
+
+    with patch("main.exchange_code", side_effect=fake_exchange):
+        resp = client.post("/scheduling/auth/exchange", json={"code": "oauth-code"})
+
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "ok"
+
+
 def test_get_slots_returns_meeting_and_slots() -> None:
     meeting = {
         "name": "Intro call",
