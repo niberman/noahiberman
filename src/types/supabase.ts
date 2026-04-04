@@ -1,3 +1,6 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
+npm warn exec The following package was not found and will be installed: supabase@2.84.10
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
 export type Json =
   | string
   | number
@@ -11,31 +14,6 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
-  }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
   }
   public: {
     Tables: {
@@ -576,6 +554,7 @@ export type Database = {
           duration_min: number
           id: string
           is_active: boolean
+          is_primary: boolean
           location_details: string | null
           location_type: string
           name: string
@@ -590,6 +569,7 @@ export type Database = {
           duration_min?: number
           id?: string
           is_active?: boolean
+          is_primary?: boolean
           location_details?: string | null
           location_type?: string
           name: string
@@ -604,6 +584,7 @@ export type Database = {
           duration_min?: number
           id?: string
           is_active?: boolean
+          is_primary?: boolean
           location_details?: string | null
           location_type?: string
           name?: string
@@ -980,9 +961,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

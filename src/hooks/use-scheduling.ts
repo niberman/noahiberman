@@ -153,6 +153,33 @@ export function useDeleteMeetingType() {
   });
 }
 
+export function useSetPrimaryMeetingType() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string | null) => {
+      if (!supabase) throw new Error("Supabase not configured");
+      // Clear all primary flags first
+      const { error: clearErr } = await supabase
+        .from("meeting_types")
+        .update({ is_primary: false })
+        .eq("is_primary", true);
+      if (clearErr) throw clearErr;
+      // Set the chosen one (if not toggling off)
+      if (id) {
+        const { error: setErr } = await supabase
+          .from("meeting_types")
+          .update({ is_primary: true })
+          .eq("id", id);
+        if (setErr) throw setErr;
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["meeting-types"] });
+      qc.invalidateQueries({ queryKey: ["scheduling-primary-meeting"] });
+    },
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Scheduling auth + public booking (calls FastAPI backend)
 // ---------------------------------------------------------------------------
@@ -221,6 +248,19 @@ export function usePublicMeetingTypes() {
       const data = await resp.json();
       return data as { meeting_types: PublicMeetingTypeSummary[] };
     },
+  });
+}
+
+export function usePrimaryMeetingSlug() {
+  return useQuery({
+    queryKey: ["scheduling-primary-meeting"],
+    queryFn: async () => {
+      const resp = await fetch(`${API_BASE}/scheduling/primary-meeting`);
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      return (data.slug as string) ?? null;
+    },
+    staleTime: 60_000,
   });
 }
 

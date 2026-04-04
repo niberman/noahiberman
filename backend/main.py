@@ -117,6 +117,13 @@ async def scheduling_auth_callback(code: str = Query(...)):
         return RedirectResponse(url="/dashboard?calendar_error=true")
 
 
+@app.get("/scheduling/primary-meeting")
+def primary_meeting():
+    """Return the slug of the meeting type marked as the homepage CTA."""
+    slug = SchedulingService.get_primary_meeting_slug()
+    return {"slug": slug}
+
+
 @app.get("/scheduling/meeting-types")
 def list_public_meeting_types():
     """Active meeting types for the public booking landing page."""

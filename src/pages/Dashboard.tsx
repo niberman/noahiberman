@@ -95,7 +95,10 @@ const Dashboard = () => {
         title="Flight Dashboard - Noah Iberman"
         description="Flight tracking command center"
       />
-      
+      {/* Scheduler Manager */}
+      <div className="mt-8 sm:mt-10">
+            <SchedulerManager />
+      </div>
       <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
         <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-3xl">
           {/* Header */}
@@ -222,10 +225,7 @@ const Dashboard = () => {
             <BlogPostManager />
           </div>
 
-          {/* Scheduler Manager */}
-          <div className="mt-8 sm:mt-10">
-            <SchedulerManager />
-          </div>
+          
 
           {/* Agent Control */}
           <div className="mt-8 sm:mt-10">

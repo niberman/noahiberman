@@ -265,6 +265,21 @@ class SchedulingService:
         return result.data
 
     @staticmethod
+    def get_primary_meeting_slug() -> str | None:
+        """Return the slug of the meeting type marked as the homepage CTA."""
+        sb = _supabase()
+        result = (
+            sb.table("meeting_types")
+            .select("slug")
+            .eq("is_primary", True)
+            .eq("is_active", True)
+            .limit(1)
+            .execute()
+        )
+        rows = result.data or []
+        return rows[0]["slug"] if rows else None
+
+    @staticmethod
     def list_active_meeting_types() -> list[dict]:
         """Public catalog fields only (no profile rules or internal ids)."""
         sb = _supabase()

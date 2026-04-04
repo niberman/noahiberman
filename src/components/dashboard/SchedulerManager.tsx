@@ -47,6 +47,7 @@ import {
   Clock,
   Copy,
   Check,
+  Star,
 } from "lucide-react";
 import {
   useAvailabilityProfiles,
@@ -57,6 +58,7 @@ import {
   useCreateMeetingType,
   useUpdateMeetingType,
   useDeleteMeetingType,
+  useSetPrimaryMeetingType,
   useSchedulingAuthStatus,
   getSchedulingAuthUrl,
 } from "@/hooks/use-scheduling";
@@ -192,6 +194,7 @@ interface MeetingFormData {
   location_details: string;
   description: string;
   is_active: boolean;
+  is_primary: boolean;
 }
 
 const defaultMeetingForm: MeetingFormData = {
@@ -204,6 +207,7 @@ const defaultMeetingForm: MeetingFormData = {
   location_details: "",
   description: "",
   is_active: true,
+  is_primary: false,
 };
 
 function slugify(s: string) {
@@ -227,6 +231,7 @@ export default function SchedulerManager() {
   const createMeeting = useCreateMeetingType();
   const updateMeeting = useUpdateMeetingType();
   const deleteMeeting = useDeleteMeetingType();
+  const setPrimary = useSetPrimaryMeetingType();
   const { data: authStatus, isLoading: authLoading } = useSchedulingAuthStatus();
 
   // Profile editor state
@@ -296,6 +301,7 @@ export default function SchedulerManager() {
         location_details: mt.location_details || "",
         description: mt.description || "",
         is_active: mt.is_active,
+        is_primary: mt.is_primary,
       });
     } else {
       setEditingMeetingId(null);
@@ -534,6 +540,11 @@ export default function SchedulerManager() {
                             <Badge variant="outline" className="text-xs">
                               {mt.duration_min}m
                             </Badge>
+                            {mt.is_primary && (
+                              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/40">
+                                Homepage CTA
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             <code className="text-xs text-muted-foreground">
@@ -542,6 +553,23 @@ export default function SchedulerManager() {
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="min-w-[44px] min-h-[44px]"
+                            title={mt.is_primary ? "Remove as homepage CTA" : "Set as homepage CTA"}
+                            onClick={() =>
+                              setPrimary.mutate(mt.is_primary ? null : mt.id)
+                            }
+                          >
+                            <Star
+                              className={`h-4 w-4 ${
+                                mt.is_primary
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
