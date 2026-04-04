@@ -24,10 +24,13 @@ export default defineConfig(({ mode }) => ({
         manualChunks(id) {
           if (!id.includes("node_modules")) return undefined;
 
+          if (id.includes("/react-dom/") || id.includes("/react/")) {
+            return "react";
+          }
+
           if (
             id.includes("mapbox-gl") ||
-            id.includes("react-map-gl") ||
-            id.includes("@types/mapbox-gl")
+            id.includes("react-map-gl")
           ) {
             return "maps";
           }
@@ -46,14 +49,6 @@ export default defineConfig(({ mode }) => ({
 
           if (id.includes("@radix-ui/")) {
             return "radix";
-          }
-
-          if (
-            id.includes("@supabase/") ||
-            id.includes("@tanstack/react-query") ||
-            id.includes("zod")
-          ) {
-            return "data";
           }
 
           if (id.includes("react-day-picker") || id.includes("date-fns")) {
