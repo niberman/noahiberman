@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -33,18 +34,21 @@ async def lifespan(_: FastAPI):
     scheduler: BackgroundScheduler | None = None
 
     try:
-        scheduler = BackgroundScheduler(timezone="UTC")
-        scheduler.add_job(
-            sync_monthly_logbook_from_email,
-            trigger="interval",
-            hours=24,
-            id="monthly_logbook_sync",
-            replace_existing=True,
-            coalesce=True,
-            max_instances=1,
-        )
-        scheduler.start()
-        LOGGER.info("Background logbook sync scheduler started (interval: 24h).")
+        if os.environ.get("VERCEL") == "1":
+            LOGGER.info("Skipping background logbook scheduler in Vercel runtime.")
+        else:
+            scheduler = BackgroundScheduler(timezone="UTC")
+            scheduler.add_job(
+                sync_monthly_logbook_from_email,
+                trigger="interval",
+                hours=24,
+                id="monthly_logbook_sync",
+                replace_existing=True,
+                coalesce=True,
+                max_instances=1,
+            )
+            scheduler.start()
+            LOGGER.info("Background logbook sync scheduler started (interval: 24h).")
     except Exception as exc:
         # Keep the API alive even if scheduler setup cannot complete.
         LOGGER.warning("Scheduler setup skipped: %s", exc)

@@ -1,7 +1,25 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/**/*.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{backend/tests/**,backend/scripts/**}"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/scheduling/auth/callback",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/scheduling/:path*",
+      "destination": "/api/scheduling/:path*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

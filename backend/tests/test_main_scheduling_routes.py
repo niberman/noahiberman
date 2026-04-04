@@ -16,6 +16,24 @@ def test_health() -> None:
     assert resp.json() == {"status": "ok"}
 
 
+def test_lifespan_skips_scheduler_on_vercel(monkeypatch) -> None:
+    events = []
+
+    monkeypatch.setenv("VERCEL", "1")
+
+    async def run_check():
+        from main import lifespan
+
+        with patch("main.BackgroundScheduler", side_effect=AssertionError("scheduler should not start")):
+            async with lifespan(None):
+                events.append("entered")
+
+    import asyncio
+
+    asyncio.run(run_check())
+    assert events == ["entered"]
+
+
 def test_list_public_meeting_types() -> None:
     rows = [
         {

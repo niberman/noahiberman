@@ -59,7 +59,6 @@ import {
   useDeleteMeetingType,
   useSchedulingAuthStatus,
   getSchedulingAuthUrl,
-  schedulingApiNeedsPublicBase,
 } from "@/hooks/use-scheduling";
 
 // ---------------------------------------------------------------------------
@@ -246,7 +245,6 @@ export default function SchedulerManager() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
   const [authLaunchError, setAuthLaunchError] = useState<string | null>(null);
-  const apiNeedsPublicBase = schedulingApiNeedsPublicBase();
 
   // Profile CRUD handlers
   const openProfileEditor = (profile?: (typeof profiles extends (infer T)[] | undefined ? T : never)) => {
@@ -422,7 +420,7 @@ export default function SchedulerManager() {
               <Button
                 type="button"
                 onClick={handleConnectGoogleCalendar}
-                disabled={isConnectingGoogle || apiNeedsPublicBase}
+                disabled={isConnectingGoogle}
                 className="min-h-[44px] w-full sm:w-auto"
               >
                 {isConnectingGoogle ? (
@@ -440,13 +438,6 @@ export default function SchedulerManager() {
             </div>
             {authLaunchError ? (
               <p className="mt-3 text-sm text-destructive">{authLaunchError}</p>
-            ) : null}
-            {apiNeedsPublicBase ? (
-              <p className="mt-3 text-sm text-destructive">
-                `VITE_API_BASE` is still pointing at localhost. Set it to your
-                deployed backend URL before connecting Google Calendar from
-                production.
-              </p>
             ) : null}
           </div>
 

@@ -4,10 +4,7 @@ import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/SEO";
-import {
-  schedulingApiNeedsPublicBase,
-  useExchangeSchedulingAuthCode,
-} from "@/hooks/use-scheduling";
+import { useExchangeSchedulingAuthCode } from "@/hooks/use-scheduling";
 
 export default function SchedulingAuthCallback() {
   const navigate = useNavigate();
@@ -17,10 +14,9 @@ export default function SchedulingAuthCallback() {
   const code = searchParams.get("code");
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
-  const apiMisconfigured = schedulingApiNeedsPublicBase();
 
   useEffect(() => {
-    if (!code || error || apiMisconfigured || exchangeCode.isSuccess) return;
+    if (!code || error || exchangeCode.isSuccess) return;
     if (exchangeCode.isPending || exchangeCode.isError) return;
 
     exchangeCode.mutate(code, {
@@ -29,7 +25,6 @@ export default function SchedulingAuthCallback() {
       },
     });
   }, [
-    apiMisconfigured,
     code,
     error,
     exchangeCode,
@@ -38,7 +33,7 @@ export default function SchedulingAuthCallback() {
 
   const title = exchangeCode.isSuccess
     ? "Google Calendar connected"
-    : error || exchangeCode.isError || !code || apiMisconfigured
+    : error || exchangeCode.isError || !code
     ? "Google Calendar connection failed"
     : "Connecting Google Calendar";
 
@@ -72,21 +67,13 @@ export default function SchedulingAuthCallback() {
                 </p>
               ) : null}
 
-              {apiMisconfigured ? (
-                <p className="text-sm text-destructive">
-                  The frontend is running against a local scheduling API. Set
-                  `VITE_API_BASE` to your deployed backend URL before using
-                  Google Calendar auth from production.
-                </p>
-              ) : null}
-
               {error ? (
                 <p className="text-sm text-destructive">
                   {errorDescription || "Google returned an authorization error."}
                 </p>
               ) : null}
 
-              {!code && !error && !apiMisconfigured ? (
+              {!code && !error ? (
                 <p className="text-sm text-destructive">
                   Missing OAuth code in the callback URL.
                 </p>
@@ -100,7 +87,7 @@ export default function SchedulingAuthCallback() {
                 </p>
               ) : null}
 
-              {error || exchangeCode.isError || !code || apiMisconfigured ? (
+              {error || exchangeCode.isError || !code ? (
                 <Button asChild variant="outline">
                   <Link to="/dashboard">Return to dashboard</Link>
                 </Button>

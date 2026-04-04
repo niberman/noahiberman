@@ -14,7 +14,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 echo "# --- Scheduling API (FastAPI). Not provided by Supabase. ---"
+echo "# Local dev only:"
 echo "VITE_API_BASE=http://localhost:8000"
+echo "# Production on Vercel now defaults to same-origin (/scheduling/* via /api),"
+echo "# so VITE_API_BASE is optional unless you intentionally host FastAPI elsewhere."
 echo ""
 
 if supabase status >/dev/null 2>&1; then
