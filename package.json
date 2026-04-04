@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "test:backend": "cd backend && pytest -q",
+    "env:from-supabase": "bash scripts/print-frontend-env-from-supabase.sh",
     "preview": "vite preview",
     "supabase:deploy": "bash scripts/setup-dashboard.sh"
   },
