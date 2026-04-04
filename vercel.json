@@ -14,11 +14,15 @@
     },
     {
       "source": "/health",
-      "destination": "/api/health"
+      "destination": "/api/index"
     },
     {
       "source": "/scheduling/:path*",
-      "destination": "/api/scheduling/:path*"
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
     },
     {
       "source": "/(.*)",
@@ -32,10 +36,6 @@
         {
           "key": "Content-Type",
           "value": "text/html; charset=UTF-8"
-        },
-        {
-          "key": "Content-Encoding",
-          "value": "identity"
         }
       ]
     },
