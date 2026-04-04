@@ -1,1 +1,7 @@
--r backend/requirements.txt
+fastapi
+uvicorn
+apscheduler
+httpx
+supabase
+pydantic
+python-dotenv
