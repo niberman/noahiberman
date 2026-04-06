@@ -10,6 +10,7 @@ interface CollapsibleSectionProps {
   children: React.ReactNode;
   defaultOpen?: boolean;
   className?: string;
+  cardClassName?: string;
   id?: string;
 }
 
@@ -20,6 +21,7 @@ export function CollapsibleSection({
   children,
   defaultOpen = true,
   className,
+  cardClassName,
   id,
 }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -37,7 +39,10 @@ export function CollapsibleSection({
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           {/* Header with title and toggle */}
-          <div className="bg-gradient-card rounded-2xl sm:rounded-3xl shadow-elegant border border-border/50 overflow-hidden">
+          <div className={cn(
+            "bg-gradient-card rounded-2xl sm:rounded-3xl shadow-elegant border border-border/50 overflow-hidden",
+            cardClassName
+          )}>
             <button
               id={buttonId}
               onClick={() => setIsOpen(!isOpen)}

@@ -62,6 +62,7 @@ import {
   useSchedulingAuthStatus,
   getSchedulingAuthUrl,
 } from "@/hooks/use-scheduling";
+import { useToast } from "@/hooks/use-toast";
 
 // ---------------------------------------------------------------------------
 // Day-of-week grid editor for availability rules
@@ -78,6 +79,59 @@ const DAYS = [
 ] as const;
 
 type Rules = Record<string, string[]>;
+
+function errMessage(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (
+    e &&
+    typeof e === "object" &&
+    "message" in e &&
+    typeof (e as { message: unknown }).message === "string"
+  ) {
+    return (e as { message: string }).message;
+  }
+  return "Something went wrong.";
+}
+
+/** Normalize rules from Supabase (object, or legacy JSON string). Only mon–sun string[] windows are kept. */
+function parseAvailabilityRules(raw: unknown): Rules {
+  let obj: unknown = raw;
+  if (typeof raw === "string") {
+    try {
+      obj = JSON.parse(raw) as unknown;
+    } catch {
+      return {};
+    }
+  }
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
+    return {};
+  }
+  const record = obj as Record<string, unknown>;
+  const out: Rules = {};
+  for (const { key } of DAYS) {
+    const v = record[key];
+    if (!Array.isArray(v)) continue;
+    const windows = v.filter((w): w is string => typeof w === "string" && w.trim().length > 0);
+    if (windows.length > 0) {
+      out[key] = windows;
+    }
+  }
+  return out;
+}
+
+/** Persist only valid day keys and non-empty window strings (matches backend DAY_KEYS). */
+function sanitizeRulesForSave(rules: Rules): Rules {
+  const out: Rules = {};
+  for (const { key } of DAYS) {
+    const windows = rules[key];
+    if (!Array.isArray(windows) || windows.length === 0) continue;
+    const cleaned = windows.map((w) => String(w).trim()).filter(Boolean);
+    if (cleaned.length > 0) {
+      out[key] = cleaned;
+    }
+  }
+  return out;
+}
 
 function RulesEditor({
   rules,
@@ -222,6 +276,7 @@ function slugify(s: string) {
 // ---------------------------------------------------------------------------
 
 export default function SchedulerManager() {
+  const { toast } = useToast();
   const { data: profiles, isLoading: profilesLoading } = useAvailabilityProfiles();
   const createProfile = useCreateAvailabilityProfile();
   const updateProfile = useUpdateAvailabilityProfile();
@@ -257,7 +312,7 @@ export default function SchedulerManager() {
       setEditingProfileId(profile.id);
       setProfileForm({
         name: profile.name,
-        rules: (profile.rules as Rules) || {},
+        rules: parseAvailabilityRules(profile.rules),
         timezone: profile.timezone,
       });
     } else {
@@ -268,23 +323,58 @@ export default function SchedulerManager() {
   };
 
   const saveProfile = async () => {
-    const payload = {
-      name: profileForm.name,
-      rules: profileForm.rules,
-      timezone: profileForm.timezone,
-    };
-    if (editingProfileId) {
-      await updateProfile.mutateAsync({ id: editingProfileId, ...payload });
-    } else {
-      await createProfile.mutateAsync(payload);
+    const name = profileForm.name.trim();
+    const timezone = profileForm.timezone.trim() || "America/Denver";
+    const rules = sanitizeRulesForSave(profileForm.rules);
+
+    if (!name) {
+      toast({
+        variant: "destructive",
+        title: "Name required",
+        description: "Please enter a profile name.",
+      });
+      return;
     }
-    setProfileEditorOpen(false);
+
+    const payload = { name, rules, timezone };
+
+    try {
+      if (editingProfileId) {
+        await updateProfile.mutateAsync({ id: editingProfileId, ...payload });
+        toast({
+          title: "Profile updated",
+          description: `${name} was saved.`,
+        });
+      } else {
+        await createProfile.mutateAsync(payload);
+        toast({
+          title: "Profile created",
+          description: `${name} was saved.`,
+        });
+      }
+      setProfileEditorOpen(false);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Could not save profile",
+        description: errMessage(e),
+      });
+    }
   };
 
   const confirmDeleteProfile = async () => {
     if (!deleteProfileId) return;
-    await deleteProfile.mutateAsync(deleteProfileId);
-    setDeleteProfileId(null);
+    try {
+      await deleteProfile.mutateAsync(deleteProfileId);
+      toast({ title: "Profile deleted" });
+      setDeleteProfileId(null);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Could not delete profile",
+        description: errMessage(e),
+      });
+    }
   };
 
   // Meeting CRUD handlers
@@ -322,18 +412,43 @@ export default function SchedulerManager() {
   };
 
   const saveMeeting = async () => {
-    if (editingMeetingId) {
-      await updateMeeting.mutateAsync({ id: editingMeetingId, ...meetingForm });
-    } else {
-      await createMeeting.mutateAsync(meetingForm);
+    try {
+      if (editingMeetingId) {
+        await updateMeeting.mutateAsync({ id: editingMeetingId, ...meetingForm });
+        toast({
+          title: "Meeting type updated",
+          description: meetingForm.name,
+        });
+      } else {
+        await createMeeting.mutateAsync(meetingForm);
+        toast({
+          title: "Meeting type created",
+          description: meetingForm.name,
+        });
+      }
+      setMeetingEditorOpen(false);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Could not save meeting type",
+        description: errMessage(e),
+      });
     }
-    setMeetingEditorOpen(false);
   };
 
   const confirmDeleteMeeting = async () => {
     if (!deleteMeetingId) return;
-    await deleteMeeting.mutateAsync(deleteMeetingId);
-    setDeleteMeetingId(null);
+    try {
+      await deleteMeeting.mutateAsync(deleteMeetingId);
+      toast({ title: "Meeting type deleted" });
+      setDeleteMeetingId(null);
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Could not delete meeting type",
+        description: errMessage(e),
+      });
+    }
   };
 
   const copyBookingLink = (slug: string) => {
@@ -466,7 +581,7 @@ export default function SchedulerManager() {
                   <div className="space-y-2">
                     {profiles.map((p) => {
                       const dayCount = Object.keys(
-                        (p.rules as Rules) || {}
+                        parseAvailabilityRules(p.rules)
                       ).length;
                       return (
                         <div
@@ -672,7 +787,7 @@ export default function SchedulerManager() {
             <Button
               onClick={saveProfile}
               disabled={
-                !profileForm.name ||
+                !profileForm.name.trim() ||
                 createProfile.isPending ||
                 updateProfile.isPending
               }

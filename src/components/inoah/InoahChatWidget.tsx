@@ -1,19 +1,16 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { MessageCircle, X, Minimize2, Bug } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ChatMessages, ChatMessage } from "@/components/inoah/ChatMessages";
 import { ChatInput } from "@/components/inoah/ChatInput";
 import { sendInoahMessage } from "@/lib/inoahClient";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 const COOLDOWN_MS = 2000;
 
 export function InoahChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "intro",
@@ -102,14 +99,12 @@ export function InoahChatWidget() {
         prompt: trimmed,
         include_context: true,
         apply_style: true,
-        debug_mode: debugMode,
       });
 
       appendMessage({
         id: `assistant-${Date.now()}`,
         role: "assistant",
         content: response.response,
-        debug: response.debug,
       });
     } catch (err) {
       const message =
@@ -198,20 +193,6 @@ export function InoahChatWidget() {
                   </p>
                 </div>
               </div>
-            </div>
-            
-            {/* Debug Mode Toggle */}
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/40">
-              <Bug className="h-3.5 w-3.5 text-muted-foreground" />
-              <Label htmlFor="debug-mode" className="text-xs text-muted-foreground cursor-pointer flex-1">
-                Debug Mode (Show Context Sources)
-              </Label>
-              <Switch
-                id="debug-mode"
-                checked={debugMode}
-                onCheckedChange={setDebugMode}
-                className="scale-75"
-              />
             </div>
           </SheetHeader>
 

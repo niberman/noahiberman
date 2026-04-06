@@ -9,15 +9,6 @@ export interface InoahChatRequest {
   apply_style?: boolean;
   max_tokens?: number;
   turnstileToken?: string;
-  debug_mode?: boolean;
-}
-
-export interface ContextSource {
-  id: string;
-  content: string;
-  similarity: number;
-  metadata?: any;
-  created_at?: string;
 }
 
 export interface InoahChatResponse {
@@ -25,11 +16,6 @@ export interface InoahChatResponse {
   response: string;
   styled?: boolean;
   context_included?: boolean;
-  debug?: {
-    context_sources: ContextSource[];
-    context_count: number;
-    raw_context: string;
-  };
 }
 
 export async function sendInoahMessage(

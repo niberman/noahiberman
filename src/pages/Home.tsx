@@ -242,8 +242,9 @@ export default function Home() {
           </CollapsibleSection>
         </div>
         */}
-          <div id="follow-my-flight" className="relative bg-background/90 backdrop-blur-xs">
+          <div id="follow-my-flight" className="relative bg-transparent">
           <CollapsibleSection
+            cardClassName="bg-black/30 backdrop-blur-md border-white/10 shadow-glow"
             title="Follow My Flight"
             subtitle="Sigue Mi Vuelo"
             collapsedContent={
