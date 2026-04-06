@@ -92,11 +92,10 @@ const Dashboard = () => {
   return (
     <>
       <SEO
-        title="Flight Dashboard - Noah Iberman"
+        title="Flight Dashboard - Noah I Berman"
         description="Flight tracking command center"
       />
-      {/* Scheduler Manager */}
-      
+     
       <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
         <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-3xl">
           {/* Header */}
@@ -120,9 +119,11 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
-          <div className="mt-8 sm:mt-10">
+          
+          {/* Scheduler Manager */}
+        <div className="mt-8 sm:mt-10">
             <SchedulerManager />
-      </div>
+        </div>
 
           {/* Main Flight Card */}
           <Card className="bg-card/95 backdrop-blur animate-slide-up">
