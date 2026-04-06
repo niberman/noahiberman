@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Inoah from "./pages/Inoah";
+import BookingPage from "./pages/BookingPage";
 import { SectionRedirect } from "@/components/SectionRedirect";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const AppFrame = () => {
             <Route path="/ventures" element={<SectionRedirect sectionId="ventures" />} />
             <Route path="/follow-my-flight" element={<SectionRedirect sectionId="follow-my-flight" />} />
             <Route path="/contact" element={<SectionRedirect sectionId="contact" />} />
+            <Route path="/book/:slug" element={<BookingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

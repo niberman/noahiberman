@@ -4,11 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Linkedin, Github, Calendar, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { useSubmitContactMessage } from "@/hooks/use-supabase-contact";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import type { CalendarProfile } from "@/types/calendar";
 
 export function ContactSection({ variant }: { variant?: "default" | "sidebar" }) {
   const isSidebar = variant === "sidebar";
@@ -19,6 +21,31 @@ export function ContactSection({ variant }: { variant?: "default" | "sidebar" })
   });
   const { toast } = useToast();
   const submitMessage = useSubmitContactMessage();
+  const [calendarSlug, setCalendarSlug] = useState<string | null>(null);
+
+  // Load first active calendar profile
+  useEffect(() => {
+    const loadCalendarProfile = async () => {
+      try {
+        const { data } = await supabase
+          .from("calendar_profiles")
+          .select("slug")
+          .eq("is_active", true)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .single();
+
+        if (data) {
+          setCalendarSlug(data.slug);
+        }
+      } catch (error) {
+        // Silently fail - will fall back to Calendly if no profile exists
+        console.log("No calendar profile found, using Calendly fallback");
+      }
+    };
+
+    loadCalendarProfile();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -239,11 +266,11 @@ export function ContactSection({ variant }: { variant?: "default" | "sidebar" })
                 </CardHeader>
                 <CardContent>
                   <a
-                    href="https://calendly.com/noahberman14/meeting-with-noah-clone"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={calendarSlug ? `/book/${calendarSlug}` : "https://calendly.com/noahberman14/meeting-with-noah-clone"}
+                    target={calendarSlug ? "_self" : "_blank"}
+                    rel={calendarSlug ? undefined : "noopener noreferrer"}
                   >
-                    <Button 
+                    <Button
                       className="w-full text-xs sm:text-sm py-4 sm:py-5 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
                       size="lg"
                     >

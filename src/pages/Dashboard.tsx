@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
+import CalendarProfileCard from "@/components/dashboard/CalendarProfileCard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -213,6 +214,11 @@ const Dashboard = () => {
           {/* Blog Post Manager */}
           <div className="mt-8 sm:mt-10">
             <BlogPostManager />
+          </div>
+
+          {/* Calendar Profile Manager */}
+          <div className="mt-8 sm:mt-10">
+            <CalendarProfileCard />
           </div>
 
           {/* Agent Control */}
