@@ -8,6 +8,7 @@ import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { SectionScrim } from "@/components/SectionScrim";
 import { WhatIDoContent } from "@/components/sections/WhatIDo";
 import { AboutMeContent } from "@/components/sections/AboutMe";
 import { VenturesSectionContent } from "@/components/sections/VenturesSection";
@@ -94,7 +95,7 @@ export default function Home() {
           ref={heroRef}
           className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
+          <SectionScrim className="absolute inset-0" />
           <motion.div
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
@@ -242,9 +243,8 @@ export default function Home() {
           </CollapsibleSection>
         </div>
         */}
-          <div id="follow-my-flight" className="relative bg-transparent">
+        <SectionScrim id="follow-my-flight">
           <CollapsibleSection
-            cardClassName="bg-black/30 backdrop-blur-md border-white/10 shadow-glow"
             title="Follow My Flight"
             subtitle="Sigue Mi Vuelo"
             collapsedContent={
@@ -267,12 +267,12 @@ export default function Home() {
           >
             <FollowFlightSectionContent />
           </CollapsibleSection>
-        </div>
+        </SectionScrim>
 
         {/* ========================================
             ABOUT ME SECTION (Collapsible)
             ======================================== */}
-        <div id="about" className="relative bg-background/90 backdrop-blur-xs">
+        <SectionScrim id="about">
           <CollapsibleSection
             title="About Me"
             subtitle="Sobre Mí"
@@ -282,12 +282,12 @@ export default function Home() {
           >
             <AboutMeContent />
           </CollapsibleSection>
-        </div>
+        </SectionScrim>
 
         {/* ========================================
             VENTURES SECTION (Collapsible)
             ======================================== */}
-        <div id="ventures" className="relative bg-background/90 backdrop-blur-xs">
+        <SectionScrim id="ventures">
           <CollapsibleSection
             title="Ventures"
             subtitle="Proyectos"
@@ -297,7 +297,7 @@ export default function Home() {
           >
             <VenturesSectionContent />
           </CollapsibleSection>
-        </div>
+        </SectionScrim>
 
         {/* ========================================
             FOLLOW MY FLIGHT SECTION (Collapsible)
@@ -307,7 +307,9 @@ export default function Home() {
         {/* ========================================
             CONTACT SECTION (Always open)
             ======================================== */}
-        <ContactSection />
+        <SectionScrim>
+          <ContactSection />
+        </SectionScrim>
 
         {/* ========================================
             SEO ALTAR — Digital Offering
