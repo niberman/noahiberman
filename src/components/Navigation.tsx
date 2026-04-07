@@ -1,12 +1,29 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNavigationVisible, setIsNavigationVisible] = useState(true);
+
+  useEffect(() => {
+    const handleNavVisibility = (event: Event) => {
+      const customEvent = event as CustomEvent<{ visible?: boolean }>;
+      const isVisible = customEvent.detail?.visible !== false;
+      setIsNavigationVisible(isVisible);
+      if (!isVisible) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("flightMapNavVisibilityChange", handleNavVisibility);
+    return () => {
+      window.removeEventListener("flightMapNavVisibilityChange", handleNavVisibility);
+    };
+  }, []);
 
   const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
     { path: "/", label: "Home", id: "home", type: "section" },
@@ -16,9 +33,6 @@ export function Navigation() {
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
     { path: "/#contact", label: "Contact", id: "contact", type: "section" },
     { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
-    ...(import.meta.env.VITE_ENABLE_CHAT_LINK === "true"
-      ? [{ path: "https://chat.noahiberman.com", label: "Sovereign Chat", id: "chat", type: "external" as const }]
-      : []),
   ];
 
   // Note: Navigation already handles hash navigation correctly
@@ -94,8 +108,14 @@ export function Navigation() {
   return (
     <motion.nav
       initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-[110] bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"
+      animate={{
+        y: isNavigationVisible ? 0 : -100,
+        opacity: isNavigationVisible ? 1 : 0,
+      }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`fixed top-0 left-0 right-0 z-[110] bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant ${
+        isNavigationVisible ? "pointer-events-auto" : "pointer-events-none"
+      }`}
     >
       <div className="container mx-auto px-4 py-4 sm:py-5">
         <div className="flex items-center justify-between">

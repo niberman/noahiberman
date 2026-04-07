@@ -322,6 +322,23 @@ export function BackgroundFlightMap() {
     setRevealSiteNavOverMap(m.getZoom() <= m.getMinZoom() + AT_MIN_ZOOM_TOLERANCE);
   }, [shouldEnableInteractions, mapLoaded]);
 
+  useEffect(() => {
+    const showSiteNav = !shouldEnableInteractions || revealSiteNavOverMap;
+    window.dispatchEvent(
+      new CustomEvent("flightMapNavVisibilityChange", {
+        detail: { visible: showSiteNav },
+      })
+    );
+
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("flightMapNavVisibilityChange", {
+          detail: { visible: true },
+        })
+      );
+    };
+  }, [shouldEnableInteractions, revealSiteNavOverMap]);
+
   // Re-draw routes when Supabase data loads/changes
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
@@ -878,14 +895,16 @@ export function BackgroundFlightMap() {
       {shouldEnableInteractions && (
         <button
           onClick={() => setIsInteractive(false)}
-          className="fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 mt-16 sm:mt-20 z-[120] 
+          className={`fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 z-[120] 
                      bg-black/90 hover:bg-black active:bg-black/90 backdrop-blur-xl 
                      rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 
                      text-white text-sm sm:text-base font-semibold 
                      transition-all active:scale-95
                      flex items-center gap-2.5 
                      shadow-2xl border border-white/30
-                     min-h-[48px]"
+                     min-h-[48px] ${
+                       revealSiteNavOverMap ? "mt-16 sm:mt-20" : "mt-0"
+                     }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

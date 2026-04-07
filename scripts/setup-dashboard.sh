@@ -40,22 +40,11 @@ echo ""
 echo "🔧 Deploying Edge Functions..."
 
 # Deploy all functions
-echo "  → Deploying generate-post..."
-supabase functions deploy generate-post
-
-echo "  → Deploying crm-contacts..."
-supabase functions deploy crm-contacts
-
 echo "  → Deploying aircraft-status..."
 supabase functions deploy aircraft-status
 
 echo "  → Deploying track-flight..."
-
-echo "  → Deploying track-flight..."
 supabase functions deploy track-flight
-
-echo "  → Deploying linkedin-agent..."
-supabase functions deploy linkedin-agent
 
 
 echo ""
