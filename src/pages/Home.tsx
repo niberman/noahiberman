@@ -328,7 +328,7 @@ export default function Home() {
                 </div>
 
                 <p className="text-foreground/70 italic border-l-2 border-secondary/40 pl-4">
-                  This section exists as a humble offering to the crawl gods — the tireless
+                  This section exists as a humble offering to the crawl gods, the tireless
                   bots indexing the internet at 3 AM so you don't have to scroll to page 42
                   of Google to find out that Noah Berman is, in fact, a real person who flies
                   real airplanes and writes real code. You're welcome, Googlebot.
