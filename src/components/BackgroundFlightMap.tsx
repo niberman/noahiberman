@@ -4,8 +4,11 @@ import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { flightHistory as staticFlightHistory } from "@/data/flights";
-import { generateArc } from "@/lib/airport-coordinates";
-import { extractAirportsFromFlight } from "@/lib/flight-airports";
+import { generateArc, isPuertoRicoIcao } from "@/lib/airport-coordinates";
+import {
+  extractAirportsFromFlight,
+  buildPuertoRicoConnectingSegments,
+} from "@/lib/flight-airports";
 import { useFlights } from "@/hooks/use-supabase-flights";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 
@@ -24,6 +27,12 @@ interface AircraftPosition {
 }
 
 type RouteFeature = Feature<LineString, { index: number; origin: string; destination: string }>;
+
+/** Match FlightMap: site chrome only after camera hits min zoom (clamped maximum zoom-out). */
+const MAP_MIN_ZOOM = 2;
+const MAP_MAX_ZOOM = 16;
+/** Float tolerance vs getMinZoom(); keep tight so nav does not appear early. */
+const AT_MIN_ZOOM_TOLERANCE = 0.02;
 
 export function BackgroundFlightMap() {
   const { data: supabaseFlights } = useFlights();
@@ -48,6 +57,8 @@ export function BackgroundFlightMap() {
   const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
   const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  /** After zoomend at min zoom, allow nav (z-110) above the map; false while zoomed in or mid-gesture. */
+  const [revealSiteNavOverMap, setRevealSiteNavOverMap] = useState(false);
 
   // Require explicit user action to enable interactive mode
   useEffect(() => {
@@ -179,6 +190,8 @@ export function BackgroundFlightMap() {
       style: 'mapbox://styles/mapbox/dark-v11', // Dark style for faint background
       center: [-105.5, 41.5], // Center on Colorado/Wyoming region
       zoom: isMobile ? 4 : window.innerWidth < 768 ? 5.5 : 6.5, // Better zoom for small screens
+      minZoom: MAP_MIN_ZOOM,
+      maxZoom: MAP_MAX_ZOOM,
       pitch: isMobile ? 25 : 45, // Less dramatic angle on mobile for better view
       bearing: -15,
       interactive: true,
@@ -276,6 +289,56 @@ export function BackgroundFlightMap() {
     };
   }, []);
 
+  // Only treat "maximum zoom out" when the gesture has ended at the clamp (zoomend), not while still zooming out.
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+    const m = map.current;
+    const atMinZoom = () => m.getZoom() <= m.getMinZoom() + AT_MIN_ZOOM_TOLERANCE;
+
+    const onZoom = () => {
+      if (m.getZoom() > m.getMinZoom() + AT_MIN_ZOOM_TOLERANCE) {
+        setRevealSiteNavOverMap(false);
+      }
+    };
+    const onZoomEnd = () => {
+      setRevealSiteNavOverMap(atMinZoom());
+    };
+
+    m.on("zoom", onZoom);
+    m.on("zoomend", onZoomEnd);
+    return () => {
+      m.off("zoom", onZoom);
+      m.off("zoomend", onZoomEnd);
+    };
+  }, [mapLoaded]);
+
+  // Entering explore mode: hide nav until user hits min zoom again (unless already clamped there).
+  useEffect(() => {
+    if (!shouldEnableInteractions || !map.current || !mapLoaded) {
+      if (!shouldEnableInteractions) setRevealSiteNavOverMap(false);
+      return;
+    }
+    const m = map.current;
+    setRevealSiteNavOverMap(m.getZoom() <= m.getMinZoom() + AT_MIN_ZOOM_TOLERANCE);
+  }, [shouldEnableInteractions, mapLoaded]);
+
+  useEffect(() => {
+    const showSiteNav = !shouldEnableInteractions || revealSiteNavOverMap;
+    window.dispatchEvent(
+      new CustomEvent("flightMapNavVisibilityChange", {
+        detail: { visible: showSiteNav },
+      })
+    );
+
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("flightMapNavVisibilityChange", {
+          detail: { visible: true },
+        })
+      );
+    };
+  }, [shouldEnableInteractions, revealSiteNavOverMap]);
+
   // Re-draw routes when Supabase data loads/changes
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
@@ -300,7 +363,8 @@ export function BackgroundFlightMap() {
     });
     visitedAirports.delete("KAPA");
 
-    const routes: RouteFeature[] = Array.from(visitedAirports)
+    const hubFeatures: RouteFeature[] = Array.from(visitedAirports)
+      .filter((code) => !isPuertoRicoIcao(code))
       .map((code, index) => {
         const destinationCoords = getAirportCoordinates(code);
         if (!destinationCoords) {
@@ -325,6 +389,25 @@ export function BackgroundFlightMap() {
         return feature;
       })
       .filter((feature): feature is RouteFeature => feature !== null);
+
+    const prSegments = buildPuertoRicoConnectingSegments(
+      flightHistory,
+      getAirportCoordinates
+    );
+    const prFeatures: RouteFeature[] = prSegments.map((seg, i) => ({
+      type: "Feature",
+      properties: {
+        index: hubFeatures.length + i,
+        origin: seg.originCode,
+        destination: seg.destinationCode,
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: seg.arc,
+      },
+    }));
+
+    const routes: RouteFeature[] = [...hubFeatures, ...prFeatures];
 
 
     // Add routes as a source
@@ -692,6 +775,8 @@ export function BackgroundFlightMap() {
   };
 
   const isMapCardActive = isInFlightSection;
+  /** Nav uses z-110; cover it until zoomend at min zoom so the menu never hovers early. */
+  const mapAboveNavWhileExploring = shouldEnableInteractions && !revealSiteNavOverMap;
 
   return (
     <>
@@ -700,7 +785,9 @@ export function BackgroundFlightMap() {
         className={`fixed inset-0 w-full h-full transition-all duration-700 ${
           isMapCardActive
             ? shouldEnableInteractions
-              ? 'pointer-events-auto z-[100]'
+              ? mapAboveNavWhileExploring
+                ? "pointer-events-auto z-[115]"
+                : "pointer-events-auto z-[100]"
               : 'pointer-events-none z-0'
             : 'pointer-events-none z-0'
         }`}
@@ -808,14 +895,16 @@ export function BackgroundFlightMap() {
       {shouldEnableInteractions && (
         <button
           onClick={() => setIsInteractive(false)}
-          className="fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 mt-16 sm:mt-20 z-[120] 
+          className={`fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 z-[120] 
                      bg-black/90 hover:bg-black active:bg-black/90 backdrop-blur-xl 
                      rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 
                      text-white text-sm sm:text-base font-semibold 
                      transition-all active:scale-95
                      flex items-center gap-2.5 
                      shadow-2xl border border-white/30
-                     min-h-[48px]"
+                     min-h-[48px] ${
+                       revealSiteNavOverMap ? "mt-16 sm:mt-20" : "mt-0"
+                     }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

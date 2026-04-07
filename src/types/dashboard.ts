@@ -15,51 +15,6 @@ export interface Agent {
   updated_at: string;
 }
 
-export interface Upload {
-  id: string;
-  user_id: string;
-  type: 'image' | 'text' | 'video' | 'document' | 'other';
-  image_url?: string;
-  text?: string;
-  metadata?: Json;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  created_at: string;
-  updated_at: string;
-}
-
-export interface GeneratedPost {
-  id: string;
-  user_id: string;
-  upload_id?: string;
-  content: string;
-  platform: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'other';
-  status: 'draft' | 'scheduled' | 'published' | 'archived';
-  metadata?: Json;
-  scheduled_at?: string;
-  published_at?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CRMContact {
-  id: string;
-  user_id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-  company?: string;
-  position?: string;
-  notes?: string;
-  tags?: string[];
-  priority: 'low' | 'medium' | 'high';
-  status: 'active' | 'inactive' | 'archived';
-  last_contacted_at?: string;
-  follow_up_date?: string;
-  metadata?: Json;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface AircraftStatus {
   id: string;
   user_id: string;
@@ -98,18 +53,6 @@ export interface FlightTracking {
 
 // API Request/Response Types
 
-export interface GeneratePostRequest {
-  textInput?: string;
-  imageUrl?: string;
-  platform?: GeneratedPost['platform'];
-}
-
-export interface GeneratePostResponse {
-  success: boolean;
-  post: string;
-  postId: string;
-}
-
 export interface TrackFlightRequest {
   flightIdentifier: string;
 }
@@ -141,9 +84,6 @@ export interface ApiResponse<T = unknown> {
 // Database insert types (without generated fields)
 
 export type AgentInsert = Omit<Agent, 'id' | 'created_at' | 'updated_at'>;
-export type UploadInsert = Omit<Upload, 'id' | 'created_at' | 'updated_at'>;
-export type GeneratedPostInsert = Omit<GeneratedPost, 'id' | 'created_at' | 'updated_at'>;
-export type CRMContactInsert = Omit<CRMContact, 'id' | 'created_at' | 'updated_at'>;
 export type AircraftStatusInsert = Omit<AircraftStatus, 'id' | 'created_at' | 'last_updated'>;
 export type FlightTrackingInsert = Omit<FlightTracking, 'id' | 'created_at' | 'updated_at'>;
 

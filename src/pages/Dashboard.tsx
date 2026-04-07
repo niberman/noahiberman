@@ -197,26 +197,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Info Card */}
-          <Card className="mt-5 sm:mt-6 bg-secondary/10 border-secondary/20">
-            <CardContent className="pt-5 sm:pt-6">
-              <div className="flex items-start gap-3">
-                <Plane className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
-                <div className="space-y-2 text-sm">
-                  <p className="text-white/90 font-medium">
-                    How it works:
-                  </p>
-                  <ul className="space-y-1 text-white/70">
-                    <li>• Enter your aircraft's tail number</li>
-                    <li>• Toggle "Currently Flying" when you take off</li>
-                    <li>• Live FlightAware tracking appears on your homepage</li>
-                    <li>• Toggle off when you land</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Flight Log Manager */}
           <div className="mt-8 sm:mt-10">
             <FlightLogManager />

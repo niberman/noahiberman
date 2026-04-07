@@ -480,12 +480,53 @@ export default function SchedulerManager() {
     <>
       <Card className="bg-card/95 backdrop-blur">
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-secondary flex-shrink-0" />
-              <CardTitle className="text-lg sm:text-xl">Scheduling</CardTitle>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 min-w-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <Calendar className="h-5 w-5 text-secondary flex-shrink-0" />
+                <CardTitle className="text-lg sm:text-xl">Scheduling</CardTitle>
+              </div>
+              <div
+                className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-2 py-1 max-w-full"
+                title="Connect Google Calendar so busy times are excluded and bookings create invites."
+              >
+                <span className="text-xs font-medium text-muted-foreground shrink-0">
+                  Google
+                </span>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] px-1.5 py-0 h-5 shrink-0 ${
+                    authStatus?.connected
+                      ? "border-green-500/40 text-green-400"
+                      : "border-amber-500/40 text-amber-400"
+                  }`}
+                >
+                  {authLoading
+                    ? "…"
+                    : authStatus?.connected
+                    ? "Connected"
+                    : "Off"}
+                </Badge>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleConnectGoogleCalendar}
+                  disabled={isConnectingGoogle}
+                  className="h-7 px-2 text-xs min-h-0 shrink-0 gap-1"
+                >
+                  {isConnectingGoogle ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <>
+                      <Link2 className="h-3.5 w-3.5" />
+                      {authStatus?.connected ? "Reconnect" : "Connect"}
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Button
                 onClick={() => openProfileEditor()}
                 size="sm"
@@ -511,57 +552,11 @@ export default function SchedulerManager() {
           <CardDescription className="text-sm">
             Manage availability profiles and bookable meeting links
           </CardDescription>
+          {authLaunchError ? (
+            <p className="mt-2 text-sm text-destructive">{authLaunchError}</p>
+          ) : null}
         </CardHeader>
         <CardContent>
-          <div className="mb-6 rounded-lg border border-border/60 bg-muted/30 p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Google Calendar</span>
-                  <Badge
-                    variant="outline"
-                    className={
-                      authStatus?.connected
-                        ? "border-green-500/40 text-green-400"
-                        : "border-amber-500/40 text-amber-400"
-                    }
-                  >
-                    {authLoading
-                      ? "Checking..."
-                      : authStatus?.connected
-                      ? "Connected"
-                      : "Not connected"}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Connect your Google Calendar so busy times are excluded and
-                  booked meetings create calendar invites.
-                </p>
-              </div>
-              <Button
-                type="button"
-                onClick={handleConnectGoogleCalendar}
-                disabled={isConnectingGoogle}
-                className="min-h-[44px] w-full sm:w-auto"
-              >
-                {isConnectingGoogle ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    <Link2 className="mr-2 h-4 w-4" />
-                    {authStatus?.connected ? "Reconnect" : "Connect"}
-                  </>
-                )}
-              </Button>
-            </div>
-            {authLaunchError ? (
-              <p className="mt-3 text-sm text-destructive">{authLaunchError}</p>
-            ) : null}
-          </div>
-
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

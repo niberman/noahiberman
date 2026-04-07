@@ -23,7 +23,12 @@ export const airportCoordinates: Record<string, [number, number]> = {
   'KANK': [-106.049, 38.5381], // Salida
   'KBDU': [-105.226, 40.0397], // Boulder
   'KLMO': [-105.164, 40.1636], // Longmont
-  
+
+  // Puerto Rico (ICAO TJ*)
+  'TJIG': [-66.0981, 18.4564], // Fernando Luis Ribas Dominicci / Isla Grande (San Juan)
+  'TJVQ': [-65.4933, 18.1347], // Antonio Rivera Rodríguez (Vieques)
+  'TJAB': [-66.6983, 18.4503], // Antonio Nery Juarbe Pol (Arecibo)
+
   // Wyoming airports
   'KLAR': [-105.675, 41.3121], // Laramie
   'KCYS': [-104.806, 41.1556], // Cheyenne
@@ -58,6 +63,11 @@ export const airportCoordinates: Record<string, [number, number]> = {
   '1V6': [-105.527, 38.4656], // Silver West (CO)
   '18V': [-103.678, 40.3608], // Platte Valley (CO)
 };
+
+/** Puerto Rico uses ICAO prefix TJ (e.g. TJIG, TJSJ). Skip KAPA hub-and-spoke arcs to these. */
+export function isPuertoRicoIcao(code: string): boolean {
+  return code.toUpperCase().startsWith("TJ");
+}
 
 /**
  * Get coordinates for an airport code

@@ -3,10 +3,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { callSupabaseFunction } from '@/lib/supabaseFunctions';
 import type {
   Agent,
-  CRMContact,
   AircraftStatus,
-  GeneratePostRequest,
-  GeneratePostResponse,
   TrackFlightRequest,
   TrackFlightResponse,
 } from '@/types/dashboard';
@@ -37,46 +34,6 @@ export function useAgents() {
       }
 
       return data as Agent[];
-    },
-  });
-}
-
-export function useCRMContacts() {
-  return useQuery({
-    queryKey: ['dashboard', 'crm-contacts'],
-    enabled: supabaseReady,
-    queryFn: async () => {
-      const data = await callSupabaseFunction<{ success: boolean; contacts?: CRMContact[] }>('crm-contacts', {
-        method: 'GET',
-      });
-
-      if (!data.success) {
-        throw new Error('Unable to load contacts right now.');
-      }
-
-      return data.contacts ?? [];
-    },
-  });
-}
-
-export function useCreateCRMContact() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (contact: Partial<CRMContact>) => {
-      const data = await callSupabaseFunction<{ success: boolean; contact: CRMContact }>('crm-contacts', {
-        method: 'POST',
-        body: contact,
-      });
-
-      if (!data.success) {
-        throw new Error('Unable to create contact.');
-      }
-
-      return data.contact;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'crm-contacts'] });
     },
   });
 }
@@ -117,23 +74,6 @@ export function useUpsertAircraftStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'aircraft-status'] });
-    },
-  });
-}
-
-export function useGeneratePost() {
-  return useMutation({
-    mutationFn: async (payload: GeneratePostRequest) => {
-      const data = await callSupabaseFunction<GeneratePostResponse, GeneratePostRequest>('generate-post', {
-        method: 'POST',
-        body: payload,
-      });
-
-      if (!data.success) {
-        throw new Error('Unable to generate post at the moment.');
-      }
-
-      return data;
     },
   });
 }
