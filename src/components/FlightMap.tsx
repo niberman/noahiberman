@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo, Suspense, lazy } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Plane, MapPin, Clock, Calendar, Radio } from "lucide-react";
 import { flightHistory as staticFlightHistory, type Flight } from "@/data/flights";
 import { generateArc, isPuertoRicoIcao } from "@/lib/airport-coordinates";
@@ -9,17 +9,11 @@ import {
 } from "@/lib/flight-airports";
 import { useFlights } from "@/hooks/use-supabase-flights";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
+import { Map, Source, Layer, Marker, NavigationControl } from "react-map-gl/mapbox";
 import type { MapRef, ViewState } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
-
-// Dynamically import Map components to avoid SSR issues  
-// Named MapboxMap to avoid collision with native JavaScript Map
-const MapboxMap = lazy(() => import("react-map-gl/mapbox").then((mod) => ({ default: mod.default || mod.Map })));
-
-// Import Source and Layer directly (they should work without lazy loading)
-import { Source, Layer, Marker, NavigationControl } from "react-map-gl/mapbox";
 
 interface FlightRoute {
   flight: Flight;
@@ -592,17 +586,7 @@ export function FlightMap() {
         }
       }}
     >
-      <Suspense
-        fallback={
-          <div className="w-full h-full flex items-center justify-center bg-card">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading map...</p>
-            </div>
-          </div>
-        }
-      >
-        <MapboxMap
+        <Map
           ref={mapRef}
           {...viewState}
           onMove={(evt) => setViewState(evt.viewState)}
@@ -930,8 +914,7 @@ export function FlightMap() {
               <span className="font-semibold text-primary-foreground">Explore:</span> Drag to pan • Ctrl/Cmd + scroll to zoom • Right-click drag to rotate • Shift+drag to tilt
             </p>
           </div>
-        </MapboxMap>
-      </Suspense>
+        </Map>
 
       {/* Tooltip */}
       {/* Flight route tooltip */}
