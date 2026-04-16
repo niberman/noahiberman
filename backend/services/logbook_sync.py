@@ -142,7 +142,6 @@ def _parse_foreflight_csv(csv_file: io.BytesIO) -> tuple[list[dict[str, Any]], l
 
     flights: list[dict[str, Any]] = []
     airports_with_coords: dict[str, dict[str, Any]] = {}
-    seen_flight_keys: set[str] = set()
 
     header_pos = {name: i for i, name in enumerate(flights_header)}
 
@@ -173,13 +172,18 @@ def _parse_foreflight_csv(csv_file: io.BytesIO) -> tuple[list[dict[str, Any]], l
         except ValueError:
             continue
 
+        # Pattern/training flights sometimes log only one airport; mirror it.
+        if origin and not destination:
+            destination = origin
+        elif destination and not origin:
+            origin = destination
+
         if not aircraft_id or not origin or not destination:
             continue
 
+        # Each CSV row is its own flight (snapshot replace handles cross-run dedup).
+        # The row ordinal in `unique_seed` below keeps same-day pattern flights distinct.
         flight_key = f"{date_str}|{origin}|{destination}|{aircraft_id}"
-        if flight_key in seen_flight_keys:
-            continue
-        seen_flight_keys.add(flight_key)
 
         make, model = aircraft_map.get(aircraft_id, ("Unknown", "Aircraft"))
         aircraft_type = " ".join([p for p in [make, model] if p]).strip() or "Unknown Aircraft"
