@@ -17,12 +17,22 @@
       "destination": "/api/index"
     },
     {
+      "source": "/sync/:path*",
+      "destination": "/api/index"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/index"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/sync/logbook",
+      "schedule": "0 6 * * *"
     }
   ],
   "headers": [

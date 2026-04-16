@@ -53,7 +53,10 @@ Requires granting Accessibility and Screen Recording permissions to the host pro
 
 **Type:** Automated data pipeline
 **Runtime:** Python backend (`backend/services/logbook_sync.py`)
-**Schedule:** APScheduler, every 24 hours (disabled on Vercel)
+**Schedule:**
+
+- Vercel Cron daily at 06:00 UTC → `GET /api/sync/logbook` (production)
+- APScheduler every 24h (local dev only; disabled when `VERCEL=1`)
 
 Automatically syncs flight log data from ForeFlight:
 
@@ -62,6 +65,8 @@ Automatically syncs flight log data from ForeFlight:
 3. Parses the ForeFlight CSV into structured flight records (date, route, aircraft, duration, comments).
 4. Performs a full snapshot replace of the `flights` table in Supabase.
 5. Optionally upserts airport coordinates from CSV latitude/longitude columns into `airport_coordinates`.
+
+The sync endpoint is gated by a `CRON_SECRET` bearer token. Required env vars in production: `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`.
 
 The frontend (`src/components/dashboard/FlightLogManager.tsx`) also supports manual CSV upload with the same parser (`src/lib/foreflight-csv-parser.ts`).
 

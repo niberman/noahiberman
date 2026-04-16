@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, type ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { LucideIcon } from 'lucide-react';
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
@@ -16,13 +17,22 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import {
   Upload, Plus, Trash2, Plane, MapPin, Clock, Loader2,
-  FileUp, CheckCircle2, ChevronDown,
+  FileUp, CheckCircle2, ChevronDown, Mail,
 } from 'lucide-react';
 
 import { useFlights, useBulkCreateFlights, useCreateFlight, useDeleteFlight } from '@/hooks/use-supabase-flights';
 import { useAirportCoordinates, useCreateAirport, useBulkCreateAirports } from '@/hooks/use-supabase-airports';
 import { parseForeFlight, type ParsedImport } from '@/lib/foreflight-csv-parser';
 import { lookupAirport } from '@/lib/airport-lookup';
+import { supabase } from '@/lib/supabase';
+
+const SYNC_API_BASE =
+  (import.meta.env.VITE_API_BASE as string | undefined) ||
+  (typeof window !== 'undefined' &&
+  window.location.hostname !== 'localhost' &&
+  window.location.hostname !== '127.0.0.1'
+    ? window.location.origin
+    : 'http://localhost:8000');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FlightLogManager – dashboard component for managing flight logs
@@ -42,6 +52,14 @@ export default function FlightLogManager() {
       description="Import from ForeFlight, add flights or airports, and review recent entries"
       contentClassName="space-y-0 pt-4"
     >
+      <FlightLogSection
+        icon={Mail}
+        title="Sync from ForeFlight Email"
+        description="Pull the latest ForeFlight CSV from Gmail and replace the flights snapshot"
+      >
+        <EmailSyncBody />
+      </FlightLogSection>
+
       <FlightLogSection
         icon={FileUp}
         title="Import ForeFlight Logbook"
@@ -153,6 +171,120 @@ function FlightLogCollapsibleCard({
         </CollapsibleContent>
       </Card>
     </Collapsible>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Email Sync (Vercel Cron parity, manual trigger)
+// ─────────────────────────────────────────────────────────────────────────────
+
+type EmailSyncResult = {
+  status?: string;
+  reason?: string;
+  emails_found?: number;
+  email_date?: string;
+  email_subject?: string;
+  csv_name?: string;
+  csv_bytes?: number;
+  import?: {
+    status?: string;
+    reason?: string;
+    flights_imported?: number;
+    airports_upserted?: number;
+  };
+};
+
+function EmailSyncBody() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [syncing, setSyncing] = useState(false);
+  const [result, setResult] = useState<EmailSyncResult | null>(null);
+
+  const handleSync = async () => {
+    if (!supabase) {
+      toast({ variant: 'destructive', title: 'Supabase not configured' });
+      return;
+    }
+
+    setSyncing(true);
+    setResult(null);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        toast({ variant: 'destructive', title: 'Not signed in' });
+        return;
+      }
+
+      const resp = await fetch(`${SYNC_API_BASE}/api/sync/logbook`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const body: EmailSyncResult = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        toast({
+          variant: 'destructive',
+          title: `Sync failed (${resp.status})`,
+          description: body.reason || (body as { detail?: string }).detail || 'Unknown error',
+        });
+        setResult(body);
+        return;
+      }
+
+      setResult(body);
+
+      if (body.status === 'skipped') {
+        toast({
+          variant: 'destructive',
+          title: 'Sync skipped',
+          description: body.reason || 'Missing configuration.',
+        });
+        return;
+      }
+
+      const imported = body.import?.flights_imported ?? 0;
+      if (body.emails_found === 0) {
+        toast({
+          title: 'No ForeFlight emails in window',
+          description: 'Nothing to import. The table was not changed.',
+        });
+      } else if (imported === 0 && body.import?.status !== 'ok') {
+        toast({
+          title: 'Email found but no CSV imported',
+          description: body.import?.reason || body.reason || 'See response below.',
+        });
+      } else {
+        toast({
+          title: 'Sync complete',
+          description: `Imported ${imported} flights from the latest ForeFlight email.`,
+        });
+        await queryClient.invalidateQueries({ queryKey: ['flights'] });
+        await queryClient.invalidateQueries({ queryKey: ['airport-coordinates'] });
+      }
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Sync failed',
+        description: err instanceof Error ? err.message : 'Network error',
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <Button type="button" onClick={handleSync} disabled={syncing} className="gap-2">
+        {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+        {syncing ? 'Syncing…' : 'Sync now'}
+      </Button>
+      {result && (
+        <pre className="rounded-md border border-border/60 bg-muted/30 p-3 text-xs overflow-x-auto">
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      )}
+    </div>
   );
 }
 

@@ -17,7 +17,7 @@ for _path, _override in (
         load_dotenv(_path, override=_override)
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
@@ -76,6 +76,60 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Logbook sync (Vercel Cron target + dashboard manual trigger)
+# ---------------------------------------------------------------------------
+
+
+def _is_valid_supabase_user_token(token: str) -> bool:
+    """Ask Supabase Auth whether this access token resolves to a real user."""
+    from urllib import error as urllib_error
+    from urllib import request as urllib_request
+
+    supabase_url = os.environ.get("SUPABASE_URL")
+    anon_key = os.environ.get("SUPABASE_ANON_KEY")
+    if not supabase_url or not anon_key:
+        return False
+
+    url = f"{supabase_url.rstrip('/')}/auth/v1/user"
+    req = urllib_request.Request(
+        url,
+        headers={"Authorization": f"Bearer {token}", "apikey": anon_key},
+        method="GET",
+    )
+    try:
+        with urllib_request.urlopen(req, timeout=10) as resp:
+            return resp.status == 200
+    except (urllib_error.HTTPError, urllib_error.URLError):
+        return False
+
+
+def _require_sync_auth(authorization: str | None) -> None:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Unauthorized.")
+    token = authorization[len("Bearer ") :]
+
+    cron_secret = os.environ.get("CRON_SECRET")
+    if cron_secret and token == cron_secret:
+        return
+
+    if _is_valid_supabase_user_token(token):
+        return
+
+    raise HTTPException(status_code=401, detail="Unauthorized.")
+
+
+@app.get("/sync/logbook")
+def sync_logbook(authorization: str | None = Header(default=None)):
+    """
+    Pull the latest ForeFlight CSV from Gmail and replace the Supabase flights
+    snapshot. Accepts CRON_SECRET bearer (for Vercel Cron) or a Supabase user
+    access token (for the dashboard's manual Sync button).
+    """
+    _require_sync_auth(authorization)
+    return sync_monthly_logbook_from_email()
 
 
 # ---------------------------------------------------------------------------

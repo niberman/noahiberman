@@ -279,7 +279,7 @@ def _rest_call(
         raise RuntimeError(f"Supabase API connection error: {exc}") from exc
 
 
-def import_logbook_data(csv_file: io.BytesIO) -> None:
+def import_logbook_data(csv_file: io.BytesIO) -> dict[str, Any]:
     """
     Import the newest ForeFlight logbook CSV as the latest snapshot.
 
@@ -293,12 +293,12 @@ def import_logbook_data(csv_file: io.BytesIO) -> None:
     supabase_service_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
     if not supabase_url or not supabase_service_key:
         LOGGER.warning("Skipping import because Supabase credentials are not configured.")
-        return
+        return {"status": "skipped", "reason": "supabase_credentials_missing"}
 
     flights, airports = _parse_foreflight_csv(csv_file)
     if not flights:
         LOGGER.info("Parsed CSV contained no importable flight rows.")
-        return
+        return {"status": "ok", "flights_imported": 0, "airports_upserted": 0}
 
     base = supabase_url.rstrip("/")
     headers = _supabase_headers(supabase_service_key)
@@ -335,14 +335,19 @@ def import_logbook_data(csv_file: io.BytesIO) -> None:
             timeout=30,
         )
 
+    return {
+        "status": "ok",
+        "flights_imported": len(flights),
+        "airports_upserted": len(airports),
+    }
 
-def sync_monthly_logbook_from_email() -> None:
+
+def sync_monthly_logbook_from_email() -> dict[str, Any]:
     gmail_user = os.getenv("GMAIL_USER")
     gmail_password = os.getenv("GMAIL_APP_PASSWORD")
 
     if not gmail_user or not gmail_password:
-        # Missing credentials is expected in some environments.
-        return
+        return {"status": "skipped", "reason": "gmail_credentials_missing"}
 
     mail = imaplib.IMAP4_SSL(IMAP_HOST)
 
@@ -358,7 +363,7 @@ def sync_monthly_logbook_from_email() -> None:
         status, search_data = mail.search(None, primary)
         if status != "OK":
             LOGGER.warning("Gmail search failed with status: %s", status)
-            return
+            return {"status": "error", "reason": f"imap_search_failed:{status}"}
 
         message_ids = search_data[0].split() if search_data and search_data[0] else []
         if not message_ids:
@@ -366,12 +371,11 @@ def sync_monthly_logbook_from_email() -> None:
             status, search_data = mail.search(None, fallback)
             if status != "OK":
                 LOGGER.warning("Gmail search failed with status: %s", status)
-                return
+                return {"status": "error", "reason": f"imap_search_failed:{status}"}
             message_ids = search_data[0].split() if search_data and search_data[0] else []
 
         if not message_ids:
-            # Monthly cadence: no message most days is normal.
-            return
+            return {"status": "ok", "emails_found": 0, "since_days": since_days}
 
         # Fetch & sort newest-first (best-effort based on Date header).
         parsed_messages: list[tuple[datetime, bytes, email.message.EmailMessage]] = []
@@ -423,14 +427,31 @@ def sync_monthly_logbook_from_email() -> None:
             LOGGER.info("Selected ForeFlight CSV part: name=%s meta=%s", name, meta)
 
             csv_buffer = io.BytesIO(payload)
-            import_logbook_data(csv_buffer)
+            import_summary = import_logbook_data(csv_buffer)
 
             # Mark seen only after successful processing/import.
             mail.store(message_id, "+FLAGS", "\\Seen")
-            break
 
-    except Exception:
+            return {
+                "status": "ok",
+                "emails_found": len(parsed_messages),
+                "email_date": parsed_msg.get("date"),
+                "email_subject": parsed_msg.get("subject"),
+                "csv_name": name,
+                "csv_bytes": len(payload),
+                "import": import_summary,
+            }
+
+        return {
+            "status": "ok",
+            "emails_found": len(parsed_messages),
+            "imported": False,
+            "reason": "no_csv_attachment",
+        }
+
+    except Exception as exc:
         LOGGER.exception("Monthly logbook sync failed.")
+        return {"status": "error", "reason": f"exception:{type(exc).__name__}"}
     finally:
         try:
             mail.logout()
