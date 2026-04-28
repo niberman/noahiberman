@@ -30,6 +30,13 @@ export interface MapWaypoint {
   logo?: string;
   /** Visual accent — drives card chrome and pin color */
   accent?: "aviation" | "education" | "business";
+  /**
+   * Desktop card placement. "anchored" (default) positions the card next to
+   * the map pin via map.project(). "centered" pins it to bottom-center of
+   * the viewport — useful for climax/CTA waypoints where the pin marks a
+   * hub area rather than a single visit, and a centered card reads better.
+   */
+  cardPlacement?: "anchored" | "centered";
 }
 
 export const HERO_WAYPOINT: MapWaypoint = {
@@ -180,6 +187,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     duration: 2600,
     cta: { label: "Click to Explore Map", event: "enableFlightMapInteractive" },
     accent: "aviation",
+    cardPlacement: "centered",
   },
 ];
 

@@ -84,8 +84,16 @@ function PinOverlay({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
   );
 }
 
-/** Pin-anchored card, desktop only. Position recomputed on every map move. */
+/** Desktop card. "anchored" placement tracks the pin via map.project();
+ *  "centered" places it bottom-center of the viewport for climax/CTA stops. */
 function DesktopCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
+  if (waypoint.cardPlacement === "centered") {
+    return <DesktopCardCentered waypoint={waypoint} hidden={hidden} />;
+  }
+  return <DesktopCardAnchored waypoint={waypoint} hidden={hidden} />;
+}
+
+function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   const map = useMapRef();
   const ref = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 360, h: 200 });
@@ -137,6 +145,30 @@ function DesktopCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: bool
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-auto"
+          >
+            <CardChrome waypoint={waypoint} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
+  return (
+    <div
+      className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] hidden sm:block w-full max-w-lg px-4 pointer-events-none"
+      aria-hidden={hidden}
+    >
+      <AnimatePresence mode="wait">
+        {!hidden && (
+          <motion.div
+            key={waypoint.id}
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="pointer-events-auto"
           >
             <CardChrome waypoint={waypoint} />
