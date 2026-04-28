@@ -158,7 +158,7 @@ function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
 function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] hidden sm:block w-full max-w-lg px-4 pointer-events-none"
+      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] hidden sm:block w-full max-w-lg px-4 pointer-events-none"
       aria-hidden={hidden}
     >
       <AnimatePresence mode="wait">
@@ -179,11 +179,11 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
   );
 }
 
-/** Bottom-sheet card on mobile. */
+/** Bottom-sheet card on mobile. Sits above the chat bubble at bottom-right. */
 function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="sm:hidden fixed inset-x-0 bottom-0 z-[110] px-3 pb-[max(env(safe-area-inset-bottom),12px)] pt-2 pointer-events-none"
+      className="sm:hidden fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom),16px)] z-[110] px-3 pt-2 mb-16 pointer-events-none"
       aria-hidden={hidden}
     >
       <AnimatePresence mode="wait">

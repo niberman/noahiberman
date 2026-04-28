@@ -935,26 +935,8 @@ export function BackgroundFlightMap() {
         </div>
       )}
 
-      {/* CTA button to require explicit user action before map consumes scroll gestures */}
-      {isMapCardActive && !shouldEnableInteractions && (
-        <button
-          onClick={() => setIsInteractive(true)}
-          className="fixed bottom-[env(safe-area-inset-bottom,20px)] left-1/2 -translate-x-1/2 mb-4 sm:mb-6 z-[120] 
-                     bg-secondary hover:bg-secondary/90 active:bg-secondary/80 
-                     backdrop-blur-xl rounded-full 
-                     px-6 sm:px-7 py-3.5 sm:py-4 
-                     text-secondary-foreground text-sm sm:text-base font-semibold 
-                     shadow-2xl transition-all active:scale-95 
-                     flex items-center gap-2.5 
-                     border-2 border-secondary/60
-                     min-h-[52px] min-w-[160px] justify-center"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m6 0l-3 3m3-3l-3-3m9 3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Click to Explore Map</span>
-        </button>
-      )}
+      {/* The Click-to-Explore CTA now lives on the follow-my-flight waypoint
+          card (see waypoints.ts), which dispatches `enableFlightMapInteractive`. */}
 
       {/* Exit affordance when interactive */}
       {shouldEnableInteractions && (

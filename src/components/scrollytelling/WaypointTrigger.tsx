@@ -43,7 +43,7 @@ export function WaypointTrigger({
     <div
       ref={ref}
       data-waypoint-id={waypoint.id}
-      className="relative h-[80vh] sm:h-[90vh] pointer-events-none"
+      className="relative h-[110vh] sm:h-[120vh] pointer-events-none"
       aria-hidden="true"
     />
   );
