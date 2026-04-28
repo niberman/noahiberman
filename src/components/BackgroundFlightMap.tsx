@@ -11,6 +11,9 @@ import {
 } from "@/lib/flight-airports";
 import { useFlights } from "@/hooks/use-supabase-flights";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
+import { useActiveWaypointId } from "@/hooks/use-active-waypoint";
+import { HERO_WAYPOINT, WAYPOINT_BY_ID, type MapWaypoint } from "@/data/waypoints";
+import { setMapRef } from "@/lib/map-ref";
 
 interface FlightInfo {
   tail_number: string;
@@ -50,7 +53,8 @@ export function BackgroundFlightMap() {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [isInFlightSection, setIsInFlightSection] = useState(false);
+  const activeWaypointId = useActiveWaypointId();
+  const isInFlightSection = activeWaypointId === "follow-my-flight";
   const [isInteractive, setIsInteractive] = useState(false);
   const rotationRef = useRef<number | null>(null);
   const airportVisitsRef = useRef<Map<string, number>>(new Map());
@@ -59,8 +63,13 @@ export function BackgroundFlightMap() {
   const tooltipRef = useRef<HTMLDivElement>(null);
   /** After zoomend at min zoom, allow nav (z-110) above the map; false while zoomed in or mid-gesture. */
   const [revealSiteNavOverMap, setRevealSiteNavOverMap] = useState(false);
+  // Refs mirroring state for use inside long-lived rAF/closures.
+  const activeWaypointIdRef = useRef(activeWaypointId);
+  useEffect(() => {
+    activeWaypointIdRef.current = activeWaypointId;
+  }, [activeWaypointId]);
 
-  // Require explicit user action to enable interactive mode
+  // Leaving the follow-my-flight waypoint disables interactive mode.
   useEffect(() => {
     if (!isInFlightSection && isInteractive) {
       setIsInteractive(false);
@@ -91,42 +100,32 @@ export function BackgroundFlightMap() {
     loadCurrentFlight();
   }, []);
 
-  // Detect when the Follow My Flight section is in view
-  useEffect(() => {
-    const flightSection = document.getElementById('follow-my-flight');
-    if (!flightSection) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const isInView = entry.isIntersecting && entry.intersectionRatio > 0.2;
-        setIsInFlightSection(isInView);
-      },
-      { threshold: [0, 0.2, 0.5, 0.7, 1] }
-    );
-
-    observer.observe(flightSection);
-    return () => observer.disconnect();
-  }, []);
-
-  // Enable/disable map interactions based on click-to-interact ONLY (not scroll position)
+  // Interactive mode is gated to the follow-my-flight waypoint only.
   const shouldEnableInteractions = isInFlightSection && isInteractive;
+  const shouldEnableInteractionsRef = useRef(shouldEnableInteractions);
+  useEffect(() => {
+    shouldEnableInteractionsRef.current = shouldEnableInteractions;
+  }, [shouldEnableInteractions]);
 
+  // Drive the camera based on the active waypoint and interactive state.
+  // Three modes:
+  //   1. Interactive (user clicked Explore on the flight waypoint) — enable
+  //      gestures, flatten view, no rotation.
+  //   2. Hero waypoint — fly to the wide view, then start slow rotation.
+  //   3. Any other waypoint — fly to its framing and sit still.
+  // Live in-flight tracking overrides everything (handled in its own effect).
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
+    if (currentFlight?.flight_status === "in_flight") return;
+
+    // Always cancel any rotation before applying a new mode.
+    if (rotationRef.current) {
+      cancelAnimationFrame(rotationRef.current);
+      rotationRef.current = null;
+    }
 
     if (shouldEnableInteractions) {
-      // Stop rotation when user is interacting with the map
-      if (rotationRef.current) {
-        cancelAnimationFrame(rotationRef.current);
-        rotationRef.current = null;
-      }
-      // Reset to flat view for better marker/line alignment
-      map.current.easeTo({
-        pitch: 0,
-        bearing: 0,
-        duration: 500
-      });
-      // Enable full interactions
+      map.current.easeTo({ pitch: 0, bearing: 0, duration: 500 });
       map.current.dragPan.enable();
       map.current.dragRotate.enable();
       map.current.scrollZoom.enable();
@@ -134,34 +133,119 @@ export function BackgroundFlightMap() {
       map.current.touchZoomRotate.enable();
       map.current.touchPitch.enable();
       map.current.keyboard.enable();
-    } else {
-      // Resume rotation with 3D perspective when not interactive
-      map.current.easeTo({
-        pitch: 45,
-        duration: 500
-      });
-      // Restart rotation animation only once per disable cycle
-      if (!rotationRef.current) {
-        let bearing = map.current.getBearing();
-        const rotateCamera = () => {
-          bearing += 0.02;
-          if (map.current && !shouldEnableInteractions) {
-            map.current.setBearing(bearing);
-            rotationRef.current = requestAnimationFrame(rotateCamera);
-          }
-        };
-        rotationRef.current = requestAnimationFrame(rotateCamera);
-      }
-      // Disable interactions
-      map.current.dragPan.disable();
-      map.current.dragRotate.disable();
-      map.current.scrollZoom.disable();
-      map.current.doubleClickZoom.disable();
-      map.current.touchZoomRotate.disable();
-      map.current.touchPitch.disable();
-      map.current.keyboard.disable();
+      drawWaypointArc(null);
+      return;
     }
-  }, [shouldEnableInteractions, mapLoaded]);
+
+    map.current.dragPan.disable();
+    map.current.dragRotate.disable();
+    map.current.scrollZoom.disable();
+    map.current.doubleClickZoom.disable();
+    map.current.touchZoomRotate.disable();
+    map.current.touchPitch.disable();
+    map.current.keyboard.disable();
+
+    const wp: MapWaypoint = WAYPOINT_BY_ID[activeWaypointId] ?? HERO_WAYPOINT;
+
+    map.current.flyTo({
+      center: wp.center,
+      zoom: wp.zoom,
+      pitch: wp.pitch ?? 45,
+      bearing: wp.bearing ?? 0,
+      duration: wp.duration ?? 1800,
+      essential: true,
+      curve: 1.4,
+    });
+
+    drawWaypointArc(wp);
+
+    // Resume slow rotation only at hero, after the flyTo completes.
+    if (activeWaypointId === HERO_WAYPOINT.id) {
+      const m = map.current;
+      const startRotation = () => {
+        if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
+        if (shouldEnableInteractionsRef.current) return;
+        if (rotationRef.current) return;
+        let bearing = m.getBearing();
+        const tick = () => {
+          if (!map.current) return;
+          if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) {
+            rotationRef.current = null;
+            return;
+          }
+          if (shouldEnableInteractionsRef.current) {
+            rotationRef.current = null;
+            return;
+          }
+          // Don't fight in-progress flyTo — wait for it.
+          if (!map.current.isMoving()) {
+            bearing += 0.02;
+            map.current.setBearing(bearing);
+          }
+          rotationRef.current = requestAnimationFrame(tick);
+        };
+        rotationRef.current = requestAnimationFrame(tick);
+      };
+      m.once("moveend", startRotation);
+    }
+  }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
+
+  // Draw or clear the IFR-style arc for waypoints with `arcTo`.
+  const drawWaypointArc = (wp: MapWaypoint | null) => {
+    if (!map.current) return;
+    const sourceId = "waypoint-arc";
+    const lineId = "waypoint-arc-line";
+    const glowId = "waypoint-arc-glow";
+
+    [lineId, glowId].forEach((id) => {
+      if (map.current?.getLayer(id)) map.current.removeLayer(id);
+    });
+    if (map.current.getSource(sourceId)) map.current.removeSource(sourceId);
+
+    if (!wp?.arcTo) return;
+
+    const arc = generateArc(wp.center, wp.arcTo, 64);
+    map.current.addSource(sourceId, {
+      type: "geojson",
+      lineMetrics: true,
+      data: {
+        type: "Feature",
+        properties: {},
+        geometry: { type: "LineString", coordinates: arc },
+      },
+    });
+    map.current.addLayer({
+      id: glowId,
+      type: "line",
+      source: sourceId,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": "#fde047",
+        "line-width": 10,
+        "line-opacity": 0.22,
+        "line-blur": 6,
+      },
+    });
+    map.current.addLayer({
+      id: lineId,
+      type: "line",
+      source: sourceId,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-gradient": [
+          "interpolate",
+          ["linear"],
+          ["line-progress"],
+          0,
+          "#fde047",
+          1,
+          "#f59e0b",
+        ],
+        "line-width": 2.6,
+        "line-opacity": 0.95,
+      },
+    });
+  };
 
   // Fetch live position data when we have a tail number
   useEffect(() => {
@@ -208,7 +292,8 @@ export function BackgroundFlightMap() {
 
     map.current.on('load', () => {
       setMapLoaded(true);
-      
+      setMapRef(map.current);
+
       // Reduce the opacity of all map layers to make them very faint
       if (map.current) {
         // Dim all the base map layers
@@ -267,24 +352,15 @@ export function BackgroundFlightMap() {
             });
           }
         });
-        
-        // Add subtle rotation animation for visual interest (only when NOT interactive)
-        let bearing = -15;
-        const rotateCamera = () => {
-          bearing += 0.02; // Slower rotation
-          if (map.current && !currentFlight && !isInFlightSection) {
-            map.current.setBearing(bearing);
-            rotationRef.current = requestAnimationFrame(rotateCamera);
-          }
-        };
-        rotateCamera();
       }
+      // Rotation is now driven by the active-waypoint effect; nothing to start here.
     });
 
     return () => {
       if (rotationRef.current) {
         cancelAnimationFrame(rotationRef.current);
       }
+      setMapRef(null);
       map.current?.remove();
     };
   }, []);
@@ -670,10 +746,10 @@ export function BackgroundFlightMap() {
     }
   }, [aircraftPosition, positionHistory, mapLoaded]);
 
-  // Restore historical routes when landing
+  // Restore historical routes when a live flight ends. Framing is handled
+  // by the active-waypoint effect, which re-runs when `currentFlight` changes.
   useEffect(() => {
     if (!currentFlight && mapLoaded && map.current) {
-      // Clear live tracking elements
       if (marker.current) {
         marker.current.remove();
         marker.current = null;
@@ -682,18 +758,7 @@ export function BackgroundFlightMap() {
         map.current.removeLayer('live-flight-path-line');
         map.current.removeSource('live-flight-path');
       }
-      
-      // Restore historical routes
       addHistoricalRoutes();
-      
-      // Reset view to Colorado/Wyoming region with better zoom
-      map.current.easeTo({
-        center: [-105.5, 41.5],
-        zoom: window.innerWidth < 640 ? 4.5 : window.innerWidth < 768 ? 5.5 : 6.5,
-        pitch: window.innerWidth < 640 ? 30 : 45,
-        bearing: -15,
-        duration: 2000
-      });
     }
   }, [currentFlight, mapLoaded]);
 
@@ -870,26 +935,8 @@ export function BackgroundFlightMap() {
         </div>
       )}
 
-      {/* CTA button to require explicit user action before map consumes scroll gestures */}
-      {isMapCardActive && !shouldEnableInteractions && (
-        <button
-          onClick={() => setIsInteractive(true)}
-          className="fixed bottom-[env(safe-area-inset-bottom,20px)] left-1/2 -translate-x-1/2 mb-4 sm:mb-6 z-[120] 
-                     bg-secondary hover:bg-secondary/90 active:bg-secondary/80 
-                     backdrop-blur-xl rounded-full 
-                     px-6 sm:px-7 py-3.5 sm:py-4 
-                     text-secondary-foreground text-sm sm:text-base font-semibold 
-                     shadow-2xl transition-all active:scale-95 
-                     flex items-center gap-2.5 
-                     border-2 border-secondary/60
-                     min-h-[52px] min-w-[160px] justify-center"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m6 0l-3 3m3-3l-3-3m9 3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Click to Explore Map</span>
-        </button>
-      )}
+      {/* The Click-to-Explore CTA now lives on the follow-my-flight waypoint
+          card (see waypoints.ts), which dispatches `enableFlightMapInteractive`. */}
 
       {/* Exit affordance when interactive */}
       {shouldEnableInteractions && (

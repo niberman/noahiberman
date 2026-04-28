@@ -1,27 +1,21 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Plane, MapPin, Calendar, BookOpen } from "lucide-react";
+import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useRef, useEffect } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { WhatIDoContent } from "@/components/sections/WhatIDo";
-import { AboutMeContent } from "@/components/sections/AboutMe";
-import { VenturesSectionContent } from "@/components/sections/VenturesSection";
-import { FollowFlightSectionContent } from "@/components/sections/FollowFlightSection";
+import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
+import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
-import { aboutContent } from "@/data/about";
 import { BrandWordsString } from "@/data/brand";
-import { useFlightStats } from "@/hooks/use-flight-stats";
 
 export default function Home() {
-  const { stats: flightStats } = useFlightStats();
   const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
@@ -54,13 +48,15 @@ export default function Home() {
 
   return (
     <main className="min-h-screen relative">
-      {/* Background Flight Map */}
+      {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
       <BackgroundFlightMap />
+
+      {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
+      <FloatingWaypointCard />
 
       {/* Live Flight Status Indicator */}
       <LiveFlightIndicator />
 
-      {/* Main Content - pointer-events-none allows map interaction, children re-enable */}
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
           title={`Noah Berman — ${BrandWordsString} | Aviation & Technology`}
@@ -86,15 +82,13 @@ export default function Home() {
           }}
         />
 
-        {/* ========================================
-            HERO SECTION (No expansion)
-            ======================================== */}
+        {/* HERO */}
         <section
           id="home"
           ref={heroRef}
           className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
           <motion.div
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
@@ -105,7 +99,6 @@ export default function Home() {
               transition={{ duration: 1.2 }}
               className="text-center max-w-5xl mx-auto"
             >
-              {/* Logo */}
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -127,7 +120,6 @@ export default function Home() {
                 />
               </motion.div>
 
-              {/* Name */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -137,7 +129,6 @@ export default function Home() {
                 Noah Berman
               </motion.p>
 
-              {/* Tagline */}
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -147,7 +138,6 @@ export default function Home() {
                 {BrandWordsString}
               </motion.h1>
 
-              {/* Sub-tagline */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -162,14 +152,12 @@ export default function Home() {
                 </p>
               </motion.div>
 
-              {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
                 className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4"
               >
-                {/* Primary: Book a Meeting */}
                 <Button
                   onClick={() => navigate(primarySlug ? `/book/${primarySlug}` : "/book")}
                   size="lg"
@@ -179,7 +167,6 @@ export default function Home() {
                   Book a Meeting
                 </Button>
 
-                {/* Secondary: Blog */}
                 <Button
                   onClick={() => navigate("/blog")}
                   size="lg"
@@ -190,7 +177,6 @@ export default function Home() {
                   Blog
                 </Button>
 
-                {/* Tertiary: Get in Touch */}
                 <Button
                   onClick={() => scrollToSection("contact")}
                   size="lg"
@@ -203,7 +189,6 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Scroll indicator */}
           <motion.div
             style={{ y }}
             className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2"
@@ -224,94 +209,13 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* ========================================
-            WHAT I DO SECTION (Collapsible) - COMMENTED OUT
-            ========================================
-        <div className="relative bg-background/90 backdrop-blur-xs">
-          <CollapsibleSection
-            id="what-i-do"
-            title="What I Do"
-            subtitle="Lo Que Hago"
-            collapsedContent={
-              <p>
-                Aviation, technology, entrepreneurship, and cultural connection — four pillars that define my work.
-              </p>
-            }
-          >
-            <WhatIDoContent />
-          </CollapsibleSection>
-        </div>
-        */}
-          <div id="follow-my-flight" className="relative bg-transparent">
-          <CollapsibleSection
-            cardClassName="bg-black/30 backdrop-blur-md border-white/10 shadow-glow"
-            title="Follow My Flight"
-            subtitle="Sigue Mi Vuelo"
-            collapsedContent={
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <p className="flex-1">
-                  Explore my flight history on an interactive 3D map showing every route I've flown.
-                </p>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1.5">
-                    <Plane className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalHoursDisplay}</strong> hours
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4 text-secondary" />
-                    <strong>{flightStats.totalFlightsDisplay}</strong> flights
-                  </span>
-                </div>
-              </div>
-            }
-          >
-            <FollowFlightSectionContent />
-          </CollapsibleSection>
-        </div>
+        {/* SCROLLYTELLING SPINE — drives the map camera through every chapter */}
+        <WaypointStack heroRef={heroRef} />
 
-        {/* ========================================
-            ABOUT ME SECTION (Collapsible)
-            ======================================== */}
-        <div id="about" className="relative bg-background/90 backdrop-blur-xs">
-          <CollapsibleSection
-            title="About Me"
-            subtitle="Sobre Mí"
-            collapsedContent={
-              <p>{aboutContent.intro}</p>
-            }
-          >
-            <AboutMeContent />
-          </CollapsibleSection>
-        </div>
-
-        {/* ========================================
-            VENTURES SECTION (Collapsible)
-            ======================================== */}
-        <div id="ventures" className="relative bg-background/90 backdrop-blur-xs">
-          <CollapsibleSection
-            title="Ventures"
-            subtitle="Proyectos"
-            collapsedContent={
-              <p>I build and operate companies that combine aviation, technology, and education.</p>
-            }
-          >
-            <VenturesSectionContent />
-          </CollapsibleSection>
-        </div>
-
-        {/* ========================================
-            FOLLOW MY FLIGHT SECTION (Collapsible)
-            ======================================== */}
-      
-
-        {/* ========================================
-            CONTACT SECTION (Always open)
-            ======================================== */}
+        {/* CONTACT */}
         <ContactSection />
 
-        {/* ========================================
-            SEO ALTAR — Digital Offering
-            ======================================== */}
+        {/* SEO ALTAR */}
         <section
           id="seo-altar"
           aria-label="Technical summary and credentials"
