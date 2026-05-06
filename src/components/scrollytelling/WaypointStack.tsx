@@ -5,46 +5,68 @@ import { WaypointTrigger } from "./WaypointTrigger";
 
 /**
  * The "scroll spine" — a stack of invisible triggers, one per waypoint,
- * that drive the map camera and floating card. The hero acts as the
- * implicit first trigger above this stack via its own observer.
+ * that drive the map camera and floating card.
+ *
+ * The active waypoint is whichever trigger (or the hero) has its center
+ * closest to the viewport center on each scroll tick. Because triggers are
+ * stacked sequentially and don't overlap, exactly one wins at any scroll
+ * position — no race conditions, no flicker between waypoints, no hero
+ * shouting down PPL during the transition.
  */
 export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElement> }) {
   const stackRef = useRef<HTMLDivElement>(null);
 
-  // Hero observer: when the hero is at least partially visible at the top,
-  // the active waypoint is "hero" (resets the camera). This handles the
-  // case where the user scrolls back up past the first waypoint trigger.
   useEffect(() => {
-    if (!heroRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-          setActiveWaypointId(HERO_WAYPOINT.id);
-        }
-      },
-      { threshold: [0, 0.4, 0.6, 1] }
-    );
-    observer.observe(heroRef.current);
-    return () => observer.disconnect();
-  }, [heroRef]);
+    const stack = stackRef.current;
+    const hero = heroRef.current;
+    if (!stack || !hero) return;
 
-  // Stack visibility: when the spine is no longer in view (scrolled past into
-  // Contact/SEO, or before the user has reached it), publish false so the
-  // floating pin/card hide. Otherwise the pin would float over opaque content.
-  useEffect(() => {
-    if (!stackRef.current) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setStackVisible(entry.isIntersecting);
-      },
-      { threshold: 0 }
-    );
-    observer.observe(stackRef.current);
+    hero.dataset.waypointId = HERO_WAYPOINT.id;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const triggers = stack.querySelectorAll<HTMLElement>("[data-waypoint-id]");
+      const targets: HTMLElement[] = [hero, ...triggers];
+      const vh = window.innerHeight;
+      const viewportCenter = vh / 2;
+
+      let bestId = HERO_WAYPOINT.id;
+      let bestDistance = Infinity;
+      for (const t of targets) {
+        const rect = t.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportCenter);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestId = t.dataset.waypointId ?? bestId;
+        }
+      }
+      setActiveWaypointId(bestId);
+
+      // Stack is "visible" while the spine has any vertical overlap with the
+      // viewport. Drive this from scroll metrics instead of an IO so it stays
+      // correct even in environments where IO is throttled (background tabs,
+      // automation harnesses).
+      const stackRect = stack.getBoundingClientRect();
+      setStackVisible(stackRect.bottom > 0 && stackRect.top < vh);
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      observer.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
       setStackVisible(false);
     };
-  }, []);
+  }, [heroRef]);
 
   return (
     <div ref={stackRef} className="relative">
