@@ -55,31 +55,12 @@ export function Footer() {
             <h4 className="font-semibold mb-4 sm:mb-5 text-primary-foreground text-base sm:text-lg">Quick Links</h4>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base">
               <li>
-                <a
-                  href="#about"
-                  onClick={(e) => scrollToSection(e, "about")}
-                  className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
-                >
-                  About
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#blog"
-                  onClick={(e) => scrollToSection(e, "blog")}
+                <Link
+                  to="/blog"
                   className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
                 >
                   Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#ventures"
-                  onClick={(e) => scrollToSection(e, "ventures")}
-                  className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
-                >
-                  Ventures
-                </a>
+                </Link>
               </li>
               <li>
                 <a

@@ -27,12 +27,9 @@ export function Navigation() {
 
   const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
     { path: "/", label: "Home", id: "home", type: "section" },
-    { path: "/#about", label: "About", id: "about", type: "section" },
     { path: "/blog", label: "Blog", id: "blog", type: "page" },
-    { path: "/#ventures", label: "Ventures", id: "ventures", type: "section" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
     { path: "/#contact", label: "Contact", id: "contact", type: "section" },
-    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
   ];
 
   // Note: Navigation already handles hash navigation correctly
@@ -122,7 +119,7 @@ export function Navigation() {
           <Link
             to="/"
             className="flex items-center gap-2 sm:gap-3 group"
-            onClick={(e) => scrollToSection(e, "/", "home")}
+            onClick={(e) => scrollToSection(e, "/", "home", "section")}
           >
             <div className="h-6 w-6 sm:h-7 sm:w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative flex-shrink-0">
               <img
