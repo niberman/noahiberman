@@ -13,6 +13,7 @@ import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
+import { OpenClawChat } from "@/components/dashboard/OpenClawChat";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -208,6 +209,11 @@ const Dashboard = () => {
           </div>
 
           
+
+          {/* OpenClaw Chat */}
+          <div className="mt-8 sm:mt-10">
+            <OpenClawChat />
+          </div>
 
           {/* Agent Control */}
           <div className="mt-8 sm:mt-10">
