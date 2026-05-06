@@ -18,7 +18,7 @@ import {
   Send,
   Settings,
   Plug,
-  PlugOff,
+  Unplug,
   Loader2,
   X,
 } from "lucide-react";
@@ -406,7 +406,7 @@ export function OpenClawChat() {
                 size="sm"
                 onClick={() => wsRef.current?.close()}
               >
-                <PlugOff className="h-4 w-4 mr-1" />
+                <Unplug className="h-4 w-4 mr-1" />
                 Disconnect
               </Button>
             ) : (

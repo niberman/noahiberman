@@ -9,6 +9,7 @@ import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import OpenClaw from "./pages/OpenClaw";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Inoah from "./pages/Inoah";
@@ -61,6 +62,14 @@ const App = () => {
                 <Route
                   path="/Dashboard/*"
                   element={<Navigate to="/dashboard" replace />}
+                />
+                <Route
+                  path="/openclaw"
+                  element={
+                    <ProtectedRoute>
+                      <OpenClaw />
+                    </ProtectedRoute>
+                  }
                 />
                 <Route path="/book" element={<BookLanding />} />
                 <Route path="/book/:slug" element={<Book />} />
