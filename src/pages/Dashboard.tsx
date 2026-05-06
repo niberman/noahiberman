@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plane, LogOut, Save } from "lucide-react";
+import { Plane, LogOut, Save, Bot, ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
@@ -13,7 +13,6 @@ import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
-import { OpenClawChat } from "@/components/dashboard/OpenClawChat";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -210,9 +209,33 @@ const Dashboard = () => {
 
           
 
-          {/* OpenClaw Chat */}
+          {/* OpenClaw entry */}
           <div className="mt-8 sm:mt-10">
-            <OpenClawChat />
+            <Card
+              role="link"
+              tabIndex={0}
+              onClick={() => navigate("/openclaw")}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate("/openclaw");
+                }
+              }}
+              className="bg-card/95 backdrop-blur animate-slide-up cursor-pointer transition-all hover:bg-card hover:shadow-elegant hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Bot className="h-5 w-5 text-secondary flex-shrink-0" />
+                    <CardTitle className="text-lg sm:text-xl">OpenClaw</CardTitle>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                </div>
+                <CardDescription className="text-sm">
+                  Open the OpenClaw Gateway chat
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
 
           {/* Agent Control */}
