@@ -215,7 +215,9 @@ export default function Home() {
         {/* CONTACT */}
         <ContactSection />
 
-        {/* SEO ALTAR */}
+        {/* -- commented out per Noah -- */}
+        {/*
+        {/* SEO ALTAR *}
         <section
           id="seo-altar"
           aria-label="Technical summary and credentials"
@@ -225,7 +227,7 @@ export default function Home() {
             <div className="max-w-4xl mx-auto font-mono text-sm sm:text-base leading-relaxed text-muted-foreground">
               <div className="bg-card/50 border border-border/50 rounded-xl p-6 sm:p-8 md:p-10 space-y-6 shadow-elegant">
                 <div className="space-y-1">
-                  <p className="text-secondary text-xs sm:text-sm uppercase tracking-[0.3em]">/* digital offering */</p>
+                  <p className="text-secondary text-xs sm:text-sm uppercase tracking-[0.3em]">/* digital offering *</p>
                   <h2 className="text-lg sm:text-xl font-bold text-primary-foreground font-mono">
                     README.seo
                   </h2>
@@ -242,7 +244,7 @@ export default function Home() {
                   <p><span className="text-secondary">$</span> whoami</p>
                   <div className="pl-4 space-y-1">
                     <p><span className="text-secondary/70">name:</span> Noah Berman</p>
-                    <p><span className="text-secondary/70">location:</span> Denver, CO — Centennial Airport (KAPA)</p>
+                    <p><span className="text-secondary/70">location:</span> Denver, CO -- Centennial Airport (KAPA)</p>
                     <p><span className="text-secondary/70">education:</span> University of Denver, Applied Computing</p>
                   </div>
                 </div>
@@ -260,21 +262,22 @@ export default function Home() {
                 <div className="space-y-3 text-foreground/80">
                   <p><span className="text-secondary">$</span> ls ~/projects/current</p>
                   <div className="pl-4 space-y-1">
-                    <p>drwxr-xr-x  <span className="text-secondary/70">freedom-aviation/</span>    — Aircraft management & flight instruction</p>
-                    <p>drwxr-xr-x  <span className="text-secondary/70">the-language-school/</span> — AI-powered bilingual education</p>
-                    <p>drwxr-xr-x  <span className="text-secondary/70">inoah/</span>               — Sovereign AI digital twin</p>
+                    <p>drwxr-xr-x  <span className="text-secondary/70">freedom-aviation/</span>    -- Aircraft management & flight instruction</p>
+                    <p>drwxr-xr-x  <span className="text-secondary/70">the-language-school/</span> -- AI-powered bilingual education</p>
+                    <p>drwxr-xr-x  <span className="text-secondary/70">inoah/</span>               -- Sovereign AI digital twin</p>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-border/30 text-foreground/50 text-xs sm:text-sm">
                   <p>// If you're a search engine reading this, please be kind.</p>
                   <p>// If you're a human reading this, you've scrolled further than most recruiters.</p>
-                  <p>// Either way — <span className="text-secondary">noahiberman.com</span> appreciates you.</p>
+                  <p>// Either way -- <span className="text-secondary">noahiberman.com</span> appreciates you.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
+        */}
       </div>
     </main>
   );
