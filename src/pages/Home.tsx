@@ -60,8 +60,8 @@ export default function Home() {
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
           title={`Noah Berman — ${BrandWordsString} | Aviation & Technology`}
-          description="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation, The Language School platform, and innovative aviation technology solutions. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
-          keywords="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot"
+          description="Commercial pilot and bilingual entrepreneur. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
+          keywords="Noah Berman, commercial pilot, aviation, flight instructor, bilingual entrepreneur, aviation technology, flight training, Spanish-English entrepreneur, multi-engine pilot, helicopter pilot"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "WebPage",
