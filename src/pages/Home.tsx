@@ -25,10 +25,10 @@ export default function Home() {
     offset: ["start start", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  // Scroll-linked transforms bypass MotionConfig, so gate the scale here.
+  // Scroll-linked transforms bypass MotionConfig, so gate each one here.
+  const opacity = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.8]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 100]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);

@@ -110,6 +110,32 @@ export function BackgroundFlightMap() {
   // True on the effect run right after explore mode ends, so the return
   // flight can be snappier than the scroll-storytelling durations.
   const wasInteractiveRef = useRef(false);
+  // Bumped when airport features finish loading, so explore mode can frame
+  // all flights even if the user entered it before the data arrived.
+  const [airportsVersion, setAirportsVersion] = useState(0);
+  const exploreFramedRef = useRef(false);
+
+  // One cinematic zoom-out that frames every flight. Returns false when the
+  // airport data hasn't loaded yet.
+  const frameAllFlights = (): boolean => {
+    const m = map.current;
+    const airportFeatures = airportFeaturesRef.current;
+    if (!m || airportFeatures.length === 0) return false;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const allFlightsBounds = new mapboxgl.LngLatBounds();
+    airportFeatures.forEach((f) =>
+      allFlightsBounds.extend(f.geometry.coordinates as [number, number]),
+    );
+    m.fitBounds(allFlightsBounds, {
+      padding: window.innerWidth < 640 ? 48 : 80,
+      pitch: 0,
+      bearing: 0,
+      maxZoom: 6,
+      duration: prefersReducedMotion ? 0 : 1600,
+      essential: true,
+    });
+    return true;
+  };
 
   // Drive the camera based on the active waypoint and interactive state.
   // Three modes:
@@ -131,24 +157,12 @@ export function BackgroundFlightMap() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (shouldEnableInteractions) {
-      // One cinematic zoom-out that frames every flight (the waypoint promises
-      // "every route, every airport"), instead of leaving the user to wheel
-      // out manually from the waypoint's zoom-6.5 framing.
-      const airportFeatures = airportFeaturesRef.current;
-      if (airportFeatures.length > 0) {
-        const allFlightsBounds = new mapboxgl.LngLatBounds();
-        airportFeatures.forEach((f) =>
-          allFlightsBounds.extend(f.geometry.coordinates as [number, number]),
-        );
-        map.current.fitBounds(allFlightsBounds, {
-          padding: window.innerWidth < 640 ? 48 : 80,
-          pitch: 0,
-          bearing: 0,
-          maxZoom: 6,
-          duration: prefersReducedMotion ? 0 : 1600,
-          essential: true,
-        });
-      } else {
+      // Frame every flight (the waypoint promises "every route, every
+      // airport") instead of leaving the user at the waypoint's zoom-6.5
+      // framing. If the data hasn't loaded yet, the airportsVersion effect
+      // below retries once it arrives.
+      exploreFramedRef.current = frameAllFlights();
+      if (!exploreFramedRef.current) {
         map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
       }
       map.current.dragPan.enable();
@@ -165,6 +179,7 @@ export function BackgroundFlightMap() {
 
     const returningFromExplore = wasInteractiveRef.current;
     wasInteractiveRef.current = false;
+    exploreFramedRef.current = false;
 
     map.current.dragPan.disable();
     map.current.dragRotate.disable();
@@ -249,6 +264,14 @@ export function BackgroundFlightMap() {
       if (settleTimer !== undefined) window.clearTimeout(settleTimer);
     };
   }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
+
+  // If the user entered explore mode before the airport data loaded, deliver
+  // the promised all-flights framing as soon as it arrives.
+  useEffect(() => {
+    if (!mapLoaded || !shouldEnableInteractions || exploreFramedRef.current) return;
+    exploreFramedRef.current = frameAllFlights();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [airportsVersion]);
 
   // Draw or clear the IFR-style arc for waypoints with `arcTo`.
   const drawWaypointArc = (wp: MapWaypoint | null) => {
@@ -692,6 +715,7 @@ export function BackgroundFlightMap() {
     // Store airport data for hover tooltip
     airportVisitsRef.current = airportVisits;
     airportFeaturesRef.current = airportFeatures;
+    setAirportsVersion((v) => v + 1);
   };
 
   // Update live aircraft position on map

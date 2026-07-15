@@ -333,7 +333,7 @@ class SchedulingService:
         tz = ZoneInfo(profile["timezone"])
         rules = profile["rules"]
         duration = meeting["duration_min"]
-        buffer = meeting["buffer_min"]
+        buffer = meeting.get("buffer_min") or 0  # null-safe, same as book()
         # region agent log
         agent_log(
             "scheduling.py:get_available_slots",
