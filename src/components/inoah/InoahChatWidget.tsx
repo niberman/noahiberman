@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { MessageCircle, Bug } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -12,6 +13,7 @@ import { Label } from "@/components/ui/label";
 const COOLDOWN_MS = 2000;
 
 export function InoahChatWidget() {
+  const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -126,6 +128,11 @@ export function InoahChatWidget() {
     }
     handleSend(lastPrompt, false);
   };
+
+  // The /inoah page IS the chat — a floating duplicate there is confusing.
+  if (pathname === "/inoah") {
+    return null;
+  }
 
   return (
     <>

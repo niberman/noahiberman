@@ -109,7 +109,10 @@ async def _get_access_token() -> str:
             # A dead refresh token (e.g. invalid_grant after revocation or
             # testing-mode expiry) must behave like "not connected" so callers
             # degrade gracefully instead of returning 500s.
-            err = resp.json().get("error", "unknown") if "json" in resp.headers.get("content-type", "") else resp.text[:100]
+            try:
+                err = resp.json().get("error", "unknown")
+            except Exception:
+                err = resp.text[:100]
             raise RuntimeError(
                 f"Google token refresh failed ({resp.status_code}: {err}). Reconnect Google Calendar from the dashboard."
             )
@@ -270,7 +273,9 @@ class SchedulingService:
         try:
             await _get_access_token()
             return True
-        except RuntimeError as exc:
+        except (RuntimeError, httpx.HTTPError) as exc:
+            # Dead token or transient network failure — either way the
+            # calendar is not usable right now; report disconnected, not 500.
             LOGGER.warning("Google Calendar connection check failed: %s", exc)
             return False
 

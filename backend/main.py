@@ -3,6 +3,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+import httpx
 from dotenv import load_dotenv
 
 # Load env files before service imports (they read os.environ at import time).
@@ -231,8 +232,9 @@ async def book_slot(slug: str, body: BookingRequest):
         return {"status": "booked", "event": result}
     except ValueError as exc:
         return JSONResponse(status_code=409, content={"error": str(exc)})
-    except RuntimeError as exc:
-        # Google Calendar unreachable (no token, or refresh token dead).
+    except (RuntimeError, httpx.HTTPError) as exc:
+        # Google Calendar unreachable (no token, refresh token dead, or a
+        # transient Google API failure during freeBusy/event creation).
         LOGGER.error("Booking failed, Google Calendar unavailable: %s", exc)
         return JSONResponse(
             status_code=503,

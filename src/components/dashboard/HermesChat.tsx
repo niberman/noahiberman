@@ -83,10 +83,11 @@ export function HermesChat() {
 
   /* ---- auto-scroll ---- */
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    // Radix ScrollArea scrolls its inner viewport, not the root element.
+    const viewport = scrollRef.current?.querySelector<HTMLDivElement>(
+      "[data-radix-scroll-area-viewport]",
+    );
+    viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
   /* ---- connect (liveness probe against GET /health) ---- */
@@ -95,10 +96,19 @@ export function HermesChat() {
     setError(null);
     try {
       const res = await fetch(`${normalizeBase(settings.url)}/health`, {
+        // /health is unauthenticated by design, but send the token so a
+        // server that does enforce auth surfaces a bad key here instead of
+        // on the first message.
+        headers: settings.token
+          ? { Authorization: `Bearer ${settings.token}` }
+          : undefined,
         signal: AbortSignal.timeout(10_000),
       });
       const data = await res.json().catch(() => null);
-      if (res.ok && data?.status === "ok") {
+      if (res.status === 401 || res.status === 403) {
+        setConnected(false);
+        setError("Hermes rejected the API key — check it in settings.");
+      } else if (res.ok && data?.status === "ok") {
         setConnected(true);
       } else {
         setConnected(false);
@@ -112,7 +122,7 @@ export function HermesChat() {
     } finally {
       setConnecting(false);
     }
-  }, [settings.url]);
+  }, [settings.url, settings.token]);
 
   /* ---- send (stateless chat.completions: full history each turn) ---- */
   const send = useCallback(async () => {
