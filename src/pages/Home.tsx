@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -12,23 +12,28 @@ import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypoi
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWordsString } from "@/data/brand";
 
+const scrollBehavior = (): ScrollBehavior =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
 export default function Home() {
   const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  // Scroll-linked transforms bypass MotionConfig, so gate each one here.
+  const opacity = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.8]);
+  const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 100]);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: scrollBehavior() });
     }
   };
 
@@ -40,13 +45,14 @@ export default function Home() {
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
+          element.scrollIntoView({ behavior: scrollBehavior() });
         }
       }, 100);
     }
   }, []);
 
   return (
+    <MotionConfig reducedMotion="user">
     <main className="min-h-screen relative">
       {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
       <BackgroundFlightMap />
@@ -115,7 +121,7 @@ export default function Home() {
                   alt="Noah Berman logo"
                   width={96}
                   height={96}
-                  fetchPriority="high"
+                  fetchpriority="high"
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
               </motion.div>
@@ -280,5 +286,6 @@ export default function Home() {
         */}
       </div>
     </main>
+    </MotionConfig>
   );
 }

@@ -30,6 +30,7 @@ export function Navigation() {
     { path: "/blog", label: "Blog", id: "blog", type: "page" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
     { path: "/#contact", label: "Contact", id: "contact", type: "section" },
+    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
   ];
 
   // Note: Navigation already handles hash navigation correctly

@@ -209,7 +209,7 @@ const Dashboard = () => {
 
           
 
-          {/* OpenClaw entry */}
+          {/* Hermes entry */}
           <div className="mt-8 sm:mt-10">
             <Card
               role="link"
@@ -227,12 +227,12 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     <Bot className="h-5 w-5 text-secondary flex-shrink-0" />
-                    <CardTitle className="text-lg sm:text-xl">OpenClaw</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl">Hermes</CardTitle>
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </div>
                 <CardDescription className="text-sm">
-                  Open the OpenClaw Gateway chat
+                  Open the Hermes Agent chat
                 </CardDescription>
               </CardHeader>
             </Card>

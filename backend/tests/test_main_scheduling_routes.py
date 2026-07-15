@@ -51,10 +51,13 @@ def test_list_public_meeting_types() -> None:
 
 
 def test_scheduling_auth_status() -> None:
+    async def fake_verify():
+        return True
+
     with patch.object(
         SchedulingService,
-        "is_google_calendar_connected",
-        staticmethod(lambda: True),
+        "verify_google_calendar_connection",
+        staticmethod(fake_verify),
     ):
         resp = client.get("/scheduling/auth/status")
 
@@ -157,4 +160,22 @@ def test_book_slot_conflict_returns_409() -> None:
         resp = client.post("/scheduling/book/intro", json=payload)
 
     assert resp.status_code == 409
+    assert "error" in resp.json()
+
+
+def test_book_slot_calendar_down_returns_503() -> None:
+    """A dead Google refresh token must surface as a clean JSON error, not a 500."""
+
+    async def raise_calendar_down(**kwargs):
+        raise RuntimeError("Google token refresh failed (400: invalid_grant).")
+
+    payload = {
+        "slot_start": "2026-06-01T15:00:00+00:00",
+        "guest_name": "Pat",
+        "guest_email": "pat@example.com",
+    }
+    with patch.object(SchedulingService, "book", staticmethod(raise_calendar_down)):
+        resp = client.post("/scheduling/book/intro", json=payload)
+
+    assert resp.status_code == 503
     assert "error" in resp.json()
