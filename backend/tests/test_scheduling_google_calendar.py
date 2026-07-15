@@ -198,6 +198,59 @@ async def test_book_creates_event_when_freebusy_empty() -> None:
 
 
 @pytest.mark.asyncio
+async def test_book_google_meet_requests_conference_and_returns_link() -> None:
+    slot_start = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).replace(
+        hour=15, minute=0, second=0, microsecond=0
+    )
+    meeting = _fake_meeting()
+    meeting["location_type"] = "google_meet"
+
+    with respx.mock:
+        respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
+            return_value=httpx.Response(200, json={"calendars": {"primary": {"busy": []}}})
+        )
+        events_route = respx.post(
+            "https://www.googleapis.com/calendar/v3/calendars/primary/events"
+        ).mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "id": "meet_evt",
+                    "htmlLink": "https://calendar.example/event",
+                    "hangoutLink": "https://meet.google.com/abc-defg-hij",
+                },
+            )
+        )
+        with (
+            patch.object(
+                SchedulingService,
+                "get_meeting_type",
+                staticmethod(lambda slug: meeting),
+            ),
+            patch(
+                "services.scheduling._get_access_token",
+                AsyncMock(return_value="token"),
+            ),
+        ):
+            result = await SchedulingService.book(
+                slug="x",
+                slot_start=slot_start.isoformat(),
+                guest_name="Alex",
+                guest_email="alex@example.com",
+            )
+
+    assert result["meet_link"] == "https://meet.google.com/abc-defg-hij"
+    sent = events_route.calls[0].request
+    assert "conferenceDataVersion=1" in str(sent.url)
+    body = json.loads(sent.content.decode())
+    assert body["conferenceData"]["createRequest"]["conferenceSolutionKey"] == {
+        "type": "hangoutsMeet"
+    }
+    assert body["conferenceData"]["createRequest"]["requestId"]
+    assert "location" not in body
+
+
+@pytest.mark.asyncio
 async def test_book_raises_when_slot_busy() -> None:
     slot_start = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).replace(
         hour=15, minute=0, second=0, microsecond=0

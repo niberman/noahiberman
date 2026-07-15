@@ -7,6 +7,7 @@ All responses return ISO 8601 strings for frontend consumption.
 
 import os
 import logging
+import uuid
 from datetime import datetime, timedelta, time as dt_time
 from zoneinfo import ZoneInfo
 
@@ -146,6 +147,7 @@ async def create_calendar_event(
     description: str = "",
     location: str = "",
     attendee_email: str = "",
+    with_meet: bool = False,
 ) -> dict:
     """Create a Google Calendar event and return the API response."""
     access_token = await _get_access_token()
@@ -162,12 +164,22 @@ async def create_calendar_event(
     if attendee_email:
         event_body["attendees"] = [{"email": attendee_email}]
 
+    params: dict = {"sendUpdates": "all"}
+    if with_meet:
+        event_body["conferenceData"] = {
+            "createRequest": {
+                "requestId": str(uuid.uuid4()),
+                "conferenceSolutionKey": {"type": "hangoutsMeet"},
+            }
+        }
+        params["conferenceDataVersion"] = 1
+
     async with httpx.AsyncClient() as client:
         resp = await client.post(
             "https://www.googleapis.com/calendar/v3/calendars/primary/events",
             headers={"Authorization": f"Bearer {access_token}"},
             json=event_body,
-            params={"sendUpdates": "all"},
+            params=params,
         )
         resp.raise_for_status()
         return resp.json()
@@ -397,7 +409,11 @@ class SchedulingService:
         if busy:
             raise ValueError("Selected slot is no longer available.")
 
-        location = meeting.get("location_details") or meeting.get("location_type", "")
+        with_meet = meeting.get("location_type") == "google_meet"
+        # Google fills in the Meet location itself; don't override it.
+        location = "" if with_meet else (
+            meeting.get("location_details") or meeting.get("location_type", "")
+        )
         summary = f"{meeting['name']} with {guest_name}"
         description = (
             f"Meeting type: {meeting['name']}\n"
@@ -413,6 +429,7 @@ class SchedulingService:
             description=description,
             location=location,
             attendee_email=guest_email,
+            with_meet=with_meet,
         )
         # region agent log
         agent_log(
@@ -426,6 +443,7 @@ class SchedulingService:
         return {
             "event_id": event.get("id"),
             "html_link": event.get("htmlLink"),
+            "meet_link": event.get("hangoutLink"),
             "start": start_dt.isoformat(),
             "end": end_dt.isoformat(),
             "summary": summary,

@@ -291,6 +291,15 @@ export function useAvailableSlots(slug: string, startDate: string, days = 14) {
   });
 }
 
+export interface BookingResult {
+  event_id: string | null;
+  html_link: string | null;
+  meet_link: string | null;
+  start: string;
+  end: string;
+  summary: string;
+}
+
 export function useBookSlot() {
   return useMutation({
     mutationFn: async ({
@@ -313,7 +322,7 @@ export function useBookSlot() {
         const err = await resp.json().catch(() => ({}));
         throw new Error(err.error || "Booking failed");
       }
-      return resp.json();
+      return (await resp.json()) as BookingResult;
     },
   });
 }

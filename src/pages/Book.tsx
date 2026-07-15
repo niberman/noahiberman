@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Loader2,
   CheckCircle2,
+  Video,
 } from "lucide-react";
 import {
   useAvailableSlots,
@@ -169,7 +170,9 @@ export default function Book() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <MapPin className="h-4 w-4" />
-                  {data.meeting.location_type === "zoom"
+                  {data.meeting.location_type === "google_meet"
+                    ? "Google Meet"
+                    : data.meeting.location_type === "zoom"
                     ? "Video Call"
                     : data.meeting.location_type === "phone"
                     ? "Phone"
@@ -396,6 +399,18 @@ export default function Book() {
                     {guestTz.replace(/_/g, " ")}
                   </p>
                 </div>
+                {bookSlot.data?.meet_link && (
+                  <Button asChild className="min-h-[44px]">
+                    <a
+                      href={bookSlot.data.meet_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Video className="h-4 w-4 mr-2" />
+                      Join with Google Meet
+                    </a>
+                  </Button>
+                )}
                 <p className="text-sm text-white/50 pt-2">
                   A calendar invite has been sent to {guestEmail}.
                 </p>
