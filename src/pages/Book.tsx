@@ -399,10 +399,10 @@ export default function Book() {
                     {guestTz.replace(/_/g, " ")}
                   </p>
                 </div>
-                {bookSlot.data?.meet_link && (
+                {bookSlot.data?.event?.meet_link && (
                   <Button asChild className="min-h-[44px]">
                     <a
-                      href={bookSlot.data.meet_link}
+                      href={bookSlot.data.event.meet_link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

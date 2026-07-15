@@ -292,12 +292,15 @@ export function useAvailableSlots(slug: string, startDate: string, days = 14) {
 }
 
 export interface BookingResult {
-  event_id: string | null;
-  html_link: string | null;
-  meet_link: string | null;
-  start: string;
-  end: string;
-  summary: string;
+  status: string;
+  event: {
+    event_id: string | null;
+    html_link: string | null;
+    meet_link: string | null;
+    start: string;
+    end: string;
+    summary: string;
+  };
 }
 
 export function useBookSlot() {
