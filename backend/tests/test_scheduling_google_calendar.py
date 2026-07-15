@@ -296,3 +296,50 @@ async def test_book_raises_when_slot_busy() -> None:
                     guest_name="Alex",
                     guest_email="alex@example.com",
                 )
+
+@pytest.mark.asyncio
+async def test_book_honors_buffer_window() -> None:
+    """An event inside the buffer (but outside the raw slot) blocks booking."""
+    slot_start = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).replace(
+        hour=15, minute=0, second=0, microsecond=0
+    )
+    adjacent_busy = {
+        "calendars": {
+            "primary": {
+                "busy": [
+                    {
+                        "start": (slot_start - timedelta(minutes=40)).isoformat(),
+                        "end": (slot_start - timedelta(minutes=10)).isoformat(),
+                    }
+                ]
+            }
+        }
+    }
+
+    with respx.mock:
+        route = respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
+            return_value=httpx.Response(200, json=adjacent_busy)
+        )
+        with (
+            patch.object(
+                SchedulingService,
+                "get_meeting_type",
+                staticmethod(lambda slug: _fake_meeting()),
+            ),
+            patch(
+                "services.scheduling._get_access_token",
+                AsyncMock(return_value="token"),
+            ),
+        ):
+            with pytest.raises(ValueError, match="no longer available"):
+                await SchedulingService.book(
+                    slug="x",
+                    slot_start=slot_start.isoformat(),
+                    guest_name="Alex",
+                    guest_email="alex@example.com",
+                )
+
+    # The freeBusy window must be padded by buffer_min (15) on both sides.
+    body = json.loads(route.calls.last.request.content)
+    assert body["timeMin"] == (slot_start - timedelta(minutes=15)).isoformat()
+    assert body["timeMax"] == (slot_start + timedelta(minutes=30 + 15)).isoformat()

@@ -156,8 +156,12 @@ function cleanResponse(text: string): string {
   cleaned = cleaned.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
   cleaned = cleaned.replace(/\[reasoning\][\s\S]*?\[\/reasoning\]/gi, "");
 
-  // Strip common reasoning prefixes and meta-commentary
-  cleaned = cleaned.replace(/^(We are given|Let's|I should|The user|Response structure|Example response)[^]*?(?=\n\n|\n[A-Z])/gim, "");
+  // Strip common reasoning prefixes and meta-commentary.
+  // NOTE (2026-07-14): "Let's", "I should", and bare "We" removed from the
+  // strip lists — they open legitimate in-character replies, and the stop
+  // sequences that motivated them were already dropped on 2026-06-09. Only
+  // unambiguous meta phrases remain.
+  cleaned = cleaned.replace(/^(We are given|The user|Response structure|Example response)[^]*?(?=\n\n|\n[A-Z])/gim, "");
 
   // Strip "Answer:" prefix
   cleaned = cleaned.replace(/^\*\*Answer:\*\*\s*/i, "");
@@ -172,7 +176,7 @@ function cleanResponse(text: string): string {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     // Skip lines that look like meta-commentary
-    if (line.match(/^(We|Let's|I should|The user|Response structure|Example|My identity)/i)) {
+    if (line.match(/^(We are given|The user|Response structure|Example response|My identity)/i)) {
       continue;
     }
     // If we find a line that doesn't look like analysis, that's probably the real content

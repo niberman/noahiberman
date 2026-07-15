@@ -412,9 +412,16 @@ class SchedulingService:
         start_dt = datetime.fromisoformat(slot_start).astimezone(ZoneInfo("UTC"))
         end_dt = start_dt + timedelta(minutes=meeting["duration_min"])
 
-        # Verify the slot is still free.
+        # Verify the slot is still free, honoring the meeting's buffer window
+        # exactly like slot listing does — otherwise a slot that listing would
+        # hide (too close to an existing event) could still be booked.
+        buffer_min = meeting.get("buffer_min") or 0
         access_token = await _get_access_token()
-        busy = await _fetch_busy_ranges(access_token, start_dt, end_dt)
+        busy = await _fetch_busy_ranges(
+            access_token,
+            start_dt - timedelta(minutes=buffer_min),
+            end_dt + timedelta(minutes=buffer_min),
+        )
         # region agent log
         agent_log(
             "scheduling.py:book",
