@@ -131,7 +131,8 @@ export function FlightMap() {
 
   // Count visits to each airport
   const airportVisits = useMemo(() => {
-    const visits = new Map<string, number>();
+    // Map is shadowed by react-map-gl's component import
+    const visits = new globalThis.Map<string, number>();
     flightHistory.forEach((flight) => {
       extractAirportsFromFlight(flight).forEach((code) => {
         visits.set(code, (visits.get(code) || 0) + 1);

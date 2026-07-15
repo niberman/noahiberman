@@ -11,7 +11,7 @@ export interface AirportLookupResult {
   longitude: number;
 }
 
-const airportData = usAirports as Record<string, [number, number, string]>;
+const airportData = usAirports as unknown as Record<string, [number, number, string]>;
 
 /**
  * Look up an airport by ICAO or FAA identifier.

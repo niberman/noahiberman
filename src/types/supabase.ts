@@ -1,6 +1,3 @@
-npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
-npm warn exec The following package was not found and will be installed: supabase@2.84.10
-npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
 export type Json =
   | string
   | number
