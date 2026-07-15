@@ -105,7 +105,14 @@ async def _get_access_token() -> str:
                 "grant_type": "refresh_token",
             },
         )
-        resp.raise_for_status()
+        if resp.status_code != 200:
+            # A dead refresh token (e.g. invalid_grant after revocation or
+            # testing-mode expiry) must behave like "not connected" so callers
+            # degrade gracefully instead of returning 500s.
+            err = resp.json().get("error", "unknown") if "json" in resp.headers.get("content-type", "") else resp.text[:100]
+            raise RuntimeError(
+                f"Google token refresh failed ({resp.status_code}: {err}). Reconnect Google Calendar from the dashboard."
+            )
         return resp.json()["access_token"]
 
 
@@ -251,6 +258,23 @@ class SchedulingService:
         return bool(result.data[0].get("refresh_token"))
 
     @staticmethod
+    async def verify_google_calendar_connection() -> bool:
+        """True when the stored refresh token can still mint an access token.
+
+        A token can exist but be dead (revoked, or expired after 7 days while
+        the OAuth app is in Testing mode); the dashboard must show that as
+        disconnected so the owner knows to reconnect.
+        """
+        if not SchedulingService.is_google_calendar_connected():
+            return False
+        try:
+            await _get_access_token()
+            return True
+        except RuntimeError as exc:
+            LOGGER.warning("Google Calendar connection check failed: %s", exc)
+            return False
+
+    @staticmethod
     def get_meeting_type(slug: str) -> dict:
         sb = _supabase()
         result = (
@@ -339,8 +363,8 @@ class SchedulingService:
             access_token = await _get_access_token()
             busy = await _fetch_busy_ranges(access_token, range_start, range_end)
             google_connected = True
-        except RuntimeError:
-            LOGGER.warning("Google Calendar not connected; returning raw profile slots.")
+        except (RuntimeError, httpx.HTTPError) as exc:
+            LOGGER.warning("Google Calendar unavailable; returning raw profile slots: %s", exc)
         # region agent log
         agent_log(
             "scheduling.py:get_available_slots",

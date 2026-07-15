@@ -144,9 +144,9 @@ def scheduling_auth_url():
 
 
 @app.get("/scheduling/auth/status")
-def scheduling_auth_status():
-    """Return whether Google Calendar has been connected."""
-    return {"connected": SchedulingService.is_google_calendar_connected()}
+async def scheduling_auth_status():
+    """Return whether Google Calendar is connected AND the token still works."""
+    return {"connected": await SchedulingService.verify_google_calendar_connection()}
 
 
 class OAuthExchangeRequest(BaseModel):
@@ -231,3 +231,10 @@ async def book_slot(slug: str, body: BookingRequest):
         return {"status": "booked", "event": result}
     except ValueError as exc:
         return JSONResponse(status_code=409, content={"error": str(exc)})
+    except RuntimeError as exc:
+        # Google Calendar unreachable (no token, or refresh token dead).
+        LOGGER.error("Booking failed, Google Calendar unavailable: %s", exc)
+        return JSONResponse(
+            status_code=503,
+            content={"error": "Calendar connection is temporarily unavailable. Please try again later or use the contact form."},
+        )

@@ -124,8 +124,10 @@ export function BackgroundFlightMap() {
       rotationRef.current = null;
     }
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     if (shouldEnableInteractions) {
-      map.current.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+      map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
       map.current.dragPan.enable();
       map.current.dragRotate.enable();
       map.current.scrollZoom.enable();
@@ -147,47 +149,76 @@ export function BackgroundFlightMap() {
 
     const wp: MapWaypoint = WAYPOINT_BY_ID[activeWaypointId] ?? HERO_WAYPOINT;
 
-    map.current.flyTo({
-      center: wp.center,
-      zoom: wp.zoom,
-      pitch: wp.pitch ?? 45,
-      bearing: wp.bearing ?? 0,
-      duration: wp.duration ?? 1800,
-      essential: true,
-      curve: 1.4,
-    });
-
-    drawWaypointArc(wp);
-
-    // Resume slow rotation only at hero, after the flyTo completes.
-    if (activeWaypointId === HERO_WAYPOINT.id) {
+    const applyCamera = () => {
       const m = map.current;
-      const startRotation = () => {
-        if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
-        if (shouldEnableInteractionsRef.current) return;
-        if (rotationRef.current) return;
-        let bearing = m.getBearing();
-        const tick = () => {
-          if (!map.current) return;
-          if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) {
-            rotationRef.current = null;
-            return;
-          }
-          if (shouldEnableInteractionsRef.current) {
-            rotationRef.current = null;
-            return;
-          }
-          // Don't fight in-progress flyTo — wait for it.
-          if (!map.current.isMoving()) {
-            bearing += 0.02;
-            map.current.setBearing(bearing);
-          }
+      if (!m) return;
+
+      if (prefersReducedMotion) {
+        m.jumpTo({
+          center: wp.center,
+          zoom: wp.zoom,
+          pitch: wp.pitch ?? 45,
+          bearing: wp.bearing ?? 0,
+        });
+      } else {
+        m.flyTo({
+          center: wp.center,
+          zoom: wp.zoom,
+          pitch: wp.pitch ?? 45,
+          bearing: wp.bearing ?? 0,
+          duration: wp.duration ?? 1800,
+          essential: true,
+          curve: 1.4,
+        });
+      }
+
+      drawWaypointArc(wp);
+
+      // Resume slow rotation only at hero, after the flyTo completes.
+      // Skipped under reduced motion — no autonomous camera movement.
+      if (wp.id === HERO_WAYPOINT.id && !prefersReducedMotion) {
+        const startRotation = () => {
+          if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
+          if (shouldEnableInteractionsRef.current) return;
+          if (rotationRef.current) return;
+          let bearing = m.getBearing();
+          const tick = () => {
+            if (!map.current) return;
+            if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) {
+              rotationRef.current = null;
+              return;
+            }
+            if (shouldEnableInteractionsRef.current) {
+              rotationRef.current = null;
+              return;
+            }
+            // Don't fight in-progress flyTo — wait for it.
+            if (!map.current.isMoving()) {
+              bearing += 0.02;
+              map.current.setBearing(bearing);
+            }
+            rotationRef.current = requestAnimationFrame(tick);
+          };
           rotationRef.current = requestAnimationFrame(tick);
         };
-        rotationRef.current = requestAnimationFrame(tick);
-      };
-      m.once("moveend", startRotation);
+        m.once("moveend", startRotation);
+      }
+    };
+
+    // If the camera is still mid-flight from the previous waypoint (fast
+    // scrolling), wait a beat before retargeting so a flick through several
+    // stops becomes one smooth flight to where the user settles instead of
+    // lurching through every intermediate flyTo. The effect cleanup clears
+    // the timer whenever a newer waypoint arrives first.
+    let settleTimer: number | undefined;
+    if (map.current.isMoving()) {
+      settleTimer = window.setTimeout(applyCamera, 200);
+    } else {
+      applyCamera();
     }
+    return () => {
+      if (settleTimer !== undefined) window.clearTimeout(settleTimer);
+    };
   }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
 
   // Draw or clear the IFR-style arc for waypoints with `arcTo`.

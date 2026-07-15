@@ -3,7 +3,7 @@ import { ArrowLeft, LogOut } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { OpenClawChat } from "@/components/dashboard/OpenClawChat";
+import { HermesChat } from "@/components/dashboard/HermesChat";
 
 const OpenClaw = () => {
   const navigate = useNavigate();
@@ -18,8 +18,8 @@ const OpenClaw = () => {
   return (
     <>
       <SEO
-        title="OpenClaw — Noah I Berman"
-        description="OpenClaw Gateway chat"
+        title="Hermes — Noah I Berman"
+        description="Hermes Agent chat"
       />
 
       <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
@@ -37,10 +37,10 @@ const OpenClaw = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
               <div>
                 <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 sm:mb-3">
-                  OpenClaw
+                  Hermes
                 </h1>
                 <p className="text-white/80 text-base sm:text-lg">
-                  Real-time chat with your local OpenClaw Gateway instance
+                  Chat with your Hermes Agent instance
                 </p>
               </div>
               <Button
@@ -54,7 +54,7 @@ const OpenClaw = () => {
             </div>
           </div>
 
-          <OpenClawChat />
+          <HermesChat />
         </div>
       </div>
     </>

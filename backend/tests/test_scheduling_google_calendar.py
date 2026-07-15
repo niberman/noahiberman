@@ -12,6 +12,7 @@ import respx
 from services.scheduling import (
     SchedulingService,
     _fetch_busy_ranges,
+    _get_access_token,
     create_calendar_event,
 )
 
@@ -79,6 +80,64 @@ async def test_create_calendar_event_posts_expected_body() -> None:
     assert parsed["summary"] == "Intro call"
     assert parsed["attendees"] == [{"email": "guest@example.com"}]
     assert parsed["start"]["timeZone"] == "UTC"
+
+
+class _FakeSupabase:
+    """Stub for the scheduling_auth refresh-token lookup."""
+
+    def __init__(self, rows):
+        self._rows = rows
+
+    def table(self, _name):
+        return self
+
+    def select(self, *_a, **_k):
+        return self
+
+    def limit(self, _n):
+        return self
+
+    def execute(self):
+        return type("R", (), {"data": self._rows})()
+
+
+@pytest.mark.asyncio
+async def test_get_access_token_dead_refresh_token_raises_runtime_error(monkeypatch) -> None:
+    """invalid_grant from Google (revoked/expired token) becomes RuntimeError, not a 500."""
+    monkeypatch.setenv("GOOGLE_CLIENT_ID", "cid")
+    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret")
+
+    with respx.mock:
+        respx.post("https://oauth2.googleapis.com/token").mock(
+            return_value=httpx.Response(400, json={"error": "invalid_grant"})
+        )
+        with patch(
+            "services.scheduling._supabase",
+            lambda: _FakeSupabase([{"refresh_token": "dead-token"}]),
+        ):
+            with pytest.raises(RuntimeError, match="invalid_grant"):
+                await _get_access_token()
+
+
+@pytest.mark.asyncio
+async def test_get_available_slots_degrades_when_token_refresh_fails() -> None:
+    """Slots endpoint must keep working (raw profile slots) when the token is dead."""
+    start_date = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).strftime("%Y-%m-%d")
+
+    with (
+        patch.object(
+            SchedulingService,
+            "get_meeting_type",
+            staticmethod(lambda slug: _fake_meeting()),
+        ),
+        patch(
+            "services.scheduling._get_access_token",
+            AsyncMock(side_effect=RuntimeError("Google token refresh failed (400: invalid_grant).")),
+        ),
+    ):
+        slots = await SchedulingService.get_available_slots("any-slug", start_date, days=3)
+
+    assert len(slots) >= 1
 
 
 def _fake_meeting() -> dict:
