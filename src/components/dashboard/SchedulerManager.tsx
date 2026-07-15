@@ -911,6 +911,7 @@ export default function SchedulerManager() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="google_meet">Google Meet</SelectItem>
                   <SelectItem value="zoom">Zoom</SelectItem>
                   <SelectItem value="in_person">In Person</SelectItem>
                   <SelectItem value="phone">Phone</SelectItem>
