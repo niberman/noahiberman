@@ -185,6 +185,10 @@ export function HermesChat() {
     const next = { ...settings, ...partial };
     setSettings(next);
     saveSettings(next);
+    // The Live badge reflects a health check against the OLD settings —
+    // require a fresh Connect after any change.
+    setConnected(false);
+    setError(null);
   };
 
   /* ---------------------------------------------------------------- */
