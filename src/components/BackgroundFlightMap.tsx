@@ -107,6 +107,10 @@ export function BackgroundFlightMap() {
     shouldEnableInteractionsRef.current = shouldEnableInteractions;
   }, [shouldEnableInteractions]);
 
+  // True on the effect run right after explore mode ends, so the return
+  // flight can be snappier than the scroll-storytelling durations.
+  const wasInteractiveRef = useRef(false);
+
   // Drive the camera based on the active waypoint and interactive state.
   // Three modes:
   //   1. Interactive (user clicked Explore on the flight waypoint) — enable
@@ -127,7 +131,26 @@ export function BackgroundFlightMap() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (shouldEnableInteractions) {
-      map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
+      // One cinematic zoom-out that frames every flight (the waypoint promises
+      // "every route, every airport"), instead of leaving the user to wheel
+      // out manually from the waypoint's zoom-6.5 framing.
+      const airportFeatures = airportFeaturesRef.current;
+      if (airportFeatures.length > 0) {
+        const allFlightsBounds = new mapboxgl.LngLatBounds();
+        airportFeatures.forEach((f) =>
+          allFlightsBounds.extend(f.geometry.coordinates as [number, number]),
+        );
+        map.current.fitBounds(allFlightsBounds, {
+          padding: window.innerWidth < 640 ? 48 : 80,
+          pitch: 0,
+          bearing: 0,
+          maxZoom: 6,
+          duration: prefersReducedMotion ? 0 : 1600,
+          essential: true,
+        });
+      } else {
+        map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
+      }
       map.current.dragPan.enable();
       map.current.dragRotate.enable();
       map.current.scrollZoom.enable();
@@ -136,8 +159,12 @@ export function BackgroundFlightMap() {
       map.current.touchPitch.enable();
       map.current.keyboard.enable();
       drawWaypointArc(null);
+      wasInteractiveRef.current = true;
       return;
     }
+
+    const returningFromExplore = wasInteractiveRef.current;
+    wasInteractiveRef.current = false;
 
     map.current.dragPan.disable();
     map.current.dragRotate.disable();
@@ -166,9 +193,11 @@ export function BackgroundFlightMap() {
           zoom: wp.zoom,
           pitch: wp.pitch ?? 45,
           bearing: wp.bearing ?? 0,
-          duration: wp.duration ?? 1800,
+          // Waypoint durations are tuned for scroll storytelling; the return
+          // from explore mode should feel like closing a panel, not a tour.
+          duration: returningFromExplore ? 1200 : wp.duration ?? 1800,
           essential: true,
-          curve: 1.4,
+          curve: returningFromExplore ? 1.2 : 1.4,
         });
       }
 
