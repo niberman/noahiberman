@@ -5,6 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+  <!-- The site manages its own dark theme. Without these, dark-mode tooling
+       (Dark Reader, Chrome Auto Dark) force-paints opaque backgrounds on every
+       element, hiding the fixed WebGL flight map behind the page content. -->
+  <meta name="color-scheme" content="only dark" />
+  <meta name="darkreader-lock" />
 
   <!-- iOS specific meta tags -->
   <meta name="mobile-web-app-capable" content="yes" />

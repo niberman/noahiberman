@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { airportCoordinates as staticAirportCoordinates } from '@/lib/airport-coordinates';
@@ -37,13 +38,18 @@ export function useAirportCoordinates() {
 export function useAirportLookupMap() {
   const { data: airports, ...rest } = useAirportCoordinates();
 
-  // Start with static data as base, overlay Supabase data on top
-  const lookupMap: Record<string, [number, number]> = { ...staticAirportCoordinates };
-  if (airports && airports.length > 0) {
-    for (const ap of airports) {
-      lookupMap[ap.code] = [ap.longitude, ap.latitude];
+  // Memoized so consumers' effects keyed on lookupMap don't re-fire every render
+  // (BackgroundFlightMap tears down and re-adds its map layers when this changes)
+  const lookupMap = useMemo(() => {
+    // Start with static data as base, overlay Supabase data on top
+    const map: Record<string, [number, number]> = { ...staticAirportCoordinates };
+    if (airports && airports.length > 0) {
+      for (const ap of airports) {
+        map[ap.code] = [ap.longitude, ap.latitude];
+      }
     }
-  }
+    return map;
+  }, [airports]);
 
   return { lookupMap, airports, ...rest };
 }
