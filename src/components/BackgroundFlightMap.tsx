@@ -59,6 +59,9 @@ export function BackgroundFlightMap() {
   const rotationRef = useRef<number | null>(null);
   const airportVisitsRef = useRef<Map<string, number>>(new Map());
   const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
+  /** Bounds of every drawn route, for waypoints with `fitRoutes`. State (not a
+   *  ref) so the camera effect re-frames once the routes finish loading. */
+  const [routeBounds, setRouteBounds] = useState<mapboxgl.LngLatBounds | null>(null);
   const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   /** After zoomend at min zoom, allow nav (z-110) above the map; false while zoomed in or mid-gesture. */
@@ -147,15 +150,32 @@ export function BackgroundFlightMap() {
 
     const wp: MapWaypoint = WAYPOINT_BY_ID[activeWaypointId] ?? HERO_WAYPOINT;
 
-    map.current.flyTo({
-      center: wp.center,
-      zoom: wp.zoom,
-      pitch: wp.pitch ?? 45,
-      bearing: wp.bearing ?? 0,
-      duration: wp.duration ?? 1800,
-      essential: true,
-      curve: 1.4,
-    });
+    if (wp.fitRoutes && routeBounds) {
+      // Frame every route rather than a fixed center/zoom, so no line falls
+      // off-screen as the logbook grows. Leave room for the nav and the
+      // bottom-centered card.
+      const narrow = window.innerWidth < 640;
+      map.current.fitBounds(routeBounds, {
+        padding: narrow
+          ? { top: 88, bottom: 240, left: 20, right: 20 }
+          : { top: 110, bottom: 200, left: 48, right: 48 },
+        pitch: wp.pitch ?? 0,
+        bearing: wp.bearing ?? 0,
+        duration: wp.duration ?? 1400,
+        essential: true,
+        curve: 1.4,
+      });
+    } else {
+      map.current.flyTo({
+        center: wp.center,
+        zoom: wp.zoom,
+        pitch: wp.pitch ?? 45,
+        bearing: wp.bearing ?? 0,
+        duration: wp.duration ?? 1400,
+        essential: true,
+        curve: 1.4,
+      });
+    }
 
     drawWaypointArc(wp);
 
@@ -188,7 +208,7 @@ export function BackgroundFlightMap() {
       };
       m.once("moveend", startRotation);
     }
-  }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
+  }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight, routeBounds]);
 
   // Draw or clear the IFR-style arc for waypoints with `arcTo`.
   const drawWaypointArc = (wp: MapWaypoint | null) => {
@@ -302,22 +322,22 @@ export function BackgroundFlightMap() {
           if (layer.type === 'background') {
             map.current!.setPaintProperty(layer.id, 'background-opacity', 0.4);
           } else if (layer.type === 'fill') {
-            map.current!.setPaintProperty(layer.id, 'fill-opacity', 0.3);
+            map.current!.setPaintProperty(layer.id, 'fill-opacity', 0.4);
           } else if (layer.type === 'line') {
-            map.current!.setPaintProperty(layer.id, 'line-opacity', 0.4);
+            map.current!.setPaintProperty(layer.id, 'line-opacity', 0.55);
           } else if (layer.type === 'symbol') {
-            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.5);
-            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.5);
+            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.75);
+            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.7);
           } else if (layer.type === 'raster') {
             map.current!.setPaintProperty(layer.id, 'raster-opacity', 0.4);
           }
         });
       }
       
-      // Add historical flight routes if not currently flying
+      // Routes themselves are drawn by the effect that watches `mapLoaded`;
+      // this closure still sees mapLoaded === false, so it can only wire up
+      // the hover handlers (layer-scoped listeners may predate the layer).
       if (!currentFlight || currentFlight.flight_status !== "in_flight") {
-        addHistoricalRoutes();
-        
         // Set up hover handlers for airport circles
         map.current.on('mouseenter', 'airport-circles', (e) => {
           if (map.current) {
@@ -485,6 +505,9 @@ export function BackgroundFlightMap() {
 
     const routes: RouteFeature[] = [...hubFeatures, ...prFeatures];
 
+    const bounds = new mapboxgl.LngLatBounds();
+    routes.forEach((r) => r.geometry.coordinates.forEach((c) => bounds.extend(c as [number, number])));
+    setRouteBounds(bounds.isEmpty() ? null : bounds);
 
     // Add routes as a source
     if (map.current.getSource("flight-routes")) {
@@ -516,8 +539,8 @@ export function BackgroundFlightMap() {
       },
       paint: {
         "line-color": "#a855f7",
-        "line-width": 6,
-        "line-opacity": 0.12,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 3, 4, 7, 7, 12, 10],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0.16, 8, 0.12, 12, 0.06],
         "line-blur": 5,
       },
     });
@@ -543,8 +566,10 @@ export function BackgroundFlightMap() {
           1,
           "#7c3aed",
         ],
-        "line-width": 2.8,
-        "line-opacity": 0.7,
+        // Ramp down when zoomed in: at a certificate stop the hub spokes are
+        // just streaks across the frame, at the wide reveal they are the story.
+        "line-width": ["interpolate", ["linear"], ["zoom"], 3, 1.6, 7, 2.6, 12, 2],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0.85, 8, 0.7, 12, 0.28],
       },
     });
 
@@ -560,7 +585,7 @@ export function BackgroundFlightMap() {
       paint: {
         "line-color": "#fdf4ff",
         "line-width": 0.7,
-        "line-opacity": 0.25,
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 3, 0.3, 8, 0.25, 12, 0.1],
       },
     });
 
@@ -622,9 +647,18 @@ export function BackgroundFlightMap() {
       type: "circle",
       source: "airport-points",
       paint: {
-        "circle-radius": ["case", ["get", "isHomeBase"], 8, 5],
+        // Scale with zoom so the whole-network shot reads as a constellation
+        // rather than a pile of blobs, and close-ups still get a solid marker.
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          3, ["case", ["get", "isHomeBase"], 4, 2.5],
+          7, ["case", ["get", "isHomeBase"], 6.5, 4],
+          11, ["case", ["get", "isHomeBase"], 8, 5],
+        ],
         "circle-color": ["case", ["get", "isHomeBase"], "#c084fc", "#a78bfa"],
-        "circle-stroke-width": 2,
+        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 3, 0.8, 7, 1.4, 11, 2],
         "circle-stroke-color": "#ffffff",
       },
     });

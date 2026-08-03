@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,10 +60,10 @@ function PinOverlay({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
       ref.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
     };
     update();
-    map.on("move", update);
+    // "render" fires on every repaint, which covers every camera move — a
+    // separate "move" listener just projected the same point twice per frame.
     map.on("render", update);
     return () => {
-      map.off("move", update);
       map.off("render", update);
     };
   }, [map, waypoint, hidden]);
@@ -96,39 +96,38 @@ function DesktopCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: bool
 function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   const map = useMapRef();
   const ref = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ w: 360, h: 200 });
-
-  useLayoutEffect(() => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    setSize({ w: rect.width, h: rect.height });
-  }, [waypoint.id]);
 
   useEffect(() => {
-    if (!map || hidden) return;
+    const el = ref.current;
+    if (!map || hidden || !el) return;
     const update = () => {
-      if (!ref.current) return;
       const p = map.project(waypoint.center);
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const gap = 32;
+      // Measured live — the card's height changes with each waypoint's copy,
+      // and a snapshot taken on id change still measures the outgoing card.
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
       const flipX = p.x > vw * 0.55;
       const flipY = p.y > vh * 0.6;
-      let x = flipX ? p.x - size.w - gap : p.x + gap;
-      let y = flipY ? p.y - size.h - gap : p.y + gap;
+      let x = flipX ? p.x - w - gap : p.x + gap;
+      let y = flipY ? p.y - h - gap : p.y + gap;
       // Clamp to viewport with a small margin
-      x = Math.max(16, Math.min(vw - size.w - 16, x));
-      y = Math.max(16, Math.min(vh - size.h - 16, y));
-      ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      x = Math.max(16, Math.min(vw - w - 16, x));
+      y = Math.max(16, Math.min(vh - h - 16, y));
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
     update();
-    map.on("move", update);
     map.on("render", update);
+    // Reposition when the incoming card mounts / resizes, even if the map is idle.
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
     return () => {
-      map.off("move", update);
       map.off("render", update);
+      ro.disconnect();
     };
-  }, [map, waypoint, size.w, size.h, hidden]);
+  }, [map, waypoint, hidden]);
 
   return (
     <div
@@ -143,8 +142,8 @@ function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             key={waypoint.id}
             initial={{ opacity: 0, y: 12, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: -8, scale: 0.97, transition: { duration: 0.14 } }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="pointer-events-auto"
           >
             <CardChrome waypoint={waypoint} />
@@ -167,8 +166,8 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             key={waypoint.id}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.14 } }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             className="pointer-events-auto"
           >
             <CardChrome waypoint={waypoint} />
@@ -192,8 +191,8 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
             key={waypoint.id}
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: 60, transition: { duration: 0.16 } }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             className="pointer-events-auto"
           >
             <CardChrome waypoint={waypoint} compact />
