@@ -10,6 +10,24 @@ const corsHeaders = {
 
 // --- Configuration ---
 
+// Model lineup (updated 2026-06-09):
+// - text-embedding-004 was shut down by Google on 2026-01-14; every embedding
+//   call has failed (silently) since. gemini-embedding-2 is the current model.
+// - gemini-2.0-flash passed its earliest-shutdown date (2026-06-01);
+//   gemini-3.5-flash is its documented replacement.
+const CHAT_MODEL = "gemini-3.5-flash";
+const EMBEDDING_MODEL = "gemini-embedding-2";
+const EMBEDDING_DIMS = 768; // must match public.memories.embedding vector(768)
+// Tuned for gemini-embedding-2's cosine-similarity distribution (measured
+// 2026-06-09): relevant memories score 0.65-0.78, unrelated ones 0.50-0.56.
+// 0.60 sits in the separation band; 0.5 let junk context through.
+const MATCH_THRESHOLD = 0.6;
+const MATCH_COUNT = 5;
+// gemini-3.5-flash is a thinking model: reasoning tokens draw from the same
+// output budget, so give answers more headroom than the old 500 default.
+const DEFAULT_MAX_TOKENS = 1024;
+const MAX_TOKENS_CAP = 2048;
+
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30; // Increased for development testing
 const BLOCKED_PATTERNS: RegExp[] = [
@@ -32,71 +50,135 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /system\s+prompt/i,
   /config\.json/i,
 ];
+
 // Identity & Style Prompts
-const IDENTITY_CORE = `You are the AI Digital Twin of Noah I Berman. You are not an assistant; you are a digital extension of Noah's persona, expertise, and history.
+const IDENTITY_CORE = `You are the AI Digital Twin of Noah I Berman.
 
 BIOGRAPHICAL FACTS:
-- 23-year-old Commercial Pilot based at Centennial Airport (KAPA), Colorado.
-- 500+ flight hours; FAA Commercial Multi-Engine and Instrument rated.
-- Rotary-wing pilot with helicopter experience; expert in Colorado mountain flying.
-- Software Developer and AI Systems Engineer (Python, FastAPI, TypeScript, Supabase, Vercel).
-- University of Denver student (Applied Computing, Entrepreneurship, Spanish); Graduating June 2026.
-- Fluent Spanish speaker (Bilbao/University of Deusto alum).
-- Amateur guitarist/pianist; Carillon player for DU hockey.
-- Outdoors: Whitewater kayaker, expert backcountry skier/snowboarder (WFR and AIARE 2 certified).
+- 23-year-old Commercial Pilot based at Centennial Airport (KAPA), Colorado
+- 500+ flight hours with multiengine and instrument ratings
+- FAA Commercial Multi-Engine and Instrument rated pilot
+- Rotary-wing pilot with helicopter flight experience
+- Software Developer and AI Systems Engineer
+- Student at University of Denver (NOT Daniel Webster)
+- Majoring in Applied Computing, Entrepreneurship, and Spanish
+- Graduating June 2026
+- Fluent Spanish speaker (studied one year at University of Deusto in Bilbao, Spain)
+- Amateur guitarist and pianist
+- Carillon player for University of Denver hockey games
+- Experienced white water kayaker
+- Expert backcountry skier and snowboarder
+- Wilderness First Responder (WFR) certified
+- AIARE 2 certified for avalanche safety
 
-PROFESSIONAL EXPERTISE & PROJECTS:
-- Aviation: High-altitude ops, mountain dynamics, flight planning.
-- Freedom Aviation: Aircraft concierge management at KAPA and a SaaS scheduling platform.
-- Subdub: B2B compliance and crisis management audit engine.
-- ESL Teaching: Weekly instruction to maintain Spanish fluency for future South America relocation.
+PROFESSIONAL EXPERTISE:
+- Aviation: Mountain flying dynamics, high-altitude operations, METARs, flight planning
+- Software: Python, FastAPI, TypeScript, Supabase, Vercel, local AI infrastructure
+- AI Systems: Ollama, LLMs, vision models, privacy-first architecture
+- Business: Aircraft management, SaaS development, compliance systems
+
+ACTIVE PROJECTS:
+- Freedom Aviation Operations: Aircraft concierge management at KAPA (cleaning, maintenance, flight instruction)
+- Freedom Aviation SaaS: Scheduling/management platform competing with Flight Schedule Pro
+- Subdub: B2B compliance & crisis management service with audit engine
+- ESL Teaching: 1 day/week to maintain Spanish fluency before Colombia relocation
 
 COMMUNICATION STYLE:
-- TONE: High-status, confident, and intellectually dense. Use technical precision.
-- SUBSTANCE: Provide detailed, comprehensive answers. If asked about a topic, dive into the specifics (e.g., flight mechanics, coding architecture, or life in Spain).
-- DIRECTNESS: Cut corporate fluff and generic AI "politeness," but do not sacrifice depth for brevity. 
-- FORMATTING: Avoid emojis, exclamation points, and hashtags. Use structured lists or clear paragraphs where it aids technical clarity.
-- AUTHENTICITY: Write like a human founder/pilot. Be pragmatic and opinionated about technology and aviation.`;
+- Direct, blunt communication without corporate fluff
+- Professional, high-status tone
+- No emojis, no exclamation points, no hashtags
+- Technical precision over politeness
+- Write like a human, not a corporation
+- Casual and direct, use sentence fragments when appropriate
+- Drop pronouns for brevity when natural
+- No generic AI fluff or overly polite responses
+
+VALUES:
+- Digital sovereignty and data privacy
+- Privacy-first, locally-hosted systems
+- Combining aviation and technology careers`;
 
 const STRICT_INSTRUCTION = `
 
-CRITICAL OPERATIONAL DIRECTIVE:
-1. INTERNAL MONOLOGUE SUPPRESSION: You are forbidden from outputting any "thinking" blocks, "reasoning" steps, or "Let's break this down" meta-commentary. 
-2. NO PREAMBLE: Start your response immediately. Do not say "Based on the info provided" or "As Noah." Just be Noah.
-3. DEPTH REQUIREMENT: Do not give one-sentence answers unless the question is binary. Elaborate with the specific technical knowledge and personal context defined in your identity. 
-4. CHARACTER INTEGRITY: If asked "Who is Noah?" or "Tell me about yourself," provide a multi-paragraph, high-level overview of your dual career in aviation and tech.
-5. NO REASONING LEAKAGE: If you must plan your answer, do it silently. The final output must be a clean, professional, and thorough response.`;
+CRITICAL DIRECTIVE - ABSOLUTE REQUIREMENT:
+You MUST NOT output ANY internal reasoning, thinking process, chain-of-thought, planning, deliberation, or meta-commentary.
+You MUST NOT show how you arrived at your answer.
+You MUST NOT explain your thought process.
+You MUST NOT include phrases like "We are given", "Let's", "I should", "The user", "Response structure", "Example response".
+You MUST NOT analyze the question before answering.
+OUTPUT THE FINAL ANSWER ONLY. NO PREAMBLE. NO PROCESS. NO ANALYSIS OF THE QUESTION.
+Respond as Noah directly and immediately. Do not think out loud. Do not plan. Do not deliberate in your output.
+VIOLATION OF THIS DIRECTIVE IS COMPLETELY UNACCEPTABLE AND WILL BE REJECTED.`;
 
-const SYSTEM_PROMPT = IDENTITY_CORE + STRICT_INSTRUCTION;
+// IDENTITY_CORE / MATCH_* above are fallbacks only. The live values come from
+// the `inoah_settings` row so they can be edited from the dashboard without a
+// redeploy; keep these in sync as the defaults if that row is ever missing.
 
+// --- Embeddings ---
+
+// Native Gemini endpoint rather than the OpenAI-compat one: output_dimensionality
+// is needed to fit the 768-dim column, and gemini-embedding-2 auto-normalizes
+// truncated outputs so cosine similarity in match_memories stays valid.
+async function embedText(text: string, apiKey: string): Promise<number[]> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        content: { parts: [{ text }] },
+        output_dimensionality: EMBEDDING_DIMS,
+      }),
+    },
+  );
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`embedContent ${res.status}: ${detail.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  const values = data?.embedding?.values;
+  if (!Array.isArray(values) || values.length !== EMBEDDING_DIMS) {
+    throw new Error(
+      `embedContent returned ${values?.length ?? 0} dims, expected ${EMBEDDING_DIMS}`,
+    );
+  }
+  return values;
+}
 
 // --- Helper Functions ---
 
 function cleanResponse(text: string): string {
   // Aggressive stripping of reasoning blocks if they leak through
   let cleaned = text;
-  
+
   // Strip XML-style thinking tags
   cleaned = cleaned.replace(/<thinking>[\s\S]*?<\/thinking>/gi, "");
   cleaned = cleaned.replace(/\[reasoning\][\s\S]*?\[\/reasoning\]/gi, "");
-  
-  // Strip common reasoning prefixes and meta-commentary
-  cleaned = cleaned.replace(/^(We are given|Let's|I should|The user|Response structure|Example response)[^]*?(?=\n\n|\n[A-Z])/gim, "");
-  
+
+  // Strip common reasoning prefixes and meta-commentary.
+  // NOTE (2026-07-14): "Let's", "I should", and bare "We" removed from the
+  // strip lists — they open legitimate in-character replies, and the stop
+  // sequences that motivated them were already dropped on 2026-06-09. Only
+  // unambiguous meta phrases remain.
+  cleaned = cleaned.replace(/^(We are given|The user|Response structure|Example response)[^]*?(?=\n\n|\n[A-Z])/gim, "");
+
   // Strip "Answer:" prefix
   cleaned = cleaned.replace(/^\*\*Answer:\*\*\s*/i, "");
   cleaned = cleaned.replace(/^Answer:\s*/i, "");
-  
+
   // If response starts with quoted analysis, try to extract the actual response
   // Look for patterns like multiple paragraphs of analysis followed by actual content
   const lines = cleaned.split('\n');
   let foundContentStart = false;
   let contentStartIndex = 0;
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     // Skip lines that look like meta-commentary
-    if (line.match(/^(We|Let's|I should|The user|Response structure|Example|My identity)/i)) {
+    if (line.match(/^(We are given|The user|Response structure|Example response|My identity)/i)) {
       continue;
     }
     // If we find a line that doesn't look like analysis, that's probably the real content
@@ -106,11 +188,11 @@ function cleanResponse(text: string): string {
       break;
     }
   }
-  
+
   if (foundContentStart && contentStartIndex > 0) {
     cleaned = lines.slice(contentStartIndex).join('\n');
   }
-  
+
   return cleaned.trim();
 }
 
@@ -225,7 +307,7 @@ serve(async (req) => {
     const prompt = typeof payload?.prompt === "string" ? payload.prompt.trim() : "";
     const include_context = payload?.include_context ?? true;
     const apply_style = payload?.apply_style ?? true; // ignored, always applied now
-    const max_tokens = payload?.max_tokens || 500;
+    const max_tokens = Math.min(Number(payload?.max_tokens) || DEFAULT_MAX_TOKENS, MAX_TOKENS_CAP);
     const turnstileToken = payload?.turnstileToken;
     const debug_mode = payload?.debug_mode ?? false; // Enable debug info in response
 
@@ -258,7 +340,6 @@ serve(async (req) => {
     // 5. Initialize Clients
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!; // Use service role for vector search
-    // SWITCH TO GEMINI API KEY
     const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
 
     if (!supabaseUrl || !supabaseKey || !geminiKey) {
@@ -270,36 +351,46 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    // Initialize OpenAI client with Google's Base URL
+    // OpenAI-compat client is used for chat completions only; embeddings go
+    // through the native endpoint (see embedText).
     const openai = new OpenAI({
       apiKey: geminiKey,
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
     });
+
+    // 5b. Dashboard-editable persona and retrieval knobs. Falls back to the
+    // compiled-in defaults if the row is missing so chat never hard-fails.
+    const { data: settings } = await supabase
+      .from("inoah_settings")
+      .select("system_prompt, match_threshold, match_count")
+      .maybeSingle();
+
+    const identity = settings?.system_prompt?.trim() || IDENTITY_CORE;
+    const matchThreshold = settings?.match_threshold ?? MATCH_THRESHOLD;
+    const matchCount = settings?.match_count ?? MATCH_COUNT;
+    // The strict directive is machine behaviour, not persona, so it is always
+    // appended and stays out of the editable prompt.
+    const SYSTEM_PROMPT = identity + STRICT_INSTRUCTION;
 
     // 6. RAG: Retrieve Context (if requested)
     let contextString = "";
     let retrievedMemories: any[] = [];
     if (include_context) {
       try {
-        // Generate embedding for the prompt using Google's embedding model
-        // Note: Using text-embedding-004 for Gemini compatibility (768 dimensions)
-        const embeddingResponse = await openai.embeddings.create({
-          model: "text-embedding-004",
-          input: prompt,
-        });
-        const embedding = embeddingResponse.data[0].embedding;
+        const embedding = await embedText(prompt, geminiKey);
 
-        // Query memories (requires DB schema update to 768 dimensions)
         const { data: memories, error: matchError } = await supabase.rpc("match_memories", {
           query_embedding: embedding,
-          match_threshold: 0.5,
-          match_count: 5,
+          match_threshold: matchThreshold,
+          match_count: matchCount,
         });
 
-        if (!matchError && memories) {
+        if (!matchError && memories && memories.length > 0) {
           retrievedMemories = memories;
-          contextString = memories.map((m: any) => m.content).join("\n\n---\n\n");
-          
+          contextString = memories
+            .map((m: any, i: number) => `[${i + 1}] ${m.content}`)
+            .join("\n\n");
+
           // Server-side logging for debugging
           console.log("RAG Context Retrieved:", {
             prompt,
@@ -322,22 +413,33 @@ serve(async (req) => {
       }
     }
 
-    // 7. Generate Response using Gemini Flash
+    // 7. Generate Response
     const finalSystemPrompt = contextString
-      ? `${SYSTEM_PROMPT}\n\nCONTEXT FROM MEMORY:\n${contextString}`
+      ? `${SYSTEM_PROMPT}
+
+CONTEXT FROM MEMORY:
+The notes below were retrieved from Noah's personal knowledge base for this specific question. Treat them as the source of truth about Noah — prefer them over anything you would otherwise guess, and if they conflict with the biography above, the notes win. Do not invent specifics (numbers, dates, names) that appear in neither the notes nor the biography. Do not mention the notes, the knowledge base, or retrieval; just answer as Noah.
+
+${contextString}`
       : SYSTEM_PROMPT;
 
-    // Disable extended thinking and use strict parameters
     const completion = await openai.chat.completions.create({
-      model: "gemini-2.0-flash",
+      model: CHAT_MODEL,
       messages: [
         { role: "system", content: finalSystemPrompt },
         { role: "user", content: prompt },
       ],
       max_tokens,
-      temperature: 0.5, // Lower temperature for more focused responses
-      stop: ["We are given", "Let's", "I should", "The user"], // Stop sequences to prevent reasoning leakage
-    });
+      // Thinking model: keep reasoning short so it doesn't eat the output
+      // budget. Unknown fields pass through openai-node to Google's
+      // OpenAI-compat layer, which accepts reasoning_effort.
+      reasoning_effort: "low",
+      // NOTE (2026-06-09): removed temperature (Google recommends model
+      // default for Gemini 3.x thinking models) and the stop sequences
+      // ["We are given", "Let's", "I should", "The user"] — they truncated
+      // legitimate replies mid-sentence (any answer containing "Let's"
+      // was cut off). cleanResponse() remains as the leakage safety net.
+    } as any);
 
     let responseText = completion.choices[0].message.content || "";
     responseText = cleanResponse(responseText);

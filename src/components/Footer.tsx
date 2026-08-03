@@ -71,6 +71,14 @@ export function Footer() {
                   Follow My Flight
                 </a>
               </li>
+              <li>
+                <Link
+                  to="/inoah"
+                  className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
+                >
+                  Ask iNoah
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -13,6 +13,7 @@ import AgentControl from "@/components/AgentsControl";
 import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
+import InoahKnowledgeManager from "@/components/dashboard/InoahKnowledgeManager";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -207,7 +208,12 @@ const Dashboard = () => {
             <BlogPostManager />
           </div>
 
-          
+          {/* iNoah Knowledge Base */}
+          <div className="mt-8 sm:mt-10">
+            <InoahKnowledgeManager />
+          </div>
+
+
 
           {/* OpenClaw entry */}
           <div className="mt-8 sm:mt-10">
