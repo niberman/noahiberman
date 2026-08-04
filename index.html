@@ -156,6 +156,10 @@
   <!-- Sitemap -->
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
+  <!-- The hero logo is the LCP image on mobile; without this it isn't
+       discovered until React renders, seconds into the load. -->
+  <link rel="preload" as="image" href="/logo.webp" type="image/webp" fetchpriority="high" />
+
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

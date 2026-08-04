@@ -1,7 +1,33 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+
+// The shell is empty until React boots, so a separate render-blocking CSS
+// request buys nothing — inline the entry stylesheet into index.html and drop
+// the request entirely. Lazy-chunk CSS (maps) is untouched; the file is kept
+// on disk in case a route chunk lists it as an imported style.
+// ponytail: repeat visits re-download ~23KB gz of CSS with the HTML; move to
+// critical-CSS extraction (beasties) if that ever matters.
+const inlineEntryCss = (): Plugin => ({
+  name: "inline-entry-css",
+  apply: "build",
+  transformIndexHtml: {
+    order: "post",
+    handler(html, ctx) {
+      const bundle = ctx.bundle;
+      if (!bundle) return html;
+      return html.replace(
+        /<link[^>]*rel="stylesheet"[^>]*href="\/(assets\/[^"]+\.css)"[^>]*>/g,
+        (tag, file) => {
+          const css = bundle[file];
+          if (css?.type !== "asset") return tag;
+          return `<style>${String(css.source)}</style>`;
+        }
+      );
+    },
+  },
+});
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -12,7 +38,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: Number(process.env.PORT) || 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), inlineEntryCss(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

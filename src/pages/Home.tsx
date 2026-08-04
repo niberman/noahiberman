@@ -111,17 +111,10 @@ export default function Home() {
                 LCP element render delay. Siblings still stagger in around
                 it. */}
             <div className="text-center max-w-5xl mx-auto">
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{
-                  delay: 0.3,
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 15
-                }}
-                className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
-              >
+              {/* The logo is the mobile LCP image — a scale-0 intro would hide
+                  it from LCP until the spring finishes. animate-float keeps it
+                  moving. */}
+              <div className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative">
                 <picture>
                 <source srcSet="/logo.webp" type="image/webp" />
                 <img
@@ -136,7 +129,7 @@ export default function Home() {
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
                 </picture>
-              </motion.div>
+              </div>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}

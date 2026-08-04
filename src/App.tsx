@@ -1,5 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -25,14 +23,32 @@ const Book = lazy(() => import("./pages/Book"));
 const BookLanding = lazy(() => import("./pages/BookLanding"));
 const SchedulingAuthCallback = lazy(() => import("./pages/SchedulingAuthCallback"));
 
+// Both toast portals render nothing until a toast fires, and both libraries
+// queue toasts raised before mount — no need to pay for sonner + radix-toast
+// in the eager bundle.
+const Toasters = lazy(() =>
+  Promise.all([
+    import("@/components/ui/toaster"),
+    import("@/components/ui/sonner"),
+  ]).then(([toaster, sonner]) => ({
+    default: () => (
+      <>
+        <toaster.Toaster />
+        <sonner.Toaster />
+      </>
+    ),
+  }))
+);
+
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
+        <Suspense fallback={null}>
+          <Toasters />
+        </Suspense>
         <BrowserRouter>
           <SecretDashboardAccess />
           <div className="min-h-screen flex flex-col relative">
