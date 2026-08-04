@@ -31,23 +31,13 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/inoah" />
   </url>
 
-  <!-- Freedom Aviation Venture Detail -->
+  <!-- Book a meeting -->
   <url>
-    <loc>https://noahiberman.com/ventures/freedom-aviation</loc>
-    <lastmod>2026-03-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/ventures/freedom-aviation" />
-  </url>
-
-  <!-- The Language School Venture Detail -->
-  <url>
-    <loc>https://noahiberman.com/ventures/language-school</loc>
-    <lastmod>2026-03-25</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/ventures/language-school" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://noahiberman.com/ventures/language-school" />
+    <loc>https://noahiberman.com/book</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://noahiberman.com/book" />
   </url>
 
 </urlset>

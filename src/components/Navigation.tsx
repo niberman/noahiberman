@@ -123,6 +123,8 @@ export function Navigation() {
             onClick={(e) => scrollToSection(e, "/", "home", "section")}
           >
             <div className="h-6 w-6 sm:h-7 sm:w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative flex-shrink-0">
+              <picture>
+              <source srcSet="/logo.webp" type="image/webp" />
               <img
                 src="/logo.png"
                 alt="Noah Berman logo"
@@ -130,6 +132,7 @@ export function Navigation() {
                 height={28}
                 className="absolute inset-0 w-full h-full object-contain origin-center"
               />
+              </picture>
             </div>
             <span className="text-lg sm:text-xl font-display font-bold group-hover:text-secondary transition-colors">
               Noah Berman

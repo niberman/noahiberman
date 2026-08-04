@@ -377,6 +377,15 @@ export function BackgroundFlightMap() {
     const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
     if (!mapContainer.current || !mapboxToken) return;
 
+    // Software WebGL (GPU-less browsers, Lighthouse) rasterizes every frame on
+    // the main thread — tens of seconds of jank. Skip the map there; the page
+    // already renders fine without it (same path as a missing token).
+    const glProbe = document.createElement("canvas").getContext("webgl2", {
+      failIfMajorPerformanceCaveat: true,
+    });
+    if (!glProbe) return;
+    glProbe.getExtension("WEBGL_lose_context")?.loseContext();
+
     mapboxgl.accessToken = mapboxToken;
     
     // Detect if mobile device

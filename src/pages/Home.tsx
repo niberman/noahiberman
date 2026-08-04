@@ -3,14 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, lazy, Suspense } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
-import { BackgroundFlightMap } from "@/components/BackgroundFlightMap";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWordsString } from "@/data/brand";
+
+// Split mapbox-gl (~460 KB) out of the critical path; the hero renders
+// immediately and the map fades in when its chunk arrives.
+const BackgroundFlightMap = lazy(() =>
+  import("@/components/BackgroundFlightMap").then((m) => ({ default: m.BackgroundFlightMap }))
+);
 
 const scrollBehavior = (): ScrollBehavior =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
@@ -55,7 +60,9 @@ export default function Home() {
     <MotionConfig reducedMotion="user">
     <main className="min-h-screen relative">
       {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
-      <BackgroundFlightMap />
+      <Suspense fallback={null}>
+        <BackgroundFlightMap />
+      </Suspense>
 
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
       <FloatingWaypointCard />
@@ -116,6 +123,8 @@ export default function Home() {
                 }}
                 className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative"
               >
+                <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
                 <img
                   src="/logo.png"
                   alt="Noah Berman logo"
@@ -127,6 +136,7 @@ export default function Home() {
                   {...({ fetchpriority: "high" } as Record<string, string>)}
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
+                </picture>
               </motion.div>
 
               <motion.p

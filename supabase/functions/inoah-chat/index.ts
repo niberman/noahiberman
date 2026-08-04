@@ -16,6 +16,17 @@ const corsHeaders = {
 // - gemini-2.0-flash passed its earliest-shutdown date (2026-06-01);
 //   gemini-3.5-flash is its documented replacement.
 const CHAT_MODEL = "gemini-3.5-flash";
+// Model spend routes through OpenRouter when OPENROUTER_API_KEY is set, falling
+// back to Gemini direct so chat never hard-fails on a missing secret.
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+const OPENROUTER_CHAT_MODEL = "google/gemini-3.5-flash";
+const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+
+// Embeddings deliberately stay on Google's native endpoint even when chat is on
+// OpenRouter. The stored vectors in public.memories were produced by
+// gemini-embedding-2 truncated to 768 dims via output_dimensionality; embedding
+// a query with any other model or width makes it incomparable to them and
+// retrieval silently returns nothing. Chat is where the spend is anyway.
 const EMBEDDING_MODEL = "gemini-embedding-2";
 const EMBEDDING_DIMS = 768; // must match public.memories.embedding vector(768)
 // Tuned for gemini-embedding-2's cosine-similarity distribution (measured
@@ -146,6 +157,106 @@ async function embedText(text: string, apiKey: string): Promise<number[]> {
     );
   }
   return values;
+}
+
+// --- Calendar ---
+
+// Reuses the same FastAPI endpoints the booking page calls, so availability
+// comes from the one place that already merges the availability profile with
+// Google Calendar busy time. Note the apex domain 308-redirects to www.
+const SCHEDULING_API = "https://www.noahiberman.com";
+const SCHEDULING_TZ = "America/Denver";
+const CALENDAR_DAYS = 10;
+const CALENDAR_MAX_SLOTS = 8;
+const CALENDAR_SLOTS_PER_DAY = 2; // spread across days, not 8 in one morning
+const CALENDAR_TIMEOUT_MS = 6000;
+
+/** Only spend the round-trip when the question is actually about meeting. */
+const CALENDAR_INTENT =
+  /\b(schedul\w*|meet\w*|book\w*|booking|appointment|avail\w*|calendar|free|busy|when can|what time|time slot|slot|call|coffee|chat with you|catch up)\b/i;
+
+interface MeetingType {
+  slug: string;
+  name: string;
+  duration_min: number;
+  location_type: string;
+  description?: string;
+}
+
+const fmtSlot = (iso: string) =>
+  new Date(iso).toLocaleString("en-US", {
+    timeZone: SCHEDULING_TZ,
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+async function getJson(path: string): Promise<any | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), CALENDAR_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${SCHEDULING_API}${path}`, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      console.error(`Calendar fetch ${path} -> ${res.status}`);
+      return null;
+    }
+    return await res.json();
+  } catch (e) {
+    console.error(`Calendar fetch ${path} failed:`, e);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Real bookable availability, rendered for the model. Returns "" on any
+ * failure so a scheduling outage degrades to iNoah simply not quoting times,
+ * rather than breaking the whole answer.
+ */
+async function fetchCalendarContext(): Promise<string> {
+  const typesPayload = await getJson("/scheduling/meeting-types");
+  const types: MeetingType[] = typesPayload?.meeting_types ?? [];
+  if (types.length === 0) return "";
+
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: SCHEDULING_TZ });
+  const blocks = await Promise.all(
+    types.map(async (t) => {
+      const data = await getJson(
+        `/scheduling/slots/${encodeURIComponent(t.slug)}?start_date=${today}&days=${CALENDAR_DAYS}`,
+      );
+      const slots: { start: string }[] = data?.slots ?? [];
+      // Sample across days rather than taking the first N: a full open day
+      // yields 8 consecutive morning slots, so "are you free next week?"
+      // would only ever surface today.
+      const perDay = new Map<string, string[]>();
+      for (const s of slots) {
+        const day = new Date(s.start).toLocaleDateString("en-CA", { timeZone: SCHEDULING_TZ });
+        const bucket = perDay.get(day) ?? [];
+        if (bucket.length < CALENDAR_SLOTS_PER_DAY) bucket.push(s.start);
+        perDay.set(day, bucket);
+      }
+      const shown = [...perDay.values()]
+        .flat()
+        .slice(0, CALENDAR_MAX_SLOTS)
+        .map(fmtSlot);
+      const url = `${SCHEDULING_API}/book/${t.slug}`;
+      if (shown.length === 0) {
+        return `- ${t.name} (${t.duration_min} min, ${t.location_type}) — nothing open in the next ${CALENDAR_DAYS} days. Book: ${url}`;
+      }
+      return `- ${t.name} (${t.duration_min} min, ${t.location_type}) — next openings: ${shown.join("; ")}. Book: ${url}`;
+    }),
+  );
+
+  return `CURRENT AVAILABILITY (live from Noah's calendar, times in Mountain Time, generated ${fmtSlot(new Date().toISOString())}):
+${blocks.join("\n")}
+
+Use these when asked about meeting, scheduling or availability: quote only times listed above, say they are Mountain Time, and point to the booking link so the guest confirms it themselves. Never invent times, and never claim to have booked anything — you cannot book on someone's behalf.`;
 }
 
 // --- Helper Functions ---
@@ -351,11 +462,20 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    // OpenAI-compat client is used for chat completions only; embeddings go
-    // through the native endpoint (see embedText).
+
+    // Chat completions go through OpenRouter when its key is configured, so
+    // model spend lands on one bill; embeddings always stay on Google (see
+    // EMBEDDING_MODEL). Falls back to Gemini direct if the key is absent.
+    const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
+    const useOpenRouter = !!openrouterKey;
+    const chatModel = useOpenRouter ? OPENROUTER_CHAT_MODEL : CHAT_MODEL;
     const openai = new OpenAI({
-      apiKey: geminiKey,
-      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+      apiKey: useOpenRouter ? openrouterKey : geminiKey,
+      baseURL: useOpenRouter ? OPENROUTER_BASE_URL : GEMINI_BASE_URL,
+      // OpenRouter attributes usage to the app in its dashboard.
+      defaultHeaders: useOpenRouter
+        ? { "HTTP-Referer": "https://noahiberman.com", "X-Title": "iNoah" }
+        : undefined,
     });
 
     // 5b. Dashboard-editable persona and retrieval knobs. Falls back to the
@@ -413,8 +533,15 @@ serve(async (req) => {
       }
     }
 
+    // 6b. Live calendar, only when the question is about meeting — otherwise
+    // every unrelated question would pay two extra HTTP round-trips.
+    let calendarContext = "";
+    if (CALENDAR_INTENT.test(prompt)) {
+      calendarContext = await fetchCalendarContext();
+    }
+
     // 7. Generate Response
-    const finalSystemPrompt = contextString
+    let finalSystemPrompt = contextString
       ? `${SYSTEM_PROMPT}
 
 CONTEXT FROM MEMORY:
@@ -423,23 +550,48 @@ The notes below were retrieved from Noah's personal knowledge base for this spec
 ${contextString}`
       : SYSTEM_PROMPT;
 
-    const completion = await openai.chat.completions.create({
-      model: CHAT_MODEL,
-      messages: [
-        { role: "system", content: finalSystemPrompt },
-        { role: "user", content: prompt },
-      ],
-      max_tokens,
-      // Thinking model: keep reasoning short so it doesn't eat the output
-      // budget. Unknown fields pass through openai-node to Google's
-      // OpenAI-compat layer, which accepts reasoning_effort.
-      reasoning_effort: "low",
-      // NOTE (2026-06-09): removed temperature (Google recommends model
-      // default for Gemini 3.x thinking models) and the stop sequences
-      // ["We are given", "Let's", "I should", "The user"] — they truncated
-      // legitimate replies mid-sentence (any answer containing "Let's"
-      // was cut off). cleanResponse() remains as the leakage safety net.
-    } as any);
+    if (calendarContext) {
+      finalSystemPrompt += `\n\n${calendarContext}`;
+    }
+
+    const messages = [
+      { role: "system", content: finalSystemPrompt },
+      { role: "user", content: prompt },
+    ];
+    // Thinking model: keep reasoning short so it doesn't eat the output budget.
+    // The two providers spell this differently — Google's OpenAI-compat layer
+    // takes OpenAI's `reasoning_effort`, OpenRouter takes a `reasoning` object.
+    // Sending the wrong one is a 400.
+    // NOTE (2026-06-09): removed temperature (Google recommends model default
+    // for Gemini 3.x thinking models) and the stop sequences ["We are given",
+    // "Let's", "I should", "The user"] — they truncated legitimate replies
+    // mid-sentence. cleanResponse() remains as the leakage safety net.
+    const geminiReasoning = { reasoning_effort: "low" };
+    const openrouterReasoning = { reasoning: { effort: "low" } };
+
+    let provider = useOpenRouter ? "openrouter" : "gemini";
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: chatModel,
+        messages,
+        max_tokens,
+        ...(useOpenRouter ? openrouterReasoning : geminiReasoning),
+      } as any);
+    } catch (err) {
+      if (!useOpenRouter) throw err;
+      // Don't let a bad key, an unavailable model or a rejected parameter on
+      // OpenRouter take the public chat down — fall back to Gemini direct.
+      console.error("OpenRouter chat failed, falling back to Gemini:", err);
+      const fallback = new OpenAI({ apiKey: geminiKey, baseURL: GEMINI_BASE_URL });
+      completion = await fallback.chat.completions.create({
+        model: CHAT_MODEL,
+        messages,
+        max_tokens,
+        ...geminiReasoning,
+      } as any);
+      provider = "gemini-fallback";
+    }
 
     let responseText = completion.choices[0].message.content || "";
     responseText = cleanResponse(responseText);
@@ -450,6 +602,8 @@ ${contextString}`
       response: responseText,
       styled: true,
       context_included: !!contextString,
+      calendar_included: !!calendarContext,
+      provider,
     };
 
     // Include debug information if requested

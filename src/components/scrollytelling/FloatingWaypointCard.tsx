@@ -36,10 +36,13 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export function FloatingWaypointCard() {
   const waypoint = useActiveWaypoint();
   const stackVisible = useStackVisible();
+  const map = useMapRef();
   // Hide whenever we're on hero or scrolled past the journey — the pin/card
   // would otherwise float over Contact/SEO content with no map underneath.
   const hidden = waypoint.id === HERO_WAYPOINT.id || !stackVisible;
-  const centered = waypoint.cardPlacement === "centered";
+  // Without a map (chunk still loading, or skipped on software GL) the
+  // anchored card can't position itself — show every stop centered instead.
+  const centered = waypoint.cardPlacement === "centered" || !map;
 
   return (
     <>
@@ -48,7 +51,7 @@ export function FloatingWaypointCard() {
       <DesktopCardAnchored waypoint={waypoint} hidden={hidden || centered} />
       <DesktopCardCentered waypoint={waypoint} hidden={hidden || !centered} />
       <MobileCard waypoint={waypoint} hidden={hidden} />
-      <PinOverlay waypoint={waypoint} hidden={hidden} />
+      <PinOverlay waypoint={waypoint} hidden={hidden || !map} />
     </>
   );
 }

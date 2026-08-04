@@ -1,0 +1,20 @@
+# Noah Berman
+
+> Personal site of Noah Berman — commercial pilot, software engineer, and Denver-based founder. Builds Freedom Aviation (aircraft management and flight instruction) and The Language School, plus AI and aviation technology projects.
+
+## Pages
+
+- [Home](https://noahiberman.com/): bio, ventures, and an interactive flight map of Noah's flying history
+- [Blog](https://noahiberman.com/blog): writing on aviation, engineering, and entrepreneurship
+- [Book a meeting](https://noahiberman.com/book): scheduling links for meetings with Noah
+- [iNoah](https://noahiberman.com/inoah): AI chat assistant that answers questions about Noah
+
+## Ventures
+
+- [Freedom Aviation](https://freedomaviationco.com): concierge aircraft management and flight instruction
+- [The Language School](https://thelanguageschool.us): English and Spanish language instruction
+
+## Contact
+
+- [LinkedIn](https://www.linkedin.com/in/noahiberman/)
+- [GitHub](https://github.com/niberman)
