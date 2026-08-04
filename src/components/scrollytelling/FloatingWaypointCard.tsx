@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,9 @@ const accentClasses: Record<NonNullable<MapWaypoint["accent"]>, { ring: string; 
   },
 };
 
+/** One timing curve for pin + every card variant so transitions read as one system. */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 /**
  * Card that follows the active waypoint's pin on desktop and pins to the
  * bottom of the viewport on mobile. Two separate DOM nodes — the desktop
@@ -36,10 +39,14 @@ export function FloatingWaypointCard() {
   // Hide whenever we're on hero or scrolled past the journey — the pin/card
   // would otherwise float over Contact/SEO content with no map underneath.
   const hidden = waypoint.id === HERO_WAYPOINT.id || !stackVisible;
+  const centered = waypoint.cardPlacement === "centered";
 
   return (
     <>
-      <DesktopCard waypoint={waypoint} hidden={hidden} />
+      {/* Both desktop variants stay mounted so switching placement mid-scroll
+          exit-animates the old card instead of unmounting it abruptly. */}
+      <DesktopCardAnchored waypoint={waypoint} hidden={hidden || centered} />
+      <DesktopCardCentered waypoint={waypoint} hidden={hidden || !centered} />
       <MobileCard waypoint={waypoint} hidden={hidden} />
       <PinOverlay waypoint={waypoint} hidden={hidden} />
     </>
@@ -48,67 +55,91 @@ export function FloatingWaypointCard() {
 
 /** Pulsing dot on the map at the waypoint center. */
 function PinOverlay({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
+  return (
+    <AnimatePresence>
+      {!hidden && <PinInstance key={waypoint.id} waypoint={waypoint} />}
+    </AnimatePresence>
+  );
+}
+
+/** One pin per waypoint. Each instance tracks its own map location, so an
+ *  exiting pin fades out where it was instead of teleporting to the next stop. */
+function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
   const map = useMapRef();
   const ref = useRef<HTMLDivElement>(null);
   const accent = accentClasses[waypoint.accent ?? "aviation"];
 
-  useEffect(() => {
-    if (!map || hidden) return;
+  useLayoutEffect(() => {
+    if (!map) return;
     const update = () => {
       if (!ref.current) return;
       const p = map.project(waypoint.center);
       ref.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
     };
     update();
-    // "render" fires on every repaint, which covers every camera move — a
-    // separate "move" listener just projected the same point twice per frame.
-    map.on("render", update);
+    map.on("move", update);
+    map.on("resize", update);
     return () => {
-      map.off("render", update);
+      map.off("move", update);
+      map.off("resize", update);
     };
-  }, [map, waypoint, hidden]);
+  }, [map, waypoint]);
 
-  if (hidden) return null;
   return (
     <div
-      key={waypoint.id}
       ref={ref}
       className="fixed top-0 left-0 z-[105] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
     >
+      {/* Centering stays on a plain div — framer owns the inner transform. */}
       <div className="relative -translate-x-1/2 -translate-y-1/2">
-        <span className={`absolute inset-0 m-auto h-3 w-3 rounded-full ${accent.pin} animate-ping opacity-70`} />
-        <span className={`relative block h-3 w-3 rounded-full ${accent.pin} ring-2 ring-white/80 shadow-lg`} />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.3, ease: EASE }}
+          className="relative"
+        >
+          <span className={`absolute inset-0 m-auto h-3 w-3 rounded-full ${accent.pin} animate-ping opacity-70`} />
+          <span className={`relative block h-3 w-3 rounded-full ${accent.pin} ring-2 ring-white/80 shadow-lg`} />
+        </motion.div>
       </div>
     </div>
   );
 }
 
-/** Desktop card. "anchored" placement tracks the pin via map.project();
- *  "centered" places it bottom-center of the viewport for climax/CTA stops. */
-function DesktopCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
-  if (waypoint.cardPlacement === "centered") {
-    return <DesktopCardCentered waypoint={waypoint} hidden={hidden} />;
-  }
-  return <DesktopCardAnchored waypoint={waypoint} hidden={hidden} />;
+/** Desktop card anchored next to the pin via map.project(). Each waypoint gets
+ *  its own instance so the outgoing card keeps tracking *its* pin while it
+ *  fades — no teleporting to the next stop, no dead gap between cards. */
+function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
+  return (
+    <AnimatePresence>
+      {!hidden && <AnchoredCardInstance key={waypoint.id} waypoint={waypoint} />}
+    </AnimatePresence>
+  );
 }
 
-function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
+function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
   const map = useMapRef();
   const ref = useRef<HTMLDivElement>(null);
+  const sizeRef = useRef({ w: 360, h: 200 });
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!map || hidden || !el) return;
+  useLayoutEffect(() => {
+    if (!map) return;
+
+    // Measure once on mount (content is static per waypoint) for clamping.
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      if (rect.width > 0) sizeRef.current = { w: rect.width, h: rect.height };
+    }
+
     const update = () => {
+      if (!ref.current) return;
       const p = map.project(waypoint.center);
+      const { w, h } = sizeRef.current;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const gap = 32;
-      // Measured live — the card's height changes with each waypoint's copy,
-      // and a snapshot taken on id change still measures the outgoing card.
-      const w = el.offsetWidth;
-      const h = el.offsetHeight;
       const flipX = p.x > vw * 0.55;
       const flipY = p.y > vh * 0.6;
       let x = flipX ? p.x - w - gap : p.x + gap;
@@ -116,59 +147,53 @@ function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
       // Clamp to viewport with a small margin
       x = Math.max(16, Math.min(vw - w - 16, x));
       y = Math.max(16, Math.min(vh - h - 16, y));
-      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
     update();
-    map.on("render", update);
-    // Reposition when the incoming card mounts / resizes, even if the map is idle.
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
+    map.on("move", update);
+    map.on("resize", update);
     return () => {
-      map.off("render", update);
-      ro.disconnect();
+      map.off("move", update);
+      map.off("resize", update);
     };
-  }, [map, waypoint, hidden]);
+  }, [map, waypoint]);
 
   return (
     <div
       ref={ref}
       className="fixed top-0 left-0 z-[110] hidden sm:block w-[min(380px,32vw)] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
-      aria-hidden={hidden}
     >
-      <AnimatePresence mode="wait">
-        {!hidden && (
-          <motion.div
-            key={waypoint.id}
-            initial={{ opacity: 0, y: 12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97, transition: { duration: 0.14 } }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto"
-          >
-            <CardChrome waypoint={waypoint} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 12, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -8, scale: 0.97 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        className="pointer-events-auto"
+      >
+        <CardChrome waypoint={waypoint} />
+      </motion.div>
     </div>
   );
 }
 
+/** Bottom-center card for climax/CTA stops. Grid-stacks entering/exiting
+ *  cards in the same cell so the crossfade never shifts layout. */
 function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] hidden sm:block w-full max-w-lg px-4 pointer-events-none"
+      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] hidden sm:grid items-end w-full max-w-lg px-4 pointer-events-none"
       aria-hidden={hidden}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {!hidden && (
           <motion.div
             key={waypoint.id}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97, transition: { duration: 0.14 } }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto"
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} />
           </motion.div>
@@ -178,22 +203,23 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
   );
 }
 
-/** Bottom-sheet card on mobile. Sits above the chat bubble at bottom-right. */
+/** Bottom-sheet card on mobile. Sits above the chat bubble at bottom-right.
+ *  Same grid-stack crossfade — the old sheet fades while the new one rises. */
 function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="sm:hidden fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom),16px)] z-[110] px-3 pt-2 mb-16 pointer-events-none"
+      className="sm:hidden fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom),16px)] z-[110] px-3 pt-2 mb-16 pointer-events-none grid items-end"
       aria-hidden={hidden}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {!hidden && (
           <motion.div
             key={waypoint.id}
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60, transition: { duration: 0.16 } }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            className="pointer-events-auto"
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} compact />
           </motion.div>

@@ -59,9 +59,6 @@ export function BackgroundFlightMap() {
   const rotationRef = useRef<number | null>(null);
   const airportVisitsRef = useRef<Map<string, number>>(new Map());
   const airportFeaturesRef = useRef<GeoJSON.Feature<GeoJSON.Point>[]>([]);
-  /** Bounds of every drawn route, for waypoints with `fitRoutes`. State (not a
-   *  ref) so the camera effect re-frames once the routes finish loading. */
-  const [routeBounds, setRouteBounds] = useState<mapboxgl.LngLatBounds | null>(null);
   const [hoveredAirport, setHoveredAirport] = useState<{ code: string; count: number; x: number; y: number } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   /** After zoomend at min zoom, allow nav (z-110) above the map; false while zoomed in or mid-gesture. */
@@ -110,6 +107,47 @@ export function BackgroundFlightMap() {
     shouldEnableInteractionsRef.current = shouldEnableInteractions;
   }, [shouldEnableInteractions]);
 
+  // True on the effect run right after explore mode ends, so the return
+  // flight can be snappier than the scroll-storytelling durations.
+  const wasInteractiveRef = useRef(false);
+  // Bumped when airport features finish loading, so explore mode can frame
+  // all flights even if the user entered it before the data arrived.
+  const [airportsVersion, setAirportsVersion] = useState(0);
+  const exploreFramedRef = useRef(false);
+
+  // One cinematic zoom-out that frames every flight. Returns false when the
+  // airport data hasn't loaded yet. Used both on entering explore mode and by
+  // the `fitRoutes` waypoint, which makes the same "every route, every
+  // airport" promise — hence the padding/duration overrides, since that stop
+  // has to leave room for the bottom-centered card.
+  const frameAllFlights = (
+    opts?: { padding?: mapboxgl.PaddingOptions | number; duration?: number },
+  ): boolean => {
+    const m = map.current;
+    const airportFeatures = airportFeaturesRef.current;
+    if (!m || airportFeatures.length === 0) return false;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const allFlightsBounds = new mapboxgl.LngLatBounds();
+    airportFeatures.forEach((f) =>
+      allFlightsBounds.extend(f.geometry.coordinates as [number, number]),
+    );
+    m.fitBounds(allFlightsBounds, {
+      padding: opts?.padding ?? (window.innerWidth < 640 ? 48 : 80),
+      pitch: 0,
+      bearing: 0,
+      maxZoom: 6,
+      duration: prefersReducedMotion ? 0 : opts?.duration ?? 1600,
+      essential: true,
+    });
+    return true;
+  };
+
+  /** Padding for the `fitRoutes` waypoint: clears the nav and the card. */
+  const fitRoutesPadding = (): mapboxgl.PaddingOptions =>
+    window.innerWidth < 640
+      ? { top: 88, bottom: 240, left: 20, right: 20 }
+      : { top: 110, bottom: 200, left: 48, right: 48 };
+
   // Drive the camera based on the active waypoint and interactive state.
   // Three modes:
   //   1. Interactive (user clicked Explore on the flight waypoint) — enable
@@ -127,8 +165,17 @@ export function BackgroundFlightMap() {
       rotationRef.current = null;
     }
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     if (shouldEnableInteractions) {
-      map.current.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+      // Frame every flight (the waypoint promises "every route, every
+      // airport") instead of leaving the user at the waypoint's zoom-6.5
+      // framing. If the data hasn't loaded yet, the airportsVersion effect
+      // below retries once it arrives.
+      exploreFramedRef.current = frameAllFlights();
+      if (!exploreFramedRef.current) {
+        map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
+      }
       map.current.dragPan.enable();
       map.current.dragRotate.enable();
       map.current.scrollZoom.enable();
@@ -137,8 +184,13 @@ export function BackgroundFlightMap() {
       map.current.touchPitch.enable();
       map.current.keyboard.enable();
       drawWaypointArc(null);
+      wasInteractiveRef.current = true;
       return;
     }
+
+    const returningFromExplore = wasInteractiveRef.current;
+    wasInteractiveRef.current = false;
+    exploreFramedRef.current = false;
 
     map.current.dragPan.disable();
     map.current.dragRotate.disable();
@@ -150,65 +202,107 @@ export function BackgroundFlightMap() {
 
     const wp: MapWaypoint = WAYPOINT_BY_ID[activeWaypointId] ?? HERO_WAYPOINT;
 
-    if (wp.fitRoutes && routeBounds) {
-      // Frame every route rather than a fixed center/zoom, so no line falls
-      // off-screen as the logbook grows. Leave room for the nav and the
-      // bottom-centered card.
-      const narrow = window.innerWidth < 640;
-      map.current.fitBounds(routeBounds, {
-        padding: narrow
-          ? { top: 88, bottom: 240, left: 20, right: 20 }
-          : { top: 110, bottom: 200, left: 48, right: 48 },
-        pitch: wp.pitch ?? 0,
-        bearing: wp.bearing ?? 0,
-        duration: wp.duration ?? 1400,
-        essential: true,
-        curve: 1.4,
-      });
-    } else {
-      map.current.flyTo({
-        center: wp.center,
-        zoom: wp.zoom,
-        pitch: wp.pitch ?? 45,
-        bearing: wp.bearing ?? 0,
-        duration: wp.duration ?? 1400,
-        essential: true,
-        curve: 1.4,
-      });
-    }
-
-    drawWaypointArc(wp);
-
-    // Resume slow rotation only at hero, after the flyTo completes.
-    if (activeWaypointId === HERO_WAYPOINT.id) {
+    const applyCamera = () => {
       const m = map.current;
-      const startRotation = () => {
-        if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
-        if (shouldEnableInteractionsRef.current) return;
-        if (rotationRef.current) return;
-        let bearing = m.getBearing();
-        const tick = () => {
-          if (!map.current) return;
-          if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) {
-            rotationRef.current = null;
-            return;
-          }
-          if (shouldEnableInteractionsRef.current) {
-            rotationRef.current = null;
-            return;
-          }
-          // Don't fight in-progress flyTo — wait for it.
-          if (!map.current.isMoving()) {
-            bearing += 0.02;
-            map.current.setBearing(bearing);
-          }
+      if (!m) return;
+
+      // The climax waypoint frames the real route bounds instead of a fixed
+      // center/zoom, which went stale as the logbook grew and left Arizona and
+      // Puerto Rico off-screen. Returns false until the airport data lands;
+      // the airportsVersion effect below retries.
+      const framed =
+        wp.fitRoutes === true &&
+        frameAllFlights({
+          padding: fitRoutesPadding(),
+          duration: returningFromExplore ? 1200 : wp.duration ?? 1800,
+        });
+
+      if (framed) {
+        // fitBounds already moved the camera.
+      } else if (prefersReducedMotion) {
+        m.jumpTo({
+          center: wp.center,
+          zoom: wp.zoom,
+          pitch: wp.pitch ?? 45,
+          bearing: wp.bearing ?? 0,
+        });
+      } else {
+        m.flyTo({
+          center: wp.center,
+          zoom: wp.zoom,
+          pitch: wp.pitch ?? 45,
+          bearing: wp.bearing ?? 0,
+          // Waypoint durations are tuned for scroll storytelling; the return
+          // from explore mode should feel like closing a panel, not a tour.
+          duration: returningFromExplore ? 1200 : wp.duration ?? 1800,
+          essential: true,
+          curve: returningFromExplore ? 1.2 : 1.4,
+        });
+      }
+
+      drawWaypointArc(wp);
+
+      // Resume slow rotation only at hero, after the flyTo completes.
+      // Skipped under reduced motion — no autonomous camera movement.
+      if (wp.id === HERO_WAYPOINT.id && !prefersReducedMotion) {
+        const startRotation = () => {
+          if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
+          if (shouldEnableInteractionsRef.current) return;
+          if (rotationRef.current) return;
+          let bearing = m.getBearing();
+          const tick = () => {
+            if (!map.current) return;
+            if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) {
+              rotationRef.current = null;
+              return;
+            }
+            if (shouldEnableInteractionsRef.current) {
+              rotationRef.current = null;
+              return;
+            }
+            // Don't fight in-progress flyTo — wait for it.
+            if (!map.current.isMoving()) {
+              bearing += 0.02;
+              map.current.setBearing(bearing);
+            }
+            rotationRef.current = requestAnimationFrame(tick);
+          };
           rotationRef.current = requestAnimationFrame(tick);
         };
-        rotationRef.current = requestAnimationFrame(tick);
-      };
-      m.once("moveend", startRotation);
+        m.once("moveend", startRotation);
+      }
+    };
+
+    // If the camera is still mid-flight from the previous waypoint (fast
+    // scrolling), wait a beat before retargeting so a flick through several
+    // stops becomes one smooth flight to where the user settles instead of
+    // lurching through every intermediate flyTo. The effect cleanup clears
+    // the timer whenever a newer waypoint arrives first.
+    let settleTimer: number | undefined;
+    if (map.current.isMoving()) {
+      settleTimer = window.setTimeout(applyCamera, 200);
+    } else {
+      applyCamera();
     }
-  }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight, routeBounds]);
+    return () => {
+      if (settleTimer !== undefined) window.clearTimeout(settleTimer);
+    };
+  }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
+
+  // If the all-flights framing was requested before the airport data loaded,
+  // deliver it as soon as it arrives — for explore mode and for the
+  // `fitRoutes` waypoint alike.
+  useEffect(() => {
+    if (!mapLoaded || exploreFramedRef.current) return;
+    if (shouldEnableInteractions) {
+      exploreFramedRef.current = frameAllFlights();
+      return;
+    }
+    if (WAYPOINT_BY_ID[activeWaypointId]?.fitRoutes) {
+      frameAllFlights({ padding: fitRoutesPadding() });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [airportsVersion]);
 
   // Draw or clear the IFR-style arc for waypoints with `arcTo`.
   const drawWaypointArc = (wp: MapWaypoint | null) => {
@@ -505,10 +599,6 @@ export function BackgroundFlightMap() {
 
     const routes: RouteFeature[] = [...hubFeatures, ...prFeatures];
 
-    const bounds = new mapboxgl.LngLatBounds();
-    routes.forEach((r) => r.geometry.coordinates.forEach((c) => bounds.extend(c as [number, number])));
-    setRouteBounds(bounds.isEmpty() ? null : bounds);
-
     // Add routes as a source
     if (map.current.getSource("flight-routes")) {
       ["flight-routes-highlight", "flight-routes-lines", "flight-routes-glow"].forEach((layerId) => {
@@ -666,6 +756,7 @@ export function BackgroundFlightMap() {
     // Store airport data for hover tooltip
     airportVisitsRef.current = airportVisits;
     airportFeaturesRef.current = airportFeatures;
+    setAirportsVersion((v) => v + 1);
   };
 
   // Update live aircraft position on map

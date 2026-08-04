@@ -1,11 +1,3 @@
-// NOTE: this file was recovered from the deployed function (version 1) — it had
-// been deployed to the noahiberman project without ever being committed. Kept
-// so `supabase functions deploy` and the dashboard agree on what is live.
-//
-// Its "bootstrap" action is spent: it self-limits to an empty memories table,
-// and the table now holds the 14 seeded rows. Day-to-day editing happens in the
-// dashboard via inoah-embed, which uses this same gemini-embedding-2 /
-// embedContent path so entries stay retrievable.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 const corsHeaders = {

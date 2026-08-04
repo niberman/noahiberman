@@ -33,3 +33,5 @@ projects.disabled/
 # Chat infrastructure
 infrastructure/chat/data/
 infrastructure/chat/.env.chat
+__pycache__/
+*.pyc

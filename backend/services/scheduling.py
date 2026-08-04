@@ -7,6 +7,7 @@ All responses return ISO 8601 strings for frontend consumption.
 
 import os
 import logging
+import uuid
 from datetime import datetime, timedelta, time as dt_time
 from zoneinfo import ZoneInfo
 
@@ -105,7 +106,17 @@ async def _get_access_token() -> str:
                 "grant_type": "refresh_token",
             },
         )
-        resp.raise_for_status()
+        if resp.status_code != 200:
+            # A dead refresh token (e.g. invalid_grant after revocation or
+            # testing-mode expiry) must behave like "not connected" so callers
+            # degrade gracefully instead of returning 500s.
+            try:
+                err = resp.json().get("error", "unknown")
+            except Exception:
+                err = resp.text[:100]
+            raise RuntimeError(
+                f"Google token refresh failed ({resp.status_code}: {err}). Reconnect Google Calendar from the dashboard."
+            )
         return resp.json()["access_token"]
 
 
@@ -146,6 +157,7 @@ async def create_calendar_event(
     description: str = "",
     location: str = "",
     attendee_email: str = "",
+    with_meet: bool = False,
 ) -> dict:
     """Create a Google Calendar event and return the API response."""
     access_token = await _get_access_token()
@@ -162,12 +174,22 @@ async def create_calendar_event(
     if attendee_email:
         event_body["attendees"] = [{"email": attendee_email}]
 
+    params: dict = {"sendUpdates": "all"}
+    if with_meet:
+        event_body["conferenceData"] = {
+            "createRequest": {
+                "requestId": str(uuid.uuid4()),
+                "conferenceSolutionKey": {"type": "hangoutsMeet"},
+            }
+        }
+        params["conferenceDataVersion"] = 1
+
     async with httpx.AsyncClient() as client:
         resp = await client.post(
             "https://www.googleapis.com/calendar/v3/calendars/primary/events",
             headers={"Authorization": f"Bearer {access_token}"},
             json=event_body,
-            params={"sendUpdates": "all"},
+            params=params,
         )
         resp.raise_for_status()
         return resp.json()
@@ -251,6 +273,25 @@ class SchedulingService:
         return bool(result.data[0].get("refresh_token"))
 
     @staticmethod
+    async def verify_google_calendar_connection() -> bool:
+        """True when the stored refresh token can still mint an access token.
+
+        A token can exist but be dead (revoked, or expired after 7 days while
+        the OAuth app is in Testing mode); the dashboard must show that as
+        disconnected so the owner knows to reconnect.
+        """
+        if not SchedulingService.is_google_calendar_connected():
+            return False
+        try:
+            await _get_access_token()
+            return True
+        except (RuntimeError, httpx.HTTPError) as exc:
+            # Dead token or transient network failure — either way the
+            # calendar is not usable right now; report disconnected, not 500.
+            LOGGER.warning("Google Calendar connection check failed: %s", exc)
+            return False
+
+    @staticmethod
     def get_meeting_type(slug: str) -> dict:
         sb = _supabase()
         result = (
@@ -304,7 +345,7 @@ class SchedulingService:
         tz = ZoneInfo(profile["timezone"])
         rules = profile["rules"]
         duration = meeting["duration_min"]
-        buffer = meeting["buffer_min"]
+        buffer = meeting.get("buffer_min") or 0  # null-safe, same as book()
         # region agent log
         agent_log(
             "scheduling.py:get_available_slots",
@@ -339,8 +380,8 @@ class SchedulingService:
             access_token = await _get_access_token()
             busy = await _fetch_busy_ranges(access_token, range_start, range_end)
             google_connected = True
-        except RuntimeError:
-            LOGGER.warning("Google Calendar not connected; returning raw profile slots.")
+        except (RuntimeError, httpx.HTTPError) as exc:
+            LOGGER.warning("Google Calendar unavailable; returning raw profile slots: %s", exc)
         # region agent log
         agent_log(
             "scheduling.py:get_available_slots",
@@ -383,9 +424,16 @@ class SchedulingService:
         start_dt = datetime.fromisoformat(slot_start).astimezone(ZoneInfo("UTC"))
         end_dt = start_dt + timedelta(minutes=meeting["duration_min"])
 
-        # Verify the slot is still free.
+        # Verify the slot is still free, honoring the meeting's buffer window
+        # exactly like slot listing does — otherwise a slot that listing would
+        # hide (too close to an existing event) could still be booked.
+        buffer_min = meeting.get("buffer_min") or 0
         access_token = await _get_access_token()
-        busy = await _fetch_busy_ranges(access_token, start_dt, end_dt)
+        busy = await _fetch_busy_ranges(
+            access_token,
+            start_dt - timedelta(minutes=buffer_min),
+            end_dt + timedelta(minutes=buffer_min),
+        )
         # region agent log
         agent_log(
             "scheduling.py:book",
@@ -397,7 +445,11 @@ class SchedulingService:
         if busy:
             raise ValueError("Selected slot is no longer available.")
 
-        location = meeting.get("location_details") or meeting.get("location_type", "")
+        with_meet = meeting.get("location_type") == "google_meet"
+        # Google fills in the Meet location itself; don't override it.
+        location = "" if with_meet else (
+            meeting.get("location_details") or meeting.get("location_type", "")
+        )
         summary = f"{meeting['name']} with {guest_name}"
         description = (
             f"Meeting type: {meeting['name']}\n"
@@ -413,6 +465,7 @@ class SchedulingService:
             description=description,
             location=location,
             attendee_email=guest_email,
+            with_meet=with_meet,
         )
         # region agent log
         agent_log(
@@ -426,6 +479,7 @@ class SchedulingService:
         return {
             "event_id": event.get("id"),
             "html_link": event.get("htmlLink"),
+            "meet_link": event.get("hangoutLink"),
             "start": start_dt.isoformat(),
             "end": end_dt.isoformat(),
             "summary": summary,
