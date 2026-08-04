@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import type { Feature, LineString } from "geojson";
-import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { flightHistory as staticFlightHistory } from "@/data/flights";
@@ -9,16 +8,11 @@ import {
   extractAirportsFromFlight,
   buildPuertoRicoConnectingSegments,
 } from "@/lib/flight-airports";
-import { useFlights } from "@/hooks/use-supabase-flights";
+import { useFlights, useCurrentFlight } from "@/hooks/use-supabase-flights";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 import { useActiveWaypointId } from "@/hooks/use-active-waypoint";
 import { HERO_WAYPOINT, WAYPOINT_BY_ID, type MapWaypoint } from "@/data/waypoints";
 import { setMapRef } from "@/lib/map-ref";
-
-interface FlightInfo {
-  tail_number: string;
-  flight_status: "on_ground" | "in_flight";
-}
 
 interface AircraftPosition {
   latitude: number;
@@ -46,7 +40,7 @@ export function BackgroundFlightMap() {
     return airportCoordsMap[code.toUpperCase()] || null;
   };
 
-  const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
+  const { data: currentFlight } = useCurrentFlight();
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
   const [positionHistory, setPositionHistory] = useState<AircraftPosition[]>([]);
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -94,10 +88,6 @@ export function BackgroundFlightMap() {
     };
     window.addEventListener("enableFlightMapInteractive", handleEnableInteractive);
     return () => window.removeEventListener("enableFlightMapInteractive", handleEnableInteractive);
-  }, []);
-
-  useEffect(() => {
-    loadCurrentFlight();
   }, []);
 
   // Interactive mode is gated to the follow-my-flight waypoint only.
@@ -157,13 +147,16 @@ export function BackgroundFlightMap() {
   // Live in-flight tracking overrides everything (handled in its own effect).
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
-    if (currentFlight?.flight_status === "in_flight") return;
 
-    // Always cancel any rotation before applying a new mode.
+    // Always cancel any rotation before applying a new mode — including when a
+    // flight goes live mid-session (the poll makes that routine), or the hero
+    // rotation keeps spinning under the live-tracking view.
     if (rotationRef.current) {
       cancelAnimationFrame(rotationRef.current);
       rotationRef.current = null;
     }
+
+    if (currentFlight?.flight_status === "in_flight") return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -892,31 +885,13 @@ export function BackgroundFlightMap() {
         map.current.removeLayer('live-flight-path-line');
         map.current.removeSource('live-flight-path');
       }
+      // Drop the ended flight's track so the next flight's path doesn't
+      // connect to it.
+      setAircraftPosition(null);
+      setPositionHistory(prev => (prev.length ? [] : prev));
       addHistoricalRoutes();
     }
   }, [currentFlight, mapLoaded]);
-
-  const loadCurrentFlight = async () => {
-    if (!supabase) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('current_flight')
-        .select('*')
-        .eq('flight_status', 'in_flight')
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data && !error) {
-        setCurrentFlight(data);
-      } else {
-        setCurrentFlight(null);
-      }
-    } catch (error) {
-      setCurrentFlight(null);
-    }
-  };
 
   const tailToHex: { [key: string]: string } = {
     'N405MK': 'a4b605',

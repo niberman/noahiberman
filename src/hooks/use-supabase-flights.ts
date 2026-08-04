@@ -27,6 +27,39 @@ export function useFlights() {
   });
 }
 
+export interface CurrentFlight {
+  tail_number: string;
+  flight_status: 'on_ground' | 'in_flight';
+}
+
+// Live in-flight record. Shared query key so the homepage's indicator and
+// background map dedupe into a single request (and one 30s poll).
+export function useCurrentFlight() {
+  return useQuery({
+    queryKey: ['current-flight'],
+    queryFn: async (): Promise<CurrentFlight | null> => {
+      if (!supabase) return null;
+      const { data, error } = await supabase
+        .from('current_flight')
+        .select('*')
+        .eq('flight_status', 'in_flight')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) return null;
+      return (data as CurrentFlight | null) ?? null;
+    },
+    refetchInterval: 30_000,
+    // The map chunk mounts seconds after the indicator; without staleTime its
+    // observer would refire the request, undoing the dedupe.
+    staleTime: 30_000,
+    // Effects depend on this value; start at null (not undefined) so a
+    // no-flight first fetch is an identity no-op.
+    placeholderData: null,
+  });
+}
+
 // Fetch active flight
 export function useActiveFlight() {
   return useQuery({
