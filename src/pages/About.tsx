@@ -22,7 +22,6 @@ export default function About({ showSEO = true }: PageSectionProps) {
         <SEO
           title="About | Noah Berman"
           description="Noah Berman's journey from private pilot to FAA Commercial Pilot in Denver. Building Freedom Aviation and AI systems at the intersection of aviation and tech."
-          keywords="Noah Berman about, aviation career, commercial pilot Denver, flight training, bilingual pilot, Freedom Aviation founder, AI systems, software engineer, entrepreneur"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "ProfilePage",

@@ -30,7 +30,6 @@ export default function Ventures({ showSEO = true }: PageSectionProps) {
         <SEO
           title="Ventures & Projects | Noah Berman"
           description="Explore Noah Berman's ventures: Freedom Aviation for aircraft management and The Language School for AI-powered education. Denver-based aviation and tech."
-          keywords="Freedom Aviation, aircraft management, flight instruction, The Language School, AI systems, Denver aviation, technology ventures, software engineer"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "CollectionPage",

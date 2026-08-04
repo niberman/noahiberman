@@ -17,13 +17,11 @@
   <meta name="format-detection" content="telephone=no" />
 
   <!-- Primary Meta Tags -->
-  <title>Noah Berman — Founder, Pilot, Engineer, Visionary | Aviation & Technology</title>
-  <meta name="title" content="Noah Berman — Founder, Pilot, Engineer, Visionary | Aviation & Technology" />
+  <title>Noah Berman | Founder and Commercial Pilot in Denver, Colorado</title>
+  <meta name="title" content="Noah Berman | Founder and Commercial Pilot in Denver, Colorado" />
   <meta name="description"
-    content="Commercial pilot, software engineer, and Denver-based founder. Building Freedom Aviation, AI systems, and aviation technology solutions." />
+    content="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado. Founder of Aviari LLC. University of Denver, Class of 2026." />
   <meta name="author" content="Noah Berman" />
-  <meta name="keywords"
-    content="Noah Berman, commercial pilot, aviation, Freedom Aviation, flight instructor, bilingual entrepreneur, aviation technology, aircraft management, flight training, The Language School, aviation startup, Spanish-English entrepreneur, ATP-rated pilot, multi-engine pilot, helicopter pilot" />
 
   <!-- Language -->
   <meta name="language" content="en-US" />
@@ -39,7 +37,7 @@
   <meta property="og:url" content="https://noahiberman.com/" />
   <meta property="og:title" content="Noah Berman — Founder, Pilot, Engineer, Visionary" />
   <meta property="og:description"
-    content="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation and innovative technology solutions." />
+    content="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado." />
   <meta property="og:image" content="https://noahiberman.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -57,94 +55,217 @@
   <meta name="twitter:url" content="https://noahiberman.com/" />
   <meta name="twitter:title" content="Noah Berman — Founder, Pilot, Engineer, Visionary" />
   <meta name="twitter:description"
-    content="Commercial pilot, bilingual entrepreneur, and founder building Freedom Aviation and innovative technology solutions." />
+    content="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado." />
   <meta name="twitter:image" content="https://noahiberman.com/og-image.png" />
   <meta name="twitter:image:alt" content="Noah Berman — Founder, Pilot, Engineer, Visionary" />
 
-  <!-- Structured Data - Person Schema -->
+  <!-- Structured Data — one @graph, nodes joined by @id so Google resolves
+       them as a single entity cluster. Facts verified against
+       AI Context/public-profile.md (2026-08-04). -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Noah Berman",
-      "url": "https://noahiberman.com",
-      "image": "https://noahiberman.com/logo.png",
-      "sameAs": [
-        "https://github.com/niberman",
-        "https://www.linkedin.com/in/noahiberman/"
-      ],
-      "jobTitle": ["Commercial Pilot", "Software Engineer"],
-      "worksFor": [
+      "@graph": [
         {
-          "@type": "Organization",
-          "name": "Freedom Aviation",
-          "url": "https://freedomaviationco.com"
+          "@type": "Person",
+          "@id": "https://noahiberman.com/#noah",
+          "name": "Noah Berman",
+          "givenName": "Noah",
+          "familyName": "Berman",
+          "url": "https://noahiberman.com/",
+          "mainEntityOfPage": { "@id": "https://noahiberman.com/#webpage" },
+          "image": "https://noahiberman.com/og-image.png",
+          "jobTitle": ["Founder", "Commercial Pilot", "Software Engineer"],
+          "description": "Noah Berman is the founder of Aviari LLC in Denver, Colorado, and an FAA Commercial Pilot with instrument and multi-engine ratings and a private rotorcraft rating.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Denver",
+            "addressRegion": "CO",
+            "addressCountry": "US"
+          },
+          "email": "noah@noahiberman.com",
+          "worksFor": [
+            { "@id": "https://noahiberman.com/#aviari" },
+            {
+              "@type": "Organization",
+              "name": "The Language School",
+              "url": "https://thelanguageschool.us"
+            }
+          ],
+          "alumniOf": [
+            {
+              "@type": "CollegeOrUniversity",
+              "name": "University of Denver",
+              "url": "https://www.du.edu/"
+            },
+            {
+              "@type": "CollegeOrUniversity",
+              "name": "Universidad de Deusto",
+              "url": "https://www.deusto.es/"
+            }
+          ],
+          "knowsLanguage": [
+            { "@type": "Language", "name": "English", "alternateName": "en" },
+            { "@type": "Language", "name": "Spanish", "alternateName": "es" }
+          ],
+          "knowsAbout": [
+            "Aviation",
+            "Commercial flight operations",
+            "Software engineering",
+            "Applied AI for small business operations",
+            "Restaurant operations software",
+            "Multi-tenant SaaS architecture"
+          ],
+          "hasCredential": [
+            {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": "certification",
+              "name": "FAA Commercial Pilot, Airplane Single-Engine Land",
+              "recognizedBy": {
+                "@type": "GovernmentOrganization",
+                "name": "Federal Aviation Administration"
+              }
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": "certification",
+              "name": "FAA Commercial Pilot, Airplane Multi-Engine Land",
+              "recognizedBy": {
+                "@type": "GovernmentOrganization",
+                "name": "Federal Aviation Administration"
+              }
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": "certification",
+              "name": "FAA Instrument Rating, Airplane",
+              "recognizedBy": {
+                "@type": "GovernmentOrganization",
+                "name": "Federal Aviation Administration"
+              }
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": "certification",
+              "name": "FAA Private Pilot, Rotorcraft Helicopter",
+              "recognizedBy": {
+                "@type": "GovernmentOrganization",
+                "name": "Federal Aviation Administration"
+              }
+            },
+            {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": "certification",
+              "name": "Wilderness First Responder",
+              "recognizedBy": {
+                "@type": "Organization",
+                "name": "NOLS"
+              }
+            }
+          ],
+          "sameAs": [
+            "https://www.linkedin.com/in/noahiberman/",
+            "https://github.com/niberman"
+          ]
         },
         {
           "@type": "Organization",
-          "name": "The Language School",
-          "url": "https://thelanguageschool.us"
-        }
-      ],
-      "knowsLanguage": ["en-US", "es-ES"],
-      "alumniOf": "University of Deusto",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Denver",
-        "addressRegion": "CO",
-        "addressCountry": "US"
-      },
-      "description": "Commercial pilot, software engineer, and bilingual entrepreneur based in Denver, CO. Founder specializing in aviation services, AI systems, and technology solutions.",
-      "hasCredential": [
-        {
-          "@type": "EducationalOccupationalCredential",
-          "credentialCategory": "FAA Commercial Pilot License",
-          "description": "FAA Commercial Pilot with Instrument Rating"
+          "@id": "https://noahiberman.com/#aviari",
+          "name": "Aviari LLC",
+          "legalName": "Aviari LLC",
+          "foundingDate": "2026-07-14",
+          "foundingLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Denver",
+              "addressRegion": "CO",
+              "addressCountry": "US"
+            }
+          },
+          "founder": { "@id": "https://noahiberman.com/#noah" }
         },
         {
-          "@type": "EducationalOccupationalCredential",
-          "credentialCategory": "FAA Multi-Engine Rating",
-          "description": "Commercial Multi-Engine Rating"
+          "@type": "WebSite",
+          "@id": "https://noahiberman.com/#website",
+          "url": "https://noahiberman.com/",
+          "name": "Noah Berman",
+          "inLanguage": ["en-US", "es-ES"],
+          "publisher": { "@id": "https://noahiberman.com/#noah" },
+          "about": { "@id": "https://noahiberman.com/#noah" }
         },
         {
-          "@type": "EducationalOccupationalCredential",
-          "credentialCategory": "FAA Helicopter Private Pilot",
-          "description": "Private Pilot License for Helicopters"
+          "@type": "ProfilePage",
+          "@id": "https://noahiberman.com/#webpage",
+          "url": "https://noahiberman.com/",
+          "name": "Noah Berman",
+          "isPartOf": { "@id": "https://noahiberman.com/#website" },
+          "mainEntity": { "@id": "https://noahiberman.com/#noah" }
         }
       ]
     }
     </script>
 
-  <!-- Structured Data - Organization Schema for Freedom Aviation -->
+  <!-- FAQPage markup mirrors the visible FAQ section rendered on the homepage
+       (src/pages/Home.tsx) word for word — Google requires the marked-up Q&A
+       to be visible on the page. Keep the two in sync. -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Freedom Aviation",
-      "url": "https://freedomaviationco.com",
-      "logo": "https://noahiberman.com/logo.png",
-      "founder": {
-        "@type": "Person",
-        "name": "Noah Berman"
-      },
-      "description": "Premium aviation company delivering concierge-level aircraft management and expert flight instruction.",
-      "serviceType": ["Aircraft Management", "Flight Instruction", "Aviation Services"]
-    }
-    </script>
-
-  <!-- Structured Data - WebSite Schema -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Noah Berman",
-      "url": "https://noahiberman.com",
-      "description": "Portfolio and ventures of Noah Berman — Founder, Pilot, Engineer, Visionary",
-      "inLanguage": ["en-US", "es-ES"],
-      "author": {
-        "@type": "Person",
-        "name": "Noah Berman"
-      }
+      "@type": "FAQPage",
+      "@id": "https://noahiberman.com/#faq",
+      "isPartOf": { "@id": "https://noahiberman.com/#website" },
+      "about": { "@id": "https://noahiberman.com/#noah" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Who is Noah Berman?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Noah Berman is a software founder and commercial pilot based in Denver, Colorado. He founded Aviari LLC in 2026 and builds software for small business operations. He is not the Noah Berman who writes for The Wire China, the psychology professor at College of the Holy Cross, or the jazz guitarist in Maine."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does Noah Berman build?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Applied AI for small business back-office work, starting with independent restaurant operators. He is a solo technical founder who took a product specification to production in a live store in eight weeks and iterates from behind the counter."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are Noah Berman's pilot qualifications?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "FAA Commercial Pilot with airplane single-engine land and multi-engine land privileges, an instrument rating, and a private pilot rotorcraft helicopter rating. He is not an ATP and does not hold a flight instructor certificate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where did Noah Berman study?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "University of Denver, Bachelor of Arts in Applied Computing with minors in Entrepreneurship and Spanish, Class of 2026. He spent the 2024 to 2025 academic year at Universidad de Deusto in Bilbao, Spain, taking coursework in Spanish alongside local engineering students."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Noah Berman speak Spanish?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. He works in English and Spanish at professional working proficiency and lived in Bilbao for a full academic year."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I contact Noah Berman?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Email noah@noahiberman.com or call 970-618-2094. Meetings can be booked at noahiberman.com/book."
+          }
+        }
+      ]
     }
     </script>
 
