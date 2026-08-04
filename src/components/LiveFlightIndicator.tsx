@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane, Radio, Navigation } from "lucide-react";
@@ -72,7 +72,7 @@ export function LiveFlightIndicator() {
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0, x: 100, scale: 0.8 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 100, scale: 0.8 }}
@@ -138,7 +138,7 @@ export function LiveFlightIndicator() {
             </div>
           </div>
         </Card>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 }
