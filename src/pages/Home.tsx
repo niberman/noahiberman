@@ -106,12 +106,11 @@ export default function Home() {
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
           >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.2 }}
-              className="text-center max-w-5xl mx-auto"
-            >
+            {/* The h1 is the LCP element: it and every ancestor must render at
+                full opacity on first paint, or the fade delay is charged as
+                LCP element render delay. Siblings still stagger in around
+                it. */}
+            <div className="text-center max-w-5xl mx-auto">
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -148,14 +147,9 @@ export default function Home() {
                 Noah Berman
               </motion.p>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight"
-              >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                 {BrandWordsString}
-              </motion.h1>
+              </h1>
 
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -205,7 +199,7 @@ export default function Home() {
                   Get in Touch
                 </Button>
               </motion.div>
-            </motion.div>
+            </div>
           </motion.div>
 
           <motion.div

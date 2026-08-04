@@ -3,12 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane, Radio, Navigation } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-
-interface FlightInfo {
-  tail_number: string;
-  flight_status: "on_ground" | "in_flight";
-}
+import { useCurrentFlight } from "@/hooks/use-supabase-flights";
 
 interface AircraftPosition {
   latitude: number;
@@ -20,16 +15,8 @@ interface AircraftPosition {
 }
 
 export function LiveFlightIndicator() {
-  const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
+  const { data: currentFlight, isLoading } = useCurrentFlight();
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadCurrentFlight();
-    // Refresh every 30 seconds
-    const interval = setInterval(loadCurrentFlight, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
@@ -40,33 +27,6 @@ export function LiveFlightIndicator() {
       return () => clearInterval(interval);
     }
   }, [currentFlight]);
-
-  const loadCurrentFlight = async () => {
-    if (!supabase) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('current_flight')
-        .select('*')
-        .eq('flight_status', 'in_flight')
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data && !error) {
-        setCurrentFlight(data);
-      } else {
-        setCurrentFlight(null);
-      }
-    } catch (error) {
-      setCurrentFlight(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const tailToHex: { [key: string]: string } = {
     'N405MK': 'a4b605',
