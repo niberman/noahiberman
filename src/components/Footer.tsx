@@ -29,6 +29,8 @@ export function Footer() {
           <div className="sm:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-7 w-7 sm:h-8 sm:w-8 overflow-hidden rounded relative flex-shrink-0">
+                <picture>
+                <source srcSet="/logo.webp" type="image/webp" />
                 <img
                   src="/logo.png"
                   alt="Noah Berman logo"
@@ -37,6 +39,7 @@ export function Footer() {
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
+                </picture>
               </div>
               <h3 className="font-display font-bold text-xl sm:text-2xl text-primary-foreground">Noah Berman</h3>
             </div>

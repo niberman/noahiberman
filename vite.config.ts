@@ -23,7 +23,19 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // Rollup's virtual commonjs interop helper is imported from nearly
+          // everywhere; left unassigned it can land inside a lazy chunk and
+          // drag it into the eager preload graph.
+          if (id.includes("commonjsHelpers")) return "react";
+
           if (!id.includes("node_modules")) return undefined;
+
+          // Pin core React into its own chunk — without this, Rollup can hoist
+          // it into a lazy manual chunk (editor), dragging that chunk into the
+          // eager preload graph.
+          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+            return "react";
+          }
 
           if (
             id.includes("mapbox-gl") ||
@@ -36,7 +48,9 @@ export default defineConfig(({ mode }) => ({
             return "editor";
           }
 
-          return "vendor";
+          // Everything else splits by usage, so dashboard-only libraries
+          // don't ride along in an eager vendor chunk.
+          return undefined;
         },
       },
     },

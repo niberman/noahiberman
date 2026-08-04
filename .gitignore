@@ -35,3 +35,6 @@ infrastructure/chat/data/
 infrastructure/chat/.env.chat
 __pycache__/
 *.pyc
+
+# TypeScript incremental build state
+*.tsbuildinfo
