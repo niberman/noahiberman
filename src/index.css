@@ -119,6 +119,9 @@ All colors MUST be HSL.
 
   html {
     scroll-behavior: smooth;
+    /* "only dark" opts out of Chrome Auto Dark Mode, which otherwise force-paints
+       opaque backgrounds on every element and hides the fixed flight map */
+    color-scheme: only dark;
   }
 
   @media (prefers-reduced-motion: reduce) {

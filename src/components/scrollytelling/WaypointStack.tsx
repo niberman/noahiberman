@@ -7,12 +7,20 @@ import { WaypointTrigger } from "./WaypointTrigger";
  * The "scroll spine" — a stack of invisible triggers, one per waypoint,
  * that drive the map camera and floating card.
  *
- * The active waypoint is whichever trigger (or the hero) has its center
- * closest to the viewport center on each scroll tick. Because triggers are
- * stacked sequentially and don't overlap, exactly one wins at any scroll
- * position — no race conditions, no flicker between waypoints, no hero
- * shouting down PPL during the transition.
+ * A waypoint takes over once its trigger's top crosses ACTIVATION_LINE. Because
+ * triggers are stacked in DOM order and don't overlap, the last one to cross
+ * wins — the handoff is monotonic in scroll direction, so there is exactly one
+ * switch per boundary and no flicker between neighbours.
  */
+
+/**
+ * Fraction of the viewport height at which a trigger takes over. Kept high on
+ * the page (30% down) so the hero has faded out before the first waypoint
+ * claims the camera — matching centers instead handed off while the hero
+ * headline was still half visible.
+ */
+const ACTIVATION_LINE = 0.3;
+
 export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElement> }) {
   const stackRef = useRef<HTMLDivElement>(null);
 
@@ -29,20 +37,15 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
       const triggers = stack.querySelectorAll<HTMLElement>("[data-waypoint-id]");
       const targets: HTMLElement[] = [hero, ...triggers];
       const vh = window.innerHeight;
-      const viewportCenter = vh / 2;
+      const line = vh * ACTIVATION_LINE;
 
-      let bestId = HERO_WAYPOINT.id;
-      let bestDistance = Infinity;
+      let activeId = HERO_WAYPOINT.id;
       for (const t of targets) {
-        const rect = t.getBoundingClientRect();
-        const center = rect.top + rect.height / 2;
-        const distance = Math.abs(center - viewportCenter);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestId = t.dataset.waypointId ?? bestId;
+        if (t.getBoundingClientRect().top <= line) {
+          activeId = t.dataset.waypointId ?? activeId;
         }
       }
-      setActiveWaypointId(bestId);
+      setActiveWaypointId(activeId);
 
       // Stack is "visible" while the spine has any vertical overlap with the
       // viewport. Drive this from scroll metrics instead of an IO so it stays

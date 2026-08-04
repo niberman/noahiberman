@@ -20,7 +20,7 @@ export interface MapWaypoint {
   zoom: number;
   pitch?: number;
   bearing?: number;
-  /** flyTo duration in ms (default 1800) */
+  /** flyTo duration in ms (default 1400 — a trigger is ~1s of scrolling) */
   duration?: number;
   /** Optional secondary point to draw an arc to (e.g. IFR → KASE) */
   arcTo?: [number, number];
@@ -37,6 +37,12 @@ export interface MapWaypoint {
    * hub area rather than a single visit, and a centered card reads better.
    */
   cardPlacement?: "anchored" | "centered";
+  /**
+   * Frame every drawn route instead of `center`/`zoom`. The route network grows
+   * as flights are logged, so the climax shot has to be fitted at runtime —
+   * a hardcoded framing leaves half the lines off-screen.
+   */
+  fitRoutes?: boolean;
 }
 
 export const HERO_WAYPOINT: MapWaypoint = {
@@ -47,7 +53,7 @@ export const HERO_WAYPOINT: MapWaypoint = {
   zoom: 3.2,
   pitch: 35,
   bearing: -15,
-  duration: 2200,
+  duration: 1800,
 };
 
 export const WAYPOINTS: MapWaypoint[] = [
@@ -87,7 +93,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     zoom: 10.5,
     pitch: 65,
     bearing: 25,
-    duration: 2400,
+    duration: 1600,
     accent: "aviation",
   },
   {
@@ -114,7 +120,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     zoom: 11,
     pitch: 55,
     bearing: 20,
-    duration: 2600,
+    duration: 2200,
     accent: "education",
   },
   {
@@ -128,7 +134,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     zoom: 12,
     pitch: 60,
     bearing: -45,
-    duration: 2400,
+    duration: 2200,
     accent: "aviation",
   },
   {
@@ -150,11 +156,14 @@ export const WAYPOINTS: MapWaypoint[] = [
     title: "Every flight I've taken",
     subtitle: "Sigue mi vuelo",
     body: "Every route, every airport. Click below to take the controls — pan, zoom, and explore.",
-    center: [-105.5, 41.5],
+    // With `fitRoutes` the camera ignores center/zoom; center still places the
+    // pin, so put it on the actual hub the card names.
+    center: [-104.849, 39.5701],
     zoom: 6.5,
-    pitch: 45,
-    bearing: -15,
-    duration: 2600,
+    pitch: 0,
+    bearing: 0,
+    duration: 2000,
+    fitRoutes: true,
     cta: { label: "Click to Explore Map", event: "enableFlightMapInteractive" },
     accent: "aviation",
     cardPlacement: "centered",

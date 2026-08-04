@@ -23,6 +23,7 @@ export const airportCoordinates: Record<string, [number, number]> = {
   'KANK': [-106.049, 38.5381], // Salida
   'KBDU': [-105.226, 40.0397], // Boulder
   'KLMO': [-105.164, 40.1636], // Longmont
+  'KMLO': [-105.164, 40.1636], // ponytail: logbook typo for KLMO; alias so its route still draws
 
   // Puerto Rico (ICAO TJ*)
   'TJIG': [-66.0981, 18.4564], // Fernando Luis Ribas Dominicci / Isla Grande (San Juan)

@@ -121,7 +121,10 @@ export default function Home() {
                   alt="Noah Berman logo"
                   width={96}
                   height={96}
-                  fetchpriority="high"
+                  // React 18's DOM typings have no fetchPriority, and it drops
+                  // the camelCase prop silently — the lowercase attribute is
+                  // what actually reaches the element. Spread past the types.
+                  {...({ fetchpriority: "high" } as Record<string, string>)}
                   className="absolute inset-0 w-full h-full object-contain origin-center"
                 />
               </motion.div>

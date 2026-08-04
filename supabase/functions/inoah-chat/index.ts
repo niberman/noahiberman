@@ -110,7 +110,9 @@ OUTPUT THE FINAL ANSWER ONLY. NO PREAMBLE. NO PROCESS. NO ANALYSIS OF THE QUESTI
 Respond as Noah directly and immediately. Do not think out loud. Do not plan. Do not deliberate in your output.
 VIOLATION OF THIS DIRECTIVE IS COMPLETELY UNACCEPTABLE AND WILL BE REJECTED.`;
 
-const SYSTEM_PROMPT = IDENTITY_CORE + STRICT_INSTRUCTION;
+// IDENTITY_CORE / MATCH_* above are fallbacks only. The live values come from
+// the `inoah_settings` row so they can be edited from the dashboard without a
+// redeploy; keep these in sync as the defaults if that row is ever missing.
 
 // --- Embeddings ---
 
@@ -356,6 +358,20 @@ serve(async (req) => {
       baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
     });
 
+    // 5b. Dashboard-editable persona and retrieval knobs. Falls back to the
+    // compiled-in defaults if the row is missing so chat never hard-fails.
+    const { data: settings } = await supabase
+      .from("inoah_settings")
+      .select("system_prompt, match_threshold, match_count")
+      .maybeSingle();
+
+    const identity = settings?.system_prompt?.trim() || IDENTITY_CORE;
+    const matchThreshold = settings?.match_threshold ?? MATCH_THRESHOLD;
+    const matchCount = settings?.match_count ?? MATCH_COUNT;
+    // The strict directive is machine behaviour, not persona, so it is always
+    // appended and stays out of the editable prompt.
+    const SYSTEM_PROMPT = identity + STRICT_INSTRUCTION;
+
     // 6. RAG: Retrieve Context (if requested)
     let contextString = "";
     let retrievedMemories: any[] = [];
@@ -365,8 +381,8 @@ serve(async (req) => {
 
         const { data: memories, error: matchError } = await supabase.rpc("match_memories", {
           query_embedding: embedding,
-          match_threshold: MATCH_THRESHOLD,
-          match_count: MATCH_COUNT,
+          match_threshold: matchThreshold,
+          match_count: matchCount,
         });
 
         if (!matchError && memories && memories.length > 0) {
