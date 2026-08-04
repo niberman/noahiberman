@@ -60,7 +60,13 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
       frame = requestAnimationFrame(update);
     };
 
-    update();
+    // First measure waits two frames: the mount effect runs before first
+    // paint, so a synchronous gBCR here forces the initial layout inside JS
+    // (PageSpeed "forced reflow"). After first paint the same reads are free.
+    // Store defaults (hero active, stack hidden) already match a fresh load.
+    frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(update);
+    });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {

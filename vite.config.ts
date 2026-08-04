@@ -1,31 +1,27 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { promises as fs } from "node:fs";
 import { componentTagger } from "lovable-tagger";
 
-// The shell is empty until React boots, so a separate render-blocking CSS
-// request buys nothing — inline the entry stylesheet into index.html and drop
-// the request entirely. Lazy-chunk CSS (maps) is untouched; the file is kept
-// on disk in case a route chunk lists it as an imported style.
-// ponytail: repeat visits re-download ~23KB gz of CSS with the HTML; move to
-// critical-CSS extraction (beasties) if that ever matters.
-const inlineEntryCss = (): Plugin => ({
-  name: "inline-entry-css",
+// Critical-CSS extraction: beasties inlines only the rules the shipped HTML
+// uses and rewrites the entry stylesheet link to a media="print" onload swap,
+// so the full Tailwind file loads off the critical path. Runs in closeBundle
+// because beasties reads the emitted CSS from dist. Lazy-chunk CSS (maps) is
+// never linked from index.html, so it's untouched.
+const criticalCss = (): Plugin => ({
+  name: "critical-css",
   apply: "build",
-  transformIndexHtml: {
-    order: "post",
-    handler(html, ctx) {
-      const bundle = ctx.bundle;
-      if (!bundle) return html;
-      return html.replace(
-        /<link[^>]*rel="stylesheet"[^>]*href="\/(assets\/[^"]+\.css)"[^>]*>/g,
-        (tag, file) => {
-          const css = bundle[file];
-          if (css?.type !== "asset") return tag;
-          return `<style>${String(css.source)}</style>`;
-        }
-      );
-    },
+  async closeBundle() {
+    const { default: Beasties } = await import("beasties");
+    const file = path.resolve(__dirname, "dist/index.html");
+    const html = await fs.readFile(file, "utf8");
+    const beasties = new Beasties({
+      path: path.resolve(__dirname, "dist"),
+      preload: "media",
+      logLevel: "warn",
+    });
+    await fs.writeFile(file, await beasties.process(html));
   },
 });
 
@@ -38,7 +34,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: Number(process.env.PORT) || 8080,
   },
-  plugins: [react(), inlineEntryCss(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), criticalCss(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

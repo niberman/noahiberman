@@ -177,7 +177,60 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <!-- Static hero shell: paints FCP/LCP at HTML parse time, before any JS.
+       createRoot().render() in src/main.tsx replaces it with identical markup —
+       keep structure/classes in sync with src/App.tsx wrappers and the hero in
+       src/pages/Home.tsx (elements framer-motion starts hidden carry inline
+       opacity/transform so layout is reserved with zero shift). -->
+  <div id="root">
+    <div class="min-h-screen flex flex-col relative">
+      <div class="flex-1 relative z-10">
+        <main class="min-h-screen relative">
+          <div class="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
+            <section id="home"
+              class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6">
+              <div class="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70">
+              </div>
+              <div class="container mx-auto px-4 relative z-10 pb-16 sm:pb-20">
+                <div class="text-center max-w-5xl mx-auto">
+                  <div
+                    class="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative">
+                    <picture>
+                      <source srcset="/logo.webp" type="image/webp" />
+                      <img src="/logo.png" alt="Noah Berman logo" width="96" height="96" fetchpriority="high"
+                        class="absolute inset-0 w-full h-full object-contain origin-center" />
+                    </picture>
+                  </div>
+                  <p style="opacity:0;transform:translateY(20px)"
+                    class="text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">Noah Berman</p>
+                  <h1
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
+                    Founder, Pilot, Visionary</h1>
+                  <div style="opacity:0;transform:translateY(30px)" class="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                    <p class="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
+                      The sky is not the limit</p>
+                    <p class="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">El cielo no es el
+                      límite</p>
+                  </div>
+                  <div style="opacity:0;transform:translateY(20px)"
+                    class="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
+                    <button
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full sm:w-auto">Book
+                      a Meeting</button>
+                    <button
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium border h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full sm:w-auto">Blog</button>
+                    <button
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full w-full sm:w-auto">Get
+                      in Touch</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

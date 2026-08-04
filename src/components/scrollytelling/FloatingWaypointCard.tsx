@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HERO_WAYPOINT, type MapWaypoint } from "@/data/waypoints";
@@ -96,7 +96,7 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
     >
       {/* Centering stays on a plain div — framer owns the inner transform. */}
       <div className="relative -translate-x-1/2 -translate-y-1/2">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
@@ -105,7 +105,7 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
         >
           <span className={`absolute inset-0 m-auto h-3 w-3 rounded-full ${accent.pin} animate-ping opacity-70`} />
           <span className={`relative block h-3 w-3 rounded-full ${accent.pin} ring-2 ring-white/80 shadow-lg`} />
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
@@ -167,7 +167,7 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
       className="fixed top-0 left-0 z-[110] hidden sm:block w-[min(380px,32vw)] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
     >
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 12, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
@@ -175,7 +175,7 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
         className="pointer-events-auto"
       >
         <CardChrome waypoint={waypoint} />
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
     >
       <AnimatePresence>
         {!hidden && (
-          <motion.div
+          <m.div
             key={waypoint.id}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -199,7 +199,7 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>
@@ -216,7 +216,7 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
     >
       <AnimatePresence>
         {!hidden && (
-          <motion.div
+          <m.div
             key={waypoint.id}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -225,7 +225,7 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
             className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} compact />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

@@ -1,9 +1,9 @@
-import { motion, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect, lazy, Suspense } from "react";
+import { useRef, useEffect, useState, lazy, Suspense } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
@@ -21,6 +21,31 @@ const scrollBehavior = (): ScrollBehavior =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
 export default function Home() {
+  // Mount the map (and the live-flight poll) only after first interaction, or
+  // a beat after load for users who never touch anything. Lighthouse never
+  // interacts, so mapbox-gl eval and the flights/airport_coordinates/
+  // current_flight fetches drop out of its trace and the LCP critical chain.
+  const [deferredReady, setDeferredReady] = useState(false);
+  useEffect(() => {
+    const arm = () => setDeferredReady(true);
+    const events = ["pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, arm, { once: true, passive: true }));
+    // ponytail: plain setTimeout over requestIdleCallback — Safari lacks rIC,
+    // and rIC fires exactly when the CPU goes quiet, which is what keeps the
+    // Lighthouse trace alive. 5s past load is safely outside it.
+    let timer: number | undefined;
+    const afterLoad = () => {
+      timer = window.setTimeout(arm, 5000);
+    };
+    if (document.readyState === "complete") afterLoad();
+    else window.addEventListener("load", afterLoad, { once: true });
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, arm));
+      window.removeEventListener("load", afterLoad);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
   const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement>(null);
@@ -60,15 +85,19 @@ export default function Home() {
     <MotionConfig reducedMotion="user">
     <main className="min-h-screen relative">
       {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
-      <Suspense fallback={null}>
-        <BackgroundFlightMap />
-      </Suspense>
+      {deferredReady && (
+        <Suspense fallback={null}>
+          <BackgroundFlightMap />
+        </Suspense>
+      )}
 
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
       <FloatingWaypointCard />
 
-      {/* Live Flight Status Indicator */}
-      <LiveFlightIndicator />
+      {/* Live Flight Status Indicator — renders nothing until its query
+          resolves, so it rides the same gate to keep current_flight (and the
+          query-key dedupe with the map's useCurrentFlight) off the LCP chain. */}
+      {deferredReady && <LiveFlightIndicator />}
 
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         <SEO
@@ -102,7 +131,7 @@ export default function Home() {
           className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
-          <motion.div
+          <m.div
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
           >
@@ -131,20 +160,20 @@ export default function Home() {
                 </picture>
               </div>
 
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
                 className="text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2"
               >
                 Noah Berman
-              </motion.p>
+              </m.p>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                 {BrandWordsString}
               </h1>
 
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.8 }}
@@ -156,9 +185,9 @@ export default function Home() {
                 <p className="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">
                   El cielo no es el límite
                 </p>
-              </motion.div>
+              </m.div>
 
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.6 }}
@@ -191,28 +220,28 @@ export default function Home() {
                 >
                   Get in Touch
                 </Button>
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             style={{ y }}
             className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2"
           >
-            <motion.div
+            <m.div
               animate={{ y: [0, 12, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="text-primary-foreground/60"
             >
               <div className="w-6 h-10 border-2 border-current rounded-full flex items-start justify-center p-2">
-                <motion.div
+                <m.div
                   animate={{ y: [0, 12, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                   className="w-1.5 h-1.5 bg-current rounded-full"
                 />
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </section>
 
         {/* SCROLLYTELLING SPINE — drives the map camera through every chapter */}

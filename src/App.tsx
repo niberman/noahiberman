@@ -1,4 +1,5 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { LazyMotion, domAnimation } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
@@ -44,6 +45,11 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
+    // Eager components use `m` + domAnimation instead of `motion`: the full
+    // bundle gives every motion component a projection node, and mounting the
+    // window-level root node reads window.innerWidth mid-load — the forced
+    // reflow PageSpeed flags on the homepage. Lazy routes still use `motion`.
+    <LazyMotion features={domAnimation}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Suspense fallback={null}>
@@ -113,6 +119,7 @@ const App = () => {
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+    </LazyMotion>
   );
 };
 
