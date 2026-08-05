@@ -32,8 +32,10 @@ export interface InoahChatResponse {
   };
 }
 
-export async function sendInoahMessage(
-  request: InoahChatRequest
+async function postInoah(
+  path: string,
+  request: InoahChatRequest,
+  accessToken: string
 ): Promise<InoahChatResponse> {
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error("Supabase is not configured yet.");
@@ -41,9 +43,7 @@ export async function sendInoahMessage(
 
   const functionsBase =
     import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || supabaseUrl;
-  const functionPath =
-    import.meta.env.VITE_INOAH_FUNCTION_PATH || DEFAULT_FUNCTION_PATH;
-  const url = `${functionsBase}${functionPath}`;
+  const url = `${functionsBase}${path}`;
 
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
@@ -54,7 +54,7 @@ export async function sendInoahMessage(
       headers: {
         "Content-Type": "application/json",
         apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(request),
       signal: controller.signal,
@@ -72,4 +72,20 @@ export async function sendInoahMessage(
   } finally {
     window.clearTimeout(timeout);
   }
+}
+
+export async function sendInoahMessage(
+  request: InoahChatRequest
+): Promise<InoahChatResponse> {
+  const functionPath =
+    import.meta.env.VITE_INOAH_FUNCTION_PATH || DEFAULT_FUNCTION_PATH;
+  return postInoah(functionPath, request, supabaseAnonKey);
+}
+
+/** Owner-only chat against the full corpus; needs the session access token. */
+export async function sendInoahPrivateMessage(
+  request: InoahChatRequest,
+  accessToken: string
+): Promise<InoahChatResponse> {
+  return postInoah("/functions/v1/inoah-chat-private", request, accessToken);
 }

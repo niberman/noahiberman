@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
-import { Brain, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Ban, Brain, Globe, Loader2, Lock, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   useDeleteKnowledgeEntry,
@@ -13,9 +22,34 @@ import {
   useKnowledgeEntries,
   useSaveInoahSettings,
   useSaveKnowledgeEntry,
+  useSetVisibility,
   type InoahSettings,
   type KnowledgeEntry,
 } from "@/hooks/use-inoah-knowledge";
+
+type TierFilter = "private" | "review" | "public" | "never" | "all";
+
+const TIER_FILTERS: { key: TierFilter; label: string }[] = [
+  { key: "private", label: "Private" },
+  { key: "review", label: "Review queue" },
+  { key: "public", label: "Public" },
+  { key: "never", label: "Never" },
+  { key: "all", label: "All" },
+];
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function matchesFilter(entry: KnowledgeEntry, filter: TierFilter): boolean {
+  if (filter === "all") return true;
+  if (filter === "review") {
+    return (
+      entry.visibility === "private" &&
+      !!entry.ingested_at &&
+      Date.now() - new Date(entry.ingested_at).getTime() < DAY_MS
+    );
+  }
+  return entry.visibility === filter;
+}
 
 /**
  * Everything iNoah answers from: the retrieved knowledge entries and the
@@ -37,11 +71,47 @@ function KnowledgeEntries() {
   const { data: entries, isPending, error } = useKnowledgeEntries();
   const saveEntry = useSaveKnowledgeEntry();
   const deleteEntry = useDeleteKnowledgeEntry();
+  const setVisibility = useSetVisibility();
   const { toast } = useToast();
 
   const [editing, setEditing] = useState<KnowledgeEntry | "new" | null>(null);
   const [content, setContent] = useState("");
   const [collection, setCollection] = useState("knowledge");
+  // Private is the landing view: everything new lands there awaiting review.
+  const [filter, setFilter] = useState<TierFilter>("private");
+  const [promoting, setPromoting] = useState<KnowledgeEntry | null>(null);
+  const [confirmText, setConfirmText] = useState("");
+
+  const visible = (entries ?? []).filter((e) => matchesFilter(e, filter));
+
+  const handlePromote = async () => {
+    if (!promoting) return;
+    try {
+      await setVisibility.mutateAsync({ id: promoting.id, visibility: "public" });
+      toast({ title: "Published", description: "This entry is now in the public tier." });
+      setPromoting(null);
+      setConfirmText("");
+    } catch (err) {
+      toast({
+        title: "Could not publish",
+        description: err instanceof Error ? err.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDemote = async (entry: KnowledgeEntry) => {
+    try {
+      await setVisibility.mutateAsync({ id: entry.id, visibility: "private" });
+      toast({ title: "Made private" });
+    } catch (err) {
+      toast({
+        title: "Could not demote",
+        description: err instanceof Error ? err.message : "Unknown error",
+        variant: "destructive",
+      });
+    }
+  };
 
   const openEditor = (entry: KnowledgeEntry | "new") => {
     setEditing(entry);
@@ -172,14 +242,34 @@ function KnowledgeEntries() {
           </p>
         )}
 
-        {!isPending && !error && entries?.length === 0 && !editing && (
+        <div className="flex flex-wrap gap-1.5">
+          {TIER_FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={cn(
+                "rounded-full border px-3 py-1 text-xs transition-colors",
+                filter === f.key
+                  ? "border-secondary/60 bg-secondary/20 text-foreground"
+                  : "border-border/60 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {f.label}
+              <span className="ml-1.5 text-[10px] opacity-70">
+                {(entries ?? []).filter((e) => matchesFilter(e, f.key)).length}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {!isPending && !error && visible.length === 0 && !editing && (
           <p className="text-sm text-muted-foreground py-4">
-            No entries yet. iNoah is answering from its persona prompt alone.
+            Nothing in this view.
           </p>
         )}
 
         <ul className="space-y-2">
-          {entries?.map((entry) => (
+          {visible.map((entry) => (
             <li
               key={entry.id}
               className="rounded-lg border border-border/60 bg-background/40 p-3 sm:p-4"
@@ -189,36 +279,153 @@ function KnowledgeEntries() {
                   <p className="text-sm text-foreground/90 line-clamp-3 whitespace-pre-wrap">
                     {entry.content}
                   </p>
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <TierBadge visibility={entry.visibility} />
                     <Badge variant="secondary" className="text-[11px]">
                       {entry.collection}
                     </Badge>
+                    {entry.source_uri && (
+                      <a
+                        href={entry.source_uri}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                      >
+                        source
+                      </a>
+                    )}
                     <span className="text-[11px] text-muted-foreground">
                       {formatStamp(entry.updated_at ?? entry.created_at)}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-shrink-0 gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => openEditor(entry)}>
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(entry)}
-                    disabled={deleteEntry.isPending}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
+                <div className="flex flex-shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center">
+                  {entry.visibility === "private" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        setPromoting(entry);
+                        setConfirmText("");
+                      }}
+                    >
+                      <Globe className="h-3.5 w-3.5 mr-1" />
+                      Publish
+                    </Button>
+                  )}
+                  {entry.visibility === "public" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => handleDemote(entry)}
+                      disabled={setVisibility.isPending}
+                    >
+                      <Lock className="h-3.5 w-3.5 mr-1" />
+                      Make private
+                    </Button>
+                  )}
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => openEditor(entry)}>
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(entry)}
+                      disabled={deleteEntry.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </li>
           ))}
         </ul>
       </CardContent>
+
+      <Dialog
+        open={!!promoting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPromoting(null);
+            setConfirmText("");
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Publish this entry</DialogTitle>
+            <DialogDescription>
+              This text becomes readable by anyone on the internet.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-64 overflow-y-auto rounded-md border border-border/60 bg-muted/30 p-3">
+            <p className="text-sm whitespace-pre-wrap">{promoting?.content}</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-publish">
+              Type <span className="font-mono font-semibold">publish</span> to confirm
+            </Label>
+            <Input
+              id="confirm-publish"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPromoting(null);
+                setConfirmText("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handlePromote}
+              disabled={confirmText !== "publish" || setVisibility.isPending}
+            >
+              {setVisibility.isPending && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
+              Publish
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
+  );
+}
+
+/** The tier a row sits in. 'never' is terminal and gets no control anywhere. */
+function TierBadge({ visibility }: { visibility: KnowledgeEntry["visibility"] }) {
+  if (visibility === "public") {
+    return (
+      <Badge className="text-[11px] bg-green-500/15 text-green-500 border-green-500/30" variant="outline">
+        <Globe className="h-3 w-3 mr-1" />
+        public
+      </Badge>
+    );
+  }
+  if (visibility === "never") {
+    return (
+      <Badge variant="outline" className="text-[11px] opacity-60 cursor-not-allowed">
+        <Ban className="h-3 w-3 mr-1" />
+        never
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="text-[11px]">
+      <Lock className="h-3 w-3 mr-1" />
+      private
+    </Badge>
   );
 }
 

@@ -6,6 +6,7 @@
 // while never being retrieved.
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { isExcludedContent } from "../_shared/content_policy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -98,15 +99,20 @@ serve(async (req) => {
         400
       );
     }
+    if (isExcludedContent(content)) {
+      return json({ error: "This entry cannot be saved." }, 400);
+    }
 
     const embedding = await embedText(content, geminiKey);
 
     const supabase = createClient(supabaseUrl, serviceKey);
     const row = { content, collection, embedding, updated_at: new Date().toISOString() };
 
+    // New entries land private; edits never touch visibility. Promotion is a
+    // dedicated dashboard action, not a side effect of saving.
     const query = id
       ? supabase.from("memories").update(row).eq("id", id)
-      : supabase.from("memories").insert(row);
+      : supabase.from("memories").insert({ ...row, visibility: "private" });
 
     const { data, error } = await query
       .select("id, content, collection, created_at, updated_at")

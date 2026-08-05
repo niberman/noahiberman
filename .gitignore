@@ -38,3 +38,6 @@ __pycache__/
 
 # TypeScript incremental build state
 *.tsbuildinfo
+
+# Contains personal data; lives in Drive AI Context, synced into the working tree only
+docs/public-profile.md
