@@ -6,31 +6,38 @@ This document describes the AI agents and automated systems that power noahiberm
 
 ## iNoah -- AI Digital Twin
 
-**Type:** Public-facing conversational agent
-**Runtime:** Supabase Edge Function (`supabase/functions/inoah-chat/`)
-**Model:** Google Gemini 2.0 Flash (via OpenAI-compatible API)
-**Embedding:** Google `text-embedding-004` (768-dim)
+**Type:** Two conversational agents over one tiered corpus
+**Runtime:** Supabase Edge Functions (`supabase/functions/inoah-chat/`, `supabase/functions/inoah-chat-private/`)
+**Model:** Google Gemini 3.5 Flash, routed through OpenRouter when `OPENROUTER_API_KEY` is set, Gemini direct otherwise
+**Embedding:** Google `gemini-embedding-2`, native endpoint, `output_dimensionality: 768`
 
-iNoah is a RAG-powered digital twin that mirrors Noah's personality, projects, and perspective. It is available site-wide as a floating chat widget (`src/components/inoah/InoahChatWidget.tsx`) and as a dedicated full-page experience at `/inoah`.
+iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors in the chat widget and at `/inoah`; the private twin answers the signed-in owner on `/dashboard`. Both retrieve from the same `memories` table, but the boundary between them is enforced in Postgres, not in a prompt: see `docs/inoah-data-tiers.md`.
 
 ### How it works
 
-1. The user's prompt is embedded using Google's `text-embedding-004` model.
-2. The embedding is matched against a `memories` table in Supabase via the `match_memories` RPC (pgvector cosine similarity, threshold 0.5, top 5).
-3. Retrieved memory chunks are injected into a system prompt that defines Noah's biographical facts, expertise, and communication style.
-4. Gemini 2.0 Flash generates the response.
-5. Output is post-processed to strip any reasoning leakage or meta-commentary.
+1. The prompt is embedded with `gemini-embedding-2` (768 dims; anything embedded with another model or width is stored but never retrieved).
+2. The public twin calls the `match_memories_public` RPC, which has `visibility = 'public'` hardcoded in its SQL body. The private twin calls `match_memories_private` after verifying the caller is in `app_owners`. Threshold and count come from `inoah_settings` (currently 0.6 and 5).
+3. Retrieved chunks are injected into the system prompt from `inoah_settings.system_prompt`, which is built from `docs/public-profile.md` and editable on the dashboard.
+4. Gemini 3.5 Flash generates the response with low reasoning effort; output is post-processed to strip reasoning leakage.
 
 ### Guardrails
 
-- **Rate limiting:** 30 requests per IP per 60-second window (in-memory buckets).
-- **Prompt blocking:** Regex patterns reject attempts to modify config, memory, files, or execute code.
-- **Turnstile:** Optional Cloudflare Turnstile verification for bot protection.
+- **Tier boundary in SQL:** the public RPC cannot see private rows regardless of what any function or caller sends. There is no visibility parameter anywhere.
+- **Medical cutoff:** content matching the medical pattern is excluded by every ingestion path and silently dropped by a trigger on `memories`. It cannot enter the corpus from any source.
+- **debug_mode:** owner-only. Anonymous callers get the same 200 with no debug key, so the flag is not an oracle.
+- **Rate limiting:** 30 requests per IP per minute on the public twin, 120 on the private one.
+- **Turnstile:** optional Cloudflare Turnstile verification on the public twin.
 - **Max prompt length:** 2,000 characters.
+
+### Ingestion
+
+- `inoah-embed`: dashboard writes; new entries land private.
+- `inoah-ingest`: secret-gated batch ingestion; the caller must name a registered `ingest_sources` row and the row decides the tier.
+- `inoah-sync-drive`: hourly cron syncs registered Drive folders (always private) and public site tables; idempotent via content hashes and the Drive changes token.
 
 ### Client
 
-`src/lib/inoahClient.ts` -- thin fetch wrapper that calls the Edge Function with apikey auth and a 60-second timeout.
+`src/lib/inoahClient.ts` -- fetch wrappers for both twins; the private one sends the session access token.
 
 ---
 

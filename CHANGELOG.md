@@ -6,6 +6,17 @@ A consolidated history of fixes, features, and improvements.
 
 ## Recent Updates
 
+### iNoah Corpus Tiering (2026-08-05)
+- **Security**: Closed the public context leak. Anonymous `debug_mode` no longer returns retrieved chunks; the flag is owner-only and silent for everyone else
+- **Security**: Replaced blanket authenticated RLS on `memories` and `inoah_settings` with owner-only policies backed by an `app_owners` table; disabled public signup
+- **Added**: Visibility tiers (`public`, `private`, `never`) with the boundary enforced in SQL: `match_memories_public` hardcodes its filter, `never` is terminal via trigger
+- **Added**: `inoah-chat-private`, an owner-only twin over the full corpus, with a private chat panel on the dashboard
+- **Added**: Hourly Google Drive sync of registered folders through a read-only service account; allowlist-driven, idempotent, always private
+- **Added**: Dashboard tier controls: private review queue, type-publish promotion dialog, one-click demotion
+- **Added**: Corpus-wide medical content cutoff enforced by a shared ingestion filter and a database trigger, plus a one-time purge
+- **Changed**: Public persona rebuilt from the verified profile with hard refusals for unsettled facts; retired the stale seed identity and the decorative prompt blocklist
+- **Changed**: Ingestion is secret-gated and idempotent; the unauthenticated bootstrap path is gone
+
 ### Flight Tracking System
 - **Fixed**: Supabase 406 errors by changing `.single()` to `.maybeSingle()`
 - **Fixed**: Duplicate flight indicators - now shows single clean indicator
