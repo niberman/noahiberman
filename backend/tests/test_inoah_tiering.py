@@ -134,6 +134,53 @@ def test_never_visibility_is_terminal():
         _delete_memory(row["id"])
 
 
+def test_ingest_rejects_bad_secret():
+    resp = httpx.post(
+        f"{SUPABASE_URL}/functions/v1/inoah-ingest",
+        headers=_headers(ANON_KEY),
+        json={"action": "ingest", "secret": "wrong", "items": []},
+        timeout=30,
+    )
+    assert resp.status_code == 403
+
+
+def test_ingest_has_no_bootstrap():
+    resp = httpx.post(
+        f"{SUPABASE_URL}/functions/v1/inoah-ingest",
+        headers=_headers(ANON_KEY),
+        json={"action": "bootstrap"},
+        timeout=30,
+    )
+    # Secret check comes first, so even naming the removed action is a 403.
+    assert resp.status_code == 403
+
+
+@pytest.mark.skipif(not os.environ.get("INGEST_SECRET"), reason="INGEST_SECRET not set")
+def test_ingest_rejects_visibility_in_body():
+    resp = httpx.post(
+        f"{SUPABASE_URL}/functions/v1/inoah-ingest",
+        headers=_headers(ANON_KEY),
+        json={
+            "action": "ingest",
+            "secret": os.environ["INGEST_SECRET"],
+            "source_kind": "repo_file",
+            "source_external_id": "does-not-matter",
+            "items": [
+                {
+                    "content": "x",
+                    "source_id": "s",
+                    "chunk_index": 0,
+                    "visibility": "public",
+                }
+            ],
+        },
+        timeout=30,
+    )
+    # Either the unregistered source or the visibility key must reject it;
+    # both are 4xx and nothing is written.
+    assert 400 <= resp.status_code < 500
+
+
 def test_authenticated_non_owner_reads_zero_rows(private_row):
     email = f"tiering-test-{uuid.uuid4().hex[:12]}@example.com"
     password = uuid.uuid4().hex

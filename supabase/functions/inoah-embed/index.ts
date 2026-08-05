@@ -104,9 +104,11 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceKey);
     const row = { content, collection, embedding, updated_at: new Date().toISOString() };
 
+    // New entries land private; edits never touch visibility. Promotion is a
+    // dedicated dashboard action, not a side effect of saving.
     const query = id
       ? supabase.from("memories").update(row).eq("id", id)
-      : supabase.from("memories").insert(row);
+      : supabase.from("memories").insert({ ...row, visibility: "private" });
 
     const { data, error } = await query
       .select("id, content, collection, created_at, updated_at")
