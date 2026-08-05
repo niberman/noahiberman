@@ -14,6 +14,7 @@ import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
 import InoahKnowledgeManager from "@/components/dashboard/InoahKnowledgeManager";
+import InoahPrivateChat from "@/components/dashboard/InoahPrivateChat";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -211,6 +212,11 @@ const Dashboard = () => {
           {/* iNoah Knowledge Base */}
           <div className="mt-8 sm:mt-10">
             <InoahKnowledgeManager />
+          </div>
+
+          {/* iNoah private twin */}
+          <div className="mt-8 sm:mt-10">
+            <InoahPrivateChat />
           </div>
 
 

@@ -41,26 +41,7 @@ const MAX_TOKENS_CAP = 2048;
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30; // Increased for development testing
-const BLOCKED_PATTERNS: RegExp[] = [
-  /update\s+(my|your|the)?\s*config/i,
-  /modify\s+(my|your|the)?\s*config/i,
-  /change\s+(my|your|the)?\s*config/i,
-  /update\s+(my|your|the)?\s*profile/i,
-  /modify\s+(my|your|the)?\s*profile/i,
-  /change\s+(my|your|the)?\s*profile/i,
-  /update\s+(my|your|the)?\s*rag/i,
-  /modify\s+(my|your|the)?\s*rag/i,
-  /change\s+(my|your|the)?\s*rag/i,
-  /update\s+(my|your|the)?\s*memory/i,
-  /modify\s+(my|your|the)?\s*memory/i,
-  /write\s+file/i,
-  /edit\s+file/i,
-  /save\s+file/i,
-  /run\s+code/i,
-  /execute\s+code/i,
-  /system\s+prompt/i,
-  /config\.json/i,
-];
+// No prompt blocklist: the tier boundary is enforced in SQL by match_memories_public.
 
 // Identity & Style Prompts
 const IDENTITY_CORE = `You are the AI Digital Twin of Noah I Berman.
@@ -363,24 +344,6 @@ const verifyTurnstile = async (token: string, ip: string) => {
   return data?.success === true;
 };
 
-// --- Helper Functions ---
-
-const isBlockedPrompt = (prompt: string) =>
-  BLOCKED_PATTERNS.some((pattern) => pattern.test(prompt));
-
-const blockedResponse = () =>
-  new Response(
-    JSON.stringify({
-      status: "blocked",
-      response:
-        "I can’t make updates or changes. If you want something updated, I can explain the process or pass the request along.",
-    }),
-    {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
-  );
-
 // --- Main Handler ---
 
 serve(async (req) => {
@@ -436,10 +399,6 @@ serve(async (req) => {
       });
     }
 
-    if (isBlockedPrompt(prompt)) {
-      return blockedResponse();
-    }
-
     // 4. Verify Turnstile
     if (turnstileToken && !(await verifyTurnstile(turnstileToken, ip))) {
       return new Response(JSON.stringify({ error: "Turnstile verification failed." }), {
@@ -462,6 +421,24 @@ serve(async (req) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // debug_mode is owner-only. Everyone else gets the same 200 with no debug
+    // key, never a 401, so the flag is not an oracle for what the corpus holds.
+    let debugAllowed = false;
+    if (debug_mode) {
+      const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+      const authHeader = req.headers.get("Authorization");
+      if (anonKey && authHeader && authHeader !== `Bearer ${anonKey}`) {
+        const asCaller = createClient(supabaseUrl, anonKey, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: { user } } = await asCaller.auth.getUser();
+        if (user) {
+          const { data: owner } = await asCaller.rpc("is_owner");
+          debugAllowed = owner === true;
+        }
+      }
+    }
 
     // Chat completions go through OpenRouter when its key is configured, so
     // model spend lands on one bill; embeddings always stay on Google (see
@@ -499,7 +476,7 @@ serve(async (req) => {
       try {
         const embedding = await embedText(prompt, geminiKey);
 
-        const { data: memories, error: matchError } = await supabase.rpc("match_memories", {
+        const { data: memories, error: matchError } = await supabase.rpc("match_memories_public", {
           query_embedding: embedding,
           match_threshold: matchThreshold,
           match_count: matchCount,
@@ -606,8 +583,8 @@ ${contextString}`
       provider,
     };
 
-    // Include debug information if requested
-    if (debug_mode && retrievedMemories.length > 0) {
+    // Include debug information only for the verified owner
+    if (debugAllowed && retrievedMemories.length > 0) {
       responsePayload.debug = {
         context_sources: retrievedMemories.map((m: any) => ({
           id: m.id,

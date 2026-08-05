@@ -16,3 +16,8 @@ enabled = true
 # Public endpoint - auth handled via rate limiting + optional Turnstile
 verify_jwt = false
 entrypoint = "./functions/inoah-chat/index.ts"
+
+[functions.inoah-chat-private]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/inoah-chat-private/index.ts"

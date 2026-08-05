@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowUp, ChevronDown, ChevronUp, Database } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { cn } from "@/lib/utils";
-import { sendInoahMessage, type ContextSource } from "@/lib/inoahClient";
+import { sendInoahMessage } from "@/lib/inoahClient";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  sources?: ContextSource[];
 }
 
 const SUGGESTIONS = [
@@ -23,9 +22,6 @@ export function InoahChat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Opt-in, off by default: the retrieved notes are quoted verbatim, so don't
-  // surface them to every visitor by default.
-  const [showSources, setShowSources] = useState(false);
   const lastPrompt = useRef<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -62,7 +58,6 @@ export function InoahChat() {
         prompt: trimmed,
         include_context: true,
         apply_style: true,
-        debug_mode: showSources,
       });
       setMessages((prev) => [
         ...prev,
@@ -70,7 +65,6 @@ export function InoahChat() {
           id: `assistant-${Date.now()}`,
           role: "assistant",
           content: res.response,
-          sources: res.debug?.context_sources,
         },
       ]);
     } catch (err) {
@@ -93,27 +87,11 @@ export function InoahChat() {
 
   return (
     <div className="flex flex-col h-[min(70vh,640px)] rounded-2xl border border-border/60 bg-card/80 backdrop-blur overflow-hidden">
-      <header className="flex items-start justify-between gap-3 px-5 py-4 border-b border-border/60">
-        <div>
-          <h2 className="font-display font-semibold text-lg leading-tight">iNoah</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Noah's digital twin · beta, so answers can be off
-          </p>
-        </div>
-        <button
-          onClick={() => setShowSources((v) => !v)}
-          aria-pressed={showSources}
-          title="Show which knowledge-base entries each answer used"
-          className={cn(
-            "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-colors",
-            showSources
-              ? "border-secondary/60 text-foreground"
-              : "border-border/60 text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Database className="h-3 w-3" />
-          Sources
-        </button>
+      <header className="px-5 py-4 border-b border-border/60">
+        <h2 className="font-display font-semibold text-lg leading-tight">iNoah</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Noah's digital twin · beta, so answers can be off
+        </p>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-5 overscroll-contain">
@@ -151,7 +129,6 @@ export function InoahChat() {
                       content={m.content}
                       className="prose-sm text-foreground/90"
                     />
-                    <SourceList sources={m.sources} />
                   </div>
                 )}
               </div>
@@ -208,42 +185,3 @@ export function InoahChat() {
   );
 }
 
-/** Which knowledge-base entries fed an answer, and how closely they matched. */
-function SourceList({ sources }: { sources?: ContextSource[] }) {
-  const [expanded, setExpanded] = useState(false);
-  if (!sources?.length) return null;
-
-  return (
-    <div className="mt-2 border-t border-border/40 pt-2">
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <Database className="h-3 w-3" />
-        <span>Context sources ({sources.length})</span>
-        {expanded ? (
-          <ChevronUp className="ml-auto h-3 w-3" />
-        ) : (
-          <ChevronDown className="ml-auto h-3 w-3" />
-        )}
-      </button>
-
-      {expanded && (
-        <div className="mt-2 space-y-2">
-          {sources.map((source, i) => (
-            <div
-              key={source.id}
-              className="rounded-lg border border-border/20 bg-background/50 p-2 text-xs"
-            >
-              <div className="mb-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                <span className="font-mono">Source {i + 1}</span>
-                <span>{(source.similarity * 100).toFixed(1)}% match</span>
-              </div>
-              <p className="line-clamp-3 text-foreground/80">{source.content}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
