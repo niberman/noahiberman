@@ -19,4 +19,15 @@ if (!rootElement) {
   throw new Error("Root element not found. Make sure there's a <div id='root'></div> in your HTML.");
 }
 
-createRoot(rootElement).render(<App />);
+// Let the static hero shell in index.html reach the screen before React
+// replaces it. This deferred module script executes before the browser's
+// first rendering opportunity, so mounting synchronously means FCP/LCP wait
+// for the whole bundle to parse and render — the shell never paints. rAF
+// twice: frame one paints the shell, frame two mounts. Hidden tabs throttle
+// rAF indefinitely (and paint nothing), so mount immediately there.
+const mount = () => createRoot(rootElement).render(<App />);
+if (document.visibilityState === "hidden") {
+  mount();
+} else {
+  requestAnimationFrame(() => requestAnimationFrame(mount));
+}

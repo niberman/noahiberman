@@ -79,7 +79,6 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
         <SEO
           title="Contact | Noah Berman"
           description="Get in touch with Noah Berman — Denver-based commercial pilot and software engineer. Aviation services, AI systems, and collaborations."
-          keywords="contact Noah Berman, aviation contact Denver, Freedom Aviation, AI systems, software engineer, business collaboration, pilot contact"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "ContactPage",

@@ -100,28 +100,12 @@ export default function Home() {
       {deferredReady && <LiveFlightIndicator />}
 
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
+        {/* Homepage structured data lives in index.html (one @graph with a
+            ProfilePage node) — no per-page structuredData here or it would
+            duplicate the entity. */}
         <SEO
-          title={`Noah Berman — ${BrandWordsString} | Aviation & Technology`}
-          description="Commercial pilot and bilingual entrepreneur. FAA Commercial Pilot with Instrument & Multi-Engine ratings."
-          keywords="Noah Berman, commercial pilot, aviation, flight instructor, bilingual entrepreneur, aviation technology, flight training, Spanish-English entrepreneur, multi-engine pilot, helicopter pilot"
-          structuredData={{
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "name": "Noah Berman — Home",
-            "description": "Commercial pilot and entrepreneur building aviation and technology ventures",
-            "url": "https://noahiberman.com/",
-            "breadcrumb": {
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": "https://noahiberman.com/"
-                }
-              ]
-            }
-          }}
+          title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
+          description="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado. Founder of Aviari LLC. University of Denver, Class of 2026."
         />
 
         {/* HERO */}
@@ -249,6 +233,91 @@ export default function Home() {
 
         {/* CONTACT */}
         <ContactSection />
+
+        {/* FAQ — the FAQPage JSON-LD in index.html mirrors this copy word for
+            word; Google requires the marked-up Q&A to be visible on the page.
+            Keep the two in sync. */}
+        <section
+          id="faq"
+          aria-labelledby="faq-heading"
+          className="relative bg-background/95 border-t border-border/30 py-16 sm:py-20"
+        >
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-3xl mx-auto">
+              <h2
+                id="faq-heading"
+                className="text-2xl sm:text-3xl font-display font-bold text-primary-foreground mb-8 sm:mb-10"
+              >
+                Questions about Noah Berman
+              </h2>
+              <div className="space-y-8 text-muted-foreground leading-relaxed">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    Who is Noah Berman?
+                  </h3>
+                  <p>
+                    Noah Berman is a software founder and commercial pilot based in Denver,
+                    Colorado. He founded Aviari LLC in 2026 and builds software for small
+                    business operations. He is not the Noah Berman who writes for The Wire
+                    China, the psychology professor at College of the Holy Cross, or the jazz
+                    guitarist in Maine.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    What does Noah Berman build?
+                  </h3>
+                  <p>
+                    Applied AI for small business back-office work, starting with independent
+                    restaurant operators. He is a solo technical founder who took a product
+                    specification to production in a live store in eight weeks and iterates
+                    from behind the counter.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    What are Noah Berman's pilot qualifications?
+                  </h3>
+                  <p>
+                    FAA Commercial Pilot with airplane single-engine land and multi-engine
+                    land privileges, an instrument rating, and a private pilot rotorcraft
+                    helicopter rating. He is not an ATP and does not hold a flight instructor
+                    certificate.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    Where did Noah Berman study?
+                  </h3>
+                  <p>
+                    University of Denver, Bachelor of Arts in Applied Computing with minors in
+                    Entrepreneurship and Spanish, Class of 2026. He spent the 2024 to 2025
+                    academic year at Universidad de Deusto in Bilbao, Spain, taking coursework
+                    in Spanish alongside local engineering students.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    Does Noah Berman speak Spanish?
+                  </h3>
+                  <p>
+                    Yes. He works in English and Spanish at professional working proficiency
+                    and lived in Bilbao for a full academic year.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-primary-foreground mb-2">
+                    How do I contact Noah Berman?
+                  </h3>
+                  <p>
+                    Email noah@noahiberman.com or call 970-618-2094. Meetings can be booked at
+                    noahiberman.com/book.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* -- commented out per Noah -- */}
         {/*

@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BrandWordsString } from "@/data/brand";
 
 interface SEOProps {
   title?: string;
   description?: string;
-  keywords?: string;
   image?: string;
   type?: string;
   canonical?: string;
@@ -13,9 +11,8 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = `Noah Berman, Colorado-Based ${BrandWordsString} | Aviation & Technology`,
-  description = "Commercial pilot, bilingual entrepreneur, and founder based in Colorado. Building Freedom Aviation, The Language School platform, and innovative aviation technology solutions.",
-  keywords = "Noah Berman, Colorado pilot, aviation Colorado, commercial pilot, Freedom Aviation, flight instructor Colorado, bilingual entrepreneur, aviation technology, aircraft management Colorado",
+  title = "Noah Berman | Founder and Commercial Pilot in Denver, Colorado",
+  description = "Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado. Founder of Aviari LLC. University of Denver, Class of 2026.",
   image = "https://noahiberman.com/og-image.png",
   type = "website",
   canonical,
@@ -44,9 +41,9 @@ export function SEO({
       }
     };
 
-    // Update basic meta tags
+    // Update basic meta tags (no keywords — Google has ignored the tag since
+    // 2009, and stale values here republished false credential claims)
     updateMetaTag('description', description);
-    updateMetaTag('keywords', keywords);
 
     // Update Open Graph tags
     updateMetaTag('og:title', title, true);
@@ -85,7 +82,7 @@ export function SEO({
         document.head.appendChild(script);
       }
     }
-  }, [title, description, keywords, image, type, currentUrl, canonicalUrl, structuredData]);
+  }, [title, description, image, type, currentUrl, canonicalUrl, structuredData]);
 
   return null;
 }

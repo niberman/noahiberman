@@ -186,7 +186,6 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
         <SEO
           title="Follow My Flight | Noah Berman"
           description="Track Noah Berman's flights in real-time and explore flight history from a Denver-based commercial pilot and software engineer."
-          keywords="flight tracking, live flight tracker, pilot flights Denver, aviation tracking, flight logbook, Noah Berman flights, commercial pilot, AI systems"
           structuredData={{
             "@context": "https://schema.org",
             "@type": "WebPage",
