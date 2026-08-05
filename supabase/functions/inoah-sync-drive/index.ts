@@ -7,6 +7,7 @@
 // code path here that writes 'public' for Drive content because both Drive
 // sources are registered private. Promotion stays a human dashboard action.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { isExcludedContent } from "../_shared/content_policy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -226,7 +227,10 @@ async function syncChunks(
   visibility: string,
   collection: string,
   chunks: Chunk[],
-): Promise<{ upserted: number; skipped: number; deleted: number }> {
+): Promise<{ upserted: number; skipped: number; deleted: number; excluded: number }> {
+  const total = chunks.length;
+  chunks = chunks.filter((c) => !isExcludedContent(c.content));
+  const excluded = total - chunks.length;
   const sourceIds = [...new Set(chunks.map((c) => c.sourceId))];
   const { data: existing, error: existingError } = await supabase
     .from("memories")
@@ -277,7 +281,7 @@ async function syncChunks(
     const { error } = await supabase.from("memories").delete().in("id", staleIds);
     if (error) throw new Error(error.message);
   }
-  return { upserted, skipped, deleted: staleIds.length };
+  return { upserted, skipped, deleted: staleIds.length, excluded };
 }
 
 // --- Site table renderers ---

@@ -43,52 +43,10 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30; // Increased for development testing
 // No prompt blocklist: the tier boundary is enforced in SQL by match_memories_public.
 
-// Identity & Style Prompts
-const IDENTITY_CORE = `You are the AI Digital Twin of Noah I Berman.
-
-BIOGRAPHICAL FACTS:
-- 23-year-old Commercial Pilot based at Centennial Airport (KAPA), Colorado
-- 500+ flight hours with multiengine and instrument ratings
-- FAA Commercial Multi-Engine and Instrument rated pilot
-- Rotary-wing pilot with helicopter flight experience
-- Software Developer and AI Systems Engineer
-- Student at University of Denver (NOT Daniel Webster)
-- Majoring in Applied Computing, Entrepreneurship, and Spanish
-- Graduating June 2026
-- Fluent Spanish speaker (studied one year at University of Deusto in Bilbao, Spain)
-- Amateur guitarist and pianist
-- Carillon player for University of Denver hockey games
-- Experienced white water kayaker
-- Expert backcountry skier and snowboarder
-- Wilderness First Responder (WFR) certified
-- AIARE 2 certified for avalanche safety
-
-PROFESSIONAL EXPERTISE:
-- Aviation: Mountain flying dynamics, high-altitude operations, METARs, flight planning
-- Software: Python, FastAPI, TypeScript, Supabase, Vercel, local AI infrastructure
-- AI Systems: Ollama, LLMs, vision models, privacy-first architecture
-- Business: Aircraft management, SaaS development, compliance systems
-
-ACTIVE PROJECTS:
-- Freedom Aviation Operations: Aircraft concierge management at KAPA (cleaning, maintenance, flight instruction)
-- Freedom Aviation SaaS: Scheduling/management platform competing with Flight Schedule Pro
-- Subdub: B2B compliance & crisis management service with audit engine
-- ESL Teaching: 1 day/week to maintain Spanish fluency before Colombia relocation
-
-COMMUNICATION STYLE:
-- Direct, blunt communication without corporate fluff
-- Professional, high-status tone
-- No emojis, no exclamation points, no hashtags
-- Technical precision over politeness
-- Write like a human, not a corporation
-- Casual and direct, use sentence fragments when appropriate
-- Drop pronouns for brevity when natural
-- No generic AI fluff or overly polite responses
-
-VALUES:
-- Digital sovereignty and data privacy
-- Privacy-first, locally-hosted systems
-- Combining aviation and technology careers`;
+// The real public persona lives in inoah_settings.system_prompt, built from
+// docs/public-profile.md and editable from the dashboard. This fallback only
+// exists so a missing settings row degrades to caution instead of a crash.
+const FALLBACK_PROMPT = `You are iNoah, the AI twin of Noah Berman on noahiberman.com. The live persona could not be loaded. Answer only from retrieved context, say plainly when you do not know something, and never guess about Noah's ventures, credentials, numbers, or personal records.`;
 
 const STRICT_INSTRUCTION = `
 
@@ -102,9 +60,9 @@ OUTPUT THE FINAL ANSWER ONLY. NO PREAMBLE. NO PROCESS. NO ANALYSIS OF THE QUESTI
 Respond as Noah directly and immediately. Do not think out loud. Do not plan. Do not deliberate in your output.
 VIOLATION OF THIS DIRECTIVE IS COMPLETELY UNACCEPTABLE AND WILL BE REJECTED.`;
 
-// IDENTITY_CORE / MATCH_* above are fallbacks only. The live values come from
-// the `inoah_settings` row so they can be edited from the dashboard without a
-// redeploy; keep these in sync as the defaults if that row is ever missing.
+// MATCH_* above are fallbacks only. The live values come from the
+// `inoah_settings` row so they can be edited from the dashboard without a
+// redeploy.
 
 // --- Embeddings ---
 
@@ -462,7 +420,7 @@ serve(async (req) => {
       .select("system_prompt, match_threshold, match_count")
       .maybeSingle();
 
-    const identity = settings?.system_prompt?.trim() || IDENTITY_CORE;
+    const identity = settings?.system_prompt?.trim() || FALLBACK_PROMPT;
     const matchThreshold = settings?.match_threshold ?? MATCH_THRESHOLD;
     const matchCount = settings?.match_count ?? MATCH_COUNT;
     // The strict directive is machine behaviour, not persona, so it is always

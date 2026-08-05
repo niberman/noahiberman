@@ -6,6 +6,7 @@
 // while never being retrieved.
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { isExcludedContent } from "../_shared/content_policy.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -97,6 +98,9 @@ serve(async (req) => {
         { error: `Content is too long (max ${MAX_CONTENT_LENGTH} characters).` },
         400
       );
+    }
+    if (isExcludedContent(content)) {
+      return json({ error: "This entry cannot be saved." }, 400);
     }
 
     const embedding = await embedText(content, geminiKey);
