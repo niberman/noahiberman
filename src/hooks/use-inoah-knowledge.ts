@@ -5,6 +5,9 @@ export interface KnowledgeEntry {
   id: string;
   content: string;
   collection: string;
+  visibility: "public" | "private" | "never";
+  source_uri: string | null;
+  ingested_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -27,7 +30,7 @@ export function useKnowledgeEntries() {
       if (!supabase) throw new Error("Supabase is not configured.");
       const { data, error } = await supabase
         .from("memories")
-        .select("id, content, collection, created_at, updated_at")
+        .select("id, content, collection, visibility, source_uri, ingested_at, created_at, updated_at")
         .order("updated_at", { ascending: false, nullsFirst: false });
 
       if (error) throw error;
@@ -67,6 +70,29 @@ export function useSaveKnowledgeEntry() {
         throw new Error(data?.error || "Could not save this entry.");
       }
       return data.entry as KnowledgeEntry;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ENTRIES_KEY });
+    },
+  });
+}
+
+/**
+ * Promotion and demotion go straight through RLS: only the owner can update,
+ * and the guard_visibility trigger makes 'never' terminal regardless of what
+ * any client sends.
+ */
+export function useSetVisibility() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, visibility }: { id: string; visibility: "public" | "private" }) => {
+      if (!supabase) throw new Error("Supabase is not configured.");
+      const { error } = await supabase
+        .from("memories")
+        .update({ visibility })
+        .eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ENTRIES_KEY });
