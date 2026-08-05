@@ -21,3 +21,10 @@ entrypoint = "./functions/inoah-chat/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/inoah-chat-private/index.ts"
+
+[functions.inoah-sync-drive]
+enabled = true
+# Secret-gated like notify_contact_message: the hourly pg_cron job sends the
+# SYNC_SECRET bearer from Vault
+verify_jwt = false
+entrypoint = "./functions/inoah-sync-drive/index.ts"
