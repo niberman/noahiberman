@@ -22,6 +22,8 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Book = lazy(() => import("./pages/Book"));
 const BookLanding = lazy(() => import("./pages/BookLanding"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const SchedulingAuthCallback = lazy(() => import("./pages/SchedulingAuthCallback"));
 
 // Both toast portals render nothing until a toast fires, and both libraries
@@ -104,6 +106,8 @@ const App = () => {
                   path="/scheduling/auth/callback"
                   element={<SchedulingAuthCallback />}
                 />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/about" element={<SectionRedirect sectionId="about" />} />

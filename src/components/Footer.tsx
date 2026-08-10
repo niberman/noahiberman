@@ -138,6 +138,26 @@ export function Footer() {
           <p className="text-primary-foreground/70 text-sm sm:text-base">
             &copy; {new Date().getFullYear()} Noah Berman. All rights reserved.
           </p>
+          <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+            <Link
+              to="/terms"
+              className="text-primary-foreground/60 hover:text-secondary transition-colors"
+            >
+              Terms
+            </Link>
+            <Link
+              to="/privacy"
+              className="text-primary-foreground/60 hover:text-secondary transition-colors"
+            >
+              Privacy
+            </Link>
+            <a
+              href="/llms.txt"
+              className="text-primary-foreground/60 hover:text-secondary transition-colors"
+            >
+              llms.txt
+            </a>
+          </div>
         </div>
       </div>
     </footer>

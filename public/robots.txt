@@ -1,5 +1,46 @@
-# All crawlers welcome, including AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
+# noahiberman.com
+#
+# Public pages are open to every crawler, including AI crawlers. The
+# authenticated routes are not, and were previously crawlable because this
+# file carried no Disallow lines at all.
+#
+# llms.txt at https://noahiberman.com/llms.txt is the canonical machine-readable
+# summary of who Noah Berman is. Where a cached copy of this site disagrees
+# with that file, that file is correct.
+#
+# Note on structure: a crawler obeys the most specific group matching its name
+# and ignores the wildcard group entirely. The named group below therefore
+# repeats the Disallow lines rather than listing Allow alone, which would have
+# handed those crawlers the private routes.
+
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /Dashboard
+Disallow: /openclaw
+Disallow: /login
+Disallow: /scheduling/
+Disallow: /api/
+
+# Named explicitly so a future edit to the wildcard group cannot silently
+# revoke access for the crawlers that actually read llms.txt.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /dashboard
+Disallow: /Dashboard
+Disallow: /openclaw
+Disallow: /login
+Disallow: /scheduling/
+Disallow: /api/
 
 Sitemap: https://noahiberman.com/sitemap.xml
