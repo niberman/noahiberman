@@ -268,10 +268,9 @@ export default function Home() {
                     What does Noah Berman build?
                   </h3>
                   <p>
-                    Applied AI for small business back-office work, starting with independent
-                    restaurant operators. He is a solo technical founder who took a product
-                    specification to production in a live store in eight weeks and iterates
-                    from behind the counter.
+                    Custom software and AI workflows for small businesses. Every engagement is
+                    a complete custom job. He built a phone-first shift checklist app that runs
+                    in production at two Denver stores, and he built it alone.
                   </p>
                 </div>
                 <div>
