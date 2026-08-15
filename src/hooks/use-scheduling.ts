@@ -192,8 +192,21 @@ export interface SchedulingAuthStatus {
   connected: boolean;
 }
 
+// The Google Calendar connection endpoints are owner-only, so every call
+// carries the signed-in user's Supabase access token.
+async function authHeaders(): Promise<Record<string, string>> {
+  if (!supabase) throw new Error("Supabase not configured");
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session?.access_token) throw new Error("Sign in to manage Google Calendar");
+  return { Authorization: `Bearer ${session.access_token}` };
+}
+
 export async function getSchedulingAuthUrl() {
-  const resp = await fetch(`${API_BASE}/scheduling/auth/url`);
+  const resp = await fetch(`${API_BASE}/scheduling/auth/url`, {
+    headers: await authHeaders(),
+  });
   if (!resp.ok) throw new Error("Failed to start Google Calendar connection");
   const data = await resp.json();
   return data.url as string;
@@ -203,7 +216,9 @@ export function useSchedulingAuthStatus() {
   return useQuery({
     queryKey: ["scheduling-auth-status"],
     queryFn: async () => {
-      const resp = await fetch(`${API_BASE}/scheduling/auth/status`);
+      const resp = await fetch(`${API_BASE}/scheduling/auth/status`, {
+        headers: await authHeaders(),
+      });
       if (!resp.ok) throw new Error("Failed to load Google Calendar status");
       return (await resp.json()) as SchedulingAuthStatus;
     },
@@ -216,7 +231,7 @@ export function useExchangeSchedulingAuthCode() {
     mutationFn: async (code: string) => {
       const resp = await fetch(`${API_BASE}/scheduling/auth/exchange`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await authHeaders()) },
         body: JSON.stringify({ code }),
       });
       if (!resp.ok) {

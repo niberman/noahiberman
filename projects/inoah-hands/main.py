@@ -4,12 +4,14 @@ Low-level desktop interaction: screenshots, clicks, keyboard input.
 """
 
 import io
+import os
 import sys
 import platform
 import mss
 import pyautogui
 import time
 import base64
+import hmac
 import json
 import uuid
 from datetime import datetime
@@ -18,7 +20,7 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from PIL import Image, ImageDraw
-from fastapi import FastAPI, HTTPException, Security
+from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +45,24 @@ MONITOR_INDEX = service_config.get("monitor_index", 1)
 logger = get_logger(SERVICE_NAME)
 api_key_header = APIKeyHeader(name="X-Agent-Key", auto_error=False)
 API_SECRET = get_api_secret()
+
+# Browsers cannot set headers on <img src>, so the stream and the dashboard
+# authenticate with a query token instead of X-Agent-Key.
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("AGENT_ALLOWED_ORIGINS", "http://localhost:8080").split(",")
+    if origin.strip()
+]
+
+
+def _valid_secret(candidate: str | None) -> bool:
+    return bool(candidate) and hmac.compare_digest(candidate, API_SECRET)
+
+
+def require_agent_key(key: str | None = Security(api_key_header)) -> None:
+    """Reject every request that does not carry the shared agent secret."""
+    if not _valid_secret(key):
+        raise HTTPException(status_code=401, detail="Invalid or missing X-Agent-Key.")
 
 # Recording state
 RECORDINGS_DIR = Path(__file__).parent / "recordings"
@@ -200,9 +220,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["X-Agent-Key", "Content-Type"],
 )
 
 
@@ -229,8 +249,10 @@ def generate_stream():
 # =============================================================================
 
 @app.get("/", response_class=HTMLResponse)
-async def dashboard():
+async def dashboard(token: str | None = None):
     """Web dashboard for manual control."""
+    if not _valid_secret(token):
+        raise HTTPException(status_code=401, detail="Append ?token=<AGENT_SECRET_KEY>.")
     return f"""
     <!DOCTYPE html>
     <html>
@@ -388,15 +410,15 @@ async def dashboard():
 # =============================================================================
 
 @app.get("/video_feed")
-async def video_feed(token: str = None):
+async def video_feed(token: str | None = None):
     """Live video stream."""
-    if token != API_SECRET:
-        raise HTTPException(status_code=403)
+    if not _valid_secret(token):
+        raise HTTPException(status_code=401, detail="Invalid or missing token.")
     return StreamingResponse(generate_stream(), media_type="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.get("/screenshot")
-async def screenshot(token: str = Security(api_key_header)):
+async def screenshot(_: None = Depends(require_agent_key)):
     """Returns current screen as base64 + metadata."""
     coord_sys = get_coordinate_system()
     image_b64 = capture_screenshot()
@@ -415,7 +437,7 @@ async def screenshot(token: str = Security(api_key_header)):
 # =============================================================================
 
 @app.post("/click")
-async def click(req: dict, token: str = Security(api_key_header)):
+async def click(req: dict, _: None = Depends(require_agent_key)):
     """Click at coordinates in stream image space (logical points for selected monitor)."""
     x = req.get("x")
     y = req.get("y")
@@ -451,7 +473,7 @@ async def click(req: dict, token: str = Security(api_key_header)):
 
 
 @app.post("/type")
-async def type_text(req: dict, token: str = Security(api_key_header)):
+async def type_text(req: dict, _: None = Depends(require_agent_key)):
     """Type text."""
     text = req.get("text", "")
     
@@ -474,7 +496,7 @@ async def type_text(req: dict, token: str = Security(api_key_header)):
 
 
 @app.post("/key")
-async def press_key(req: dict, token: str = Security(api_key_header)):
+async def press_key(req: dict, _: None = Depends(require_agent_key)):
     """Press special key."""
     key = req.get("key", "")
     
@@ -505,7 +527,7 @@ async def press_key(req: dict, token: str = Security(api_key_header)):
 
 
 @app.post("/hotkey")
-async def hotkey(req: dict, token: str = Security(api_key_header)):
+async def hotkey(req: dict, _: None = Depends(require_agent_key)):
     """Press key combination (e.g., Ctrl+C)."""
     keys = req.get("keys", [])
     
@@ -532,7 +554,7 @@ async def hotkey(req: dict, token: str = Security(api_key_header)):
 # =============================================================================
 
 @app.post("/record/start")
-async def start_recording(req: dict, token: str = Security(api_key_header)):
+async def start_recording(req: dict, _: None = Depends(require_agent_key)):
     """Start recording interactions."""
     if recording_session["active"]:
         raise HTTPException(status_code=400, detail="Recording already active")
@@ -558,7 +580,7 @@ async def start_recording(req: dict, token: str = Security(api_key_header)):
 
 
 @app.post("/record/stop")
-async def stop_recording(token: str = Security(api_key_header)):
+async def stop_recording(_: None = Depends(require_agent_key)):
     """Stop recording and save."""
     if not recording_session["active"]:
         raise HTTPException(status_code=400, detail="No active recording")
@@ -588,7 +610,7 @@ async def stop_recording(token: str = Security(api_key_header)):
 
 
 @app.get("/record/status")
-async def recording_status(token: str = Security(api_key_header)):
+async def recording_status(_: None = Depends(require_agent_key)):
     """Get current recording status."""
     return {
         "active": recording_session["active"],
@@ -598,7 +620,7 @@ async def recording_status(token: str = Security(api_key_header)):
 
 
 @app.get("/recordings")
-async def list_recordings(token: str = Security(api_key_header)):
+async def list_recordings(_: None = Depends(require_agent_key)):
     """List all saved recordings."""
     recordings = []
     

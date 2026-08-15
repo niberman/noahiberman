@@ -18,7 +18,9 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get("WEBHOOK_SECRET");
     const providedSecret = req.headers.get("x-webhook-secret");
     
-    if (webhookSecret && providedSecret !== webhookSecret) {
+    // Fail closed: verify_jwt is off for this function, so an unset secret
+    // would leave the mailer open to anyone.
+    if (!webhookSecret || providedSecret !== webhookSecret) {
       console.error("Invalid webhook secret");
       return new Response("Unauthorized", { status: 401, headers: corsHeaders });
     }

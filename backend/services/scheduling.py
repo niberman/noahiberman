@@ -6,7 +6,11 @@ All responses return ISO 8601 strings for frontend consumption.
 """
 
 import os
+import base64
+import hashlib
+import hmac
 import logging
+import time
 import uuid
 from datetime import datetime, timedelta, time as dt_time
 from zoneinfo import ZoneInfo
@@ -42,6 +46,35 @@ def _supabase() -> Client:
 # Google OAuth helpers
 # ---------------------------------------------------------------------------
 
+OAUTH_STATE_TTL_SECONDS = 15 * 60
+
+
+def _state_signing_key() -> bytes:
+    return _env("GOOGLE_CLIENT_SECRET").encode()
+
+
+def _sign_state(issued_at: int) -> str:
+    mac = hmac.new(_state_signing_key(), str(issued_at).encode(), hashlib.sha256).digest()
+    return base64.urlsafe_b64encode(mac).decode().rstrip("=")
+
+
+def mint_oauth_state() -> str:
+    """A timestamped, signed value Google echoes back to the callback."""
+    issued_at = int(time.time())
+    return f"{issued_at}.{_sign_state(issued_at)}"
+
+
+def verify_oauth_state(state: str) -> bool:
+    """True only for an unexpired state this deployment minted."""
+    issued_at_raw, _, signature = (state or "").partition(".")
+    if not issued_at_raw.isdigit() or not signature:
+        return False
+    issued_at = int(issued_at_raw)
+    if abs(int(time.time()) - issued_at) > OAUTH_STATE_TTL_SECONDS:
+        return False
+    return hmac.compare_digest(signature, _sign_state(issued_at))
+
+
 def get_auth_url() -> str:
     params = {
         "client_id": _env("GOOGLE_CLIENT_ID"),
@@ -50,6 +83,7 @@ def get_auth_url() -> str:
         "scope": " ".join(GOOGLE_SCOPES),
         "access_type": "offline",
         "prompt": "consent",
+        "state": mint_oauth_state(),
     }
     qs = "&".join(f"{k}={httpx.URL('', params={k: v}).params[k]}" for k, v in params.items())
     return f"https://accounts.google.com/o/oauth2/v2/auth?{qs}"
