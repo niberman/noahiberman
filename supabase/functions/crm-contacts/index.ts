@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { errorResponse, HttpError } from "../_shared/errors.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,9 +26,11 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -36,12 +39,11 @@ serve(async (req) => {
     );
 
     // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser();
 
-    if (!user) {
-      throw new Error("Unauthorized");
+    if (authError || !user) {
+      throw new HttpError(401, authError?.message ?? "Unauthorized");
     }
 
     const method = req.method;
@@ -92,6 +94,9 @@ serve(async (req) => {
     // Handle PUT requests - update contact
     if (method === "PUT") {
       const { id, ...updates }: Contact & { id: string } = await req.json();
+      if (!id) {
+        throw new HttpError(400, "Contact id is required.");
+      }
 
       const { data: updatedContact, error } = await supabaseClient
         .from("crm_contacts")
@@ -115,6 +120,9 @@ serve(async (req) => {
     // Handle DELETE requests - delete contact
     if (method === "DELETE") {
       const { id } = await req.json();
+      if (!id) {
+        throw new HttpError(400, "Contact id is required.");
+      }
 
       const { error } = await supabaseClient
         .from("crm_contacts")
@@ -141,13 +149,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return errorResponse(error, "crm-contacts", corsHeaders);
   }
 });
 

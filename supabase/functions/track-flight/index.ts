@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { errorResponse, HttpError } from "../_shared/errors.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,9 +18,11 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -28,18 +31,17 @@ serve(async (req) => {
     );
 
     // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser();
 
-    if (!user) {
-      throw new Error("Unauthorized");
+    if (authError || !user) {
+      throw new HttpError(401, authError?.message ?? "Unauthorized");
     }
 
     const { flightIdentifier }: TrackFlightRequest = await req.json();
 
     if (!flightIdentifier) {
-      throw new Error("Flight identifier is required");
+      throw new HttpError(400, "Flight identifier is required.");
     }
 
     // TODO: Integrate with FlightAware API
@@ -82,15 +84,13 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Error storing flight:", error);
-    }
+    if (error) throw error;
 
     return new Response(
       JSON.stringify({
         success: true,
         flight: mockFlightData,
-        flightId: trackedFlight?.id,
+        flightId: trackedFlight.id,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -98,13 +98,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return errorResponse(error, "track-flight", corsHeaders);
   }
 });
 
