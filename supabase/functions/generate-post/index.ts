@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  BASE_CORS_HEADERS as corsHeaders,
+  errorMessage,
+  errorResponse,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, getCallerUser } from "../_shared/supabase.ts";
 
 interface GeneratePostRequest {
   textInput?: string;
@@ -15,24 +17,17 @@ interface GeneratePostRequest {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
-    // Create Supabase client
-    const supabaseClient = createClient(
+    const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      req.headers.get("Authorization"),
     );
 
-    // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const user = await getCallerUser(supabaseClient);
 
     if (!user) {
       throw new Error("Unauthorized");
@@ -86,25 +81,13 @@ What's your take on this? Let me know in the comments! 👇
       console.error("Post error:", postError);
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        post: mockPost,
-        postId: generatedPost?.id,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
+    return jsonResponse(
+      { success: true, post: mockPost, postId: generatedPost?.id },
+      200,
+      corsHeaders,
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return errorResponse(errorMessage(error), 400, corsHeaders);
   }
 });
 

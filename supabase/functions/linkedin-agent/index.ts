@@ -1,14 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import {
+    BASE_CORS_HEADERS as corsHeaders,
+    errorMessage,
+    errorResponse,
+    jsonResponse,
+    preflightResponse,
+} from "../_shared/http.ts"
 
 serve(async (req) => {
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
-        return new Response('ok', { headers: corsHeaders })
+        return preflightResponse(corsHeaders)
     }
 
     try {
@@ -24,10 +26,7 @@ serve(async (req) => {
         const { content } = body
 
         if (!content) {
-            return new Response(
-                JSON.stringify({ error: 'Missing content' }),
-                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            )
+            return errorResponse('Missing content', 400, corsHeaders)
         }
 
         // Forward to Cloudflare Worker
@@ -43,22 +42,17 @@ serve(async (req) => {
         const data = await response.json()
 
         if (!response.ok) {
-            return new Response(
-                JSON.stringify({ error: data.error || 'Failed to post to LinkedIn' }),
-                { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            return errorResponse(
+                data.error || 'Failed to post to LinkedIn',
+                response.status,
+                corsHeaders,
             )
         }
 
-        return new Response(
-            JSON.stringify(data),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        return jsonResponse(data, 200, corsHeaders)
 
     } catch (error) {
         console.error('Internal error:', error)
-        return new Response(
-            JSON.stringify({ error: error.message }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        return errorResponse(errorMessage(error), 500, corsHeaders)
     }
 })

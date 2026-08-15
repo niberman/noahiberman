@@ -1,16 +1,14 @@
 // supabase/functions/notify_contact_message/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import { corsHeadersWith, errorMessage, jsonResponse, preflightResponse } from "../_shared/http.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-secret",
-};
+const corsHeaders = corsHeadersWith(["x-webhook-secret"]);
 
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
@@ -107,15 +105,13 @@ This email was sent from your website contact form at noahiberman.com
     await client.close();
 
     console.log(`Email notification sent successfully to ${notificationEmail}`);
-    return new Response(
-      JSON.stringify({ success: true, message: "Email sent successfully" }), 
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    return jsonResponse(
+      { success: true, message: "Email sent successfully" },
+      200,
+      corsHeaders,
     );
   } catch (err) {
     console.error("Error sending email:", err);
-    return new Response(
-      JSON.stringify({ success: false, error: err.message }), 
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ success: false, error: errorMessage(err) }, 500, corsHeaders);
   }
 });

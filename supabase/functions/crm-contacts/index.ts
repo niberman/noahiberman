@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  BASE_CORS_HEADERS as corsHeaders,
+  errorMessage,
+  errorResponse,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, getCallerUser } from "../_shared/supabase.ts";
 
 interface Contact {
   name: string;
@@ -21,24 +23,17 @@ interface Contact {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
-    // Create Supabase client
-    const supabaseClient = createClient(
+    const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      req.headers.get("Authorization"),
     );
 
-    // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const user = await getCallerUser(supabaseClient);
 
     if (!user) {
       throw new Error("Unauthorized");
@@ -56,13 +51,7 @@ serve(async (req) => {
 
       if (error) throw error;
 
-      return new Response(
-        JSON.stringify({ success: true, contacts }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return jsonResponse({ success: true, contacts }, 200, corsHeaders);
     }
 
     // Handle POST requests - create contact
@@ -80,13 +69,7 @@ serve(async (req) => {
 
       if (error) throw error;
 
-      return new Response(
-        JSON.stringify({ success: true, contact: newContact }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 201,
-        }
-      );
+      return jsonResponse({ success: true, contact: newContact }, 201, corsHeaders);
     }
 
     // Handle PUT requests - update contact
@@ -103,13 +86,7 @@ serve(async (req) => {
 
       if (error) throw error;
 
-      return new Response(
-        JSON.stringify({ success: true, contact: updatedContact }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return jsonResponse({ success: true, contact: updatedContact }, 200, corsHeaders);
     }
 
     // Handle DELETE requests - delete contact
@@ -124,30 +101,12 @@ serve(async (req) => {
 
       if (error) throw error;
 
-      return new Response(
-        JSON.stringify({ success: true }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return jsonResponse({ success: true }, 200, corsHeaders);
     }
 
-    return new Response(
-      JSON.stringify({ error: "Method not allowed" }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 405,
-      }
-    );
+    return errorResponse("Method not allowed", 405, corsHeaders);
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return errorResponse(errorMessage(error), 400, corsHeaders);
   }
 });
 

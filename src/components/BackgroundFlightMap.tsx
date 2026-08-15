@@ -9,19 +9,12 @@ import {
   buildPuertoRicoConnectingSegments,
 } from "@/lib/flight-airports";
 import { useFlights, useCurrentFlight } from "@/hooks/use-supabase-flights";
+import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
+import type { AircraftPosition } from "@/lib/aircraft-position";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 import { useActiveWaypointId } from "@/hooks/use-active-waypoint";
 import { HERO_WAYPOINT, WAYPOINT_BY_ID, type MapWaypoint } from "@/data/waypoints";
 import { setMapRef } from "@/lib/map-ref";
-
-interface AircraftPosition {
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  heading: number;
-  speed: number;
-  timestamp: number;
-}
 
 type RouteFeature = Feature<LineString, { index: number; origin: string; destination: string }>;
 
@@ -354,16 +347,15 @@ export function BackgroundFlightMap() {
     });
   };
 
-  // Fetch live position data when we have a tail number
-  useEffect(() => {
-    if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
-      fetchAircraftPosition(currentFlight.tail_number);
-      const interval = setInterval(() => {
-        fetchAircraftPosition(currentFlight.tail_number);
-      }, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [currentFlight]);
+  useAircraftPositionPolling(
+    currentFlight?.tail_number,
+    currentFlight?.flight_status === "in_flight",
+    (position) => {
+      setAircraftPosition(position);
+      setPositionHistory((prev) => [...prev.slice(-19), position]);
+    },
+    { demoSpread: 2 },
+  );
 
   // Initialize map
   useEffect(() => {
@@ -893,60 +885,6 @@ export function BackgroundFlightMap() {
     }
   }, [currentFlight, mapLoaded]);
 
-  const tailToHex: { [key: string]: string } = {
-    'N405MK': 'a4b605',
-  };
-
-  const fetchAircraftPosition = async (tailNumber: string) => {
-    try {
-      const hexCode = tailToHex[tailNumber.toUpperCase()] || '';
-      
-      if (!hexCode) {
-        // Demo data for testing
-        const newPosition = {
-          latitude: 39.8617 + (Math.random() - 0.5) * 2,
-          longitude: -104.6731 + (Math.random() - 0.5) * 2,
-          altitude: 8500 + Math.random() * 2000,
-          heading: Math.random() * 360,
-          speed: 150 + Math.random() * 50,
-          timestamp: Date.now()
-        };
-        setAircraftPosition(newPosition);
-        setPositionHistory(prev => [...prev.slice(-19), newPosition]);
-        return;
-      }
-
-      const response = await fetch(
-        `https://adsbexchange-com1.p.rapidapi.com/v2/hex/${hexCode}/`,
-        {
-          headers: {
-            'X-RapidAPI-Key': '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad',
-            'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.ac && data.ac.length > 0) {
-          const aircraft = data.ac[0];
-          const newPosition = {
-            latitude: parseFloat(aircraft.lat),
-            longitude: parseFloat(aircraft.lon),
-            altitude: parseInt(aircraft.alt_baro) || parseInt(aircraft.alt_geom) || 0,
-            heading: parseInt(aircraft.track) || 0,
-            speed: parseInt(aircraft.gs) || 0,
-            timestamp: Date.now()
-          };
-          
-          setAircraftPosition(newPosition);
-          setPositionHistory(prev => [...prev.slice(-19), newPosition]);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching aircraft position:', error);
-    }
-  };
 
   const isMapCardActive = isInFlightSection;
   /** Nav uses z-110; cover it until zoomend at min zoom so the menu never hovers early. */
