@@ -26,8 +26,9 @@ const corsHeadersFor = (origin: string | null) => ({
 // - gemini-2.0-flash passed its earliest-shutdown date (2026-06-01);
 //   gemini-3.5-flash is its documented replacement.
 const CHAT_MODEL = "gemini-3.5-flash";
-// Model spend routes through OpenRouter when OPENROUTER_API_KEY is set, falling
-// back to Gemini direct so chat never hard-fails on a missing secret.
+// OpenRouter is the chat provider: OPENROUTER_API_KEY is what iNoah bills model
+// spend to. GEMINI_API_KEY is only a fallback for chat (and stays mandatory for
+// embeddings, below), so either key on its own is enough to answer a question.
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const OPENROUTER_CHAT_MODEL = "google/gemini-3.5-flash";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
@@ -237,9 +238,14 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
+    // Chat completions bill to OpenRouter; Gemini direct is the fallback and
+    // still owns embeddings. Requiring GEMINI_API_KEY unconditionally used to
+    // 500 the whole function on an OpenRouter-only deployment, so the guard now
+    // only insists that at least one model key is present.
+    const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
 
-    if (!supabaseUrl || !supabaseKey || !anonKey || !geminiKey) {
+    if (!supabaseUrl || !supabaseKey || !anonKey || (!openrouterKey && !geminiKey)) {
       console.error("Missing environment variables");
       return new Response(JSON.stringify({ error: "Server configuration error." }), {
         status: 500,
@@ -288,9 +294,8 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
     const useOpenRouter = !!openrouterKey;
-    const chatModel = useOpenRouter ? OPENROUTER_CHAT_MODEL : CHAT_MODEL;
+    let chatModel = useOpenRouter ? OPENROUTER_CHAT_MODEL : CHAT_MODEL;
     const openai = new OpenAI({
       apiKey: useOpenRouter ? openrouterKey : geminiKey,
       baseURL: useOpenRouter ? OPENROUTER_BASE_URL : GEMINI_BASE_URL,
@@ -312,7 +317,14 @@ serve(async (req) => {
 
     let contextString = "";
     let retrievedMemories: any[] = [];
-    if (include_context) {
+    if (include_context && !geminiKey) {
+      // OpenRouter has no embeddings endpoint, and anything embedded with a
+      // different model or width is incomparable to the stored vectors. Without
+      // the Gemini key the honest degradation is answering with no retrieved
+      // context, not retrieving garbage.
+      console.warn("GEMINI_API_KEY not set - answering without retrieved context");
+    }
+    if (include_context && geminiKey) {
       try {
         const embedding = await embedText(prompt, geminiKey);
 
@@ -371,9 +383,13 @@ ${contextString}`
         ...(useOpenRouter ? openrouterReasoning : geminiReasoning),
       } as any);
     } catch (err) {
-      if (!useOpenRouter) throw err;
+      // Nothing to fall back to when OpenRouter is the only configured
+      // provider: rethrow so the real OpenRouter error surfaces instead of a
+      // second failure from a client built with an undefined key.
+      if (!useOpenRouter || !geminiKey) throw err;
       console.error("OpenRouter chat failed, falling back to Gemini:", err);
       const fallback = new OpenAI({ apiKey: geminiKey, baseURL: GEMINI_BASE_URL });
+      chatModel = CHAT_MODEL;
       completion = await fallback.chat.completions.create({
         model: CHAT_MODEL,
         messages,
@@ -382,6 +398,10 @@ ${contextString}`
       } as any);
       provider = "gemini-fallback";
     }
+
+    // Logged so the configured route can be confirmed from the function logs
+    // without having to read `provider` out of a live response body.
+    console.log(`iNoah private chat completed via ${provider} (${chatModel})`);
 
     const responseText = completion.choices[0].message.content || "";
 
