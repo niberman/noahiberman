@@ -3,6 +3,7 @@ import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 import { sendInoahMessage } from "@/lib/inoahClient";
 
 interface Message {
@@ -11,17 +12,15 @@ interface Message {
   content: string;
 }
 
-const SUGGESTIONS = [
-  "What's hard about mountain flying?",
-  "What is Freedom Aviation?",
-  "Why Bilbao?",
-];
+// How many chips fit on one line on a phone.
+const SUGGESTION_COUNT = 3;
 
 export function InoahChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const lastPrompt = useRef<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -29,6 +28,30 @@ export function InoahChat() {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isLoading]);
+
+  // Chips come from the public corpus, so a suggestion is always a question
+  // iNoah can actually answer. The three that used to be hard-coded named a
+  // closed company and a trip the public tier no longer holds anything about,
+  // and the twin had to answer "I don't know" to its own prompts. Order is the
+  // order of public-answers.md, so Noah picks the first three by editing it.
+  useEffect(() => {
+    if (!supabase) return;
+    let live = true;
+    supabase
+      .rpc("inoah_public_questions")
+      .then(({ data, error: rpcError }) => {
+        // Silent: chips are a nicety, and the composer works without them.
+        if (!live || rpcError || !data) return;
+        setSuggestions(
+          (data as { question: string }[])
+            .map((row) => row.question)
+            .slice(0, SUGGESTION_COUNT),
+        );
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   // Grow the composer with its content instead of reserving four empty rows.
   useEffect(() => {
@@ -101,7 +124,7 @@ export function InoahChat() {
               Ask about aviation, the ventures, or the stack.
             </p>
             <div className="flex flex-wrap justify-center gap-2">
-              {SUGGESTIONS.map((s) => (
+              {suggestions.map((s) => (
                 <button
                   key={s}
                   onClick={() => send(s)}
