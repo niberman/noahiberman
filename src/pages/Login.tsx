@@ -38,7 +38,10 @@ export default function Login() {
         navigate("/dashboard");
       }
     } catch (err) {
-      setError("An unexpected error occurred");
+      console.error("Login failed:", err);
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,7 @@
 // supabase/functions/notify_contact_message/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import { errorMessage } from "../_shared/errors.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -95,16 +96,21 @@ ${message}
 This email was sent from your website contact form at noahiberman.com
     `;
 
-    await client.send({
-      from: smtpUsername,
-      to: notificationEmail,
-      subject,
-      content: textBody,
-      html: htmlBody,
-      replyTo: email, // Reply directly to the person who contacted
-    });
-
-    await client.close();
+    try {
+      await client.send({
+        from: smtpUsername,
+        to: notificationEmail,
+        subject,
+        content: textBody,
+        html: htmlBody,
+        replyTo: email, // Reply directly to the person who contacted
+      });
+    } finally {
+      // Closing can fail on its own; never let it mask the send result.
+      await client.close().catch((closeError: unknown) => {
+        console.warn("Failed to close SMTP client:", closeError);
+      });
+    }
 
     console.log(`Email notification sent successfully to ${notificationEmail}`);
     return new Response(
@@ -114,7 +120,7 @@ This email was sent from your website contact form at noahiberman.com
   } catch (err) {
     console.error("Error sending email:", err);
     return new Response(
-      JSON.stringify({ success: false, error: err.message }), 
+      JSON.stringify({ success: false, error: errorMessage(err) }), 
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

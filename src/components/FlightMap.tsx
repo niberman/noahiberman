@@ -468,12 +468,11 @@ export function FlightMap() {
         .limit(1)
         .maybeSingle();
 
-      if (data && !error) {
-        setCurrentFlight(data);
-      } else {
-        setCurrentFlight(null);
-      }
+      if (error) throw error;
+
+      setCurrentFlight(data ?? null);
     } catch (error) {
+      console.error('Error loading current flight:', error);
       setCurrentFlight(null);
     }
   };

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import { errorResponse, HttpError } from "../_shared/errors.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,9 +22,11 @@ serve(async (req) => {
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
     // Create Supabase client
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -32,12 +35,11 @@ serve(async (req) => {
     );
 
     // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser();
 
-    if (!user) {
-      throw new Error("Unauthorized");
+    if (authError || !user) {
+      throw new HttpError(401, authError?.message ?? "Unauthorized");
     }
 
     const method = req.method;
@@ -68,12 +70,14 @@ serve(async (req) => {
       const aircraftStatus: AircraftStatus = await req.json();
 
       // Check if aircraft already exists
-      const { data: existing } = await supabaseClient
+      const { data: existing, error: lookupError } = await supabaseClient
         .from("aircraft_status")
         .select("id")
         .eq("user_id", user.id)
         .eq("aircraft_tail_number", aircraftStatus.aircraft_tail_number)
-        .single();
+        .maybeSingle();
+
+      if (lookupError) throw lookupError;
 
       let result;
       if (existing) {
@@ -122,13 +126,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return errorResponse(error, "aircraft-status", corsHeaders);
   }
 });
 
