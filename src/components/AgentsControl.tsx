@@ -2,11 +2,18 @@
 
 import { useCallback, useState } from "react";
 
+// VITE_SERVER_AGENT_* are the names actually set in Vercel; the VITE_AGENT_*
+// pair is what this file has always read, so nothing matched and the widget
+// stayed disabled in production. Both are accepted until the older pair is
+// renamed, at which point the fallbacks can go.
 const AGENT_URL = (
-  import.meta.env.VITE_AGENT_URL ?? "http://127.0.0.1:8000"
+  import.meta.env.VITE_AGENT_URL ??
+  import.meta.env.VITE_SERVER_AGENT_URL ??
+  "http://127.0.0.1:8000"
 ).replace(/\/$/, "");
 
-const SECRET = import.meta.env.VITE_AGENT_SECRET ?? "";
+const SECRET =
+  import.meta.env.VITE_AGENT_SECRET ?? import.meta.env.VITE_SERVER_AGENT_KEY ?? "";
 
 export default function AgentControl() {
   const [status, setStatus] = useState(
