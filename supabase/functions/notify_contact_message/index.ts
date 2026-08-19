@@ -16,7 +16,9 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get("WEBHOOK_SECRET");
     const providedSecret = req.headers.get("x-webhook-secret");
     
-    if (webhookSecret && providedSecret !== webhookSecret) {
+    // Fail closed: verify_jwt is off for this function, so an unset secret
+    // would leave the mailer open to anyone.
+    if (!webhookSecret || providedSecret !== webhookSecret) {
       console.error("Invalid webhook secret");
       return new Response("Unauthorized", { status: 401, headers: corsHeaders });
     }
@@ -93,16 +95,23 @@ ${message}
 This email was sent from your website contact form at noahiberman.com
     `;
 
-    await client.send({
-      from: smtpUsername,
-      to: notificationEmail,
-      subject,
-      content: textBody,
-      html: htmlBody,
-      replyTo: email, // Reply directly to the person who contacted
-    });
-
-    await client.close();
+    try {
+      await client.send({
+        from: smtpUsername,
+        to: notificationEmail,
+        subject,
+        content: textBody,
+        html: htmlBody,
+        replyTo: email, // Reply directly to the person who contacted
+      });
+    } finally {
+      // Closing can fail on its own; never let it mask the send result.
+      try {
+        await client.close();
+      } catch (closeError) {
+        console.warn("Failed to close SMTP client:", closeError);
+      }
+    }
 
     console.log(`Email notification sent successfully to ${notificationEmail}`);
     return jsonResponse(

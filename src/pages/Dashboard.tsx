@@ -15,9 +15,11 @@ import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
 import InoahKnowledgeManager from "@/components/dashboard/InoahKnowledgeManager";
 import InoahPrivateChat from "@/components/dashboard/InoahPrivateChat";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [tailNumber, setTailNumber] = useState("");
   const [isFlying, setIsFlying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,13 +43,20 @@ const Dashboard = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (data && !error) {
+      if (error) throw error;
+
+      if (data) {
         setTailNumber(data.tail_number || "");
         setIsFlying(data.flight_status === "in_flight");
         setLastSaved(data.updated_at ? new Date(data.updated_at) : null);
       }
     } catch (error) {
       console.error("Error loading flight info:", error);
+      toast({
+        variant: "destructive",
+        title: "Could not load flight status",
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   };
 
@@ -79,6 +88,11 @@ const Dashboard = () => {
       setLastSaved(new Date());
     } catch (error) {
       console.error("Error saving flight info:", error);
+      toast({
+        variant: "destructive",
+        title: "Could not save flight status",
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -86,7 +100,15 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     if (supabase) {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error signing out:", error);
+        toast({
+          variant: "destructive",
+          title: "Sign out may not have completed",
+          description: error.message,
+        });
+      }
     }
     navigate("/login");
   };

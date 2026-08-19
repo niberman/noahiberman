@@ -19,7 +19,10 @@ export function callerClient(
 }
 
 export async function getCallerUser(client: SupabaseClient) {
-  const { data: { user } } = await client.auth.getUser();
+  const { data: { user }, error } = await client.auth.getUser();
+  // An expired or malformed JWT is a rejection with a reason, not an anonymous
+  // caller; log it so a 401 is diagnosable from the function logs.
+  if (error) console.warn("auth.getUser failed:", error.message);
   return user;
 }
 

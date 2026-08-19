@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   BASE_CORS_HEADERS as corsHeaders,
-  errorMessage,
+  caughtErrorResponse,
   errorResponse,
+  HttpError,
   jsonResponse,
   preflightResponse,
 } from "../_shared/http.ts";
@@ -23,16 +24,21 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
     const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      req.headers.get("Authorization"),
+      authHeader,
     );
 
     const user = await getCallerUser(supabaseClient);
 
     if (!user) {
-      throw new Error("Unauthorized");
+      throw new HttpError(401, "Unauthorized");
     }
 
     const method = req.method;
@@ -57,12 +63,14 @@ serve(async (req) => {
       const aircraftStatus: AircraftStatus = await req.json();
 
       // Check if aircraft already exists
-      const { data: existing } = await supabaseClient
+      const { data: existing, error: lookupError } = await supabaseClient
         .from("aircraft_status")
         .select("id")
         .eq("user_id", user.id)
         .eq("aircraft_tail_number", aircraftStatus.aircraft_tail_number)
-        .single();
+        .maybeSingle();
+
+      if (lookupError) throw lookupError;
 
       let result;
       if (existing) {
@@ -99,7 +107,7 @@ serve(async (req) => {
 
     return errorResponse("Method not allowed", 405, corsHeaders);
   } catch (error) {
-    return errorResponse(errorMessage(error), 400, corsHeaders);
+    return caughtErrorResponse(error, "aircraft-status", corsHeaders);
   }
 });
 

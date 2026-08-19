@@ -14,7 +14,7 @@ import {
   jsonResponse,
   preflightResponse,
 } from "../_shared/http.ts";
-import { callerClient, getCallerUser, serviceClient } from "../_shared/supabase.ts";
+import { callerClient, isCallerOwner, serviceClient } from "../_shared/supabase.ts";
 
 const MAX_CONTENT_LENGTH = 8000;
 
@@ -36,9 +36,10 @@ serve(async (req) => {
     return errorResponse("Server configuration error.", 500, corsHeaders);
   }
 
-  // Only a signed-in dashboard user may edit the corpus.
+  // Only the owner may edit the corpus. Signup is public, so "any signed-in
+  // user" would let a stranger write memories the twins retrieve.
   const asCaller = callerClient(supabaseUrl, anonKey, req.headers.get("Authorization"));
-  if (!(await getCallerUser(asCaller))) {
+  if (!(await isCallerOwner(asCaller))) {
     return errorResponse("Not authorized.", 401, corsHeaders);
   }
 

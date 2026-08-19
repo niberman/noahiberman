@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   BASE_CORS_HEADERS as corsHeaders,
-  errorMessage,
+  caughtErrorResponse,
   errorResponse,
+  HttpError,
   jsonResponse,
   preflightResponse,
 } from "../_shared/http.ts";
@@ -19,22 +20,27 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
     const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      req.headers.get("Authorization"),
+      authHeader,
     );
 
     const user = await getCallerUser(supabaseClient);
 
     if (!user) {
-      throw new Error("Unauthorized");
+      throw new HttpError(401, "Unauthorized");
     }
 
     const { flightIdentifier }: TrackFlightRequest = await req.json();
 
     if (!flightIdentifier) {
-      throw new Error("Flight identifier is required");
+      throw new HttpError(400, "Flight identifier is required.");
     }
 
     // TODO: Integrate with FlightAware API
@@ -77,17 +83,15 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Error storing flight:", error);
-    }
+    if (error) throw error;
 
     return jsonResponse(
-      { success: true, flight: mockFlightData, flightId: trackedFlight?.id },
+      { success: true, flight: mockFlightData, flightId: trackedFlight.id },
       200,
       corsHeaders,
     );
   } catch (error) {
-    return errorResponse(errorMessage(error), 400, corsHeaders);
+    return caughtErrorResponse(error, "track-flight", corsHeaders);
   }
 });
 

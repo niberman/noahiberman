@@ -401,7 +401,8 @@ def sync_monthly_logbook_from_email() -> dict[str, Any]:
             dt: datetime | None = None
             try:
                 dt = msg_date.datetime if msg_date and hasattr(msg_date, "datetime") else None
-            except Exception:
+            except Exception as exc:
+                LOGGER.warning("Could not read Date header (%s): %s", msg_date, exc)
                 dt = None
 
             parsed_messages.append((dt or datetime.min.replace(tzinfo=UTC), message_id, parsed_msg))
@@ -434,7 +435,12 @@ def sync_monthly_logbook_from_email() -> dict[str, Any]:
             import_summary = import_logbook_data(csv_buffer)
 
             # Mark seen only after successful processing/import.
-            mail.store(message_id, "+FLAGS", "\\Seen")
+            store_status, _ = mail.store(message_id, "+FLAGS", "\\Seen")
+            if store_status != "OK":
+                LOGGER.warning(
+                    "Could not flag email as seen (status=%s); it may be re-imported.",
+                    store_status,
+                )
 
             return {
                 "status": "ok",
@@ -455,9 +461,15 @@ def sync_monthly_logbook_from_email() -> dict[str, Any]:
 
     except Exception as exc:
         LOGGER.exception("Monthly logbook sync failed.")
-        return {"status": "error", "reason": f"exception:{type(exc).__name__}"}
+        return {
+            "status": "error",
+            "reason": f"exception:{type(exc).__name__}",
+            "detail": str(exc),
+        }
     finally:
         try:
             mail.logout()
-        except Exception:
-            pass
+        except Exception as exc:
+            # Logout failures do not affect the sync result, but hiding them
+            # entirely makes connection leaks invisible.
+            LOGGER.warning("IMAP logout failed: %s", exc)
