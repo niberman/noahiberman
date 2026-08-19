@@ -8,10 +8,10 @@ This document describes the AI agents and automated systems that power noahiberm
 
 **Type:** Two conversational agents over one tiered corpus
 **Runtime:** Supabase Edge Functions (`supabase/functions/inoah-chat/`, `supabase/functions/inoah-chat-private/`)
-**Model:** Google Gemini 3.5 Flash (`google/gemini-3.5-flash`) via OpenRouter — `OPENROUTER_API_KEY` is the key chat bills to. Gemini direct is the fallback, used only if that key is unset or the OpenRouter call errors.
+**Model:** Google Gemini 3.5 Flash (`google/gemini-3.5-flash`) via OpenRouter — `OPENROUTER_API_KEY` is the only key chat bills to. There is no second route: Google is reached as an OpenRouter upstream, never directly.
 **Embedding:** Google `gemini-embedding-2`, native endpoint, `output_dimensionality: 768`
 
-**Keys.** Chat needs `OPENROUTER_API_KEY`; embeddings need `GEMINI_API_KEY` and cannot move to OpenRouter (no embeddings endpoint there, and the stored vectors are gemini-embedding-2 at 768 dims — re-embedding a query with anything else makes it incomparable and retrieval silently returns nothing). The functions boot with either key alone: with only OpenRouter set, chat works and answers without retrieved context; with only Gemini set, chat falls back to Gemini direct. Both missing is the only configuration error. Each answer reports the route it took in the `provider` field and in the function logs.
+**Keys.** Chat requires `OPENROUTER_API_KEY` — without it both twins return a 500, because there is no fallback provider. Embeddings use `EMBEDDING_API_KEY` (a Google AI Studio key; `GEMINI_API_KEY` is still read as a fallback so the old secret keeps working) and cannot move to OpenRouter: it serves no embeddings endpoint, and the stored vectors are gemini-embedding-2 at 768 dims, so re-embedding a query with anything else makes it incomparable and retrieval silently returns nothing. Missing only the embedding key is survivable — the twins answer with no retrieved context and log `EMBEDDING_API_KEY not set`. Each answer reports its route in the `provider` field and in the function logs.
 
 iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors in the chat widget and at `/inoah`; the private twin answers the signed-in owner on `/dashboard`. Both retrieve from the same `memories` table, but the boundary between them is enforced in Postgres, not in a prompt: see `docs/inoah-data-tiers.md`.
 

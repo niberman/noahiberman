@@ -161,14 +161,15 @@ serve(async (req) => {
     // 5. Initialize Clients
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!; // Use service role for vector search
-    // Chat completions bill to OpenRouter; Gemini direct is the fallback and
-    // still owns embeddings. Requiring GEMINI_API_KEY unconditionally used to
-    // 500 the whole function on an OpenRouter-only deployment, so the guard now
-    // only insists that at least one model key is present.
+    // Chat is OpenRouter-only, so its key is required. EMBEDDING_API_KEY is
+    // separate and optional: OpenRouter has no embeddings endpoint, and every
+    // vector in `memories` came from gemini-embedding-2, so retrieval still
+    // calls Google directly. Without it the twins answer without context
+    // rather than retrieving vectors that are incomparable to the stored ones.
     const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    const embeddingKey = Deno.env.get("EMBEDDING_API_KEY") ?? Deno.env.get("GEMINI_API_KEY");
 
-    if (!supabaseUrl || !supabaseKey || (!openrouterKey && !geminiKey)) {
+    if (!supabaseUrl || !supabaseKey || !openrouterKey) {
       console.error("Missing environment variables");
       return errorResponse("Server configuration error.", 500, corsHeaders);
     }
@@ -198,16 +199,12 @@ serve(async (req) => {
     // 6. RAG: Retrieve Context (if requested)
     let contextString = "";
     let retrievedMemories: MatchedMemory[] = [];
-    if (include_context && !geminiKey) {
-      // OpenRouter has no embeddings endpoint, and anything embedded with a
-      // different model or width is incomparable to the stored vectors. Without
-      // the Gemini key the honest degradation is answering with no retrieved
-      // context, not retrieving garbage.
-      console.warn("GEMINI_API_KEY not set - answering without retrieved context");
+    if (include_context && !embeddingKey) {
+      console.warn("EMBEDDING_API_KEY not set - answering without retrieved context");
     }
-    if (include_context && geminiKey) {
+    if (include_context && embeddingKey) {
       try {
-        const embedding = await embedText(prompt, geminiKey);
+        const embedding = await embedText(prompt, embeddingKey);
         const retrieved = await retrieveContext(
           supabase,
           "match_memories_public",
@@ -236,7 +233,7 @@ serve(async (req) => {
 
     // 7. Generate Response
     const { text, provider } = await createChatCompletion({
-      geminiKey,
+      openrouterKey,
       appTitle: "iNoah",
       messages: [
         {

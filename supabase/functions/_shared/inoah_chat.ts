@@ -5,16 +5,12 @@
 import OpenAI from "https://esm.sh/openai@4.24.1";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
-// Model lineup (updated 2026-06-09):
-// - gemini-2.0-flash passed its earliest-shutdown date (2026-06-01);
-//   gemini-3.5-flash is its documented replacement.
-export const CHAT_MODEL = "gemini-3.5-flash";
-// OpenRouter is the chat provider: OPENROUTER_API_KEY is what iNoah bills model
-// spend to. GEMINI_API_KEY is only a fallback for chat (and stays mandatory for
-// embeddings), so either key on its own is enough to answer a question.
+// OpenRouter is the only chat provider: OPENROUTER_API_KEY is the single key
+// model spend bills to, and there is no second route. Google is still reached,
+// but as an OpenRouter upstream, so no Google key is involved in a chat turn.
+// (EMBEDDING_API_KEY survives for embeddings alone — see _shared/embeddings.ts.)
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
-const OPENROUTER_CHAT_MODEL = "google/gemini-3.5-flash";
-const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+export const CHAT_MODEL = "google/gemini-3.5-flash";
 
 // Tuned for gemini-embedding-2's cosine-similarity distribution (measured
 // 2026-06-09): relevant memories score 0.65-0.78, unrelated ones 0.50-0.56.
@@ -166,79 +162,42 @@ export interface ChatCompletionResult {
 
 type ChatCompletionParams = OpenAI.Chat.ChatCompletionCreateParamsNonStreaming;
 
-/** The two providers spell low reasoning effort differently. */
-interface ReasoningParams {
-  reasoning_effort?: "low";
-  reasoning?: { effort: "low" };
-}
-
 /**
- * One chat completion, on OpenRouter when its key is configured and on Gemini
- * direct otherwise. A failing OpenRouter call (bad key, unavailable model,
- * rejected parameter) falls back to Gemini rather than taking chat down —
- * unless OpenRouter is the only configured provider, in which case the original
- * error is rethrown rather than masked by a second failure from a client built
- * with an undefined key.
+ * One chat completion, on OpenRouter. There is no second provider: a single
+ * route means a single bill and one place to change models, at the cost of
+ * OpenRouter being a hard dependency for chat.
  *
  * Thinking model: reasoning effort is kept low so it doesn't eat the output
- * budget. The two providers spell that differently — Google's OpenAI-compat
- * layer takes OpenAI's `reasoning_effort`, OpenRouter takes a `reasoning`
- * object — and sending the wrong one is a 400.
+ * budget. OpenRouter spells that as a `reasoning` object (Google's own
+ * OpenAI-compat layer wants `reasoning_effort`); sending the wrong one is a 400.
  */
 export async function createChatCompletion(opts: {
-  /** Absent on an OpenRouter-only deployment; there is then no fallback. */
-  geminiKey?: string;
+  openrouterKey: string;
   appTitle: string;
   messages: { role: string; content: string }[];
   maxTokens: number;
 }): Promise<ChatCompletionResult> {
-  const openrouterKey = Deno.env.get("OPENROUTER_API_KEY");
-  const useOpenRouter = !!openrouterKey;
-  const geminiReasoning: ReasoningParams = { reasoning_effort: "low" };
-  const openrouterReasoning: ReasoningParams = { reasoning: { effort: "low" } };
-
   const client = new OpenAI({
-    apiKey: useOpenRouter ? openrouterKey : opts.geminiKey,
-    baseURL: useOpenRouter ? OPENROUTER_BASE_URL : GEMINI_BASE_URL,
+    apiKey: opts.openrouterKey,
+    baseURL: OPENROUTER_BASE_URL,
     // OpenRouter attributes usage to the app in its dashboard.
-    defaultHeaders: useOpenRouter
-      ? { "HTTP-Referer": "https://noahiberman.com", "X-Title": opts.appTitle }
-      : undefined,
+    defaultHeaders: { "HTTP-Referer": "https://noahiberman.com", "X-Title": opts.appTitle },
   });
 
-  try {
-    const completion = await client.chat.completions.create({
-      model: useOpenRouter ? OPENROUTER_CHAT_MODEL : CHAT_MODEL,
-      messages: opts.messages,
-      max_tokens: opts.maxTokens,
-      ...(useOpenRouter ? openrouterReasoning : geminiReasoning),
-    } as ChatCompletionParams);
-    const provider = useOpenRouter ? "openrouter" : "gemini";
-    // Logged so the configured route can be confirmed from the function logs
-    // without having to read `provider` out of a live response body.
-    console.log(`${opts.appTitle} completed via ${provider}`);
-    return {
-      text: completion.choices[0].message.content || "",
-      provider,
-    };
-  } catch (err) {
-    // Nothing to fall back to when OpenRouter is the only configured provider:
-    // rethrow so the real OpenRouter error surfaces.
-    if (!useOpenRouter || !opts.geminiKey) throw err;
-    console.error("OpenRouter chat failed, falling back to Gemini:", err);
-    const fallback = new OpenAI({ apiKey: opts.geminiKey, baseURL: GEMINI_BASE_URL });
-    const completion = await fallback.chat.completions.create({
-      model: CHAT_MODEL,
-      messages: opts.messages,
-      max_tokens: opts.maxTokens,
-      ...geminiReasoning,
-    } as ChatCompletionParams);
-    console.log(`${opts.appTitle} completed via gemini-fallback (${CHAT_MODEL})`);
-    return {
-      text: completion.choices[0].message.content || "",
-      provider: "gemini-fallback",
-    };
-  }
+  const completion = await client.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: opts.messages,
+    max_tokens: opts.maxTokens,
+    reasoning: { effort: "low" },
+  } as ChatCompletionParams);
+
+  // Logged so the route can be confirmed from the function logs without having
+  // to read `provider` out of a live response body.
+  console.log(`${opts.appTitle} completed via openrouter (${CHAT_MODEL})`);
+  return {
+    text: completion.choices[0].message.content || "",
+    provider: "openrouter",
+  };
 }
 
 /** System prompt with the retrieved notes and any live calendar block appended. */

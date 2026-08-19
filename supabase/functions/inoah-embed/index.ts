@@ -29,9 +29,9 @@ serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const geminiKey = Deno.env.get("GEMINI_API_KEY");
+  const embeddingKey = Deno.env.get("EMBEDDING_API_KEY") ?? Deno.env.get("GEMINI_API_KEY");
 
-  if (!supabaseUrl || !serviceKey || !anonKey || !geminiKey) {
+  if (!supabaseUrl || !serviceKey || !anonKey || !embeddingKey) {
     console.error("inoah-embed: missing environment variables");
     return errorResponse("Server configuration error.", 500, corsHeaders);
   }
@@ -66,7 +66,7 @@ serve(async (req) => {
       return errorResponse("This entry cannot be saved.", 400, corsHeaders);
     }
 
-    const embedding = await embedText(content, geminiKey);
+    const embedding = await embedText(content, embeddingKey);
 
     const supabase = serviceClient(supabaseUrl, serviceKey);
     const row = { content, collection, embedding, updated_at: new Date().toISOString() };

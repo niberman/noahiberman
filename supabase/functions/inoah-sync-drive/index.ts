@@ -187,7 +187,7 @@ interface Chunk {
  */
 async function syncChunks(
   supabase: any,
-  geminiKey: string,
+  embeddingKey: string,
   origin: string,
   visibility: string,
   collection: string,
@@ -216,7 +216,7 @@ async function syncChunks(
       skipped += 1;
       continue;
     }
-    const embedding = await embedText(c.content, geminiKey);
+    const embedding = await embedText(c.content, embeddingKey);
     const { error } = await supabase.from("memories").upsert(
       {
         content: c.content,
@@ -335,9 +335,9 @@ Deno.serve(async (req) => {
   const syncSecret = Deno.env.get("SYNC_SECRET");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const geminiKey = Deno.env.get("GEMINI_API_KEY");
+  const embeddingKey = Deno.env.get("EMBEDDING_API_KEY") ?? Deno.env.get("GEMINI_API_KEY");
   const saJson = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
-  if (!syncSecret || !supabaseUrl || !serviceKey || !geminiKey || !saJson) {
+  if (!syncSecret || !supabaseUrl || !serviceKey || !embeddingKey || !saJson) {
     console.error("inoah-sync-drive: missing environment variables");
     return errorResponse("Server configuration error.", 500, corsHeaders);
   }
@@ -421,7 +421,7 @@ Deno.serve(async (req) => {
         }
         const result = await syncChunks(
           supabase,
-          geminiKey,
+          embeddingKey,
           `drive_folder:${src.external_id}`,
           src.default_visibility,
           "drive",
@@ -445,7 +445,7 @@ Deno.serve(async (req) => {
       const chunks = await siteTableChunks(supabase, src.external_id);
       const result = await syncChunks(
         supabase,
-        geminiKey,
+        embeddingKey,
         `site_table:${src.external_id}`,
         src.default_visibility,
         "site",
