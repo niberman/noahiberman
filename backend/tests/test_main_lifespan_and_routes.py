@@ -13,6 +13,10 @@ from services.scheduling import SchedulingService
 
 client = TestClient(main.app)
 
+# The Google Calendar connection routes are owner-only; the token itself is
+# validated by _is_valid_supabase_user_token, which these tests patch.
+OWNER_HEADERS = {"Authorization": "Bearer owner-token"}
+
 
 class FakeScheduler:
     instances: list["FakeScheduler"] = []
@@ -74,8 +78,11 @@ def test_lifespan_survives_scheduler_setup_failure(monkeypatch: pytest.MonkeyPat
 
 
 def test_scheduling_auth_url_route() -> None:
-    with patch("main.get_auth_url", return_value="https://accounts.google.com/o/oauth2/v2/auth?x=1"):
-        resp = client.get("/scheduling/auth/url")
+    with (
+        patch("main._is_valid_supabase_user_token", return_value=True),
+        patch("main.get_auth_url", return_value="https://accounts.google.com/o/oauth2/v2/auth?x=1"),
+    ):
+        resp = client.get("/scheduling/auth/url", headers=OWNER_HEADERS)
 
     assert resp.status_code == 200
     assert resp.json() == {"url": "https://accounts.google.com/o/oauth2/v2/auth?x=1"}
@@ -83,8 +90,13 @@ def test_scheduling_auth_url_route() -> None:
 
 def test_scheduling_auth_exchange_route() -> None:
     exchange = AsyncMock(return_value={"refresh_token": "rt"})
-    with patch("main.exchange_code", exchange):
-        resp = client.post("/scheduling/auth/exchange", json={"code": "abc"})
+    with (
+        patch("main._is_valid_supabase_user_token", return_value=True),
+        patch("main.exchange_code", exchange),
+    ):
+        resp = client.post(
+            "/scheduling/auth/exchange", json={"code": "abc"}, headers=OWNER_HEADERS
+        )
 
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok", "message": "Google Calendar connected."}
@@ -92,7 +104,10 @@ def test_scheduling_auth_exchange_route() -> None:
 
 
 def test_oauth_callback_redirects_on_success() -> None:
-    with patch("main.exchange_code", AsyncMock(return_value={})):
+    with (
+        patch("main.verify_oauth_state", return_value=True),
+        patch("main.exchange_code", AsyncMock(return_value={})),
+    ):
         resp = client.get("/scheduling/auth/callback", params={"code": "abc"}, follow_redirects=False)
 
     assert resp.status_code == 307
@@ -100,7 +115,10 @@ def test_oauth_callback_redirects_on_success() -> None:
 
 
 def test_oauth_callback_redirects_with_error_flag_on_failure() -> None:
-    with patch("main.exchange_code", AsyncMock(side_effect=RuntimeError("bad code"))):
+    with (
+        patch("main.verify_oauth_state", return_value=True),
+        patch("main.exchange_code", AsyncMock(side_effect=RuntimeError("bad code"))),
+    ):
         resp = client.get("/scheduling/auth/callback", params={"code": "abc"}, follow_redirects=False)
 
     assert resp.status_code == 307
