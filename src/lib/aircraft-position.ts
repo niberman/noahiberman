@@ -18,9 +18,12 @@ export const TAIL_TO_HEX: Record<string, string> = {
 };
 
 const ADSB_HOST = 'adsbexchange-com1.p.rapidapi.com';
-// TODO: rotate this key and serve it from VITE_ADSB_RAPIDAPI_KEY only.
-const ADSB_KEY = import.meta.env.VITE_ADSB_RAPIDAPI_KEY ??
-  '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad';
+// No hardcoded fallback: the key that used to live here was committed to the
+// repo and had stopped working anyway ("not subscribed"), so every lookup was
+// spending a round-trip to earn a 403. A VITE_ var is readable by anyone who
+// opens the bundle, so this one is expected to be a low-privilege RapidAPI key
+// scoped to ADS-B Exchange and nothing else.
+const ADSB_KEY = import.meta.env.VITE_ADSB_RAPIDAPI_KEY ?? '';
 
 const DEMO_CENTER: [number, number] = [39.8617, -104.6731];
 
@@ -52,15 +55,31 @@ export function demoAircraftPosition(spread = 2): AircraftPosition {
   };
 }
 
+/** The map polls; without this the console would fill with the same warning. */
+let warnedMissingKey = false;
+function warnMissingKeyOnce() {
+  if (warnedMissingKey) return;
+  warnedMissingKey = true;
+  console.warn(
+    'VITE_ADSB_RAPIDAPI_KEY is not set - live aircraft positions are disabled.',
+  );
+}
+
 /**
- * Live position for a tail number, or null when it has no hex mapping, the
- * lookup fails, or the aircraft is not transmitting.
+ * Live position for a tail number, or null when the lookup is unconfigured, the
+ * tail number has no hex mapping, the lookup fails, or the aircraft is not
+ * transmitting.
  */
 export async function fetchAircraftPosition(
   tailNumber: string,
 ): Promise<AircraftPosition | null> {
   const hexCode = tailToHex(tailNumber);
   if (!hexCode) return null;
+
+  if (!ADSB_KEY) {
+    warnMissingKeyOnce();
+    return null;
+  }
 
   try {
     const response = await fetch(`https://${ADSB_HOST}/v2/hex/${hexCode}/`, {
