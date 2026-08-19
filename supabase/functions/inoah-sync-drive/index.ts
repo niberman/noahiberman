@@ -227,7 +227,14 @@ async function syncChunks(
   for (const c of chunks) {
     const hash = await sha256Hex(c.content);
     const prior = byKey.get(`${c.sourceId} ${c.chunkIndex}`);
-    const tier = c.visibility ?? defaultVisibility;
+    // 'never' is terminal: guard_visibility() raises on any move off it, and a
+    // raise here would abort the whole run — this origin's stale deletes and
+    // every later source included. That the tier cannot be walked back is the
+    // point of it, so an existing 'never' row keeps its tier no matter what the
+    // file now declares.
+    const tier = prior?.visibility === "never"
+      ? "never"
+      : (c.visibility ?? defaultVisibility);
     if (prior?.content_hash === hash) {
       if (prior.visibility === tier) {
         skipped += 1;
