@@ -1,6 +1,6 @@
-// Public twin: answers anonymous visitors and retrieves only rows marked
-// public, via match_memories_public. The private twin lives in
-// inoah-chat-private; the tier boundary is enforced in SQL, not here.
+// iNoah: the one assistant, public-facing. It answers anonymous visitors and
+// retrieves only rows marked public, via match_memories_public. The tier
+// boundary is enforced in that RPC's SQL body, not here.
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { PUBLIC_CORS_HEADERS, errorMessage, errorResponse, jsonResponse, preflightResponse } from "../_shared/http.ts";
 import { callerClient, isCallerOwner, serviceClient } from "../_shared/supabase.ts";

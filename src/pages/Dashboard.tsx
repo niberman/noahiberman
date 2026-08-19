@@ -14,7 +14,6 @@ import BlogPostManager from "@/components/dashboard/BlogPostManager";
 import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
 import InoahKnowledgeManager from "@/components/dashboard/InoahKnowledgeManager";
-import InoahPrivateChat from "@/components/dashboard/InoahPrivateChat";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -235,12 +234,6 @@ const Dashboard = () => {
           <div className="mt-8 sm:mt-10">
             <InoahKnowledgeManager />
           </div>
-
-          {/* iNoah private twin */}
-          <div className="mt-8 sm:mt-10">
-            <InoahPrivateChat />
-          </div>
-
 
 
           {/* Hermes entry */}
