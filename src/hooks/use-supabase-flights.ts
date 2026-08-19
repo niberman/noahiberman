@@ -47,7 +47,12 @@ export function useCurrentFlight() {
         .limit(1)
         .maybeSingle();
 
-      if (error) return null;
+      if (error) {
+        // Surfaced rather than swallowed: a failing query used to be
+        // indistinguishable from "nobody is flying".
+        console.error('Error loading current flight:', error);
+        throw error;
+      }
       return (data as CurrentFlight | null) ?? null;
     },
     refetchInterval: 30_000,

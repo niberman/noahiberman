@@ -1,9 +1,11 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plane, ExternalLink, Radio, ChevronDown, ChevronUp } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { useCurrentFlight } from "@/hooks/use-supabase-flights";
+import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
+import type { AircraftPosition } from "@/lib/aircraft-position";
 import { motion } from "framer-motion";
 import { FlightMap } from "@/components/FlightMap";
 import { flightHistory } from "@/data/flights";
@@ -13,24 +15,9 @@ interface UnifiedFlightTrackerProps {
   showInlineMap?: boolean;
 }
 
-interface FlightInfo {
-  tail_number: string;
-  flight_status: "on_ground" | "in_flight";
-}
-
-interface AircraftPosition {
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  heading: number;
-  speed: number;
-  timestamp: number;
-}
-
 export function UnifiedFlightTracker({ showInlineMap = true }: UnifiedFlightTrackerProps) {
-  const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
+  const { data: currentFlight, isLoading } = useCurrentFlight();
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
@@ -51,113 +38,15 @@ export function UnifiedFlightTracker({ showInlineMap = true }: UnifiedFlightTrac
   });
   const airportList = Array.from(airports);
 
-  useEffect(() => {
-    loadCurrentFlight();
-  }, []);
-
-  // Fetch live position data when we have a tail number
-  useEffect(() => {
-    if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
-      fetchAircraftPosition(currentFlight.tail_number);
-      // Refresh position every 30 seconds
-      const interval = setInterval(() => {
-        fetchAircraftPosition(currentFlight.tail_number);
-      }, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [currentFlight]);
-
-  const loadCurrentFlight = async () => {
-    if (!supabase) {
-      setIsLoading(false);
-      return;
-    }
-    
-    try {
-      const { data, error } = await supabase
-        .from('current_flight')
-        .select('*')
-        .eq('flight_status', 'in_flight')
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      setCurrentFlight(data ?? null);
-    } catch (error) {
-      console.error('Error loading current flight:', error);
-      setCurrentFlight(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Map of tail numbers to ICAO hex codes (Mode S codes)
-  const tailToHex: { [key: string]: string } = {
-    'N405MK': 'a4b605',
-    // Add more mappings as needed
-  };
-
-  const fetchAircraftPosition = async (tailNumber: string) => {
-    try {
-      // Get hex code for this tail number
-      const hexCode = tailToHex[tailNumber.toUpperCase()] || '';
-      
-      if (!hexCode) {
-        console.log(`No hex code mapping for ${tailNumber}, using demo data`);
-        // Use demo data if we don't have a hex code mapping
-        const newPosition = {
-          latitude: 39.8617 + (Math.random() - 0.5) * 0.5,
-          longitude: -104.6731 + (Math.random() - 0.5) * 0.5,
-          altitude: 8500 + Math.random() * 2000,
-          heading: Math.random() * 360,
-          speed: 150 + Math.random() * 50,
-          timestamp: Date.now()
-        };
-        setAircraftPosition(newPosition);
-        setLastUpdate(new Date());
-        return;
-      }
-
-      // Using ADS-B Exchange API with hex code lookup
-      const response = await fetch(
-        `https://adsbexchange-com1.p.rapidapi.com/v2/hex/${hexCode}/`,
-        {
-          headers: {
-            'X-RapidAPI-Key': '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad',
-            'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.ac && data.ac.length > 0) {
-          const aircraft = data.ac[0];
-          console.log('Live aircraft data received:', aircraft);
-          
-          const newPosition = {
-            latitude: parseFloat(aircraft.lat),
-            longitude: parseFloat(aircraft.lon),
-            altitude: parseInt(aircraft.alt_baro) || parseInt(aircraft.alt_geom) || 0,
-            heading: parseInt(aircraft.track) || parseInt(aircraft.true_heading) || 0,
-            speed: parseInt(aircraft.gs) || 0,
-            timestamp: Date.now()
-          };
-          
-          setAircraftPosition(newPosition);
-          setLastUpdate(new Date());
-        } else {
-          console.log('No aircraft data in response, aircraft may not be transmitting');
-        }
-      } else {
-        console.error('API response not ok:', response.status);
-      }
-    } catch (error) {
-      console.error('Error fetching aircraft position:', error);
-    }
-  };
+  useAircraftPositionPolling(
+    currentFlight?.tail_number,
+    currentFlight?.flight_status === "in_flight",
+    (position) => {
+      setAircraftPosition(position);
+      setLastUpdate(new Date());
+    },
+    { demoSpread: 0.5 },
+  );
 
   if (isLoading) {
     return null;

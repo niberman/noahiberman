@@ -6,20 +6,16 @@
 // all. Every chunk lands at the source row's default_visibility; there is no
 // code path here that writes 'public' for Drive content because both Drive
 // sources are registered private. Promotion stays a human dashboard action.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 import { isExcludedContent } from "../_shared/content_policy.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-// Must stay identical to embedText in inoah-chat, inoah-chat-private,
-// inoah-embed and inoah-ingest: a chunk embedded with a different model or
-// width is stored fine but never retrieved.
-const EMBEDDING_MODEL = "gemini-embedding-2";
-const EMBEDDING_DIMS = 768; // must match public.memories.embedding vector(768)
+import { embedText, sha256Hex } from "../_shared/embeddings.ts";
+import {
+  PUBLIC_CORS_HEADERS as corsHeaders,
+  errorMessage,
+  errorResponse,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { serviceClient } from "../_shared/supabase.ts";
 
 // Chunking mirrors projects/inoah-core/src/inoah_core/memory/ingest.py
 // (chunk_size 1000, overlap 200, paragraph boundaries) so the two ingesters
@@ -32,30 +28,6 @@ const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const FOLDER_MIME = "application/vnd.google-apps.folder";
 const DOC_MIME = "application/vnd.google-apps.document";
 const TEXT_MIMES = new Set(["text/plain", "text/markdown", "text/x-markdown"]);
-
-async function embedText(text: string, apiKey: string): Promise<number[]> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        content: { parts: [{ text }] },
-        output_dimensionality: EMBEDDING_DIMS,
-      }),
-    },
-  );
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`embedContent ${res.status}: ${detail.slice(0, 300)}`);
-  }
-  const data = await res.json();
-  const values = data?.embedding?.values;
-  if (!Array.isArray(values) || values.length !== EMBEDDING_DIMS) {
-    throw new Error(`embedContent returned ${values?.length ?? 0} dims, expected ${EMBEDDING_DIMS}`);
-  }
-  return values;
-}
 
 function chunkText(text: string): string[] {
   const paragraphs = text.split(/\n\n+/);
@@ -77,13 +49,6 @@ function chunkText(text: string): string[] {
   }
   if (current) chunks.push(current.trim());
   return chunks;
-}
-
-async function sha256Hex(text: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
 }
 
 // --- Service account auth ---
@@ -363,16 +328,9 @@ async function siteTableChunks(supabase: any, table: string): Promise<Chunk[]> {
 
 // --- Main ---
 
-function json(status: number, body: unknown) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+  if (req.method === "OPTIONS") return preflightResponse(corsHeaders);
+  if (req.method !== "POST") return errorResponse("Method not allowed", 405, corsHeaders);
 
   const syncSecret = Deno.env.get("SYNC_SECRET");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -381,15 +339,15 @@ Deno.serve(async (req) => {
   const saJson = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
   if (!syncSecret || !supabaseUrl || !serviceKey || !geminiKey || !saJson) {
     console.error("inoah-sync-drive: missing environment variables");
-    return json(500, { error: "Server configuration error." });
+    return errorResponse("Server configuration error.", 500, corsHeaders);
   }
 
   const auth = req.headers.get("Authorization") ?? "";
   if (auth !== `Bearer ${syncSecret}`) {
-    return json(401, { error: "Not authorized." });
+    return errorResponse("Not authorized.", 401, corsHeaders);
   }
 
-  const supabase = createClient(supabaseUrl, serviceKey);
+  const supabase = serviceClient(supabaseUrl, serviceKey);
 
   try {
     const { data: sources, error: sourcesError } = await supabase
@@ -497,9 +455,9 @@ Deno.serve(async (req) => {
     }
 
     console.log("inoah-sync-drive report:", JSON.stringify(report));
-    return json(200, { status: "success", report });
+    return jsonResponse({ status: "success", report }, 200, corsHeaders);
   } catch (err) {
     console.error("inoah-sync-drive error:", err);
-    return json(500, { error: err instanceof Error ? err.message : "Unexpected server error." });
+    return errorResponse(errorMessage(err), 500, corsHeaders);
   }
 });

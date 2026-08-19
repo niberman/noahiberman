@@ -1,70 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane, Radio, Navigation } from "lucide-react";
 import { useCurrentFlight } from "@/hooks/use-supabase-flights";
-
-interface AircraftPosition {
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  heading: number;
-  speed: number;
-  timestamp: number;
-}
+import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
+import type { AircraftPosition } from "@/lib/aircraft-position";
 
 export function LiveFlightIndicator() {
   const { data: currentFlight, isLoading } = useCurrentFlight();
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
 
-  useEffect(() => {
-    if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
-      fetchAircraftPosition(currentFlight.tail_number);
-      const interval = setInterval(() => {
-        fetchAircraftPosition(currentFlight.tail_number);
-      }, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [currentFlight]);
-
-  const tailToHex: { [key: string]: string } = {
-    'N405MK': 'a4b605',
-  };
-
-  const fetchAircraftPosition = async (tailNumber: string) => {
-    try {
-      const hexCode = tailToHex[tailNumber.toUpperCase()] || '';
-      if (!hexCode) return;
-
-      const response = await fetch(
-        `https://adsbexchange-com1.p.rapidapi.com/v2/hex/${hexCode}/`,
-        {
-          headers: {
-            'X-RapidAPI-Key': '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad',
-            'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.ac && data.ac.length > 0) {
-          const aircraft = data.ac[0];
-          setAircraftPosition({
-            latitude: parseFloat(aircraft.lat),
-            longitude: parseFloat(aircraft.lon),
-            altitude: parseInt(aircraft.alt_baro) || parseInt(aircraft.alt_geom) || 0,
-            heading: parseInt(aircraft.track) || 0,
-            speed: parseInt(aircraft.gs) || 0,
-            timestamp: Date.now()
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching aircraft position:', error);
-    }
-  };
+  useAircraftPositionPolling(
+    currentFlight?.tail_number,
+    currentFlight?.flight_status === "in_flight",
+    setAircraftPosition,
+  );
 
   if (isLoading || !currentFlight || currentFlight.flight_status !== "in_flight") {
     return null;

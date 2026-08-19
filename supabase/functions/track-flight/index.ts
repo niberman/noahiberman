@@ -1,11 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-import { errorResponse, HttpError } from "../_shared/errors.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  BASE_CORS_HEADERS as corsHeaders,
+  caughtErrorResponse,
+  errorResponse,
+  HttpError,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, getCallerUser } from "../_shared/supabase.ts";
 
 interface TrackFlightRequest {
   flightIdentifier: string; // Can be flight number or FA flight ID
@@ -14,7 +16,7 @@ interface TrackFlightRequest {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
@@ -23,19 +25,16 @@ serve(async (req) => {
       throw new HttpError(401, "Missing Authorization header.");
     }
 
-    // Create Supabase client
-    const supabaseClient = createClient(
+    const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      authHeader,
     );
 
-    // Get the current user
-    const { data: { user }, error: authError } = await supabaseClient.auth
-      .getUser();
+    const user = await getCallerUser(supabaseClient);
 
-    if (authError || !user) {
-      throw new HttpError(401, authError?.message ?? "Unauthorized");
+    if (!user) {
+      throw new HttpError(401, "Unauthorized");
     }
 
     const { flightIdentifier }: TrackFlightRequest = await req.json();
@@ -86,19 +85,13 @@ serve(async (req) => {
 
     if (error) throw error;
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        flight: mockFlightData,
-        flightId: trackedFlight.id,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
+    return jsonResponse(
+      { success: true, flight: mockFlightData, flightId: trackedFlight.id },
+      200,
+      corsHeaders,
     );
   } catch (error) {
-    return errorResponse(error, "track-flight", corsHeaders);
+    return caughtErrorResponse(error, "track-flight", corsHeaders);
   }
 });
 
