@@ -1,6 +1,6 @@
 # iNoah data tiers
 
-One corpus, two twins, and a boundary that lives in Postgres. This file is the
+One corpus, one public-facing assistant, and a boundary that lives in Postgres. This file is the
 reference for what each tier means, what can never enter the corpus, and how
 sources are added and revoked.
 
@@ -10,9 +10,9 @@ Every row in `memories` carries a `visibility`:
 
 | Tier | Who can retrieve it | How rows get here |
 | --- | --- | --- |
-| `public` | Anyone, through the public twin | Only by a human promoting one row at a time on the dashboard, or a source registered `public` because its content is already on the public site |
-| `private` | The signed-in owner, through the private twin | The default for every write path. A failed or missing classification hides data, never exposes it |
-| `never` | The owner, like private, but terminal | Manual assignment for material that must not be promotable |
+| `public` | Anyone, through iNoah | Only by a human promoting one row at a time on the dashboard, or a source registered `public` because its content is already on the public site |
+| `private` | No assistant. Visible to the owner in the dashboard only | The default for every write path. A failed or missing classification hides data, never exposes it |
+| `never` | No assistant, and terminal — excluded from both match RPCs | Manual assignment for material that must not be promotable |
 
 Rules that hold everywhere:
 
@@ -82,9 +82,9 @@ writes into `metadata`, so a sync can only ever delete rows it owns.
 
 ## The persona
 
-The public twin's system prompt lives in `inoah_settings.system_prompt`,
+iNoah's system prompt lives in `inoah_settings.system_prompt`,
 built from `docs/public-profile.md`. That file stays out of version control
 (gitignored; the repo is public) and is the single source of truth for what
-the public twin may claim. The three standing rules from it: unresolved facts
+iNoah may claim. The three standing rules from it: unresolved facts
 get a plain not settled answer, the do-not-claim list is refused outright, and
 customers are never identified beyond what the public site already names.

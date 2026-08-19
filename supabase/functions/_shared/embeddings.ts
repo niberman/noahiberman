@@ -1,7 +1,7 @@
 // The single embedding implementation for the whole corpus.
 //
-// Every read and write path (inoah-chat, inoah-chat-private, inoah-embed,
-// inoah-ingest, inoah-sync-drive) must embed with the same model and width: a
+// Every read and write path (inoah-chat, inoah-embed, inoah-ingest,
+// inoah-sync-drive) must embed with the same model and width: a
 // chunk embedded any other way is stored fine but never retrieved, and the
 // failure is silent. Keeping one copy is what makes that guarantee hold.
 //

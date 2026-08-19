@@ -1,7 +1,7 @@
-// Everything the two iNoah twins do identically: model routing, request
-// parsing, the dashboard-editable retrieval knobs, and RAG retrieval. Only the
-// tier boundary differs, and that lives in SQL (match_memories_public vs
-// match_memories_private), never in a parameter here.
+// Model routing, request parsing, the dashboard-editable retrieval knobs, and
+// RAG retrieval for iNoah. There is one assistant, and it is public-facing:
+// retrieval goes through match_memories_public, whose SQL body hardcodes
+// visibility = 'public', so no caller here can widen what a visitor sees.
 import OpenAI from "https://esm.sh/openai@4.24.1";
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
@@ -107,13 +107,13 @@ export interface RetrievedContext {
 }
 
 /**
- * Vector search against the given match RPC. The RPC name is the tier: the
- * public one has visibility = 'public' hardcoded in its SQL body, so no caller
- * can widen what the public twin sees.
+ * Vector search against the public match RPC, whose SQL body hardcodes
+ * visibility = 'public'. Passing the name explicitly keeps the tier visible at
+ * the call site rather than buried in this helper.
  */
 export async function retrieveContext(
   supabase: SupabaseClient,
-  matchRpc: "match_memories_public" | "match_memories_private",
+  matchRpc: "match_memories_public",
   embedding: number[],
   matchThreshold: number,
   matchCount: number,

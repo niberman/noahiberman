@@ -17,11 +17,6 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/inoah-chat/index.ts"
 
-[functions.inoah-chat-private]
-enabled = true
-verify_jwt = true
-entrypoint = "./functions/inoah-chat-private/index.ts"
-
 [functions.inoah-sync-drive]
 enabled = true
 # Secret-gated like notify_contact_message: the hourly pg_cron job sends the
