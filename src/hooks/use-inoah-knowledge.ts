@@ -12,15 +12,7 @@ export interface KnowledgeEntry {
   updated_at: string | null;
 }
 
-export interface InoahSettings {
-  system_prompt: string;
-  match_threshold: number;
-  match_count: number;
-  updated_at?: string | null;
-}
-
 const ENTRIES_KEY = ["inoah", "entries"];
-const SETTINGS_KEY = ["inoah", "settings"];
 
 /** Reads and deletes go straight through RLS; only writes need the edge function. */
 export function useKnowledgeEntries() {
@@ -111,41 +103,6 @@ export function useDeleteKnowledgeEntry() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ENTRIES_KEY });
-    },
-  });
-}
-
-export function useInoahSettings() {
-  return useQuery({
-    queryKey: SETTINGS_KEY,
-    queryFn: async (): Promise<InoahSettings | null> => {
-      if (!supabase) throw new Error("Supabase is not configured.");
-      const { data, error } = await supabase
-        .from("inoah_settings")
-        .select("system_prompt, match_threshold, match_count, updated_at")
-        .maybeSingle();
-
-      if (error) throw error;
-      return data as InoahSettings | null;
-    },
-  });
-}
-
-export function useSaveInoahSettings() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (settings: InoahSettings) => {
-      if (!supabase) throw new Error("Supabase is not configured.");
-      const { error } = await supabase
-        .from("inoah_settings")
-        .update({ ...settings, updated_at: new Date().toISOString() })
-        .eq("id", true);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
     },
   });
 }
