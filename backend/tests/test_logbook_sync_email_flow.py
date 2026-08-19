@@ -49,8 +49,10 @@ class FakeIMAP:
             return "NO", []
         return "OK", [(b"1 (RFC822 {n}", raw), b")"]
 
-    def store(self, message_id: bytes, flag_command: str, flags: str) -> None:
+    def store(self, message_id: bytes, flag_command: str, flags: str) -> tuple[str, list[Any]]:
         self.stored.append((message_id, flag_command, flags))
+        # imaplib returns (typ, data); the sync checks typ before trusting the flag.
+        return "OK", [b"1 (FLAGS (\\Seen))"]
 
     def logout(self) -> None:
         self.logged_out = True
@@ -246,7 +248,11 @@ def test_returns_error_status_when_import_raises(monkeypatch: pytest.MonkeyPatch
 
     result = logbook_sync.sync_monthly_logbook_from_email()
 
-    assert result == {"status": "error", "reason": "exception:RuntimeError"}
+    assert result == {
+        "status": "error",
+        "reason": "exception:RuntimeError",
+        "detail": "Supabase API error 500: nope",
+    }
     assert fake.stored == []
     assert fake.logged_out
 
@@ -262,7 +268,11 @@ def test_returns_error_status_when_login_fails(monkeypatch: pytest.MonkeyPatch) 
 
     result = logbook_sync.sync_monthly_logbook_from_email()
 
-    assert result == {"status": "error", "reason": "exception:error"}
+    assert result == {
+        "status": "error",
+        "reason": "exception:error",
+        "detail": "auth failed",
+    }
 
 
 def test_logout_failure_is_swallowed(monkeypatch: pytest.MonkeyPatch) -> None:
