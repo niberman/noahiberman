@@ -123,7 +123,11 @@ def _is_valid_supabase_user_token(token: str) -> bool:
     try:
         with urllib_request.urlopen(req, timeout=10) as resp:
             return resp.status == 200
-    except (urllib_error.HTTPError, urllib_error.URLError):
+    except urllib_error.HTTPError as exc:
+        LOGGER.warning("Supabase token check rejected: %s %s", exc.code, exc.reason)
+        return False
+    except urllib_error.URLError as exc:
+        LOGGER.warning("Supabase token check unreachable: %s", exc.reason)
         return False
 
 
@@ -158,7 +162,12 @@ def sync_logbook(authorization: str | None = Header(default=None)):
     access token (for the dashboard's manual Sync button).
     """
     _require_sync_auth(authorization)
-    return sync_monthly_logbook_from_email()
+    result = sync_monthly_logbook_from_email()
+    if result.get("status") == "error":
+        # A failed sync must not look like a successful one to the cron job or
+        # the dashboard's Sync button.
+        return JSONResponse(status_code=502, content=result)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -209,8 +218,8 @@ async def scheduling_auth_callback(code: str = Query(...), state: str = Query(de
     try:
         await exchange_code(code)
         return RedirectResponse(url="/dashboard?calendar_connected=true")
-    except Exception as exc:
-        LOGGER.error("OAuth callback exchange failed: %s", exc)
+    except Exception:
+        LOGGER.exception("OAuth callback exchange failed.")
         return RedirectResponse(url="/dashboard?calendar_error=true")
 
 

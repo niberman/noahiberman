@@ -46,6 +46,10 @@ import {
   generateSlug,
 } from "@/hooks/use-supabase-blog";
 import type { BlogPost, BlogImage } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
+
+const errMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Unknown error";
 
 interface PostFormData {
   title: string;
@@ -68,6 +72,7 @@ const defaultFormData: PostFormData = {
 };
 
 export default function BlogPostManager() {
+  const { toast } = useToast();
   const { data: posts, isLoading } = useAllBlogPosts();
   const createPost = useCreateBlogPost();
   const updatePost = useUpdateBlogPost();
@@ -123,6 +128,7 @@ export default function BlogPostManager() {
 
       setIsUploading(true);
       const newImages: BlogImage[] = [];
+      const failures: string[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -142,6 +148,7 @@ export default function BlogPostManager() {
           });
         } catch (error) {
           console.error("Failed to upload image:", error);
+          failures.push(`${file.name}: ${errMessage(error)}`);
         }
       }
 
@@ -150,8 +157,16 @@ export default function BlogPostManager() {
         images: [...prev.images, ...newImages],
       }));
       setIsUploading(false);
+
+      if (failures.length > 0) {
+        toast({
+          variant: "destructive",
+          title: `${failures.length} image upload${failures.length > 1 ? "s" : ""} failed`,
+          description: failures.join("; "),
+        });
+      }
     },
-    [editingPost?.id, formData.images.length, uploadImage]
+    [editingPost?.id, formData.images.length, toast, uploadImage]
   );
 
   const handleDrop = useCallback(
@@ -169,6 +184,11 @@ export default function BlogPostManager() {
       await deleteImage.mutateAsync(image.url);
     } catch (error) {
       console.error("Failed to delete image from storage:", error);
+      toast({
+        variant: "destructive",
+        title: "Image removed from post, but not from storage",
+        description: errMessage(error),
+      });
     }
 
     setFormData((prev) => ({
@@ -236,6 +256,11 @@ export default function BlogPostManager() {
       closeEditor();
     } catch (error) {
       console.error("Failed to save post:", error);
+      toast({
+        variant: "destructive",
+        title: editingPost ? "Could not update post" : "Could not create post",
+        description: errMessage(error),
+      });
     }
   };
 
@@ -244,18 +269,39 @@ export default function BlogPostManager() {
 
     // Delete all images associated with the post
     const post = posts?.find((p) => p.id === deleteConfirmId);
+    const orphanedImages: string[] = [];
     if (post?.images) {
       for (const image of post.images) {
         try {
           await deleteImage.mutateAsync(image.url);
         } catch (error) {
           console.error("Failed to delete image:", error);
+          orphanedImages.push(image.url);
         }
       }
     }
 
-    await deletePost.mutateAsync(deleteConfirmId);
-    setDeleteConfirmId(null);
+    try {
+      await deletePost.mutateAsync(deleteConfirmId);
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      toast({
+        variant: "destructive",
+        title: "Could not delete post",
+        description: errMessage(error),
+      });
+      return;
+    } finally {
+      setDeleteConfirmId(null);
+    }
+
+    if (orphanedImages.length > 0) {
+      toast({
+        variant: "destructive",
+        title: "Post deleted, but some images remain in storage",
+        description: orphanedImages.join(", "),
+      });
+    }
   };
 
   const formatDate = (dateString: string | null) => {
