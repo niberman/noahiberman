@@ -5,57 +5,22 @@
 // entry without an embedding — such a row would sit in the table looking saved
 // while never being retrieved.
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 import { isExcludedContent } from "../_shared/content_policy.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { embedText } from "../_shared/embeddings.ts";
+import {
+  PUBLIC_CORS_HEADERS as corsHeaders,
+  errorMessage,
+  errorResponse,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, isCallerOwner, serviceClient } from "../_shared/supabase.ts";
 
 const MAX_CONTENT_LENGTH = 8000;
 
-// Must stay identical to inoah-chat's embedText: an entry embedded with a
-// different model is stored fine but never retrieved. text-embedding-004 was
-// shut down by Google on 2026-01-14 — gemini-embedding-2 is the current model,
-// and the native endpoint is required for output_dimensionality.
-const EMBEDDING_MODEL = "gemini-embedding-2";
-const EMBEDDING_DIMS = 768; // must match public.memories.embedding vector(768)
-
-async function embedText(text: string, apiKey: string): Promise<number[]> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-      body: JSON.stringify({
-        content: { parts: [{ text }] },
-        output_dimensionality: EMBEDDING_DIMS,
-      }),
-    },
-  );
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`embedContent ${res.status}: ${detail.slice(0, 300)}`);
-  }
-  const data = await res.json();
-  const values = data?.embedding?.values;
-  if (!Array.isArray(values) || values.length !== EMBEDDING_DIMS) {
-    throw new Error(`embedContent returned ${values?.length ?? 0} dims, expected ${EMBEDDING_DIMS}`);
-  }
-  return values;
-}
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -68,17 +33,14 @@ serve(async (req) => {
 
   if (!supabaseUrl || !serviceKey || !anonKey || !geminiKey) {
     console.error("inoah-embed: missing environment variables");
-    return json({ error: "Server configuration error." }, 500);
+    return errorResponse("Server configuration error.", 500, corsHeaders);
   }
 
-  // Only a signed-in dashboard user may edit the corpus.
-  const authHeader = req.headers.get("Authorization") ?? "";
-  const asCaller = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const { data: { user } } = await asCaller.auth.getUser();
-  if (!user) {
-    return json({ error: "Not authorized." }, 401);
+  // Only the owner may edit the corpus. Signup is public, so "any signed-in
+  // user" would let a stranger write memories the twins retrieve.
+  const asCaller = callerClient(supabaseUrl, anonKey, req.headers.get("Authorization"));
+  if (!(await isCallerOwner(asCaller))) {
+    return errorResponse("Not authorized.", 401, corsHeaders);
   }
 
   try {
@@ -91,21 +53,22 @@ serve(async (req) => {
         : "knowledge";
 
     if (!content) {
-      return json({ error: "Content is required." }, 400);
+      return errorResponse("Content is required.", 400, corsHeaders);
     }
     if (content.length > MAX_CONTENT_LENGTH) {
-      return json(
-        { error: `Content is too long (max ${MAX_CONTENT_LENGTH} characters).` },
-        400
+      return errorResponse(
+        `Content is too long (max ${MAX_CONTENT_LENGTH} characters).`,
+        400,
+        corsHeaders,
       );
     }
     if (isExcludedContent(content)) {
-      return json({ error: "This entry cannot be saved." }, 400);
+      return errorResponse("This entry cannot be saved.", 400, corsHeaders);
     }
 
     const embedding = await embedText(content, geminiKey);
 
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const supabase = serviceClient(supabaseUrl, serviceKey);
     const row = { content, collection, embedding, updated_at: new Date().toISOString() };
 
     // New entries land private; edits never touch visibility. Promotion is a
@@ -120,10 +83,9 @@ serve(async (req) => {
 
     if (error) throw error;
 
-    return json({ status: "success", entry: data });
+    return jsonResponse({ status: "success", entry: data }, 200, corsHeaders);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unexpected server error.";
     console.error("inoah-embed error:", err);
-    return json({ error: message }, 500);
+    return errorResponse(errorMessage(err), 500, corsHeaders);
   }
 });

@@ -1,16 +1,14 @@
 // supabase/functions/notify_contact_message/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import { corsHeadersWith, errorMessage, jsonResponse, preflightResponse } from "../_shared/http.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-webhook-secret",
-};
+const corsHeaders = corsHeadersWith(["x-webhook-secret"]);
 
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
@@ -18,7 +16,9 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get("WEBHOOK_SECRET");
     const providedSecret = req.headers.get("x-webhook-secret");
     
-    if (webhookSecret && providedSecret !== webhookSecret) {
+    // Fail closed: verify_jwt is off for this function, so an unset secret
+    // would leave the mailer open to anyone.
+    if (!webhookSecret || providedSecret !== webhookSecret) {
       console.error("Invalid webhook secret");
       return new Response("Unauthorized", { status: 401, headers: corsHeaders });
     }
@@ -95,27 +95,32 @@ ${message}
 This email was sent from your website contact form at noahiberman.com
     `;
 
-    await client.send({
-      from: smtpUsername,
-      to: notificationEmail,
-      subject,
-      content: textBody,
-      html: htmlBody,
-      replyTo: email, // Reply directly to the person who contacted
-    });
-
-    await client.close();
+    try {
+      await client.send({
+        from: smtpUsername,
+        to: notificationEmail,
+        subject,
+        content: textBody,
+        html: htmlBody,
+        replyTo: email, // Reply directly to the person who contacted
+      });
+    } finally {
+      // Closing can fail on its own; never let it mask the send result.
+      try {
+        await client.close();
+      } catch (closeError) {
+        console.warn("Failed to close SMTP client:", closeError);
+      }
+    }
 
     console.log(`Email notification sent successfully to ${notificationEmail}`);
-    return new Response(
-      JSON.stringify({ success: true, message: "Email sent successfully" }), 
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    return jsonResponse(
+      { success: true, message: "Email sent successfully" },
+      200,
+      corsHeaders,
     );
   } catch (err) {
     console.error("Error sending email:", err);
-    return new Response(
-      JSON.stringify({ success: false, error: err.message }), 
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ success: false, error: errorMessage(err) }, 500, corsHeaders);
   }
 });

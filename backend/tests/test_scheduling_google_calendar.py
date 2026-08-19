@@ -1,7 +1,9 @@
 """Google Calendar HTTP integration tests using mocked httpx (respx)."""
 
 import json
+from contextlib import contextmanager
 from datetime import datetime, timedelta
+from typing import Iterator
 from unittest.mock import AsyncMock, patch
 from zoneinfo import ZoneInfo
 
@@ -124,17 +126,7 @@ async def test_get_available_slots_degrades_when_token_refresh_fails() -> None:
     """Slots endpoint must keep working (raw profile slots) when the token is dead."""
     start_date = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).strftime("%Y-%m-%d")
 
-    with (
-        patch.object(
-            SchedulingService,
-            "get_meeting_type",
-            staticmethod(lambda slug: _fake_meeting()),
-        ),
-        patch(
-            "services.scheduling._get_access_token",
-            AsyncMock(side_effect=RuntimeError("Google token refresh failed (400: invalid_grant).")),
-        ),
-    ):
+    with _patched_scheduling(token=RuntimeError("Google token refresh failed (400: invalid_grant).")):
         slots = await SchedulingService.get_available_slots("any-slug", start_date, days=3)
 
     assert len(slots) >= 1
@@ -154,6 +146,29 @@ def _fake_meeting() -> dict:
     }
 
 
+@contextmanager
+def _patched_scheduling(
+    meeting: dict | None = None,
+    token: str | Exception = "token",
+) -> Iterator[None]:
+    """Stub the meeting-type lookup and the Google access token fetch."""
+    resolved = _fake_meeting() if meeting is None else meeting
+    access_token = (
+        AsyncMock(side_effect=token)
+        if isinstance(token, Exception)
+        else AsyncMock(return_value=token)
+    )
+    with (
+        patch.object(
+            SchedulingService,
+            "get_meeting_type",
+            staticmethod(lambda slug: resolved),
+        ),
+        patch("services.scheduling._get_access_token", access_token),
+    ):
+        yield
+
+
 @pytest.mark.asyncio
 async def test_get_available_slots_with_google_empty_busy_returns_slots() -> None:
     start_date = (datetime.now(ZoneInfo("UTC")) + timedelta(days=60)).strftime("%Y-%m-%d")
@@ -163,17 +178,7 @@ async def test_get_available_slots_with_google_empty_busy_returns_slots() -> Non
         respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
             return_value=httpx.Response(200, json=freebusy_payload)
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: _fake_meeting()),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling():
             slots = await SchedulingService.get_available_slots("any-slug", start_date, days=3)
 
     assert isinstance(slots, list)
@@ -201,17 +206,7 @@ async def test_get_available_slots_with_full_range_busy_returns_empty() -> None:
         respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
             return_value=httpx.Response(200, json=freebusy_payload)
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: _fake_meeting()),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling():
             slots = await SchedulingService.get_available_slots("any-slug", start_date, days=2)
 
     assert slots == []
@@ -234,17 +229,7 @@ async def test_book_creates_event_when_freebusy_empty() -> None:
                 json={"id": "new_evt", "htmlLink": "https://calendar.example/event"},
             )
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: _fake_meeting()),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling():
             result = await SchedulingService.book(
                 slug="x",
                 slot_start=iso_start,
@@ -280,17 +265,7 @@ async def test_book_google_meet_requests_conference_and_returns_link() -> None:
                 },
             )
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: meeting),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling(meeting):
             result = await SchedulingService.book(
                 slug="x",
                 slot_start=slot_start.isoformat(),
@@ -331,17 +306,7 @@ async def test_book_raises_when_slot_busy() -> None:
         respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
             return_value=httpx.Response(200, json=busy)
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: _fake_meeting()),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling():
             with pytest.raises(ValueError, match="no longer available"):
                 await SchedulingService.book(
                     slug="x",
@@ -373,17 +338,7 @@ async def test_book_honors_buffer_window() -> None:
         route = respx.post("https://www.googleapis.com/calendar/v3/freeBusy").mock(
             return_value=httpx.Response(200, json=adjacent_busy)
         )
-        with (
-            patch.object(
-                SchedulingService,
-                "get_meeting_type",
-                staticmethod(lambda slug: _fake_meeting()),
-            ),
-            patch(
-                "services.scheduling._get_access_token",
-                AsyncMock(return_value="token"),
-            ),
-        ):
+        with _patched_scheduling():
             with pytest.raises(ValueError, match="no longer available"):
                 await SchedulingService.book(
                     slug="x",

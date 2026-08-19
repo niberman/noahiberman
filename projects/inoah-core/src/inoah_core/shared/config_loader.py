@@ -155,10 +155,19 @@ def get_style_rules() -> list:
 
 def get_api_secret() -> str:
     """
-    Get API secret key from environment.
-    Falls back to default for development.
+    Get the shared API secret from the environment.
+
+    Raises:
+        RuntimeError: If AGENT_SECRET_KEY is unset or too short. Services that
+            grant desktop control must not start with a guessable secret.
     """
-    return os.getenv("AGENT_SECRET_KEY", "1234")
+    secret = os.getenv("AGENT_SECRET_KEY", "")
+    if len(secret) < 16:
+        raise RuntimeError(
+            "AGENT_SECRET_KEY must be set to a random value of at least 16 "
+            "characters (e.g. `openssl rand -hex 32`)."
+        )
+    return secret
 
 
 # Backwards compatibility aliases

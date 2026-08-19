@@ -7,12 +7,13 @@ import {
   mapAirportsToFlights,
   buildPuertoRicoConnectingSegments,
 } from "@/lib/flight-airports";
-import { useFlights } from "@/hooks/use-supabase-flights";
+import { useCurrentFlight, useFlights } from "@/hooks/use-supabase-flights";
+import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
+import type { AircraftPosition } from "@/lib/aircraft-position";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
 import { Map, Source, Layer, Marker, NavigationControl } from "react-map-gl/mapbox";
 import type { MapRef, ViewState } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { supabase } from "@/lib/supabase";
 import mapboxgl from "mapbox-gl";
 
 interface FlightRoute {
@@ -35,20 +36,6 @@ interface AirportTooltip {
   count: number;
   x: number;
   y: number;
-}
-
-interface FlightInfo {
-  tail_number: string;
-  flight_status: "on_ground" | "in_flight";
-}
-
-interface AircraftPosition {
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  heading: number;
-  speed: number;
-  timestamp: number;
 }
 
 // Mapbox token - must be set in Vercel environment variables as VITE_MAPBOX_TOKEN
@@ -83,26 +70,20 @@ export function FlightMap() {
   const [isInitialized, setIsInitialized] = useState(false);
   
   // Live flight tracking state
-  const [currentFlight, setCurrentFlight] = useState<FlightInfo | null>(null);
+  const { data: currentFlight } = useCurrentFlight();
   const [aircraftPosition, setAircraftPosition] = useState<AircraftPosition | null>(null);
   const [positionHistory, setPositionHistory] = useState<AircraftPosition[]>([]);
   const liveMarkerRef = useRef<mapboxgl.Marker | null>(null);
 
-  // Load current flight status
-  useEffect(() => {
-    loadCurrentFlight();
-  }, []);
-
-  // Fetch live position data when we have an active flight
-  useEffect(() => {
-    if (currentFlight?.tail_number && currentFlight.flight_status === "in_flight") {
-      fetchAircraftPosition(currentFlight.tail_number);
-      const interval = setInterval(() => {
-        fetchAircraftPosition(currentFlight.tail_number);
-      }, 30000); // Update every 30 seconds
-      return () => clearInterval(interval);
-    }
-  }, [currentFlight]);
+  useAircraftPositionPolling(
+    currentFlight?.tail_number,
+    currentFlight?.flight_status === "in_flight",
+    (position) => {
+      setAircraftPosition(position);
+      setPositionHistory((prev) => [...prev.slice(-19), position]);
+    },
+    { demoSpread: 2 },
+  );
 
   // Collect all unique airports referenced across every flight (including description waypoints)
   const uniqueAirports = useMemo(() => {
@@ -453,89 +434,6 @@ export function FlightMap() {
     const hours = hoursMatch ? parseFloat(hoursMatch[1]) : 0;
     const minutes = minutesMatch ? parseFloat(minutesMatch[1]) : 0;
     return (hours + minutes / 60).toFixed(1);
-  };
-
-  // Load current flight status
-  const loadCurrentFlight = async () => {
-    if (!supabase) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('current_flight')
-        .select('*')
-        .eq('flight_status', 'in_flight')
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data && !error) {
-        setCurrentFlight(data);
-      } else {
-        setCurrentFlight(null);
-      }
-    } catch (error) {
-      setCurrentFlight(null);
-    }
-  };
-
-  // Map of tail numbers to ICAO hex codes (Mode S codes)
-  const tailToHex: { [key: string]: string } = {
-    'N405MK': 'a4b605',
-    // Add more mappings as needed
-  };
-
-  const fetchAircraftPosition = async (tailNumber: string) => {
-    try {
-      const hexCode = tailToHex[tailNumber.toUpperCase()] || '';
-      
-      if (!hexCode) {
-        console.log(`No hex code mapping for ${tailNumber}, using demo data`);
-        // Use demo data if we don't have a hex code mapping
-        const newPosition = {
-          latitude: 39.8617 + (Math.random() - 0.5) * 2,
-          longitude: -104.6731 + (Math.random() - 0.5) * 2,
-          altitude: 8500 + Math.random() * 2000,
-          heading: Math.random() * 360,
-          speed: 150 + Math.random() * 50,
-          timestamp: Date.now()
-        };
-        setAircraftPosition(newPosition);
-        setPositionHistory(prev => [...prev.slice(-19), newPosition]);
-        return;
-      }
-
-      const response = await fetch(
-        `https://adsbexchange-com1.p.rapidapi.com/v2/hex/${hexCode}/`,
-        {
-          headers: {
-            'X-RapidAPI-Key': '311e23f637msh8454e570caa53a6p1a6fc8jsn8a0bf67a91ad',
-            'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
-          }
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.ac && data.ac.length > 0) {
-          const aircraft = data.ac[0];
-          console.log('Live aircraft data received:', aircraft);
-          
-          const newPosition = {
-            latitude: parseFloat(aircraft.lat),
-            longitude: parseFloat(aircraft.lon),
-            altitude: parseInt(aircraft.alt_baro) || parseInt(aircraft.alt_geom) || 0,
-            heading: parseInt(aircraft.track) || 0,
-            speed: parseInt(aircraft.gs) || 0,
-            timestamp: Date.now()
-          };
-          
-          setAircraftPosition(newPosition);
-          setPositionHistory(prev => [...prev.slice(-19), newPosition]);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching aircraft position:', error);
-    }
   };
 
   const mapboxToken = getMapboxToken();

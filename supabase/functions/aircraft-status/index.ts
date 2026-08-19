@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  BASE_CORS_HEADERS as corsHeaders,
+  caughtErrorResponse,
+  errorResponse,
+  HttpError,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, getCallerUser } from "../_shared/supabase.ts";
 
 interface AircraftStatus {
   aircraft_tail_number: string;
@@ -17,27 +20,25 @@ interface AircraftStatus {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
-    // Create Supabase client
-    const supabaseClient = createClient(
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
+    const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      authHeader,
     );
 
-    // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const user = await getCallerUser(supabaseClient);
 
     if (!user) {
-      throw new Error("Unauthorized");
+      throw new HttpError(401, "Unauthorized");
     }
 
     const method = req.method;
@@ -54,13 +55,7 @@ serve(async (req) => {
 
       if (error && error.code !== "PGRST116") throw error; // PGRST116 = no rows returned
 
-      return new Response(
-        JSON.stringify({ success: true, aircraft }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return jsonResponse({ success: true, aircraft }, 200, corsHeaders);
     }
 
     // Handle POST requests - create/update aircraft status
@@ -68,12 +63,14 @@ serve(async (req) => {
       const aircraftStatus: AircraftStatus = await req.json();
 
       // Check if aircraft already exists
-      const { data: existing } = await supabaseClient
+      const { data: existing, error: lookupError } = await supabaseClient
         .from("aircraft_status")
         .select("id")
         .eq("user_id", user.id)
         .eq("aircraft_tail_number", aircraftStatus.aircraft_tail_number)
-        .single();
+        .maybeSingle();
+
+      if (lookupError) throw lookupError;
 
       let result;
       if (existing) {
@@ -105,30 +102,12 @@ serve(async (req) => {
         result = data;
       }
 
-      return new Response(
-        JSON.stringify({ success: true, aircraft: result }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        }
-      );
+      return jsonResponse({ success: true, aircraft: result }, 200, corsHeaders);
     }
 
-    return new Response(
-      JSON.stringify({ error: "Method not allowed" }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 405,
-      }
-    );
+    return errorResponse("Method not allowed", 405, corsHeaders);
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return caughtErrorResponse(error, "aircraft-status", corsHeaders);
   }
 });
 

@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  BASE_CORS_HEADERS as corsHeaders,
+  caughtErrorResponse,
+  errorResponse,
+  HttpError,
+  jsonResponse,
+  preflightResponse,
+} from "../_shared/http.ts";
+import { callerClient, getCallerUser } from "../_shared/supabase.ts";
 
 interface TrackFlightRequest {
   flightIdentifier: string; // Can be flight number or FA flight ID
@@ -13,33 +16,31 @@ interface TrackFlightRequest {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflightResponse(corsHeaders);
   }
 
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("Authorization")!;
-    
-    // Create Supabase client
-    const supabaseClient = createClient(
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new HttpError(401, "Missing Authorization header.");
+    }
+
+    const supabaseClient = callerClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      authHeader,
     );
 
-    // Get the current user
-    const {
-      data: { user },
-    } = await supabaseClient.auth.getUser();
+    const user = await getCallerUser(supabaseClient);
 
     if (!user) {
-      throw new Error("Unauthorized");
+      throw new HttpError(401, "Unauthorized");
     }
 
     const { flightIdentifier }: TrackFlightRequest = await req.json();
 
     if (!flightIdentifier) {
-      throw new Error("Flight identifier is required");
+      throw new HttpError(400, "Flight identifier is required.");
     }
 
     // TODO: Integrate with FlightAware API
@@ -82,29 +83,15 @@ serve(async (req) => {
       .select()
       .single();
 
-    if (error) {
-      console.error("Error storing flight:", error);
-    }
+    if (error) throw error;
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        flight: mockFlightData,
-        flightId: trackedFlight?.id,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
+    return jsonResponse(
+      { success: true, flight: mockFlightData, flightId: trackedFlight.id },
+      200,
+      corsHeaders,
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      }
-    );
+    return caughtErrorResponse(error, "track-flight", corsHeaders);
   }
 });
 
