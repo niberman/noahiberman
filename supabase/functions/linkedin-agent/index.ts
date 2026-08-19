@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,10 +15,26 @@ serve(async (req) => {
     try {
         const CF_WORKER_URL = Deno.env.get('CLOUDFLARE_WORKER_URL')
         const CF_API_KEY = Deno.env.get('CLOUDFLARE_API_KEY')
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')
+        const anonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
-        if (!CF_WORKER_URL) {
-            console.error('Missing CLOUDFLARE_WORKER_URL')
+        if (!CF_WORKER_URL || !supabaseUrl || !anonKey) {
+            console.error('Missing CLOUDFLARE_WORKER_URL / Supabase environment')
             throw new Error('Server configuration error')
+        }
+
+        // Owner gate: verify_jwt only proves the caller holds the anon key, which
+        // every visitor has. Posting to LinkedIn is owner-only.
+        const asCaller = createClient(supabaseUrl, anonKey, {
+            global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+        })
+        const { data: { user } } = await asCaller.auth.getUser()
+        const { data: isOwner } = user ? await asCaller.rpc('is_owner') : { data: false }
+        if (isOwner !== true) {
+            return new Response(
+                JSON.stringify({ error: 'Not authorized' }),
+                { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
         }
 
         const body = await req.json()

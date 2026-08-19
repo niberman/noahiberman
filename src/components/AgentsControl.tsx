@@ -6,7 +6,7 @@ const AGENT_URL = (
   import.meta.env.VITE_AGENT_URL ?? "http://127.0.0.1:8000"
 ).replace(/\/$/, "");
 
-const SECRET = import.meta.env.VITE_AGENT_SECRET ?? "1234";
+const SECRET = import.meta.env.VITE_AGENT_SECRET ?? "";
 
 export default function AgentControl() {
   const [status, setStatus] = useState(
@@ -112,6 +112,15 @@ export default function AgentControl() {
   }, []);
 
   const feedSrc = `${AGENT_URL}/video_feed?token=${encodeURIComponent(SECRET)}`;
+
+  if (!SECRET) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-4 border border-zinc-800 bg-zinc-950 rounded-xl text-zinc-400 text-xs font-mono">
+        Remote Visual Interface disabled: set <code>VITE_AGENT_SECRET</code> (must
+        match <code>AGENT_SECRET_KEY</code> on the host) to enable it.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 border border-zinc-800 bg-zinc-950 rounded-xl text-zinc-200 shadow-2xl">

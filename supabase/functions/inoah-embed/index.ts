@@ -71,13 +71,15 @@ serve(async (req) => {
     return json({ error: "Server configuration error." }, 500);
   }
 
-  // Only a signed-in dashboard user may edit the corpus.
+  // Only the owner may edit the corpus. Signup is public, so "any signed-in
+  // user" would let a stranger write memories the twins retrieve.
   const authHeader = req.headers.get("Authorization") ?? "";
   const asCaller = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authHeader } },
   });
   const { data: { user } } = await asCaller.auth.getUser();
-  if (!user) {
+  const { data: isOwner } = user ? await asCaller.rpc("is_owner") : { data: false };
+  if (isOwner !== true) {
     return json({ error: "Not authorized." }, 401);
   }
 

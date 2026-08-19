@@ -1,3 +1,4 @@
+import hmac
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -24,7 +25,12 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 
 from services.logbook_sync import sync_monthly_logbook_from_email
-from services.scheduling import SchedulingService, get_auth_url, exchange_code
+from services.scheduling import (
+    SchedulingService,
+    exchange_code,
+    get_auth_url,
+    verify_oauth_state,
+)
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -65,12 +71,26 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+DEFAULT_ALLOWED_ORIGINS = (
+    "https://noahiberman.com",
+    "https://www.noahiberman.com",
+    "http://localhost:8080",
+    "http://localhost:5173",
+)
+
+
+def _allowed_origins() -> list[str]:
+    configured = os.environ.get("ALLOWED_ORIGINS", "")
+    origins = [o.strip() for o in configured.split(",") if o.strip()]
+    return origins or list(DEFAULT_ALLOWED_ORIGINS)
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_allowed_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
@@ -117,13 +137,21 @@ def _require_sync_auth(authorization: str | None) -> None:
     token = authorization[len("Bearer ") :]
 
     cron_secret = os.environ.get("CRON_SECRET")
-    if cron_secret and token == cron_secret:
+    if cron_secret and hmac.compare_digest(token, cron_secret):
         return
 
     if _is_valid_supabase_user_token(token):
         return
 
     raise HTTPException(status_code=401, detail="Unauthorized.")
+
+
+def _require_owner_auth(authorization: str | None) -> None:
+    """Only a signed-in dashboard user may touch the Google Calendar connection."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Unauthorized.")
+    if not _is_valid_supabase_user_token(authorization[len("Bearer ") :]):
+        raise HTTPException(status_code=401, detail="Unauthorized.")
 
 
 @app.get("/sync/logbook")
@@ -148,14 +176,16 @@ def sync_logbook(authorization: str | None = Header(default=None)):
 
 
 @app.get("/scheduling/auth/url")
-def scheduling_auth_url():
-    """Return the Google OAuth consent URL."""
+def scheduling_auth_url(authorization: str | None = Header(default=None)):
+    """Return the Google OAuth consent URL (owner only)."""
+    _require_owner_auth(authorization)
     return {"url": get_auth_url()}
 
 
 @app.get("/scheduling/auth/status")
-async def scheduling_auth_status():
+async def scheduling_auth_status(authorization: str | None = Header(default=None)):
     """Return whether Google Calendar is connected AND the token still works."""
+    _require_owner_auth(authorization)
     return {"connected": await SchedulingService.verify_google_calendar_connection()}
 
 
@@ -164,15 +194,27 @@ class OAuthExchangeRequest(BaseModel):
 
 
 @app.post("/scheduling/auth/exchange")
-async def scheduling_auth_exchange(body: OAuthExchangeRequest):
+async def scheduling_auth_exchange(
+    body: OAuthExchangeRequest,
+    authorization: str | None = Header(default=None),
+):
     """Exchange an OAuth code for tokens and persist the refresh token."""
+    _require_owner_auth(authorization)
     await exchange_code(body.code)
     return {"status": "ok", "message": "Google Calendar connected."}
 
 
 @app.get("/scheduling/auth/callback")
-async def scheduling_auth_callback(code: str = Query(...)):
-    """Handle the Google OAuth callback, persist the refresh token, then redirect."""
+async def scheduling_auth_callback(code: str = Query(...), state: str = Query(default="")):
+    """Handle the Google OAuth callback, persist the refresh token, then redirect.
+
+    The `state` value is the one minted by `get_auth_url`; rejecting anything
+    else stops a third party from replaying their own authorization code and
+    binding their Google Calendar to this deployment.
+    """
+    if not verify_oauth_state(state):
+        LOGGER.warning("OAuth callback rejected: invalid state.")
+        return RedirectResponse(url="/dashboard?calendar_error=true")
     try:
         await exchange_code(code)
         return RedirectResponse(url="/dashboard?calendar_connected=true")

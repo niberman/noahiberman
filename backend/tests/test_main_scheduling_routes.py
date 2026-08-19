@@ -9,6 +9,8 @@ from services.scheduling import SchedulingService
 
 client = TestClient(app)
 
+OWNER_HEADERS = {"Authorization": "Bearer owner-token"}
+
 
 def test_health() -> None:
     resp = client.get("/health")
@@ -54,15 +56,26 @@ def test_scheduling_auth_status() -> None:
     async def fake_verify():
         return True
 
-    with patch.object(
-        SchedulingService,
-        "verify_google_calendar_connection",
-        staticmethod(fake_verify),
+    with (
+        patch("main._is_valid_supabase_user_token", return_value=True),
+        patch.object(
+            SchedulingService,
+            "verify_google_calendar_connection",
+            staticmethod(fake_verify),
+        ),
     ):
-        resp = client.get("/scheduling/auth/status")
+        resp = client.get("/scheduling/auth/status", headers=OWNER_HEADERS)
 
     assert resp.status_code == 200
     assert resp.json() == {"connected": True}
+
+
+def test_scheduling_auth_endpoints_require_auth() -> None:
+    assert client.get("/scheduling/auth/url").status_code == 401
+    assert client.get("/scheduling/auth/status").status_code == 401
+    assert (
+        client.post("/scheduling/auth/exchange", json={"code": "x"}).status_code == 401
+    )
 
 
 def test_scheduling_auth_exchange() -> None:
@@ -70,11 +83,28 @@ def test_scheduling_auth_exchange() -> None:
         assert code == "oauth-code"
         return {"refresh_token": "stored"}
 
-    with patch("main.exchange_code", side_effect=fake_exchange):
-        resp = client.post("/scheduling/auth/exchange", json={"code": "oauth-code"})
+    with (
+        patch("main._is_valid_supabase_user_token", return_value=True),
+        patch("main.exchange_code", side_effect=fake_exchange),
+    ):
+        resp = client.post(
+            "/scheduling/auth/exchange",
+            json={"code": "oauth-code"},
+            headers=OWNER_HEADERS,
+        )
 
     assert resp.status_code == 200
     assert resp.json()["status"] == "ok"
+
+
+def test_scheduling_auth_callback_rejects_bad_state() -> None:
+    with patch("main.exchange_code", side_effect=AssertionError("must not exchange")):
+        resp = client.get(
+            "/scheduling/auth/callback?code=abc&state=forged",
+            follow_redirects=False,
+        )
+    assert resp.status_code in (302, 307)
+    assert "calendar_error=true" in resp.headers["location"]
 
 
 def test_get_slots_returns_meeting_and_slots() -> None:
