@@ -53,31 +53,6 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['agents']['Row']>;
       };
-      uploads: {
-        Row: {
-          id: string;
-          user_id: string | null;
-          type: 'image' | 'text' | 'video' | 'document' | 'other';
-          image_url: string | null;
-          text: string | null;
-          metadata: Json | null;
-          status: 'pending' | 'processing' | 'completed' | 'failed';
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id?: string | null;
-          type?: 'image' | 'text' | 'video' | 'document' | 'other';
-          image_url?: string | null;
-          text?: string | null;
-          metadata?: Json | null;
-          status?: 'pending' | 'processing' | 'completed' | 'failed';
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: Partial<Database['public']['Tables']['uploads']['Row']>;
-      };
       aircraft_status: {
         Row: {
           id: string;
@@ -137,70 +112,6 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: Partial<Database['public']['Tables']['flight_tracking']['Row']>;
-      };
-      ventures: {
-        Row: {
-          id: string;
-          title: string;
-          description: string;
-          role: string;
-          year: string;
-          status: 'active' | 'completed' | 'in-progress';
-          link: string | null;
-          tags: string[] | null;
-          subtitle_en: string | null;
-          subtitle_es: string | null;
-          is_new: boolean | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id: string;
-          title: string;
-          description: string;
-          role: string;
-          year: string;
-          status?: 'active' | 'completed' | 'in-progress';
-          link?: string | null;
-          tags?: string[] | null;
-          subtitle_en?: string | null;
-          subtitle_es?: string | null;
-          is_new?: boolean | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: Partial<Database['public']['Tables']['ventures']['Row']>;
-      };
-      projects: {
-        Row: {
-          id: string;
-          title: string;
-          description: string;
-          category: string;
-          year: string;
-          technologies: string[] | null;
-          link: string | null;
-          image: string | null;
-          venture_link: string | null;
-          venture_name: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id: string;
-          title: string;
-          description: string;
-          category: string;
-          year: string;
-          technologies?: string[] | null;
-          link?: string | null;
-          image?: string | null;
-          venture_link?: string | null;
-          venture_name?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: Partial<Database['public']['Tables']['projects']['Row']>;
       };
       flights: {
         Row: {

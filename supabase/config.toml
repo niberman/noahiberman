@@ -28,3 +28,19 @@ enabled = true
 # SYNC_SECRET bearer from Vault
 verify_jwt = false
 entrypoint = "./functions/inoah-sync-drive/index.ts"
+
+# Archived 2026-08-19: deployed but never called from the app, and their tables
+# now live in the `archive` schema. Left in the tree so the source is still
+# here; `enabled = false` keeps a bulk deploy from putting them back. To revive
+# one, flip this and move its table back out of `archive`.
+[functions.linkedin-agent]
+enabled = false
+entrypoint = "./functions/linkedin-agent/index.ts"
+
+[functions.generate-post]
+enabled = false
+entrypoint = "./functions/generate-post/index.ts"
+
+[functions.crm-contacts]
+enabled = false
+entrypoint = "./functions/crm-contacts/index.ts"
