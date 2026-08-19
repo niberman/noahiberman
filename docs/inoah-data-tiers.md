@@ -54,6 +54,28 @@ produces; request bodies that try to set visibility are rejected.
 | `site_table` | A public table already rendered on noahiberman.com | `public` |
 | `repo_file` | `docs/public-profile.md`, ingested by script with its Never publish section stripped | `public` |
 
+### Tiering a section rather than a whole file
+
+A file is often the wrong unit: `public-profile.md` is public knowledge and a
+never-publish list in one document. A heading may therefore re-declare the tier
+of its own section, using the frontmatter vocabulary in an HTML comment:
+
+```markdown
+## Certificates and ratings
+## Hours snapshot <!-- private -->
+## Credentials dump <!-- secret -->
+```
+
+The marker counts only at the end of a heading line, so prose cannot vote, and
+it is stripped before the text is embedded. A section that declares nothing
+inherits the file's tier. `secret`/`config` drop the section the way they drop
+a file. Because chunk overlap is never applied across a heading, a private
+section cannot bleed its tail into the public chunk that follows it
+(`_shared/chunking_test.ts` holds that property).
+
+Mixed sections need a subheading, not a marker on the parent: marking
+`## Aviation` private would hide the certificate list along with the hours.
+
 ### Adding a Drive source
 
 1. Share the folder, read-only, with the sync service account
