@@ -15,7 +15,6 @@ import FlightLogManager from "@/components/dashboard/FlightLogManager";
 import SchedulerManager from "@/components/dashboard/SchedulerManager";
 import InoahKnowledgeManager from "@/components/dashboard/InoahKnowledgeManager";
 import InoahPrivateChat from "@/components/dashboard/InoahPrivateChat";
-import { AircraftCard } from "@/components/dashboard/AircraftCard";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -271,12 +270,6 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
             </Card>
-          </div>
-
-          {/* Aircraft status. The card and its edge function already existed;
-              nothing rendered them, so the aircraft_status table stayed empty. */}
-          <div className="mt-8 sm:mt-10">
-            <AircraftCard />
           </div>
 
           {/* Agent Control */}
