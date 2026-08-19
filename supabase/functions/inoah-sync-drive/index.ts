@@ -46,6 +46,15 @@ function chunkText(text: string): string[] {
   for (let para of paragraphs) {
     para = para.trim();
     if (!para) continue;
+    // A heading starts a new topic, so never pack across one. Without this a
+    // Q&A document packs several unrelated answers into one chunk, and the
+    // blended embedding fails to clear the match threshold for any single
+    // question — the corpus holds the answer and retrieval never surfaces it.
+    if (para.startsWith("#") && current) {
+      chunks.push(current.trim());
+      current = para;
+      continue;
+    }
     if (current.length + para.length > CHUNK_SIZE) {
       if (current) chunks.push(current.trim());
       if (chunks.length > 0 && CHUNK_OVERLAP > 0) {
