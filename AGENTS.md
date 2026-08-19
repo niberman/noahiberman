@@ -8,8 +8,10 @@ This document describes the AI agents and automated systems that power noahiberm
 
 **Type:** Two conversational agents over one tiered corpus
 **Runtime:** Supabase Edge Functions (`supabase/functions/inoah-chat/`, `supabase/functions/inoah-chat-private/`)
-**Model:** Google Gemini 3.5 Flash, routed through OpenRouter when `OPENROUTER_API_KEY` is set, Gemini direct otherwise
+**Model:** Google Gemini 3.5 Flash (`google/gemini-3.5-flash`) via OpenRouter — `OPENROUTER_API_KEY` is the key chat bills to. Gemini direct is the fallback, used only if that key is unset or the OpenRouter call errors.
 **Embedding:** Google `gemini-embedding-2`, native endpoint, `output_dimensionality: 768`
+
+**Keys.** Chat needs `OPENROUTER_API_KEY`; embeddings need `GEMINI_API_KEY` and cannot move to OpenRouter (no embeddings endpoint there, and the stored vectors are gemini-embedding-2 at 768 dims — re-embedding a query with anything else makes it incomparable and retrieval silently returns nothing). The functions boot with either key alone: with only OpenRouter set, chat works and answers without retrieved context; with only Gemini set, chat falls back to Gemini direct. Both missing is the only configuration error. Each answer reports the route it took in the `provider` field and in the function logs.
 
 iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors in the chat widget and at `/inoah`; the private twin answers the signed-in owner on `/dashboard`. Both retrieve from the same `memories` table, but the boundary between them is enforced in Postgres, not in a prompt: see `docs/inoah-data-tiers.md`.
 
@@ -18,7 +20,7 @@ iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors 
 1. The prompt is embedded with `gemini-embedding-2` (768 dims; anything embedded with another model or width is stored but never retrieved).
 2. The public twin calls the `match_memories_public` RPC, which has `visibility = 'public'` hardcoded in its SQL body. The private twin calls `match_memories_private` after verifying the caller is in `app_owners`. Threshold and count come from `inoah_settings` (currently 0.6 and 5).
 3. Retrieved chunks are injected into the system prompt from `inoah_settings.system_prompt`, which is built from `docs/public-profile.md` and editable on the dashboard.
-4. Gemini 3.5 Flash generates the response with low reasoning effort; output is post-processed to strip reasoning leakage.
+4. Gemini 3.5 Flash, called through OpenRouter, generates the response with low reasoning effort; output is post-processed to strip reasoning leakage. The two routes spell reasoning effort differently — OpenRouter takes `reasoning: { effort }`, Google's OpenAI-compat layer takes `reasoning_effort` — so the fallback swaps the parameter as well as the base URL.
 
 ### Guardrails
 

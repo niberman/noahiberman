@@ -6,6 +6,12 @@ A consolidated history of fixes, features, and improvements.
 
 ## Recent Updates
 
+### iNoah on OpenRouter (2026-08-16)
+- **Fixed**: Both twins hard-failed with a 500 when `GEMINI_API_KEY` was absent, even with `OPENROUTER_API_KEY` set — so the OpenRouter key could never be the only configured provider. The config guard now requires just one of the two
+- **Fixed**: The Gemini fallback built a client with an undefined key when Gemini was unconfigured, masking the real OpenRouter error behind a second failure. It now rethrows the original
+- **Changed**: Retrieval degrades to answering without context (with a warning) instead of blocking startup when the embedding key is missing; embeddings stay on `gemini-embedding-2` because OpenRouter has no embeddings endpoint and the stored vectors are not comparable to any other model
+- **Added**: `OPENROUTER_API_KEY` and `GEMINI_API_KEY` documented in `.env.example` with the `supabase secrets set` commands, and the provider route logged per request alongside the existing `provider` response field
+
 ### iNoah Corpus Tiering (2026-08-05)
 - **Security**: Closed the public context leak. Anonymous `debug_mode` no longer returns retrieved chunks; the flag is owner-only and silent for everyone else
 - **Security**: Replaced blanket authenticated RLS on `memories` and `inoah_settings` with owner-only policies backed by an `app_owners` table; disabled public signup
