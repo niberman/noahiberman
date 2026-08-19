@@ -3,10 +3,20 @@
 // Trust model: SYNC_SECRET bearer gates the trigger (the hourly cron in
 // Postgres holds it in Vault). The service account can only see folders Noah
 // shared with it, and only folders registered in ingest_sources get read at
-// all. Every chunk lands at the source row's default_visibility; there is no
-// code path here that writes 'public' for Drive content because both Drive
-// sources are registered private. Promotion stays a human dashboard action.
+// all. A Drive file decides its own tier in its frontmatter: `visibility:
+// public` is served to strangers, `private` (or no declaration) is owner-only,
+// and `secret`/`config` are not ingested at all — a credentials file has no
+// business in a retrieval corpus, and a persona spec is configuration rather
+// than knowledge. Site tables have no frontmatter and keep the source row's
+// default_visibility. Files that declare nothing still default to private, so
+// a missing declaration hides a row rather than publishing it.
 import { isExcludedContent } from "../_shared/content_policy.ts";
+import {
+  DECLARABLE_TIERS,
+  declaredVisibility,
+  NOT_CORPUS,
+  stripFrontmatter,
+} from "../_shared/frontmatter.ts";
 import { embedText, sha256Hex } from "../_shared/embeddings.ts";
 import {
   PUBLIC_CORS_HEADERS as corsHeaders,
@@ -177,6 +187,8 @@ interface Chunk {
   content: string;
   sourceUri: string | null;
   name: string;
+  /** From the file's frontmatter; falls back to the source default when absent. */
+  visibility?: string;
 }
 
 /**
@@ -189,17 +201,19 @@ async function syncChunks(
   supabase: any,
   embeddingKey: string,
   origin: string,
-  visibility: string,
+  defaultVisibility: string,
   collection: string,
   chunks: Chunk[],
-): Promise<{ upserted: number; skipped: number; deleted: number; excluded: number }> {
+): Promise<
+  { upserted: number; skipped: number; retiered: number; deleted: number; excluded: number }
+> {
   const total = chunks.length;
   chunks = chunks.filter((c) => !isExcludedContent(c.content));
   const excluded = total - chunks.length;
   const sourceIds = [...new Set(chunks.map((c) => c.sourceId))];
   const { data: existing, error: existingError } = await supabase
     .from("memories")
-    .select("id, source_id, chunk_index, content_hash")
+    .select("id, source_id, chunk_index, content_hash, visibility")
     .eq("metadata->>sync_origin", origin);
   if (existingError) throw new Error(existingError.message);
   const byKey = new Map<string, any>(
@@ -209,11 +223,25 @@ async function syncChunks(
   const now = new Date().toISOString();
   let upserted = 0;
   let skipped = 0;
+  let retiered = 0;
   for (const c of chunks) {
     const hash = await sha256Hex(c.content);
     const prior = byKey.get(`${c.sourceId} ${c.chunkIndex}`);
+    const tier = c.visibility ?? defaultVisibility;
     if (prior?.content_hash === hash) {
-      skipped += 1;
+      if (prior.visibility === tier) {
+        skipped += 1;
+        continue;
+      }
+      // Same text, different tier: the file re-declared itself, or the rule
+      // that assigned the tier changed. Move the row without paying for an
+      // embedding — the vector is a function of the content, which is identical.
+      const { error } = await supabase
+        .from("memories")
+        .update({ visibility: tier, updated_at: now })
+        .eq("id", prior.id);
+      if (error) throw new Error(error.message);
+      retiered += 1;
       continue;
     }
     const embedding = await embedText(c.content, embeddingKey);
@@ -227,7 +255,7 @@ async function syncChunks(
         source_uri: c.sourceUri,
         chunk_index: c.chunkIndex,
         content_hash: hash,
-        visibility,
+        visibility: tier,
         ingested_at: now,
         updated_at: now,
       },
@@ -246,7 +274,7 @@ async function syncChunks(
     const { error } = await supabase.from("memories").delete().in("id", staleIds);
     if (error) throw new Error(error.message);
   }
-  return { upserted, skipped, deleted: staleIds.length, excluded };
+  return { upserted, skipped, retiered, deleted: staleIds.length, excluded };
 }
 
 // --- Site table renderers ---
@@ -407,15 +435,29 @@ Deno.serve(async (req) => {
       for (const src of driveSources) {
         const { files, skippedBinaries } = await listFolderRecursive(src.external_id, token);
         const chunks: Chunk[] = [];
+        const notCorpus: string[] = [];
         for (const f of files) {
           const text = await readFileText(f, token);
-          chunkText(text).forEach((content, i) => {
+          const declared = declaredVisibility(text);
+          if (declared && NOT_CORPUS.has(declared)) {
+            // Never embedded, and any rows a previous run created are deleted
+            // below as stale — the file simply stops existing to the corpus.
+            notCorpus.push(`${f.name} (${declared})`);
+            continue;
+          }
+          const visibility = declared && DECLARABLE_TIERS.has(declared)
+            ? declared
+            : src.default_visibility;
+          // The declaration is read from the frontmatter; the frontmatter itself
+          // is metadata and never becomes corpus content.
+          chunkText(stripFrontmatter(text)).forEach((content, i) => {
             chunks.push({
               sourceId: f.id,
               chunkIndex: i,
               name: f.name,
               sourceUri: f.webViewLink ?? null,
               content,
+              visibility,
             });
           });
         }
@@ -427,7 +469,12 @@ Deno.serve(async (req) => {
           "drive",
           chunks,
         );
-        report[src.label] = { files: files.length, skipped_binaries: skippedBinaries, ...result };
+        report[src.label] = {
+          files: files.length,
+          skipped_binaries: skippedBinaries,
+          not_corpus: notCorpus,
+          ...result,
+        };
       }
       if (!report.drive_changes_seen) {
         const startPage = await driveGet("/changes/startPageToken", token);
