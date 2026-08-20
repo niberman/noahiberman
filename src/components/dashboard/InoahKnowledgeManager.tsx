@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Ban, Brain, Globe, Loader2, Lock, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,12 +18,9 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import {
   useDeleteKnowledgeEntry,
-  useInoahSettings,
   useKnowledgeEntries,
-  useSaveInoahSettings,
   useSaveKnowledgeEntry,
   useSetVisibility,
-  type InoahSettings,
   type KnowledgeEntry,
 } from "@/hooks/use-inoah-knowledge";
 
@@ -52,20 +49,12 @@ function matchesFilter(entry: KnowledgeEntry, filter: TierFilter): boolean {
 }
 
 /**
- * Everything iNoah answers from: the retrieved knowledge entries and the
- * persona prompt they are injected into. Both were previously baked into the
- * edge function and needed a redeploy to change.
+ * The corpus iNoah answers from: review, promote, demote, delete. The persona
+ * and retrieval knobs are deliberately not editable here — `public-persona.md`
+ * in Drive is the source of truth for the prompt, and a second edit surface
+ * only competed with it.
  */
 export default function InoahKnowledgeManager() {
-  return (
-    <div className="space-y-8 sm:space-y-10">
-      <KnowledgeEntries />
-      <PersonaSettings />
-    </div>
-  );
-}
-
-function KnowledgeEntries() {
   // isPending, not isLoading: between react-query's retries isLoading goes false
   // while data is still undefined, which rendered an empty card with no explanation.
   const { data: entries, isPending, error } = useKnowledgeEntries();
@@ -426,125 +415,6 @@ function TierBadge({ visibility }: { visibility: KnowledgeEntry["visibility"] })
       <Lock className="h-3 w-3 mr-1" />
       private
     </Badge>
-  );
-}
-
-function PersonaSettings() {
-  const { data: settings, isPending } = useInoahSettings();
-  const saveSettings = useSaveInoahSettings();
-  const { toast } = useToast();
-  const [draft, setDraft] = useState<InoahSettings | null>(null);
-
-  useEffect(() => {
-    if (settings) setDraft(settings);
-  }, [settings]);
-
-  const handleSave = async () => {
-    if (!draft) return;
-    try {
-      await saveSettings.mutateAsync(draft);
-      toast({ title: "Saved", description: "New answers use this immediately." });
-    } catch (err) {
-      toast({
-        title: "Could not save",
-        description: err instanceof Error ? err.message : "Unknown error",
-        variant: "destructive",
-      });
-    }
-  };
-
-  return (
-    <Card className="bg-card/95 backdrop-blur">
-      <CardHeader>
-        <CardTitle className="text-lg sm:text-xl">Persona &amp; retrieval</CardTitle>
-        <CardDescription className="text-sm">
-          The voice iNoah answers in, and how much of the knowledge base it pulls per
-          question.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-5">
-        {isPending && <p className="text-sm text-muted-foreground">Loading…</p>}
-
-        {!isPending && !draft && (
-          <p className="text-sm text-muted-foreground">
-            No settings row found — run the{" "}
-            <code className="text-xs">inoah_knowledge_base</code> migration.
-          </p>
-        )}
-
-        {draft && (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="system-prompt">System prompt</Label>
-              <Textarea
-                id="system-prompt"
-                value={draft.system_prompt}
-                onChange={(e) => setDraft({ ...draft, system_prompt: e.target.value })}
-                className="min-h-[280px] font-mono text-xs leading-relaxed"
-              />
-              <p className="text-xs text-muted-foreground">
-                Who iNoah is and how it writes. Formatting rules that stop it leaking
-                reasoning are appended automatically and are not editable here.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="match-count">Entries per answer</Label>
-                <Input
-                  id="match-count"
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={draft.match_count}
-                  onChange={(e) =>
-                    setDraft({ ...draft, match_count: Number(e.target.value) })
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  How many entries get injected. More context, slower answers.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="match-threshold">Similarity threshold</Label>
-                <Input
-                  id="match-threshold"
-                  type="number"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={draft.match_threshold}
-                  onChange={(e) =>
-                    setDraft({ ...draft, match_threshold: Number(e.target.value) })
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  0–1. Raise it to only use close matches, lower it if answers miss
-                  entries you know are there.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t">
-              <span className="text-xs text-muted-foreground">
-                {settings?.updated_at && `Last updated ${formatStamp(settings.updated_at)}`}
-              </span>
-              <Button
-                variant="secondary"
-                onClick={handleSave}
-                disabled={saveSettings.isPending || !draft.system_prompt.trim()}
-                className="w-full sm:w-auto"
-              >
-                {saveSettings.isPending && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
-                Save
-              </Button>
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
   );
 }
 

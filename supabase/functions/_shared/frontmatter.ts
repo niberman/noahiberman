@@ -34,3 +34,28 @@ export const NOT_CORPUS = new Set(["secret", "config"]);
 export function stripFrontmatter(text: string): string {
   return text.replace(FRONTMATTER_RE, "").trim();
 }
+
+/**
+ * A heading may re-declare the tier of its own section:
+ * `## Internal figures <!-- private -->`. Same vocabulary as the frontmatter,
+ * so one document can be public without publishing the parts of itself it
+ * says are internal — `public-profile.md` is public knowledge and a
+ * never-publish list living in one file, and the file is the wrong unit.
+ *
+ * An HTML comment because it stays invisible wherever the document is read,
+ * and because prose can mention a tier without voting: the marker only counts
+ * on a heading line, at its end.
+ */
+const SECTION_TIER_RE = /^#{1,6}[ \t].*?<!--[ \t]*([A-Za-z]+)[ \t]*-->[ \t]*$/;
+
+/** The tier a heading declares for its section, or null if it declares none. */
+export function sectionVisibility(heading: string): string | null {
+  const line = heading.split("\n", 1)[0];
+  const match = line.match(SECTION_TIER_RE);
+  return match ? match[1].toLowerCase() : null;
+}
+
+/** The heading without its marker, so the marker is never embedded. */
+export function stripSectionMarker(heading: string): string {
+  return heading.replace(/[ \t]*<!--[ \t]*[A-Za-z]+[ \t]*-->[ \t]*$/m, "");
+}

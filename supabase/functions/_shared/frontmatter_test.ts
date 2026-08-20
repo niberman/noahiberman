@@ -1,6 +1,11 @@
 // deno test supabase/functions/_shared/frontmatter_test.ts
 import { assertEquals } from "https://deno.land/std@0.177.0/testing/asserts.ts";
-import { declaredVisibility, stripFrontmatter } from "./frontmatter.ts";
+import {
+  declaredVisibility,
+  sectionVisibility,
+  stripFrontmatter,
+  stripSectionMarker,
+} from "./frontmatter.ts";
 
 Deno.test("reads a declaration from the frontmatter block", () => {
   assertEquals(
@@ -57,4 +62,30 @@ Deno.test("a file with no frontmatter is untouched", () => {
 
 Deno.test("a --- rule inside the body is not mistaken for frontmatter", () => {
   assertEquals(stripFrontmatter("Intro.\n\n---\n\nMore."), "Intro.\n\n---\n\nMore.");
+});
+
+Deno.test("a heading re-declares the tier of its own section", () => {
+  assertEquals(sectionVisibility("## Internal figures <!-- private -->"), "private");
+  assertEquals(sectionVisibility("# Do not claim <!--  NEVER  -->"), "never");
+});
+
+Deno.test("an unmarked heading declares nothing", () => {
+  assertEquals(sectionVisibility("## Education"), null);
+  assertEquals(sectionVisibility("## Aviation\n\nBody about hours."), null);
+});
+
+Deno.test("only a heading line carries a marker, and only at its end", () => {
+  // Body prose and mid-heading comments must not vote, or an offhand note
+  // silently re-tiers the section around it.
+  assertEquals(sectionVisibility("Plain body <!-- private -->"), null);
+  assertEquals(sectionVisibility("## <!-- private --> Internal figures"), null);
+  assertEquals(sectionVisibility("####### Seven hashes is not a heading <!-- private -->"), null);
+});
+
+Deno.test("the marker never reaches the corpus", () => {
+  assertEquals(
+    stripSectionMarker("## Internal figures <!-- private -->"),
+    "## Internal figures",
+  );
+  assertEquals(stripSectionMarker("## Education"), "## Education");
 });

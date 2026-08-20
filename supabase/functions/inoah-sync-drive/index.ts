@@ -11,6 +11,7 @@
 // default_visibility. Files that declare nothing still default to private, so
 // a missing declaration hides a row rather than publishing it.
 import { isExcludedContent } from "../_shared/content_policy.ts";
+import { chunkText } from "../_shared/chunking.ts";
 import {
   DECLARABLE_TIERS,
   declaredVisibility,
@@ -27,48 +28,12 @@ import {
 } from "../_shared/http.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 
-// Chunking mirrors projects/inoah-core/src/inoah_core/memory/ingest.py
-// (chunk_size 1000, overlap 200, paragraph boundaries) so the two ingesters
-// never disagree about chunk identity.
-const CHUNK_SIZE = 1000;
-const CHUNK_OVERLAP = 200;
 const MAX_FILE_CHARS = 200_000;
 
 const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const FOLDER_MIME = "application/vnd.google-apps.folder";
 const DOC_MIME = "application/vnd.google-apps.document";
 const TEXT_MIMES = new Set(["text/plain", "text/markdown", "text/x-markdown"]);
-
-function chunkText(text: string): string[] {
-  const paragraphs = text.split(/\n\n+/);
-  const chunks: string[] = [];
-  let current = "";
-  for (let para of paragraphs) {
-    para = para.trim();
-    if (!para) continue;
-    // A heading starts a new topic, so never pack across one. Without this a
-    // Q&A document packs several unrelated answers into one chunk, and the
-    // blended embedding fails to clear the match threshold for any single
-    // question — the corpus holds the answer and retrieval never surfaces it.
-    if (para.startsWith("#") && current) {
-      chunks.push(current.trim());
-      current = para;
-      continue;
-    }
-    if (current.length + para.length > CHUNK_SIZE) {
-      if (current) chunks.push(current.trim());
-      if (chunks.length > 0 && CHUNK_OVERLAP > 0) {
-        current = chunks[chunks.length - 1].slice(-CHUNK_OVERLAP) + "\n\n" + para;
-      } else {
-        current = para;
-      }
-    } else {
-      current = current ? current + "\n\n" + para : para;
-    }
-  }
-  if (current) chunks.push(current.trim());
-  return chunks;
-}
 
 // --- Service account auth ---
 
@@ -196,7 +161,7 @@ interface Chunk {
   content: string;
   sourceUri: string | null;
   name: string;
-  /** From the file's frontmatter; falls back to the source default when absent. */
+  /** From the chunk's section marker, else the file's frontmatter, else the source default. */
   visibility?: string;
 }
 
@@ -333,13 +298,13 @@ async function siteTableChunks(supabase: any, table: string): Promise<Chunk[]> {
     const chunks: Chunk[] = [];
     for (const post of data ?? []) {
       const body = `Blog post: ${post.title}\n\n${post.excerpt ?? ""}\n\n${post.content ?? ""}`;
-      chunkText(body).forEach((content, i) => {
+      chunkText(body).forEach((chunk, i) => {
         chunks.push({
           sourceId: `site:blog_posts:${post.id}`,
           chunkIndex: i,
           name: post.title,
           sourceUri: `https://www.noahiberman.com/blog/${post.slug}`,
-          content,
+          content: chunk.content,
         });
       });
     }
@@ -466,16 +431,26 @@ Deno.serve(async (req) => {
             : src.default_visibility;
           // The declaration is read from the frontmatter; the frontmatter itself
           // is metadata and never becomes corpus content.
-          chunkText(stripFrontmatter(text)).forEach((content, i) => {
-            chunks.push({
-              sourceId: f.id,
-              chunkIndex: i,
-              name: f.name,
-              sourceUri: f.webViewLink ?? null,
-              content,
-              visibility,
+          // A section marked `secret`/`config` is dropped the way such a file
+          // is: filtered before indexing, so chunkIndex stays gapless and the
+          // rows a previous run wrote fall out as stale.
+          chunkText(stripFrontmatter(text))
+            .filter((chunk) => !(chunk.tier && NOT_CORPUS.has(chunk.tier)))
+            .forEach((chunk, i) => {
+              chunks.push({
+                sourceId: f.id,
+                chunkIndex: i,
+                name: f.name,
+                sourceUri: f.webViewLink ?? null,
+                content: chunk.content,
+                // The section wins over the file, both directions: this is what
+                // lets public-profile.md be public while the sections it calls
+                // never-publish stay owner-only.
+                visibility: chunk.tier && DECLARABLE_TIERS.has(chunk.tier)
+                  ? chunk.tier
+                  : visibility,
+              });
             });
-          });
         }
         const result = await syncChunks(
           supabase,
