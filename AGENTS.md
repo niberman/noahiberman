@@ -6,19 +6,19 @@ This document describes the AI agents and automated systems that power noahiberm
 
 ## iNoah -- AI Digital Twin
 
-**Type:** Two conversational agents over one tiered corpus
-**Runtime:** Supabase Edge Functions (`supabase/functions/inoah-chat/`, `supabase/functions/inoah-chat-private/`)
+**Type:** One public-facing conversational agent over a tiered corpus
+**Runtime:** Supabase Edge Function (`supabase/functions/inoah-chat/`)
 **Model:** Google Gemini 3.5 Flash (`google/gemini-3.5-flash`) via OpenRouter — `OPENROUTER_API_KEY` is the only key chat bills to. There is no second route: Google is reached as an OpenRouter upstream, never directly.
 **Embedding:** Google `gemini-embedding-2`, native endpoint, `output_dimensionality: 768`
 
-**Keys.** Chat requires `OPENROUTER_API_KEY` — without it both twins return a 500, because there is no fallback provider. Embeddings use `EMBEDDING_API_KEY` (a Google AI Studio key; `GEMINI_API_KEY` is still read as a fallback so the old secret keeps working) and cannot move to OpenRouter: it serves no embeddings endpoint, and the stored vectors are gemini-embedding-2 at 768 dims, so re-embedding a query with anything else makes it incomparable and retrieval silently returns nothing. Missing only the embedding key is survivable — the twins answer with no retrieved context and log `EMBEDDING_API_KEY not set`. Each answer reports its route in the `provider` field and in the function logs.
+**Keys.** Chat requires `OPENROUTER_API_KEY` — without it iNoah returns a 500, because there is no fallback provider. Embeddings use `EMBEDDING_API_KEY` (a Google AI Studio key; `GEMINI_API_KEY` is still read as a fallback so the old secret keeps working) and cannot move to OpenRouter: it serves no embeddings endpoint, and the stored vectors are gemini-embedding-2 at 768 dims, so re-embedding a query with anything else makes it incomparable and retrieval silently returns nothing. Missing only the embedding key is survivable — iNoah answers with no retrieved context and log `EMBEDDING_API_KEY not set`. Each answer reports its route in the `provider` field and in the function logs.
 
-iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors in the chat widget and at `/inoah`; the private twin answers the signed-in owner on `/dashboard`. Both retrieve from the same `memories` table, but the boundary between them is enforced in Postgres, not in a prompt: see `docs/inoah-data-tiers.md`.
+iNoah is a RAG-powered digital twin. It answers anonymous visitors in the chat widget and at `/inoah`. There is no owner-facing twin: the dashboard curates the corpus rather than chatting against it, and material stays private until it is promoted. The boundary is enforced in Postgres, not in a prompt: see `docs/inoah-data-tiers.md`.
 
 ### How it works
 
 1. The prompt is embedded with `gemini-embedding-2` (768 dims; anything embedded with another model or width is stored but never retrieved).
-2. The public twin calls the `match_memories_public` RPC, which has `visibility = 'public'` hardcoded in its SQL body. The private twin calls `match_memories_private` after verifying the caller is in `app_owners`. Threshold and count come from `inoah_settings` (currently 0.6 and 5).
+2. iNoah calls the `match_memories_public` RPC, which has `visibility = 'public'` hardcoded in its SQL body, so no code path can widen what a visitor sees. `match_memories_private` still exists but is `service_role`-only with no caller — it is what the tiering tests assert the boundary against. Threshold and count come from `inoah_settings` (currently 0.6 and 5).
 3. Retrieved chunks are injected into the system prompt from `inoah_settings.system_prompt`, which is built from `docs/public-profile.md` and editable on the dashboard.
 4. Gemini 3.5 Flash, called through OpenRouter, generates the response with low reasoning effort; output is post-processed to strip reasoning leakage. The two routes spell reasoning effort differently — OpenRouter takes `reasoning: { effort }`, Google's OpenAI-compat layer takes `reasoning_effort` — so the fallback swaps the parameter as well as the base URL.
 
@@ -27,8 +27,8 @@ iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors 
 - **Tier boundary in SQL:** the public RPC cannot see private rows regardless of what any function or caller sends. There is no visibility parameter anywhere.
 - **Medical cutoff:** content matching the medical pattern is excluded by every ingestion path and silently dropped by a trigger on `memories`. It cannot enter the corpus from any source.
 - **debug_mode:** owner-only. Anonymous callers get the same 200 with no debug key, so the flag is not an oracle.
-- **Rate limiting:** 30 requests per IP per minute on the public twin, 120 on the private one.
-- **Turnstile:** optional Cloudflare Turnstile verification on the public twin.
+- **Rate limiting:** 30 requests per IP per minute.
+- **Turnstile:** optional Cloudflare Turnstile verification (unset today, so the check is skipped).
 - **Max prompt length:** 2,000 characters.
 
 ### Ingestion
@@ -39,7 +39,7 @@ iNoah is a RAG-powered digital twin. The public twin answers anonymous visitors 
 
 ### Client
 
-`src/lib/inoahClient.ts` -- fetch wrappers for both twins; the private one sends the session access token.
+`src/lib/inoahClient.ts` -- fetch wrapper for iNoah; sends the anon key.
 
 ---
 

@@ -81,11 +81,3 @@ export async function sendInoahMessage(
     import.meta.env.VITE_INOAH_FUNCTION_PATH || DEFAULT_FUNCTION_PATH;
   return postInoah(functionPath, request, supabaseAnonKey);
 }
-
-/** Owner-only chat against the full corpus; needs the session access token. */
-export async function sendInoahPrivateMessage(
-  request: InoahChatRequest,
-  accessToken: string
-): Promise<InoahChatResponse> {
-  return postInoah("/functions/v1/inoah-chat-private", request, accessToken);
-}
