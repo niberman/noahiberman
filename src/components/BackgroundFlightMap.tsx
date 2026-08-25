@@ -42,12 +42,12 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
-  // No token or no hardware-accelerated WebGL: the map never mounts, so the
-  // loading state must not sit there forever waiting for a first frame.
-  const [mapUnavailable, setMapUnavailable] = useState(false);
+  // True once there is no first frame worth waiting for: no token, no
+  // hardware-accelerated WebGL, or a map that mounted but never loaded.
+  const [doneWaiting, setDoneWaiting] = useState(false);
   useEffect(() => {
-    if (mapLoaded || mapUnavailable) onReady?.();
-  }, [mapLoaded, mapUnavailable, onReady]);
+    if (mapLoaded || doneWaiting) onReady?.();
+  }, [mapLoaded, doneWaiting, onReady]);
   const activeWaypointId = useActiveWaypointId();
   const isInFlightSection = activeWaypointId === "follow-my-flight";
   const [isInteractive, setIsInteractive] = useState(false);
@@ -369,7 +369,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   useEffect(() => {
     const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
     if (!mapContainer.current || !mapboxToken) {
-      setMapUnavailable(true);
+      setDoneWaiting(true);
       return;
     }
 
@@ -380,7 +380,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       failIfMajorPerformanceCaveat: true,
     });
     if (!glProbe) {
-      setMapUnavailable(true);
+      setDoneWaiting(true);
       return;
     }
     glProbe.getExtension("WEBGL_lose_context")?.loseContext();
@@ -412,7 +412,13 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       scrollZoom: false, // Disabled to allow page scrolling
     });
 
+    // A bad token or a Mapbox outage means `load` simply never fires. Stop
+    // waiting so the loading state can't animate behind the page forever;
+    // the map still fades in on its own if it turns up late.
+    const firstFrameTimeout = window.setTimeout(() => setDoneWaiting(true), 15000);
+
     map.current.on('load', () => {
+      window.clearTimeout(firstFrameTimeout);
       setMapLoaded(true);
       setMapRef(map.current);
 
@@ -479,6 +485,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
     });
 
     return () => {
+      window.clearTimeout(firstFrameTimeout);
       if (rotationRef.current) {
         cancelAnimationFrame(rotationRef.current);
       }
