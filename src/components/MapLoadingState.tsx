@@ -42,7 +42,11 @@ export function MapLoadingState({ done }: { done: boolean }) {
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-0 overflow-hidden bg-background pointer-events-none transition-opacity duration-700 ${
+      // z-[1] puts this over the map container (fixed, z-0, and later in the
+      // DOM, so it would otherwise paint on top) while staying under the
+      // site content at z-10. Without it Mapbox's black canvas covers the
+      // very gap this is here to fill.
+      className={`fixed inset-0 z-[1] overflow-hidden bg-background pointer-events-none transition-opacity duration-700 ${
         done ? "opacity-0" : "opacity-100"
       }`}
     >
