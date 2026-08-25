@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
 /**
- * Mapbox paints a black canvas for the second or two between mount and its
- * first frame, which reads as a broken page. This sits on top of the container
- * until then: a faint sectional grid with routes drawing themselves and a jet
- * tracking the main one.
+ * Home defers the map behind a first-interaction gate and a 460 KB lazy chunk,
+ * and Mapbox then paints a black canvas until its first frame — several
+ * seconds of bare background that read as a broken page. This fills that whole
+ * window: a faint sectional grid with routes drawing themselves and a jet
+ * tracking the main one. Owned by Home (not the map) so it can cover the gate
+ * and the chunk fetch too, and it's a static import for the same reason.
  */
 
 const ROUTE_MAIN = "M -60 640 C 220 560 380 344 700 316 C 940 296 1080 208 1300 104";
@@ -40,7 +42,7 @@ export function MapLoadingState({ done }: { done: boolean }) {
   return (
     <div
       aria-hidden
-      className={`absolute inset-0 overflow-hidden bg-background pointer-events-none transition-opacity duration-700 ${
+      className={`fixed inset-0 z-0 overflow-hidden bg-background pointer-events-none transition-opacity duration-700 ${
         done ? "opacity-0" : "opacity-100"
       }`}
     >

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { MapLoadingState } from "@/components/MapLoadingState";
 import type { Feature, LineString } from "geojson";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -25,7 +24,9 @@ const MAP_MAX_ZOOM = 16;
 /** Float tolerance vs getMinZoom(); keep tight so nav does not appear early. */
 const AT_MIN_ZOOM_TOLERANCE = 0.02;
 
-export function BackgroundFlightMap() {
+/** `onReady` fires on the map's first frame — or right away when there is no
+ *  map to wait for — so Home can drop the loading state it holds. */
+export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   const { data: supabaseFlights } = useFlights();
   const { lookupMap: airportCoordsMap } = useAirportLookupMap();
   const flightHistory = useMemo(() => supabaseFlights ?? staticFlightHistory, [supabaseFlights]);
@@ -44,6 +45,9 @@ export function BackgroundFlightMap() {
   // No token or no hardware-accelerated WebGL: the map never mounts, so the
   // loading state must not sit there forever waiting for a first frame.
   const [mapUnavailable, setMapUnavailable] = useState(false);
+  useEffect(() => {
+    if (mapLoaded || mapUnavailable) onReady?.();
+  }, [mapLoaded, mapUnavailable, onReady]);
   const activeWaypointId = useActiveWaypointId();
   const isInFlightSection = activeWaypointId === "follow-my-flight";
   const [isInteractive, setIsInteractive] = useState(false);
@@ -918,9 +922,6 @@ export function BackgroundFlightMap() {
           ref={mapContainer} 
           className="w-full h-full"
         />
-
-        {/* Mapbox paints black until its first frame lands */}
-        {!mapUnavailable && <MapLoadingState done={mapLoaded} />}
         
         {/* Instruction hint while actively interacting */}
         {shouldEnableInteractions && (

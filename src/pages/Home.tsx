@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect, useState, lazy, Suspense } from "react";
+import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWordsString } from "@/data/brand";
+import { MapLoadingState } from "@/components/MapLoadingState";
 
 // Split mapbox-gl (~460 KB) out of the critical path; the hero renders
 // immediately and the map fades in when its chunk arrives.
@@ -26,9 +27,15 @@ export default function Home() {
   // interacts, so mapbox-gl eval and the flights/airport_coordinates/
   // current_flight fetches drop out of its trace and the LCP critical chain.
   const [deferredReady, setDeferredReady] = useState(false);
+  // Cleared on the map's first frame; until then the loading state stands in.
+  const [mapReady, setMapReady] = useState(false);
+  const handleMapReady = useCallback(() => setMapReady(true), []);
   useEffect(() => {
     const arm = () => setDeferredReady(true);
-    const events = ["pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
+    // pointermove is what saves real visitors from the 5s fallback below —
+    // a mouse twitches within milliseconds of load, while Lighthouse never
+    // moves a pointer at all, so the trace stays as clean as before.
+    const events = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
     events.forEach((e) => window.addEventListener(e, arm, { once: true, passive: true }));
     // ponytail: plain setTimeout over requestIdleCallback — Safari lacks rIC,
     // and rIC fires exactly when the CPU goes quiet, which is what keeps the
@@ -86,9 +93,14 @@ export default function Home() {
     <main className="min-h-screen relative">
       {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
       {deferredReady && (
-        <Suspense fallback={null}>
-          <BackgroundFlightMap />
-        </Suspense>
+        <>
+          {/* Covers the whole wait — lazy chunk, style, tiles — not just the
+              tail end after the map component mounts. */}
+          <MapLoadingState done={mapReady} />
+          <Suspense fallback={null}>
+            <BackgroundFlightMap onReady={handleMapReady} />
+          </Suspense>
+        </>
       )}
 
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
