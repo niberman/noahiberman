@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { MapLoadingState } from "@/components/MapLoadingState";
 import type { Feature, LineString } from "geojson";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -40,6 +41,9 @@ export function BackgroundFlightMap() {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  // No token or no hardware-accelerated WebGL: the map never mounts, so the
+  // loading state must not sit there forever waiting for a first frame.
+  const [mapUnavailable, setMapUnavailable] = useState(false);
   const activeWaypointId = useActiveWaypointId();
   const isInFlightSection = activeWaypointId === "follow-my-flight";
   const [isInteractive, setIsInteractive] = useState(false);
@@ -360,7 +364,10 @@ export function BackgroundFlightMap() {
   // Initialize map
   useEffect(() => {
     const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current || !mapboxToken) {
+      setMapUnavailable(true);
+      return;
+    }
 
     // Software WebGL (GPU-less browsers, Lighthouse) rasterizes every frame on
     // the main thread — tens of seconds of jank. Skip the map there; the page
@@ -368,7 +375,10 @@ export function BackgroundFlightMap() {
     const glProbe = document.createElement("canvas").getContext("webgl2", {
       failIfMajorPerformanceCaveat: true,
     });
-    if (!glProbe) return;
+    if (!glProbe) {
+      setMapUnavailable(true);
+      return;
+    }
     glProbe.getExtension("WEBGL_lose_context")?.loseContext();
 
     mapboxgl.accessToken = mapboxToken;
@@ -908,6 +918,9 @@ export function BackgroundFlightMap() {
           ref={mapContainer} 
           className="w-full h-full"
         />
+
+        {/* Mapbox paints black until its first frame lands */}
+        {!mapUnavailable && <MapLoadingState done={mapLoaded} />}
         
         {/* Instruction hint while actively interacting */}
         {shouldEnableInteractions && (
