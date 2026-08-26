@@ -25,6 +25,10 @@
       "destination": "/api/index"
     },
     {
+      "source": "/llms-full.txt",
+      "destination": "/api/index"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { scrollToId } from "@/lib/lenis-ref";
 
 interface SectionRedirectProps {
   sectionId: string;
@@ -10,12 +11,7 @@ export function SectionRedirect({ sectionId }: SectionRedirectProps) {
 
   useEffect(() => {
     navigate("/", { replace: true });
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
+    setTimeout(() => scrollToId(sectionId), 100);
   }, [navigate, sectionId]);
 
   return null;

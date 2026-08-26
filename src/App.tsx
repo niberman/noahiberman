@@ -1,8 +1,11 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import { ReactLenis, useLenis } from "lenis/react";
+import "lenis/dist/lenis.css";
+import { setLenis, getLenis } from "@/lib/lenis-ref";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
@@ -43,6 +46,34 @@ const Toasters = lazy(() =>
 
 const queryClient = new QueryClient();
 
+// Publishes the root Lenis instance to lib/lenis-ref for the scattered
+// scroll call sites (Navigation, Footer, Home, SectionRedirect).
+function LenisBridge() {
+  const lenis = useLenis();
+  useEffect(() => {
+    setLenis(lenis ?? null);
+    return () => setLenis(null);
+  }, [lenis]);
+  return null;
+}
+
+// React Router keeps the old scroll position across route changes; kill it
+// (and any in-flight inertia) on push/replace navigations. Skipped on the
+// first render (reload) and on Back/Forward, where the browser restores the
+// previous position and must not be yanked back to the top.
+function ScrollResetOnNavigate() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  const prevPathname = useRef<string | null>(null);
+  useEffect(() => {
+    const prev = prevPathname.current;
+    prevPathname.current = pathname;
+    if (prev === null || prev === pathname || navigationType === "POP") return;
+    getLenis()?.scrollTo(0, { immediate: true });
+  }, [pathname, navigationType]);
+  return null;
+}
+
 const App = () => {
   return (
     // Eager components use `m` + domAnimation instead of `motion`: the full
@@ -50,12 +81,27 @@ const App = () => {
     // window-level root node reads window.innerWidth mid-load — the forced
     // reflow PageSpeed flags on the homepage. Lazy routes still use `motion`.
     <LazyMotion features={domAnimation}>
+    <ReactLenis
+      root
+      options={{
+        lerp: 0.12,
+        autoRaf: true,
+        anchors: true,
+        allowNestedScroll: true,
+        stopInertiaOnNavigate: true,
+        // Lenis's own reduced-motion mode still intercepts wheel and damps it
+        // over a few frames; not intercepting at all is truly native/instant.
+        smoothWheel: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      }}
+    >
+    <LenisBridge />
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Suspense fallback={null}>
           <Toasters />
         </Suspense>
         <BrowserRouter>
+          <ScrollResetOnNavigate />
           <SecretDashboardAccess />
           <div className="min-h-screen flex flex-col relative">
             <Navigation />
@@ -119,6 +165,7 @@ const App = () => {
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+    </ReactLenis>
     </LazyMotion>
   );
 };

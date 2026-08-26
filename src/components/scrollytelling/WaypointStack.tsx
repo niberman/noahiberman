@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLenis } from "lenis/react";
 import { HERO_WAYPOINT, WAYPOINTS, type MapWaypoint } from "@/data/waypoints";
 import { setActiveWaypointId, setStackVisible } from "@/hooks/use-active-waypoint";
 import { WaypointTrigger } from "./WaypointTrigger";
@@ -23,6 +24,12 @@ const ACTIVATION_LINE = 0.3;
 
 export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElement> }) {
   const stackRef = useRef<HTMLDivElement>(null);
+
+  // Lenis emits one scroll event per rAF tick (for smoothed, native, and
+  // reduced-motion scrolling alike), so it replaces the old window scroll
+  // listener plus manual rAF coalescing as the single scroll source.
+  const updateRef = useRef<(() => void) | null>(null);
+  useLenis(() => updateRef.current?.());
 
   useEffect(() => {
     const stack = stackRef.current;
@@ -55,10 +62,12 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
       setStackVisible(stackRect.bottom > 0 && stackRect.top < vh);
     };
 
-    const onScroll = () => {
+    const onResize = () => {
       if (frame) return;
       frame = requestAnimationFrame(update);
     };
+
+    updateRef.current = update;
 
     // First measure waits two frames: the mount effect runs before first
     // paint, so a synchronous gBCR here forces the initial layout inside JS
@@ -67,11 +76,10 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
     frame = requestAnimationFrame(() => {
       frame = requestAnimationFrame(update);
     });
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      updateRef.current = null;
+      window.removeEventListener("resize", onResize);
       if (frame) cancelAnimationFrame(frame);
       setStackVisible(false);
     };

@@ -22,11 +22,14 @@ export function InoahChat() {
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const lastPrompt = useRef<string | null>(null);
-  const endRef = useRef<HTMLDivElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Scroll only the chat log, not the page: scrollIntoView chains to scroll
+  // ancestors, which fights Lenis's control of the window scroller.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const el = logRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, isLoading]);
 
   // Chips come from the public corpus, so a suggestion is always a question
@@ -117,7 +120,7 @@ export function InoahChat() {
         </p>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5 overscroll-contain">
+      <div ref={logRef} data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-5 overscroll-contain">
         {isEmpty ? (
           <div className="h-full flex flex-col items-center justify-center text-center gap-5 px-2">
             <p className="text-sm text-muted-foreground max-w-xs">
@@ -172,7 +175,6 @@ export function InoahChat() {
             )}
           </div>
         )}
-        <div ref={endRef} />
       </div>
 
       <div className="border-t border-border/60 p-3">

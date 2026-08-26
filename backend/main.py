@@ -21,7 +21,7 @@ for _path, _override in (
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from pydantic import BaseModel
 
 from services.logbook_sync import sync_monthly_logbook_from_email
@@ -97,6 +97,62 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Machine-readable site content (llms.txt spec: https://llmstxt.org)
+# ---------------------------------------------------------------------------
+
+_LLMS_TXT_PATH = _repo_root / "public" / "llms.txt"
+
+
+def _fetch_published_posts() -> list[dict]:
+    """Published blog posts, read with the anon key so RLS decides what is public."""
+    supabase_url = os.environ.get("SUPABASE_URL")
+    anon_key = os.environ.get("SUPABASE_ANON_KEY")
+    if not supabase_url or not anon_key:
+        return []
+    resp = httpx.get(
+        f"{supabase_url.rstrip('/')}/rest/v1/blog_posts",
+        params={
+            "select": "title,slug,excerpt,content,published_at",
+            "is_published": "eq.true",
+            "order": "published_at.desc.nullslast",
+            # ponytail: hard cap far above a personal blog; PostgREST silently
+            # truncates at 1000 and Vercel caps responses at ~4.5MB anyway.
+            "limit": "200",
+        },
+        headers={"apikey": anon_key, "Authorization": f"Bearer {anon_key}"},
+        timeout=10,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+@app.get("/llms-full.txt")
+def llms_full() -> PlainTextResponse:
+    """llms.txt plus the full markdown of every published blog post."""
+    sections = ["# Noah Berman\n\nSite facts: https://noahiberman.com/llms.txt"]
+    try:
+        if _LLMS_TXT_PATH.is_file():
+            sections = [_LLMS_TXT_PATH.read_text(encoding="utf-8").rstrip()]
+        for post in _fetch_published_posts():
+            published = str(post.get("published_at") or "")[:10]
+            dateline = f", published {published}" if published else ""
+            sections.append(
+                f"## Blog: {post.get('title')}\n\n"
+                f"https://noahiberman.com/blog/{post.get('slug')}{dateline}\n\n"
+                + (post.get("content") or post.get("excerpt") or "")
+            )
+    except Exception as exc:
+        # Whatever made it into sections so far is still a correct answer;
+        # never 500 a crawler.
+        LOGGER.warning("llms-full.txt degraded: %s", exc)
+
+    return PlainTextResponse(
+        "\n\n".join(sections) + "\n",
+        headers={"Cache-Control": "public, max-age=3600, s-maxage=3600"},
+    )
 
 
 # ---------------------------------------------------------------------------

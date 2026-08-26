@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { BrandWordsString } from "@/data/brand";
+import { scrollToId } from "@/lib/lenis-ref";
 
 export function Footer() {
   const location = useLocation();
@@ -10,18 +11,14 @@ export function Footer() {
     e.preventDefault();
     if (location.pathname !== "/") {
       navigate("/");
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) element.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+      setTimeout(() => scrollToId(id), 100);
     } else {
-      const element = document.getElementById(id);
-      if (element) element.scrollIntoView({ behavior: "smooth" });
+      scrollToId(id);
     }
   };
 
   return (
-    <footer className="bg-gradient-dusk border-t border-secondary/20 mt-20 sm:mt-32 relative overflow-hidden">
+    <footer className="bg-gradient-dusk border-t border-secondary/20 mt-20 sm:mt-32 relative overflow-hidden [content-visibility:auto] [contain-intrinsic-size:auto_600px]">
       <div className="absolute inset-0 bg-texture-overlay opacity-30" />
 
       <div className="container mx-auto px-4 py-12 sm:py-16 relative z-10">
@@ -67,7 +64,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="#follow-my-flight"
+                  href="/#follow-my-flight"
                   onClick={(e) => scrollToSection(e, "follow-my-flight")}
                   className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
                 >
@@ -90,7 +87,7 @@ export function Footer() {
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base mb-5 sm:mb-6">
               <li>
                 <a
-                  href="#contact"
+                  href="/#contact"
                   onClick={(e) => scrollToSection(e, "contact")}
                   className="text-primary-foreground/80 hover:text-secondary transition-colors active:scale-95 inline-block"
                 >
