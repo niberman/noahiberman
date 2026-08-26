@@ -24,7 +24,9 @@ const MAP_MAX_ZOOM = 16;
 /** Float tolerance vs getMinZoom(); keep tight so nav does not appear early. */
 const AT_MIN_ZOOM_TOLERANCE = 0.02;
 
-export function BackgroundFlightMap() {
+/** `onReady` fires on the map's first frame — or right away when there is no
+ *  map to wait for — so Home can drop the loading state it holds. */
+export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   const { data: supabaseFlights } = useFlights();
   const { lookupMap: airportCoordsMap } = useAirportLookupMap();
   const flightHistory = useMemo(() => supabaseFlights ?? staticFlightHistory, [supabaseFlights]);
@@ -40,6 +42,12 @@ export function BackgroundFlightMap() {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  // True once there is no first frame worth waiting for: no token, no
+  // hardware-accelerated WebGL, or a map that mounted but never loaded.
+  const [doneWaiting, setDoneWaiting] = useState(false);
+  useEffect(() => {
+    if (mapLoaded || doneWaiting) onReady?.();
+  }, [mapLoaded, doneWaiting, onReady]);
   const activeWaypointId = useActiveWaypointId();
   const isInFlightSection = activeWaypointId === "follow-my-flight";
   const [isInteractive, setIsInteractive] = useState(false);
@@ -360,7 +368,10 @@ export function BackgroundFlightMap() {
   // Initialize map
   useEffect(() => {
     const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current || !mapboxToken) {
+      setDoneWaiting(true);
+      return;
+    }
 
     // Software WebGL (GPU-less browsers, Lighthouse) rasterizes every frame on
     // the main thread — tens of seconds of jank. Skip the map there; the page
@@ -368,7 +379,10 @@ export function BackgroundFlightMap() {
     const glProbe = document.createElement("canvas").getContext("webgl2", {
       failIfMajorPerformanceCaveat: true,
     });
-    if (!glProbe) return;
+    if (!glProbe) {
+      setDoneWaiting(true);
+      return;
+    }
     glProbe.getExtension("WEBGL_lose_context")?.loseContext();
 
     mapboxgl.accessToken = mapboxToken;
@@ -398,7 +412,13 @@ export function BackgroundFlightMap() {
       scrollZoom: false, // Disabled to allow page scrolling
     });
 
+    // A bad token or a Mapbox outage means `load` simply never fires. Stop
+    // waiting so the loading state can't animate behind the page forever;
+    // the map still fades in on its own if it turns up late.
+    const firstFrameTimeout = window.setTimeout(() => setDoneWaiting(true), 15000);
+
     map.current.on('load', () => {
+      window.clearTimeout(firstFrameTimeout);
       setMapLoaded(true);
       setMapRef(map.current);
 
@@ -465,6 +485,7 @@ export function BackgroundFlightMap() {
     });
 
     return () => {
+      window.clearTimeout(firstFrameTimeout);
       if (rotationRef.current) {
         cancelAnimationFrame(rotationRef.current);
       }
