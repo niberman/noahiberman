@@ -386,7 +386,21 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
     glProbe.getExtension("WEBGL_lose_context")?.loseContext();
 
     mapboxgl.accessToken = mapboxToken;
-    
+
+    // Cap the map's render resolution at 1.5x. mapbox-gl has no pixelRatio
+    // option (that's MapLibre) and reads window.devicePixelRatio on every
+    // canvas resize, so the override must live as long as the map. On a 3x
+    // phone this is 4x fewer shaded pixels for a basemap that renders dimmed
+    // behind content anyway. Restored on unmount; nothing else in src reads
+    // devicePixelRatio.
+    const dprDescriptor = Object.getOwnPropertyDescriptor(window, "devicePixelRatio");
+    if (window.devicePixelRatio > 1.5) {
+      Object.defineProperty(window, "devicePixelRatio", {
+        get: () => 1.5,
+        configurable: true,
+      });
+    }
+
     // Detect if mobile device
     const isMobile = window.innerWidth < 640;
     
@@ -491,6 +505,11 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       }
       setMapRef(null);
       map.current?.remove();
+      if (dprDescriptor) {
+        Object.defineProperty(window, "devicePixelRatio", dprDescriptor);
+      } else {
+        delete (window as { devicePixelRatio?: number }).devicePixelRatio;
+      }
     };
   }, []);
 

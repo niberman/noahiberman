@@ -118,16 +118,11 @@ All colors MUST be HSL.
   }
 
   html {
-    scroll-behavior: smooth;
+    /* No scroll-behavior: smooth here — it fights Lenis's programmatic
+       scroll. Lenis owns window smoothing (and honors reduced motion). */
     /* "only dark" opts out of Chrome Auto Dark Mode, which otherwise force-paints
        opaque backgrounds on every element and hides the fixed flight map */
     color-scheme: only dark;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
   }
 
   body {
@@ -528,5 +523,64 @@ All colors MUST be HSL.
   .min-dvh-screen {
     min-height: 100vh;
     min-height: 100dvh;
+  }
+}
+
+/* Outside @layer so Tailwind never purges them — the static shell in
+   index.html uses these and isn't in the content globs. */
+
+/* Hero entry stagger. Pure CSS so the shell animates before JS arrives and
+   nothing is ever stuck hidden when JS never runs: the default state is
+   visible, `backwards` supplies the hidden from-state only while waiting.
+   Mirrors the old framer variants (y:20/30, delays .4/.7/.9). Keep the class
+   names in sync between index.html and src/pages/Home.tsx. */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--hero-rise, 20px));
+  }
+}
+.hero-enter-1 {
+  animation: hero-rise 0.6s ease-out 0.4s backwards;
+}
+.hero-enter-2 {
+  --hero-rise: 30px;
+  animation: hero-rise 0.8s ease-out 0.7s backwards;
+}
+.hero-enter-3 {
+  animation: hero-rise 0.6s ease-out 0.9s backwards;
+}
+
+/* Below-fold reveals. Visible by default; only browsers with scroll-driven
+   animations get the rise. animation-timeline must come after the shorthand
+   (the shorthand resets it). */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+@supports (animation-timeline: view()) {
+  .reveal-view {
+    animation: reveal-rise ease-out both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+/* Set by the inline animationend script in index.html after the shell's
+   stagger completes, so React's remount doesn't replay it. */
+.hero-done .hero-enter-1,
+.hero-done .hero-enter-2,
+.hero-done .hero-enter-3 {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter-1,
+  .hero-enter-2,
+  .hero-enter-3,
+  .reveal-view {
+    animation: none;
   }
 }

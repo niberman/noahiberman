@@ -11,15 +11,13 @@ import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypoi
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWordsString } from "@/data/brand";
 import { MapLoadingState } from "@/components/MapLoadingState";
+import { scrollToId } from "@/lib/lenis-ref";
 
 // Split mapbox-gl (~460 KB) out of the critical path; the hero renders
 // immediately and the map fades in when its chunk arrives.
 const BackgroundFlightMap = lazy(() =>
   import("@/components/BackgroundFlightMap").then((m) => ({ default: m.BackgroundFlightMap }))
 );
-
-const scrollBehavior = (): ScrollBehavior =>
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 
 export default function Home() {
   // Mount the map (and the live-flight poll) only after first interaction, or
@@ -67,24 +65,12 @@ export default function Home() {
   const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.8]);
   const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 100]);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: scrollBehavior() });
-    }
-  };
-
   // Handle hash navigation on page load
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
       const id = hash.substring(1);
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: scrollBehavior() });
-        }
-      }, 100);
+      setTimeout(() => scrollToId(id), 100);
     }
   }, []);
 
@@ -156,39 +142,27 @@ export default function Home() {
                 </picture>
               </div>
 
-              <m.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2"
-              >
+              {/* Entry stagger is CSS (hero-enter-*) so the static shell in
+                  index.html plays the identical animation pre-JS and nothing
+                  defaults to hidden. */}
+              <p className="hero-enter-1 text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">
                 Noah Berman
-              </m.p>
+              </p>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                 {BrandWordsString}
               </h1>
 
-              <m.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.8 }}
-                className="space-y-2 sm:space-y-3 mb-6 sm:mb-8"
-              >
+              <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                   The sky is not the limit
                 </p>
                 <p className="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">
                   El cielo no es el límite
                 </p>
-              </m.div>
+              </div>
 
-              <m.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
-                className="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4"
-              >
+              <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
                 <Button
                   onClick={() => navigate(primarySlug ? `/book/${primarySlug}` : "/book")}
                   size="lg"
@@ -209,14 +183,14 @@ export default function Home() {
                 </Button>
 
                 <Button
-                  onClick={() => scrollToSection("contact")}
+                  onClick={() => scrollToId("contact")}
                   size="lg"
                   variant="ghost"
                   className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-background/10 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full transition-all w-full sm:w-auto"
                 >
                   Get in Touch
                 </Button>
-              </m.div>
+              </div>
             </div>
           </m.div>
 

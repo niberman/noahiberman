@@ -238,8 +238,8 @@
   <!-- Static hero shell: paints FCP/LCP at HTML parse time, before any JS.
        createRoot().render() in src/main.tsx replaces it with identical markup —
        keep structure/classes in sync with src/App.tsx wrappers and the hero in
-       src/pages/Home.tsx (elements framer-motion starts hidden carry inline
-       opacity/transform so layout is reserved with zero shift). -->
+       src/pages/Home.tsx (the hero-enter-* classes play the entry stagger in
+       CSS, so content is visible-by-default even when JS never runs). -->
   <div id="root">
     <div class="min-h-screen flex flex-col relative">
       <div class="flex-1 relative z-10">
@@ -259,19 +259,18 @@
                         class="absolute inset-0 w-full h-full object-contain origin-center" />
                     </picture>
                   </div>
-                  <p style="opacity:0;transform:translateY(20px)"
-                    class="text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">Noah Berman</p>
+                  <p class="hero-enter-1 text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">Noah
+                    Berman</p>
                   <h1
                     class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                     Founder, Pilot, Visionary</h1>
-                  <div style="opacity:0;transform:translateY(30px)" class="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                  <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                     <p class="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                       The sky is not the limit</p>
                     <p class="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">El cielo no es el
                       límite</p>
                   </div>
-                  <div style="opacity:0;transform:translateY(20px)"
-                    class="flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
+                  <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
                     <button
                       class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full sm:w-auto">Book
                       a Meeting</button>
@@ -289,6 +288,18 @@
       </div>
     </div>
   </div>
+  <script>
+    // Once the shell's stagger has finished, suppress hero-enter-* (see
+    // index.css .hero-done): createRoot() discards the shell DOM, and fresh
+    // nodes would restart the animation — blanking already-visible text when
+    // the bundle arrives late. Mid-flight remounts still replay; only the
+    // vanish-after-completion case is closed.
+    document.addEventListener("animationend", function (e) {
+      if (e.target && e.target.classList && e.target.classList.contains("hero-enter-3")) {
+        document.documentElement.classList.add("hero-done");
+      }
+    }, true);
+  </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

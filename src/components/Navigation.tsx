@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { m, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { scrollToId, scrollToTop } from "@/lib/lenis-ref";
 
 export function Navigation() {
   const location = useLocation();
@@ -76,9 +77,9 @@ export function Navigation() {
       e.preventDefault();
       if (location.pathname !== "/") {
         navigate("/");
-        setTimeout(() => window.scrollTo(0, 0), 100);
+        setTimeout(() => scrollToTop(true), 100);
       } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
       }
       updateHash();
       setIsMenuOpen(false);
@@ -90,13 +91,11 @@ export function Navigation() {
       if (location.pathname !== "/") {
         navigate("/");
         setTimeout(() => {
-          const element = document.getElementById(id);
-          if (element) element.scrollIntoView({ behavior: "smooth" });
+          scrollToId(id);
           updateHash(id);
         }, 100);
       } else {
-        const element = document.getElementById(id);
-        if (element) element.scrollIntoView({ behavior: "smooth" });
+        scrollToId(id);
         updateHash(id);
       }
       setIsMenuOpen(false);
