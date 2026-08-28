@@ -529,6 +529,12 @@ All colors MUST be HSL.
 /* Outside @layer so Tailwind never purges them — the static shell in
    index.html uses these and isn't in the content globs. */
 
+/* One easing for every entry on the page so the choreography reads as a
+   single system (same curve the framer components use as EASE). */
+:root {
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Hero entry stagger. Pure CSS so the shell animates before JS arrives and
    nothing is ever stuck hidden when JS never runs: the default state is
    visible, `backwards` supplies the hidden from-state only while waiting.
@@ -538,17 +544,35 @@ All colors MUST be HSL.
   from {
     opacity: 0;
     transform: translateY(var(--hero-rise, 20px));
+    filter: blur(6px);
   }
 }
 .hero-enter-1 {
-  animation: hero-rise 0.6s ease-out 0.4s backwards;
+  animation: hero-rise 0.8s var(--ease-out-expo) 0.4s backwards;
 }
 .hero-enter-2 {
   --hero-rise: 30px;
-  animation: hero-rise 0.8s ease-out 0.7s backwards;
+  animation: hero-rise 1s var(--ease-out-expo) 0.7s backwards;
 }
 .hero-enter-3 {
-  animation: hero-rise 0.6s ease-out 0.9s backwards;
+  animation: hero-rise 0.8s var(--ease-out-expo) 0.9s backwards;
+}
+
+/* Headline word cascade. The h1 is the LCP element, so opacity must stay 1
+   for it and every word in it — only transform and filter animate, which
+   never delay the paint. Each word rises into focus with a per-word delay
+   set through --word-i. Markup lives in both index.html (shell) and
+   src/pages/Home.tsx — keep them identical. */
+@keyframes hero-word-rise {
+  from {
+    transform: translateY(0.45em) scale(0.99);
+    filter: blur(12px);
+  }
+}
+.hero-word {
+  display: inline-block;
+  animation: hero-word-rise 0.9s var(--ease-out-expo) backwards;
+  animation-delay: calc(0.12s + var(--word-i, 0) * 0.11s);
 }
 
 /* Below-fold reveals. Visible by default; only browsers with scroll-driven
@@ -557,14 +581,70 @@ All colors MUST be HSL.
 @keyframes reveal-rise {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(36px) scale(0.985);
+    filter: blur(8px);
   }
 }
 @supports (animation-timeline: view()) {
   .reveal-view {
-    animation: reveal-rise ease-out both;
+    animation: reveal-rise var(--ease-out-expo) both;
     animation-timeline: view();
     animation-range: entry 0% entry 40%;
+  }
+}
+
+/* Sheen sweep for the primary CTA — a skewed light band crosses the button
+   on hover. Pure CSS so it costs nothing until pointed at. */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-150%) skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    transparent 20%,
+    hsl(0 0% 100% / 0.35) 50%,
+    transparent 80%
+  );
+  transition: transform 0.8s var(--ease-out-expo);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  transform: translateX(150%) skewX(-20deg);
+}
+
+/* Film grain — a tiled feTurbulence texture over the whole page. The div
+   bleeds 48px past the viewport and jumps between sub-48px offsets in
+   discrete steps so the grain "boils" like film stock — the texture tiles,
+   so small jumps read as fully new frames without paying for an oversized
+   GPU layer. Transform-only: composites, never repaints. Animated on fine
+   pointers only — phones get the static texture. */
+.grain-overlay {
+  inset: -48px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 160px 160px;
+  opacity: 0.04;
+}
+@keyframes grain-shift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  10% { transform: translate3d(-18px, -26px, 0); }
+  20% { transform: translate3d(-34px, 14px, 0); }
+  30% { transform: translate3d(16px, -42px, 0); }
+  40% { transform: translate3d(-12px, 38px, 0); }
+  50% { transform: translate3d(-30px, 22px, 0); }
+  60% { transform: translate3d(36px, 4px, 0); }
+  70% { transform: translate3d(2px, 30px, 0); }
+  80% { transform: translate3d(10px, 44px, 0); }
+  90% { transform: translate3d(-24px, 18px, 0); }
+}
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .grain-overlay {
+    animation: grain-shift 1.6s steps(10, end) infinite;
   }
 }
 
@@ -572,7 +652,8 @@ All colors MUST be HSL.
    stagger completes, so React's remount doesn't replay it. */
 .hero-done .hero-enter-1,
 .hero-done .hero-enter-2,
-.hero-done .hero-enter-3 {
+.hero-done .hero-enter-3,
+.hero-done .hero-word {
   animation: none;
 }
 
@@ -580,7 +661,13 @@ All colors MUST be HSL.
   .hero-enter-1,
   .hero-enter-2,
   .hero-enter-3,
-  .reveal-view {
+  .hero-word,
+  .reveal-view,
+  .grain-overlay {
     animation: none;
+  }
+  .btn-sheen::after {
+    transition: none;
+    content: none;
   }
 }

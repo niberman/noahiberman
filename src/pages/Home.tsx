@@ -9,9 +9,13 @@ import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
-import { BrandWordsString } from "@/data/brand";
+import { BrandWords } from "@/data/brand";
 import { MapLoadingState } from "@/components/MapLoadingState";
 import { scrollToId } from "@/lib/lenis-ref";
+import { Magnetic } from "@/components/motion/Magnetic";
+import { ScrollProgress } from "@/components/motion/ScrollProgress";
+import { GrainOverlay } from "@/components/motion/GrainOverlay";
+import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
 
 // Split mapbox-gl (~460 KB) out of the critical path; the hero renders
 // immediately and the map fades in when its chunk arrives.
@@ -64,6 +68,12 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.8]);
   const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 100]);
+  // The scroll cue dissolves as soon as the user takes the hint.
+  const cueOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.15],
+    prefersReducedMotion ? [1, 1] : [1, 0]
+  );
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -77,6 +87,10 @@ export default function Home() {
   return (
     <MotionConfig reducedMotion="user">
     <main className="min-h-screen relative">
+      {/* Film grain + scroll progress — page-wide chrome for the homepage. */}
+      <GrainOverlay />
+      <ScrollProgress />
+
       {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
       {deferredReady && (
         <>
@@ -113,6 +127,10 @@ export default function Home() {
           className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
+
+          {/* Cursor aura over the map — sits under the z-10 hero copy. */}
+          <HeroSpotlight heroRef={heroRef} />
+
           <m.div
             style={{ opacity, scale }}
             className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
@@ -149,8 +167,21 @@ export default function Home() {
                 Noah Berman
               </p>
 
+              {/* Word cascade animates transform/filter only — opacity stays 1
+                  on the LCP element so the paint is never delayed. Markup is
+                  mirrored in the index.html shell; keep them identical. */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
-                {BrandWordsString}
+                {BrandWords.map((word, i) => (
+                  <span key={word}>
+                    <span
+                      className="hero-word"
+                      style={{ "--word-i": i } as React.CSSProperties}
+                    >
+                      {i < BrandWords.length - 1 ? `${word},` : word}
+                    </span>
+                    {i < BrandWords.length - 1 ? " " : ""}
+                  </span>
+                ))}
               </h1>
 
               <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
@@ -162,41 +193,51 @@ export default function Home() {
                 </p>
               </div>
 
+              {/* Magnetic wrappers carry the responsive width; buttons fill
+                  them so mobile stacking is unchanged. */}
               <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
-                <Button
-                  onClick={() => navigate(primarySlug ? `/book/${primarySlug}` : "/book")}
-                  size="lg"
-                  className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
-                >
-                  <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Book a Meeting
-                </Button>
+                <Magnetic className="w-full sm:w-auto">
+                  <Button
+                    onClick={() => navigate(primarySlug ? `/book/${primarySlug}` : "/book")}
+                    size="lg"
+                    className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
+                  >
+                    <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Book a Meeting
+                  </Button>
+                </Magnetic>
 
-                <Button
-                  onClick={() => navigate("/blog")}
-                  size="lg"
-                  variant="outline"
-                  className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
-                >
-                  <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Blog
-                </Button>
+                <Magnetic className="w-full sm:w-auto">
+                  <Button
+                    onClick={() => navigate("/blog")}
+                    size="lg"
+                    variant="outline"
+                    className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
+                  >
+                    <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Blog
+                  </Button>
+                </Magnetic>
 
-                <Button
-                  onClick={() => scrollToId("contact")}
-                  size="lg"
-                  variant="ghost"
-                  className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-background/10 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full transition-all w-full sm:w-auto"
-                >
-                  Get in Touch
-                </Button>
+                <Magnetic className="w-full sm:w-auto">
+                  <Button
+                    onClick={() => scrollToId("contact")}
+                    size="lg"
+                    variant="ghost"
+                    className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-background/10 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full transition-all w-full"
+                  >
+                    Get in Touch
+                  </Button>
+                </Magnetic>
               </div>
             </div>
           </m.div>
 
+          {/* x lives in the motion style: framer writes the inline transform,
+              which would otherwise drop a class-based -translate-x-1/2. */}
           <m.div
-            style={{ y }}
-            className="absolute bottom-8 sm:bottom-12 left-1/2 transform -translate-x-1/2"
+            style={{ y, x: "-50%", opacity: cueOpacity }}
+            className="absolute bottom-8 sm:bottom-12 left-1/2"
           >
             <m.div
               animate={{ y: [0, 12, 0] }}

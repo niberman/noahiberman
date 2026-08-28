@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { m, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
 import { scrollToId, scrollToTop } from "@/lib/lenis-ref";
 
 export function Navigation() {
@@ -9,6 +10,13 @@ export function Navigation() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNavigationVisible, setIsNavigationVisible] = useState(true);
+  // Over the homepage hero the bar goes fully transparent and lets the map
+  // breathe; the glass treatment fades in on the first real scroll. Other
+  // routes keep the solid bar from the top. setState bails when the value is
+  // unchanged, so the per-frame Lenis callback is effectively free.
+  const [scrolled, setScrolled] = useState(false);
+  useLenis((lenis) => setScrolled(lenis.scroll > 24));
+  const solid = scrolled || isMenuOpen || location.pathname !== "/";
 
   useEffect(() => {
     const handleNavVisibility = (event: Event) => {
@@ -110,9 +118,11 @@ export function Navigation() {
         opacity: isNavigationVisible ? 1 : 0,
       }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-[110] bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant ${
-        isNavigationVisible ? "pointer-events-auto" : "pointer-events-none"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-[110] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 ${
+        solid
+          ? "bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"
+          : "bg-transparent border-b border-transparent shadow-none"
+      } ${isNavigationVisible ? "pointer-events-auto" : "pointer-events-none"}`}
     >
       <div className="container mx-auto px-4 py-4 sm:py-5">
         <div className="flex items-center justify-between">

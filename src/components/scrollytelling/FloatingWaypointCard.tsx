@@ -27,6 +27,15 @@ const accentClasses: Record<NonNullable<MapWaypoint["accent"]>, { ring: string; 
 /** One timing curve for pin + every card variant so transitions read as one system. */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
+/** Staggered rise for the rows inside a card. Card instances remount per
+ *  waypoint (key=waypoint.id), so these replay on every stop — the card
+ *  composes itself instead of popping in as one block. */
+const rise = (order: number) => ({
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, ease: EASE, delay: 0.1 + order * 0.07 },
+});
+
 /**
  * Card that follows the active waypoint's pin on desktop and pins to the
  * bottom of the viewport on mobile. Two separate DOM nodes — the desktop
@@ -171,6 +180,7 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
         initial={{ opacity: 0, y: 12, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
+        whileHover={{ scale: 1.015 }}
         transition={{ duration: 0.35, ease: EASE }}
         className="pointer-events-auto"
       >
@@ -195,6 +205,7 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            whileHover={{ scale: 1.015 }}
             transition={{ duration: 0.35, ease: EASE }}
             className="pointer-events-auto col-start-1 row-start-1"
           >
@@ -248,7 +259,7 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
         compact ? "p-4" : "p-5"
       }`}
     >
-      <div className="flex items-center gap-2 mb-2">
+      <m.div {...rise(0)} className="flex items-center gap-2 mb-2">
         <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${accent.eyebrow}`}>
           <MapPin className="h-3 w-3" />
           {waypoint.code ?? "Location"}
@@ -256,9 +267,9 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
         {waypoint.year && (
           <span className="ml-auto text-[11px] font-medium text-white/50 tabular-nums">{waypoint.year}</span>
         )}
-      </div>
+      </m.div>
 
-      <div className="flex items-start gap-3">
+      <m.div {...rise(1)} className="flex items-start gap-3">
         {waypoint.logo && (
           <img
             src={waypoint.logo}
@@ -276,21 +287,23 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
             </p>
           )}
         </div>
-      </div>
+      </m.div>
 
-      <p className={`mt-3 text-white/80 leading-relaxed ${compact ? "text-sm" : "text-[0.95rem]"}`}>
+      <m.p {...rise(2)} className={`mt-3 text-white/80 leading-relaxed ${compact ? "text-sm" : "text-[0.95rem]"}`}>
         {waypoint.body}
-      </p>
+      </m.p>
 
       {waypoint.cta && (
-        <Button
-          onClick={handleCta}
-          size="sm"
-          className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
-        >
-          {waypoint.cta.label}
-          {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
-        </Button>
+        <m.div {...rise(3)}>
+          <Button
+            onClick={handleCta}
+            size="sm"
+            className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
+          >
+            {waypoint.cta.label}
+            {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
+          </Button>
+        </m.div>
       )}
     </div>
   );
