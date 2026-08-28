@@ -261,24 +261,38 @@
                   </div>
                   <p class="hero-enter-1 text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">Noah
                     Berman</p>
+                  <!-- Word spans animate transform/filter only (opacity stays 1)
+                       so the LCP paint is never delayed. Keep in sync with the
+                       hero-word markup in src/pages/Home.tsx. -->
                   <h1
                     class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
-                    Founder, Pilot, Visionary</h1>
+                    <span class="hero-word" style="--word-i:0">Founder,</span>
+                    <span class="hero-word" style="--word-i:1">Pilot,</span>
+                    <span class="hero-word" style="--word-i:2">Visionary</span>
+                  </h1>
                   <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                     <p class="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                       The sky is not the limit</p>
                     <p class="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">El cielo no es el
                       límite</p>
                   </div>
+                  <!-- Wrapper divs mirror the Magnetic wrappers in Home.tsx:
+                       they carry the responsive width, buttons fill them. -->
                   <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
-                    <button
-                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full sm:w-auto">Book
-                      a Meeting</button>
-                    <button
-                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium border h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full sm:w-auto">Blog</button>
-                    <button
-                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full w-full sm:w-auto">Get
-                      in Touch</button>
+                    <div class="w-full sm:w-auto">
+                      <button
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Book
+                        a Meeting</button>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                      <button
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium border h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Blog</button>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                      <button
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium h-11 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full w-full">Get
+                        in Touch</button>
+                    </div>
                   </div>
                 </div>
               </div>
