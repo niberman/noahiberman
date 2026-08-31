@@ -20,6 +20,13 @@ export function scrollToId(id: string) {
   const element = document.getElementById(id);
   if (!element) return;
   if (lenis) {
+    // Cross-route hand-offs (Footer/Navigation/SectionRedirect navigate("/")
+    // then scroll here) fire before Lenis's autoResize ResizeObserver catches
+    // the taller homepage, so its cached scroll `limit` is still the previous
+    // (short) page's. scrollTo clamps the target to that stale limit, landing
+    // ~500px down instead of at the section. resize() recomputes the limit
+    // synchronously from the live DOM first.
+    lenis.resize();
     lenis.scrollTo(element);
   } else {
     element.scrollIntoView();
