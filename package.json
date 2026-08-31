@@ -11,7 +11,12 @@
     "test:backend": "cd backend && pytest -q",
     "env:from-supabase": "bash scripts/print-frontend-env-from-supabase.sh",
     "preview": "vite preview",
-    "supabase:deploy": "bash scripts/setup-dashboard.sh"
+    "supabase:deploy": "bash scripts/setup-dashboard.sh",
+    "flyover:fixtures": "node scripts/flyover/fixtures.mjs",
+    "flyover:data": "node scripts/flyover/data.mjs",
+    "flyover:terrain": "node scripts/flyover/terrain.mjs",
+    "flyover:poster": "node scripts/flyover/poster.mjs",
+    "flyover:build": "npm run flyover:data && npm run flyover:terrain && npm run flyover:poster"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -77,6 +82,7 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.185.1",
     "vaul": "^0.9.9",
     "zod": "^3.25.76"
   },
@@ -87,13 +93,16 @@
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.21",
     "beasties": "^0.4.3",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "geotiff": "^3.0.5",
     "globals": "^15.15.0",
+    "jpeg-js": "^0.4.4",
     "lovable-tagger": "^1.1.11",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
