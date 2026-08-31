@@ -1,0 +1,51 @@
+{
+  "$comment": "Build-time config for the logbook flyover hero. Airport coordinates from FAA airport data. data/tracklogs/ (gitignored) holds the raw ForeFlight exports; scripts/flyover/ reads both and emits privacy-scrubbed artifacts into public/flyover/.",
+  "airports": {
+    "KAPA": { "lonLat": [-104.8493, 39.57], "elevFt": 5885 },
+    "KASE": { "lonLat": [-106.8686, 39.2232], "elevFt": 7838 }
+  },
+  "aircraftMap": [
+    { "pattern": "R44|R22|CABRI|ROTOR|HELI", "class": "helicopter" }
+  ],
+  "defaultClass": "airplane",
+  "heroRule": {
+    "start": "KAPA",
+    "end": "KASE",
+    "nearKm": 5,
+    "fallback": "longest-cross-country"
+  },
+  "palette": {
+    "airplane": "#a855f7",
+    "helicopter": "#f5f3ff",
+    "terrainLow": "#07040d",
+    "terrainMid": "#191233",
+    "terrainHigh": "#2f2153",
+    "terrainPeak": "#57457f",
+    "fog": "#050308",
+    "background": "#000000"
+  },
+  "budgets": {
+    "desktopPoints": 80000,
+    "mobilePoints": 60000,
+    "perTrackMaxDesktop": 4000,
+    "perTrackMaxMobile": 1200,
+    "minPerTrack": 50
+  },
+  "terrain": {
+    "res": 1024,
+    "mobileRes": 512,
+    "marginKm": 20,
+    "boundsOverride": { "lon": [-107.8, -104.2], "lat": [38.6, 40.35] }
+  },
+  "sectionFixes": [
+    { "id": "ppl", "t": 0.1 },
+    { "id": "ifr", "t": 0.21 },
+    { "id": "mountain-flying", "lonLat": [-105.55, 39.45] },
+    { "id": "commercial", "t": 0.45 },
+    { "id": "spain", "t": 0.57 },
+    { "id": "helicopter", "t": 0.68 },
+    { "id": "multi", "t": 0.8 },
+    { "id": "follow-my-flight", "t": 0.9 },
+    { "id": "contact", "t": 1 }
+  ]
+}

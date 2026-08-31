@@ -21,6 +21,7 @@ export function WaypointTrigger({
     <div
       id={waypoint.id}
       data-waypoint-id={waypoint.id}
+      data-fix={waypoint.id}
       className="relative h-[130vh] sm:h-[140vh] pointer-events-none scroll-mt-24"
       aria-hidden="true"
     />

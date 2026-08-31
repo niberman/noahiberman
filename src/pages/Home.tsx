@@ -3,35 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
+import { useRef, useEffect, useState, lazy, Suspense } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWords } from "@/data/brand";
-import { MapLoadingState } from "@/components/MapLoadingState";
 import { scrollToId } from "@/lib/lenis-ref";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { GrainOverlay } from "@/components/motion/GrainOverlay";
 import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
 
-// Split mapbox-gl (~460 KB) out of the critical path; the hero renders
-// immediately and the map fades in when its chunk arrives.
-const BackgroundFlightMap = lazy(() =>
-  import("@/components/BackgroundFlightMap").then((m) => ({ default: m.BackgroundFlightMap }))
-);
+// Split three + the flyover runtime out of the critical path; the hero
+// (poster CSS on #home) renders immediately and the canvas fades in when the
+// scene has its first frame.
+const FlyoverBackground = lazy(() => import("@/flyover/FlyoverBackground"));
 
 export default function Home() {
-  // Mount the map (and the live-flight poll) only after first interaction, or
-  // a beat after load for users who never touch anything. Lighthouse never
-  // interacts, so mapbox-gl eval and the flights/airport_coordinates/
-  // current_flight fetches drop out of its trace and the LCP critical chain.
+  // Mount the flyover (and the live-flight poll) only after first interaction,
+  // or a beat after load for users who never touch anything. Lighthouse never
+  // interacts, so the WebGL work and the flyover-asset/current_flight fetches
+  // drop out of its trace and the LCP critical chain.
   const [deferredReady, setDeferredReady] = useState(false);
-  // Cleared on the map's first frame; until then the loading state stands in.
-  const [mapReady, setMapReady] = useState(false);
-  const handleMapReady = useCallback(() => setMapReady(true), []);
   useEffect(() => {
     const arm = () => setDeferredReady(true);
     // pointermove is what saves real visitors from the 5s fallback below —
@@ -54,6 +49,14 @@ export default function Home() {
       window.clearTimeout(timer);
     };
   }, []);
+
+  // Full-res poster rides the same gate: the inline LQIP painted at first
+  // paint upgrades once the visitor interacts (or the 5 s fallback fires) —
+  // never inside the Lighthouse trace, where the High-priority background
+  // fetch cost ~300 ms of FCP.
+  useEffect(() => {
+    if (deferredReady) heroRef.current?.classList.add("poster-hd");
+  }, [deferredReady]);
 
   const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
@@ -91,24 +94,21 @@ export default function Home() {
       <GrainOverlay />
       <ScrollProgress />
 
-      {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
+      {/* Logbook flyover — fixed, full-bleed 3D canvas; scroll flies the
+          camera along the hero track. Until (or unless) it is ready, the
+          poster CSS on #home keeps the hero painted. */}
       {deferredReady && (
-        <>
-          {/* Covers the whole wait — lazy chunk, style, tiles — not just the
-              tail end after the map component mounts. */}
-          <MapLoadingState done={mapReady} />
-          <Suspense fallback={null}>
-            <BackgroundFlightMap onReady={handleMapReady} />
-          </Suspense>
-        </>
+        <Suspense fallback={null}>
+          <FlyoverBackground />
+        </Suspense>
       )}
 
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
       <FloatingWaypointCard />
 
       {/* Live Flight Status Indicator — renders nothing until its query
-          resolves, so it rides the same gate to keep current_flight (and the
-          query-key dedupe with the map's useCurrentFlight) off the LCP chain. */}
+          resolves, so it rides the same gate to keep current_flight off the
+          LCP chain. */}
       {deferredReady && <LiveFlightIndicator />}
 
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
@@ -128,7 +128,7 @@ export default function Home() {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
 
-          {/* Cursor aura over the map — sits under the z-10 hero copy. */}
+          {/* Cursor aura over the flyover — sits under the z-10 hero copy. */}
           <HeroSpotlight heroRef={heroRef} />
 
           <m.div
@@ -255,7 +255,7 @@ export default function Home() {
           </m.div>
         </section>
 
-        {/* SCROLLYTELLING SPINE — drives the map camera through every chapter */}
+        {/* SCROLLYTELLING SPINE — drives the flyover camera through every chapter */}
         <WaypointStack heroRef={heroRef} />
 
         {/* CONTACT */}

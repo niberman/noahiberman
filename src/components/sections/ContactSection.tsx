@@ -6,6 +6,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
+      data-fix="contact"
       className="py-16 sm:py-20 md:py-24 lg:py-32 scroll-mt-24 relative bg-background/90 backdrop-blur-xs [content-visibility:auto] [contain-intrinsic-size:auto_1100px]"
     >
       <div className="container mx-auto px-4 sm:px-6">
