@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { useRef, useEffect, useState, lazy, Suspense } from "react";
+import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { BrandWords } from "@/data/brand";
+import { MapLoadingState } from "@/components/MapLoadingState";
 import { scrollToId } from "@/lib/lenis-ref";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
@@ -17,10 +18,11 @@ import { GrainOverlay } from "@/components/motion/GrainOverlay";
 import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
 import { LaunchScreen } from "@/components/motion/LaunchScreen";
 
-// Split three + the flyover runtime out of the critical path; the hero
-// (poster CSS on #home) renders immediately and the canvas fades in when the
-// scene has its first frame.
-const FlyoverBackground = lazy(() => import("@/flyover/FlyoverBackground"));
+// Split mapbox-gl (~460 KB) out of the critical path; the hero renders
+// immediately and the map fades in when its chunk arrives.
+const BackgroundFlightMap = lazy(() =>
+  import("@/components/BackgroundFlightMap").then((m) => ({ default: m.BackgroundFlightMap }))
+);
 
 const launchAlreadySeen = () => {
   try {
@@ -37,9 +39,23 @@ export default function Home() {
   const [launchMinDone, setLaunchMinDone] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  // First visits load the flyover immediately under the launch screen. Later
-  // visits keep the old deferred gate so repeat navigations stay instant.
+  // Mount the map (and the live-flight poll) only after first interaction, or
+  // a beat after load for users who never touch anything. Lighthouse never
+  // interacts, so mapbox-gl eval and the flights/airport_coordinates/
+  // current_flight fetches drop out of its trace and the LCP critical chain.
+  // First visits load the map immediately under the launch screen; later
+  // visits keep the deferred gate so repeat navigations stay instant.
   const [deferredReady, setDeferredReady] = useState(showLaunch);
+  // Cleared on the map's first frame; until then the loading state stands in.
+  const [mapReady, setMapReady] = useState(false);
+  // The map's first frame is the readiness signal — it flips the launch bar to
+  // done so the intro dismisses with the map (the map-hero stand-in for the
+  // old background-ready broadcast).
+  const handleMapReady = useCallback(() => {
+    setMapReady(true);
+    setLaunchProgress(1);
+    setLaunchReady(true);
+  }, []);
   useEffect(() => {
     if (showLaunch) return;
     const arm = () => setDeferredReady(true);
@@ -77,6 +93,9 @@ export default function Home() {
     };
   }, [showLaunch, prefersReducedMotion]);
 
+  // Broadcast progress channel for the launch bar. The map reports readiness
+  // straight through onReady (handleMapReady above); these listeners stay as
+  // the hook for any finer-grained map:progress a future loader might emit.
   useEffect(() => {
     const onProgress = (event: Event) => {
       const progress = (event as CustomEvent<{ progress?: number }>).detail?.progress;
@@ -88,13 +107,13 @@ export default function Home() {
       setLaunchProgress(1);
       setLaunchReady(true);
     };
-    window.addEventListener("flyover:progress", onProgress);
-    window.addEventListener("flyover:ready", onReady);
-    window.addEventListener("flyover:fallback", onReady);
+    window.addEventListener("map:progress", onProgress);
+    window.addEventListener("map:ready", onReady);
+    window.addEventListener("map:fallback", onReady);
     return () => {
-      window.removeEventListener("flyover:progress", onProgress);
-      window.removeEventListener("flyover:ready", onReady);
-      window.removeEventListener("flyover:fallback", onReady);
+      window.removeEventListener("map:progress", onProgress);
+      window.removeEventListener("map:ready", onReady);
+      window.removeEventListener("map:fallback", onReady);
     };
   }, []);
 
@@ -156,21 +175,24 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Logbook flyover — fixed, full-bleed 3D canvas; scroll flies the
-          camera along the hero track. Until (or unless) it is ready, the
-          poster CSS on #home keeps the hero painted. */}
+      {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
       {deferredReady && (
-        <Suspense fallback={null}>
-          <FlyoverBackground />
-        </Suspense>
+        <>
+          {/* Covers the whole wait — lazy chunk, style, tiles — not just the
+              tail end after the map component mounts. */}
+          <MapLoadingState done={mapReady} />
+          <Suspense fallback={null}>
+            <BackgroundFlightMap onReady={handleMapReady} />
+          </Suspense>
+        </>
       )}
 
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
       <FloatingWaypointCard />
 
       {/* Live Flight Status Indicator — renders nothing until its query
-          resolves, so it rides the same gate to keep current_flight off the
-          LCP chain. */}
+          resolves, so it rides the same gate to keep current_flight (and the
+          query-key dedupe with the map's useCurrentFlight) off the LCP chain. */}
       {deferredReady && <LiveFlightIndicator />}
 
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
@@ -190,7 +212,7 @@ export default function Home() {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
 
-          {/* Cursor aura over the flyover — sits under the z-10 hero copy. */}
+          {/* Cursor aura over the map — sits under the z-10 hero copy. */}
           <HeroSpotlight heroRef={heroRef} />
 
           <m.div
@@ -317,7 +339,7 @@ export default function Home() {
           </m.div>
         </section>
 
-        {/* SCROLLYTELLING SPINE — drives the flyover camera through every chapter */}
+        {/* SCROLLYTELLING SPINE — drives the map camera through every chapter */}
         <WaypointStack heroRef={heroRef} />
 
         {/* CONTACT */}
