@@ -535,6 +535,111 @@ All colors MUST be HSL.
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.launch-screen {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 45%, hsl(var(--secondary) / 0.18), transparent 34rem),
+    radial-gradient(circle at 50% 110%, hsl(270 80% 38% / 0.28), transparent 40rem),
+    linear-gradient(180deg, #050208, #000 60%);
+}
+.launch-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, hsl(0 0% 100% / 0.5) 0 1px, transparent 1.5px),
+    linear-gradient(115deg, transparent 0 47%, hsl(var(--secondary) / 0.14) 48%, transparent 51%);
+  background-position: 0 0, center;
+  background-size: 84px 84px, 100% 100%;
+  mask-image: radial-gradient(circle at 50% 45%, #000, transparent 72%);
+}
+.launch-glow {
+  position: absolute;
+  inset: auto -10% -28% -10%;
+  height: 52vh;
+  background:
+    linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.4), transparent),
+    repeating-linear-gradient(90deg, transparent 0 7%, hsl(0 0% 100% / 0.13) 7.2% 7.45%, transparent 7.7% 14%);
+  filter: blur(18px);
+  opacity: 0.46;
+  transform: perspective(34rem) rotateX(68deg);
+}
+.launch-orb {
+  position: relative;
+  background:
+    radial-gradient(circle, hsl(var(--secondary) / 0.3), transparent 58%),
+    hsl(0 0% 100% / 0.04);
+  box-shadow:
+    0 0 90px hsl(var(--secondary) / 0.4),
+    inset 0 0 28px hsl(0 0% 100% / 0.08);
+}
+.launch-ring {
+  position: absolute;
+  inset: -16%;
+  border: 1px solid hsl(0 0% 100% / 0.18);
+  border-radius: inherit;
+}
+.launch-ring-1 {
+  border-top-color: hsl(var(--secondary) / 0.9);
+  border-right-color: hsl(var(--secondary) / 0.4);
+}
+.launch-ring-2 {
+  inset: -32%;
+  border-bottom-color: hsl(var(--secondary) / 0.65);
+  border-left-color: hsl(var(--secondary) / 0.35);
+}
+.launch-sweep {
+  position: absolute;
+  inset: -55%;
+  border-radius: inherit;
+  background: conic-gradient(from 20deg, transparent 0 75%, hsl(var(--secondary) / 0.34), transparent 86%);
+  mask-image: radial-gradient(circle, transparent 0 39%, #000 40% 42%, transparent 43%);
+}
+.launch-progress {
+  position: relative;
+}
+.launch-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.5), transparent);
+  transform: translateX(-100%);
+}
+@keyframes launch-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes launch-counter-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes launch-scan {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes launch-drift {
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .launch-orb {
+    animation: launch-drift 3.6s var(--ease-out-expo) infinite;
+  }
+  .launch-ring-1,
+  .launch-sweep {
+    animation: launch-spin 5s linear infinite;
+  }
+  .launch-ring-2 {
+    animation: launch-counter-spin 8s linear infinite;
+  }
+  .launch-progress::after {
+    animation: launch-scan 1.25s var(--ease-out-expo) infinite;
+  }
+}
+
 /* Hero entry stagger. Pure CSS so the shell animates before JS arrives and
    nothing is ever stuck hidden when JS never runs: the default state is
    visible, `backwards` supplies the hidden from-state only while waiting.
@@ -548,14 +653,14 @@ All colors MUST be HSL.
   }
 }
 .hero-enter-1 {
-  animation: hero-rise 0.8s var(--ease-out-expo) 0.4s backwards;
+  animation: hero-rise 1s var(--ease-out-expo) 0.25s backwards;
 }
 .hero-enter-2 {
   --hero-rise: 30px;
-  animation: hero-rise 1s var(--ease-out-expo) 0.7s backwards;
+  animation: hero-rise 1.15s var(--ease-out-expo) 0.55s backwards;
 }
 .hero-enter-3 {
-  animation: hero-rise 0.8s var(--ease-out-expo) 0.9s backwards;
+  animation: hero-rise 1s var(--ease-out-expo) 0.85s backwards;
 }
 
 /* Headline word cascade. The h1 is the LCP element, so opacity must stay 1
@@ -571,8 +676,9 @@ All colors MUST be HSL.
 }
 .hero-word {
   display: inline-block;
-  animation: hero-word-rise 0.9s var(--ease-out-expo) backwards;
-  animation-delay: calc(0.12s + var(--word-i, 0) * 0.11s);
+  will-change: transform, filter;
+  animation: hero-word-rise 1.08s var(--ease-out-expo) backwards;
+  animation-delay: calc(0.1s + var(--word-i, 0) * 0.13s);
 }
 
 /* Below-fold reveals. Visible by default; only browsers with scroll-driven
@@ -587,9 +693,9 @@ All colors MUST be HSL.
 }
 @supports (animation-timeline: view()) {
   .reveal-view {
-    animation: reveal-rise var(--ease-out-expo) both;
+    animation: reveal-rise 0.9s var(--ease-out-expo) both;
     animation-timeline: view();
-    animation-range: entry 0% entry 40%;
+    animation-range: entry 0% entry 46%;
   }
 }
 

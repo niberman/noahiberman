@@ -24,8 +24,8 @@ export function Magnetic({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 200, damping: 16, mass: 0.5 });
-  const springY = useSpring(y, { stiffness: 200, damping: 16, mass: 0.5 });
+  const springX = useSpring(x, { stiffness: 150, damping: 20, mass: 0.6 });
+  const springY = useSpring(y, { stiffness: 150, damping: 20, mass: 0.6 });
   const reduceMotion = useReducedMotion();
   const active = finePointer && !reduceMotion;
 

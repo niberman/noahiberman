@@ -84,7 +84,8 @@ const App = () => {
     <ReactLenis
       root
       options={{
-        lerp: 0.12,
+        lerp: 0.09,
+        wheelMultiplier: 0.9,
         autoRaf: true,
         anchors: true,
         allowNestedScroll: true,
