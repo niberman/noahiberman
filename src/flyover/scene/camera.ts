@@ -81,10 +81,10 @@ const _mtx = new THREE.Matrix4();
 
 /** Hero-track sampling, aircraft pose (yaw/pitch/bank), and the sprung chase camera. */
 export class ChaseRig {
-  readonly camPos = new SpringV3(9.5, 0.5); // ~0.7 s settle
-  readonly camTgt = new SpringV3(9.5, 0.5);
-  private tSpring = new Spring(12, 1e-5);
-  private bankSpring = new Spring(4, 1e-3);
+  readonly camPos = new SpringV3(7.4, 0.55);
+  readonly camTgt = new SpringV3(7.8, 0.55);
+  private tSpring = new Spring(8.5, 1e-5);
+  private bankSpring = new Spring(3.2, 1e-3);
   private pts: Float32Array;
   private n: number;
   private totalLen: number;

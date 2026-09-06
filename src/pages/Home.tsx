@@ -1,4 +1,4 @@
-import { m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -15,19 +15,33 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { GrainOverlay } from "@/components/motion/GrainOverlay";
 import { HeroSpotlight } from "@/components/motion/HeroSpotlight";
+import { LaunchScreen } from "@/components/motion/LaunchScreen";
 
 // Split three + the flyover runtime out of the critical path; the hero
 // (poster CSS on #home) renders immediately and the canvas fades in when the
 // scene has its first frame.
 const FlyoverBackground = lazy(() => import("@/flyover/FlyoverBackground"));
 
+const launchAlreadySeen = () => {
+  try {
+    return sessionStorage.getItem("site-launch-seen") === "1";
+  } catch {
+    return false;
+  }
+};
+
 export default function Home() {
-  // Mount the flyover (and the live-flight poll) only after first interaction,
-  // or a beat after load for users who never touch anything. Lighthouse never
-  // interacts, so the WebGL work and the flyover-asset/current_flight fetches
-  // drop out of its trace and the LCP critical chain.
-  const [deferredReady, setDeferredReady] = useState(false);
+  const [showLaunch, setShowLaunch] = useState(() => !launchAlreadySeen());
+  const [launchProgress, setLaunchProgress] = useState(0);
+  const [launchReady, setLaunchReady] = useState(false);
+  const [launchMinDone, setLaunchMinDone] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  // First visits load the flyover immediately under the launch screen. Later
+  // visits keep the old deferred gate so repeat navigations stay instant.
+  const [deferredReady, setDeferredReady] = useState(showLaunch);
   useEffect(() => {
+    if (showLaunch) return;
     const arm = () => setDeferredReady(true);
     // pointermove is what saves real visitors from the 5s fallback below —
     // a mouse twitches within milliseconds of load, while Lighthouse never
@@ -48,29 +62,72 @@ export default function Home() {
       window.removeEventListener("load", afterLoad);
       window.clearTimeout(timer);
     };
+  }, [showLaunch]);
+
+  useEffect(() => {
+    if (!showLaunch) return;
+    const min = window.setTimeout(() => setLaunchMinDone(true), prefersReducedMotion ? 700 : 2400);
+    const max = window.setTimeout(() => {
+      setLaunchProgress((p) => Math.max(p, 0.92));
+      setLaunchReady(true);
+    }, 7500);
+    return () => {
+      window.clearTimeout(min);
+      window.clearTimeout(max);
+    };
+  }, [showLaunch, prefersReducedMotion]);
+
+  useEffect(() => {
+    const onProgress = (event: Event) => {
+      const progress = (event as CustomEvent<{ progress?: number }>).detail?.progress;
+      if (typeof progress === "number") {
+        setLaunchProgress((current) => Math.max(current, progress));
+      }
+    };
+    const onReady = () => {
+      setLaunchProgress(1);
+      setLaunchReady(true);
+    };
+    window.addEventListener("flyover:progress", onProgress);
+    window.addEventListener("flyover:ready", onReady);
+    window.addEventListener("flyover:fallback", onReady);
+    return () => {
+      window.removeEventListener("flyover:progress", onProgress);
+      window.removeEventListener("flyover:ready", onReady);
+      window.removeEventListener("flyover:fallback", onReady);
+    };
   }, []);
 
-  // Full-res poster rides the same gate: the inline LQIP painted at first
-  // paint upgrades once the visitor interacts (or the 5 s fallback fires) —
-  // never inside the Lighthouse trace, where the High-priority background
-  // fetch cost ~300 ms of FCP.
+  useEffect(() => {
+    if (!showLaunch || !launchReady || !launchMinDone) return;
+    const t = window.setTimeout(() => {
+      setShowLaunch(false);
+      try {
+        sessionStorage.setItem("site-launch-seen", "1");
+      } catch {
+        /* ignore */
+      }
+    }, prefersReducedMotion ? 120 : 350);
+    return () => window.clearTimeout(t);
+  }, [showLaunch, launchReady, launchMinDone, prefersReducedMotion]);
+
+  // Full-res poster rides the same gate: first visits upgrade behind the
+  // launch screen; repeat visits keep the original interaction/fallback gate.
   useEffect(() => {
     if (deferredReady) heroRef.current?.classList.add("poster-hd");
   }, [deferredReady]);
 
   const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
-  const heroRef = useRef<HTMLElement>(null);
-  const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
 
   // Scroll-linked transforms bypass MotionConfig, so gate each one here.
-  const opacity = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.8]);
-  const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.72, 1], prefersReducedMotion ? [1, 1, 1] : [1, 0.55, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [1, 1] : [1, 0.86]);
+  const y = useTransform(scrollYProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 72]);
   // The scroll cue dissolves as soon as the user takes the hint.
   const cueOpacity = useTransform(
     scrollYProgress,
@@ -93,6 +150,11 @@ export default function Home() {
       {/* Film grain + scroll progress — page-wide chrome for the homepage. */}
       <GrainOverlay />
       <ScrollProgress />
+      <AnimatePresence>
+        {showLaunch && (
+          <LaunchScreen progress={launchProgress} reducedMotion={!!prefersReducedMotion} />
+        )}
+      </AnimatePresence>
 
       {/* Logbook flyover — fixed, full-bleed 3D canvas; scroll flies the
           camera along the hero track. Until (or unless) it is ready, the

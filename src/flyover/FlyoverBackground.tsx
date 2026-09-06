@@ -23,6 +23,14 @@ import { getLenis } from "@/lib/lenis-ref";
 const FAIL_MS = 8000;
 const MIN_TAPE_MS = 600;
 
+const publishProgress = (progress: number) => {
+  window.dispatchEvent(new CustomEvent("flyover:progress", { detail: { progress } }));
+};
+
+const publishReady = (eventName: "flyover:ready" | "flyover:fallback") => {
+  window.dispatchEvent(new Event(eventName));
+};
+
 function probeWebgl(): boolean {
   // Same probe-and-lose-context pattern as BackgroundFlightMap: software GL
   // (failIfMajorPerformanceCaveat) would jank the main thread for a scene
@@ -46,6 +54,10 @@ export default function FlyoverBackground() {
   const reducedMotion = !!useReducedMotion();
   const reducedRef = useRef(reducedMotion);
   reducedRef.current = reducedMotion;
+
+  useEffect(() => {
+    if (!webglOk) publishReady("flyover:fallback");
+  }, [webglOk]);
 
   useEffect(() => {
     if (!webglOk) return;
@@ -73,6 +85,7 @@ export default function FlyoverBackground() {
     const fail = (err?: unknown) => {
       if (dead) return;
       if (err) console.warn("flyover: falling back to poster —", err);
+      publishReady("flyover:fallback");
       teardown();
       setPhase("dead");
     };
@@ -85,17 +98,23 @@ export default function FlyoverBackground() {
       const reduced = reducedRef.current;
 
       const assets = await loadAssets(mobile, (f) => {
-        if (!dead) setProgress(f);
+        if (!dead) {
+          setProgress(f);
+          publishProgress(f);
+        }
       });
       if (dead) return;
       setProgress(0.7);
+      publishProgress(0.7);
 
       scene = createFlyoverScene(canvas, assets, { mobile, reducedMotion: reduced });
       await scene.compile();
       if (dead) return;
       setProgress(0.9);
+      publishProgress(0.9);
       scene.renderOnce();
       setProgress(1);
+      publishProgress(1);
       window.clearTimeout(failTimer);
 
       // The tape gets at least MIN_TAPE_MS on screen before it settles.
@@ -108,6 +127,7 @@ export default function FlyoverBackground() {
       homeEl?.classList.add("flyover-live");
       cleanups.push(() => homeEl?.classList.remove("flyover-live"));
       setPhase("live");
+      publishReady("flyover:ready");
 
       // Director from the first frame on — the scene smooths raw t itself.
       director = createDirector(assets.heroMeta.fixes, (t) => {

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useLenis } from "lenis/react";
 import { scrollToId, scrollToTop } from "@/lib/lenis-ref";
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -117,7 +119,7 @@ export function Navigation() {
         y: isNavigationVisible ? 0 : -100,
         opacity: isNavigationVisible ? 1 : 0,
       }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      transition={{ duration: 0.45, ease: EASE }}
       className={`fixed top-0 left-0 right-0 z-[110] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 ${
         solid
           ? "bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-elegant"
@@ -190,7 +192,7 @@ export function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.36, ease: EASE }}
             className="md:hidden bg-card/98 backdrop-blur-xl border-t border-border/50"
           >
             <div className="container mx-auto px-4 py-4 space-y-1">

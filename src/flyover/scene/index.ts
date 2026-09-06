@@ -14,9 +14,9 @@ import { ChaseRig } from "./camera";
 // intro vantage: high above and SE of KAPA, looking WSW over the terrain toward the mountains
 const VANTAGE_POS = new THREE.Vector3(20000, 16000, 24000);
 const VANTAGE_TARGET = new THREE.Vector3(-80000, 0, 40000);
-const SOLID_DUR = 1.5;
-const REVEAL_DUR = 6;
-const BLEND_DUR = 1;
+const SOLID_DUR = 1.25;
+const REVEAL_DUR = 7.2;
+const BLEND_DUR = 1.35;
 // past 1 so the smoothstep draw-tip glow is fully retired once the intro ends
 const REVEAL_DONE = 1.02;
 

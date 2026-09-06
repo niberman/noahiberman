@@ -33,7 +33,7 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const rise = (order: number) => ({
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.45, ease: EASE, delay: 0.1 + order * 0.07 },
+  transition: { duration: 0.52, ease: EASE, delay: 0.08 + order * 0.06 },
 });
 
 /**
@@ -109,7 +109,7 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
-          transition={{ duration: 0.3, ease: EASE }}
+          transition={{ duration: 0.45, ease: EASE }}
           className="relative"
         >
           <span className={`absolute inset-0 m-auto h-3 w-3 rounded-full ${accent.pin} animate-ping opacity-70`} />
@@ -179,9 +179,9 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
       <m.div
         initial={{ opacity: 0, y: 12, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -8, scale: 0.97 }}
-        whileHover={{ scale: 1.015 }}
-        transition={{ duration: 0.35, ease: EASE }}
+        exit={{ opacity: 0, y: -12, scale: 0.96 }}
+        whileHover={{ scale: 1.018 }}
+        transition={{ duration: 0.5, ease: EASE }}
         className="pointer-events-auto"
       >
         <CardChrome waypoint={waypoint} />
@@ -204,9 +204,9 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             key={waypoint.id}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            whileHover={{ scale: 1.015 }}
-            transition={{ duration: 0.35, ease: EASE }}
+            exit={{ opacity: 0, y: 18, scale: 0.96 }}
+            whileHover={{ scale: 1.018 }}
+            transition={{ duration: 0.5, ease: EASE }}
             className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} />
@@ -231,8 +231,8 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
             key={waypoint.id}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ duration: 0.35, ease: EASE }}
+            exit={{ opacity: 0, y: 28 }}
+            transition={{ duration: 0.48, ease: EASE }}
             className="pointer-events-auto col-start-1 row-start-1"
           >
             <CardChrome waypoint={waypoint} compact />
@@ -255,56 +255,66 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
 
   return (
     <div
-      className={`relative rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl ring-1 ${accent.ring} ${
+      className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl ring-1 ${accent.ring} ${
         compact ? "p-4" : "p-5"
       }`}
     >
-      <m.div {...rise(0)} className="flex items-center gap-2 mb-2">
-        <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${accent.eyebrow}`}>
-          <MapPin className="h-3 w-3" />
-          {waypoint.code ?? "Location"}
-        </span>
-        {waypoint.year && (
-          <span className="ml-auto text-[11px] font-medium text-white/50 tabular-nums">{waypoint.year}</span>
-        )}
-      </m.div>
-
-      <m.div {...rise(1)} className="flex items-start gap-3">
-        {waypoint.logo && (
-          <img
-            src={waypoint.logo}
-            alt=""
-            className="h-10 w-10 rounded-md object-contain bg-white/5 p-1 flex-shrink-0"
-          />
-        )}
-        <div className="min-w-0">
-          <h3 className={`font-display font-bold text-white leading-tight ${compact ? "text-lg" : "text-xl"}`}>
-            {waypoint.title}
-          </h3>
-          {waypoint.subtitle && (
-            <p className={`italic text-white/60 mt-0.5 ${compact ? "text-xs" : "text-sm"}`}>
-              {waypoint.subtitle}
-            </p>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_0%,rgba(255,255,255,0.16),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_44%)]"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+      />
+      <div className="relative">
+        <m.div {...rise(0)} className="flex items-center gap-2 mb-2">
+          <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${accent.eyebrow}`}>
+            <MapPin className="h-3 w-3" />
+            {waypoint.code ?? "Location"}
+          </span>
+          {waypoint.year && (
+            <span className="ml-auto text-[11px] font-medium text-white/50 tabular-nums">{waypoint.year}</span>
           )}
-        </div>
-      </m.div>
-
-      <m.p {...rise(2)} className={`mt-3 text-white/80 leading-relaxed ${compact ? "text-sm" : "text-[0.95rem]"}`}>
-        {waypoint.body}
-      </m.p>
-
-      {waypoint.cta && (
-        <m.div {...rise(3)}>
-          <Button
-            onClick={handleCta}
-            size="sm"
-            className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
-          >
-            {waypoint.cta.label}
-            {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
-          </Button>
         </m.div>
-      )}
+
+        <m.div {...rise(1)} className="flex items-start gap-3">
+          {waypoint.logo && (
+            <img
+              src={waypoint.logo}
+              alt=""
+              className="h-10 w-10 rounded-md object-contain bg-white/5 p-1 flex-shrink-0"
+            />
+          )}
+          <div className="min-w-0">
+            <h3 className={`font-display font-bold text-white leading-tight ${compact ? "text-lg" : "text-xl"}`}>
+              {waypoint.title}
+            </h3>
+            {waypoint.subtitle && (
+              <p className={`italic text-white/60 mt-0.5 ${compact ? "text-xs" : "text-sm"}`}>
+                {waypoint.subtitle}
+              </p>
+            )}
+          </div>
+        </m.div>
+
+        <m.p {...rise(2)} className={`mt-3 text-white/80 leading-relaxed ${compact ? "text-sm" : "text-[0.95rem]"}`}>
+          {waypoint.body}
+        </m.p>
+
+        {waypoint.cta && (
+          <m.div {...rise(3)}>
+            <Button
+              onClick={handleCta}
+              size="sm"
+              className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
+            >
+              {waypoint.cta.label}
+              {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
+            </Button>
+          </m.div>
+        )}
+      </div>
     </div>
   );
 }
