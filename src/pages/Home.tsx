@@ -1,10 +1,9 @@
 import { AnimatePresence, m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Calendar, BookOpen } from "lucide-react";
+import { MessageCircle, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
-import { usePrimaryMeetingSlug } from "@/hooks/use-scheduling";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
@@ -136,7 +135,6 @@ export default function Home() {
     if (deferredReady) heroRef.current?.classList.add("poster-hd");
   }, [deferredReady]);
 
-  const { data: primarySlug } = usePrimaryMeetingSlug();
   const navigate = useNavigate();
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -282,12 +280,12 @@ export default function Home() {
               <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate(primarySlug ? `/book/${primarySlug}` : "/book")}
+                    onClick={() => navigate("/inoah")}
                     size="lg"
                     className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
                   >
-                    <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Book a Meeting
+                    <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Access iNoah
                   </Button>
                 </Magnetic>
 
