@@ -79,10 +79,6 @@ linear interpolation at index `t * 2047`.
 by the pipeline to the `t` of the nearest hero-track point. `fixes` is sorted
 by `t` ascending and each `id` matches a `data-fix` attribute in the page.
 
-### `poster.jpg` (≤ 200 KB, 1920 px wide) / `poster-480.jpg` (480 px wide)
-Node-rendered hillshade of the heightmap with every track drawn as a thin
-additive line in the two palette colors. Dark, matches site background.
-
 ## Pipeline commands
 
 - `npm run flyover:data` → parse `data/tracklogs/*` (KML / GPX / ForeFlight CSV),
@@ -98,8 +94,7 @@ additive line in the two palette colors. Dark, matches site background.
   covering the track bbox + `marginKm` (or `boundsOverride` when set), cache in
   `scripts/flyover/.cache/` (idempotent), merge/resample to `res`/`mobileRes`,
   emit `heightmap*.png` + `terrain*.json`.
-- `npm run flyover:poster` → emit `poster.jpg` + `poster-480.jpg`.
-- `npm run flyover:build` → all three in order.
+- `npm run flyover:build` → data then terrain.
 - `npm run flyover:fixtures` → synthesize placeholder KML tracks into
   `data/tracklogs/` from the shipped logbook flight list (dev only, until the
   real ForeFlight track exports land).

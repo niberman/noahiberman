@@ -129,12 +129,6 @@ export default function Home() {
     return () => window.clearTimeout(t);
   }, [showLaunch, launchReady, launchMinDone, prefersReducedMotion]);
 
-  // Full-res poster rides the same gate: first visits upgrade behind the
-  // launch screen; repeat visits keep the original interaction/fallback gate.
-  useEffect(() => {
-    if (deferredReady) heroRef.current?.classList.add("poster-hd");
-  }, [deferredReady]);
-
   const navigate = useNavigate();
   const { scrollYProgress } = useScroll({
     target: heroRef,

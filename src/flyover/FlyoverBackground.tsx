@@ -10,14 +10,11 @@ import { getLenis } from "@/lib/lenis-ref";
 
 /**
  * The logbook flyover — a fixed full-bleed WebGL canvas behind the page,
- * flown along the hero track by scroll. The hero's poster (#home::before,
- * see index.css) is the bottom layer from first paint; once the scene has a
- * frame we add .flyover-live to #home to fade the poster out over the canvas
- * (everything inside the z-10 content wrapper stacks above this z-0 canvas,
- * so the crossfade has to run poster-side).
+ * flown along the hero track by scroll. Once the scene has a frame the
+ * canvas fades in.
  *
  * Any failure — no WebGL, missing assets, no DecompressionStream, 8 s without
- * a first frame — renders nothing and leaves the poster standing.
+ * a first frame — renders nothing.
  */
 
 const FAIL_MS = 8000;
@@ -122,10 +119,7 @@ export default function FlyoverBackground() {
       if (wait > 0) await new Promise<void>((r) => later(r, wait));
       if (dead) return;
 
-      // Crossfade: canvas opacity → 1 (visible below the hero immediately)
-      // and the hero poster fades out above it. Tape settles + fades itself.
-      homeEl?.classList.add("flyover-live");
-      cleanups.push(() => homeEl?.classList.remove("flyover-live"));
+      // Canvas opacity → 1. Tape settles + fades itself.
       setPhase("live");
       publishReady("flyover:ready");
 
