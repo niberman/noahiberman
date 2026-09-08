@@ -115,7 +115,7 @@ export const aboutContent = {
       title: "Entrepreneurship",
       spanish: "Emprendimiento",
       description: "Creating ventures that blend passion, purpose, and innovation.",
-      expandedContent: "Creating ventures that blend passion, purpose, and precision—aimed at expanding freedom, mobility, and opportunity.",
+      expandedContent: "Creating ventures that blend passion, purpose, and precision, all aimed at expanding freedom, mobility, and opportunity.",
     },
     {
       title: "Cultural Connection",

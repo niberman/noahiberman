@@ -5,19 +5,19 @@ import { setActiveWaypointId, setStackVisible } from "@/hooks/use-active-waypoin
 import { WaypointTrigger } from "./WaypointTrigger";
 
 /**
- * The "scroll spine" — a stack of invisible triggers, one per waypoint,
+ * The "scroll spine": a stack of invisible triggers, one per waypoint,
  * that drive the map camera and floating card.
  *
  * A waypoint takes over once its trigger's top crosses ACTIVATION_LINE. Because
  * triggers are stacked in DOM order and don't overlap, the last one to cross
- * wins — the handoff is monotonic in scroll direction, so there is exactly one
+ * wins. The handoff is monotonic in scroll direction, so there is exactly one
  * switch per boundary and no flicker between neighbours.
  */
 
 /**
  * Fraction of the viewport height at which a trigger takes over. Kept high on
  * the page (30% down) so the hero has faded out before the first waypoint
- * claims the camera — matching centers instead handed off while the hero
+ * claims the camera. Matching centers instead handed off while the hero
  * headline was still half visible.
  */
 const ACTIVATION_LINE = 0.3;
@@ -57,7 +57,7 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
       // Stack is "visible" while its bottom is still below the same
       // ACTIVATION_LINE handoff (not merely inside the viewport): once the
       // spine's bottom crosses that line the contact section has arrived, so
-      // the floating card steps aside instead of hovering over Contact — even
+      // the floating card steps aside instead of hovering over Contact, even
       // when scrollToId leaves contact's scroll-mt gap in view. Drive this from
       // scroll metrics instead of an IO so it stays correct even where IO is
       // throttled (background tabs, automation harnesses).

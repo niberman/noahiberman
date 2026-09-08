@@ -43,7 +43,7 @@ interface ConnSettings {
 /* ------------------------------------------------------------------ */
 
 // Hermes Agent API server (OpenAI-compatible).
-// Docs: hermes-agent "API Server" — POST {url}/v1/chat/completions,
+// Docs: hermes-agent "API Server": POST {url}/v1/chat/completions,
 // GET {url}/health, Authorization: Bearer <API_SERVER_KEY>.
 const SETTINGS_KEY = "hermes-dash-settings";
 const REQUEST_TIMEOUT_MS = 300_000; // agent runs tools; responses can be slow
@@ -107,7 +107,7 @@ export function HermesChat() {
       const data = await res.json().catch(() => null);
       if (res.status === 401 || res.status === 403) {
         setConnected(false);
-        setError("Hermes rejected the API key — check it in settings.");
+        setError("Hermes rejected the API key. Check it in settings.");
       } else if (res.ok && data?.status === "ok") {
         setConnected(true);
       } else {
@@ -117,7 +117,7 @@ export function HermesChat() {
     } catch {
       setConnected(false);
       setError(
-        "Cannot reach Hermes — check the API URL, that `hermes gateway` is running, and CORS (API_SERVER_CORS_ORIGINS)."
+        "Cannot reach Hermes. Check the API URL, that `hermes gateway` is running, and CORS (API_SERVER_CORS_ORIGINS)."
       );
     } finally {
       setConnecting(false);
@@ -172,7 +172,7 @@ export function HermesChat() {
       const msg = e instanceof Error ? e.message : String(e);
       setError(
         msg.includes("abort") || msg.includes("timeout")
-          ? "Hermes timed out — the agent may still be working. Try again."
+          ? "Hermes timed out. The agent may still be working. Try again."
           : `Send failed: ${msg}`
       );
     } finally {
@@ -185,8 +185,8 @@ export function HermesChat() {
     const next = { ...settings, ...partial };
     setSettings(next);
     saveSettings(next);
-    // The Live badge reflects a health check against the OLD settings —
-    // require a fresh Connect after any change.
+    // The Live badge reflects a health check against the OLD settings.
+    // Require a fresh Connect after any change.
     setConnected(false);
     setError(null);
   };

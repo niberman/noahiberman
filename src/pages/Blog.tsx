@@ -10,7 +10,7 @@ export default function Blog() {
       <main className="min-h-screen pt-24 pb-16">
       <SEO
         title="Blog | Noah Berman"
-        description="Aviation, AI systems, and technology insights from Noah Berman — a Denver-based commercial pilot, software engineer, and entrepreneur."
+        description="Aviation, AI systems, and technology insights from Noah Berman, a Denver-based commercial pilot, software engineer, and entrepreneur."
       />
         <div className="container max-w-5xl mx-auto px-4 sm:px-6">
           {/* Back to home */}

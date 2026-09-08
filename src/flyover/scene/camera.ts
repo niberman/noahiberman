@@ -9,8 +9,8 @@ const MAX_BANK = (35 * Math.PI) / 180;
 const CHASE_BACK = 650;
 const CHASE_UP = 200;
 const CHASE_AHEAD = 900;
-// aim below the flight path: puts the aircraft ~4° under the view axis —
-// above the centered waypoint cards — and the horizon in the upper third
+// aim below the flight path: puts the aircraft ~4° under the view axis
+// (above the centered waypoint cards), and the horizon in the upper third
 const CHASE_AIM_DOWN = 160;
 
 const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);

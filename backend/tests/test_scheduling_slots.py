@@ -18,7 +18,7 @@ def test_parse_window() -> None:
 
 
 def test_overlaps_touching_boundary_no_overlap() -> None:
-    # [10:00, 11:00) and [11:00, 12:00) — end == start is not overlap
+    # [10:00, 11:00) and [11:00, 12:00): end == start is not overlap
     a0 = datetime(2026, 4, 1, 10, 0, tzinfo=ZoneInfo("UTC"))
     a1 = datetime(2026, 4, 1, 11, 0, tzinfo=ZoneInfo("UTC"))
     b0 = datetime(2026, 4, 1, 11, 0, tzinfo=ZoneInfo("UTC"))
@@ -60,7 +60,7 @@ def test_subtract_busy_respects_buffer() -> None:
     out = _subtract_busy_and_buffers(slots, busy, buffer_min=15)
     assert out == []
 
-    # Busy ends before buffered window starts — slot survives
+    # Busy ends before buffered window starts, so the slot survives
     busy_clear = [
         (
             datetime(2026, 4, 1, 13, 0, tzinfo=tz),

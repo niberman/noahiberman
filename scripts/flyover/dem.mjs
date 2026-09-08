@@ -16,7 +16,7 @@ async function download(name, dest) {
   const url = `https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/1/TIFF/current/${name}/USGS_1_${name}.tif`;
   const res = await fetch(url);
   if (res.status === 404) {
-    const err = new Error(`DEM tile not found (404): ${name} — ${url}`);
+    const err = new Error(`DEM tile not found (404): ${name} at ${url}`);
     err.notFound = true;
     throw err;
   }

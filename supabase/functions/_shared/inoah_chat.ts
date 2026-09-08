@@ -8,14 +8,14 @@ import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.39.0
 // OpenRouter is the only chat provider: OPENROUTER_API_KEY is the single key
 // model spend bills to, and there is no second route. Google is still reached,
 // but as an OpenRouter upstream, so no Google key is involved in a chat turn.
-// (EMBEDDING_API_KEY survives for embeddings alone — see _shared/embeddings.ts.)
+// (EMBEDDING_API_KEY survives for embeddings alone; see _shared/embeddings.ts.)
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 export const CHAT_MODEL = "google/gemini-3.5-flash";
 
 // Tuned for gemini-embedding-2's cosine-similarity distribution (measured
 // 2026-06-09): relevant memories score 0.65-0.78, unrelated ones 0.50-0.56.
 // 0.60 sits in the separation band; 0.5 let junk context through. These are
-// fallbacks only — the live values come from the inoah_settings row so they can
+// fallbacks only: the live values come from the inoah_settings row so they can
 // be edited from the dashboard without a redeploy.
 export const MATCH_THRESHOLD = 0.6;
 export const MATCH_COUNT = 5;

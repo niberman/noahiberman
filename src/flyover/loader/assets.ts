@@ -37,7 +37,7 @@ async function getBuf(
     if (done) break;
     chunks.push(value);
     loaded += value.byteLength;
-    // content-length is the encoded size; loaded bytes are decoded — clamp so
+    // content-length is the encoded size; loaded bytes are decoded. Clamp so
     // a gzip-served asset never reports past its total.
     onBytes(Math.min(loaded, total), total);
   }
@@ -56,7 +56,7 @@ export async function loadAssets(
 ): Promise<FlyoverAssets> {
   const s = mobile ? "-m" : "";
 
-  // Tiny metadata first — the sizes below are derived from it.
+  // Tiny metadata first: the sizes below are derived from it.
   const [terrain, tracksIndex, heroMeta] = await Promise.all([
     getJson<TerrainMeta>(`terrain${s}.json`),
     getJson<TracksIndex>(`tracks${s}.json`),
@@ -89,7 +89,7 @@ export async function loadAssets(
   ]);
 
   // ponytail: bins are little-endian and typed-array views use platform byte
-  // order — every browser platform we serve is LE.
+  // order, and every browser platform we serve is LE.
   const q16 = new Uint16Array(tracksBuf);
   const hero = new Float32Array(heroBuf);
   if (q16.length !== tracksIndex.totalPoints * 3) throw new Error("flyover: tracks.bin size mismatch");

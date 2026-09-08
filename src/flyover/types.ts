@@ -1,6 +1,6 @@
 /**
- * Shared contracts for the flyover runtime. Mirrors scripts/flyover/FORMATS.md —
- * that file is the source of truth for the on-disk formats.
+ * Shared contracts for the flyover runtime. Mirrors scripts/flyover/FORMATS.md,
+ * which is the source of truth for the on-disk formats.
  */
 
 export interface TrackIndexEntry {
@@ -16,7 +16,7 @@ export interface TracksIndex {
   version: 1;
   stride: 3;
   totalPoints: number;
-  /** chronological order — rank is the array index */
+  /** chronological order; rank is the array index */
   tracks: TrackIndexEntry[];
   bounds: [number, number, number, number, number, number];
   /** tracks.bin is uint16-quantized: pos[a] = min[a] + q * scale[a] */
@@ -64,7 +64,7 @@ export interface FlyoverAssets {
   mobile: boolean;
 }
 
-/** Mirrors data/flyover.config.json palette — keep in sync by hand. */
+/** Mirrors data/flyover.config.json palette; keep in sync by hand. */
 export const PALETTE = {
   airplane: "#a855f7",
   helicopter: "#f5f3ff",
@@ -78,7 +78,7 @@ export const PALETTE = {
 
 export interface FlyoverSceneOpts {
   mobile: boolean;
-  /** reduced motion: no intro, no scroll flight — fixed camera on the finished scene */
+  /** reduced motion: no intro, no scroll flight, just a fixed camera on the finished scene */
   reducedMotion: boolean;
 }
 

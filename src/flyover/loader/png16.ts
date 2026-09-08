@@ -1,11 +1,11 @@
 /**
  * Browser decoder for the flyover heightmap PNG (see scripts/flyover/FORMATS.md):
  * 16-bit grayscale, color type 0, non-interlaced, row filters 0 or 2 (Up).
- * Canvas can't do this — it clamps to 8 bits — so we walk the chunks and
+ * Canvas can't do this (it clamps to 8 bits), so we walk the chunks and
  * inflate the IDAT stream ourselves via DecompressionStream.
  */
 
-/** Thrown when the browser can't decode at all — caller leaves the poster. */
+/** Thrown when the browser can't decode at all; caller leaves the poster. */
 export class Png16UnsupportedError extends Error {
   constructor() {
     super("DecompressionStream unavailable");
@@ -85,7 +85,7 @@ export async function decodePng16(
   for (let row = 0; row < height; row++) {
     const r = row * rowBytes;
     const filter = raw[r];
-    // The pipeline emits filter 0 or 2/Up only (FORMATS.md) — anything else
+    // The pipeline emits filter 0 or 2/Up only (FORMATS.md); anything else
     // means a foreign file.
     if (filter === 2 && row > 0) {
       // unfilter Up in place: add the byte directly above

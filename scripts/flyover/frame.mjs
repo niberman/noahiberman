@@ -11,7 +11,7 @@ export const OUT_DIR = path.join(root, "public/flyover");
 
 const [lon0, lat0] = CONFIG.airports.KAPA.lonLat;
 const rad = (d) => (d * Math.PI) / 180;
-// Series expansion for meters per degree at the origin latitude — exact enough
+// Series expansion for meters per degree at the origin latitude, exact enough
 // over the few hundred km these tracks span.
 const M_PER_DEG_LAT =
   111132.954 - 559.822 * Math.cos(2 * rad(lat0)) + 1.175 * Math.cos(4 * rad(lat0));

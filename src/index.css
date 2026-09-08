@@ -118,7 +118,7 @@ All colors MUST be HSL.
   }
 
   html {
-    /* No scroll-behavior: smooth here — it fights Lenis's programmatic
+    /* No scroll-behavior: smooth here; it fights Lenis's programmatic
        scroll. Lenis owns window smoothing (and honors reduced motion). */
     /* "only dark" opts out of Chrome Auto Dark Mode, which otherwise force-paints
        opaque backgrounds on every element and hides the fixed flight map */
@@ -526,7 +526,7 @@ All colors MUST be HSL.
   }
 }
 
-/* Outside @layer so Tailwind never purges them — the static shell in
+/* Outside @layer so Tailwind never purges them: the static shell in
    index.html uses these and isn't in the content globs. */
 
 /* One easing for every entry on the page so the choreography reads as a
@@ -664,10 +664,10 @@ All colors MUST be HSL.
 }
 
 /* Headline word cascade. The h1 is the LCP element, so opacity must stay 1
-   for it and every word in it — only transform and filter animate, which
+   for it and every word in it. Only transform and filter animate, which
    never delay the paint. Each word rises into focus with a per-word delay
    set through --word-i. Markup lives in both index.html (shell) and
-   src/pages/Home.tsx — keep them identical. */
+   src/pages/Home.tsx. Keep them identical. */
 @keyframes hero-word-rise {
   from {
     transform: translateY(0.45em) scale(0.99);
@@ -699,7 +699,7 @@ All colors MUST be HSL.
   }
 }
 
-/* Sheen sweep for the primary CTA — a skewed light band crosses the button
+/* Sheen sweep for the primary CTA: a skewed light band crosses the button
    on hover. Pure CSS so it costs nothing until pointed at. */
 .btn-sheen {
   position: relative;
@@ -723,12 +723,12 @@ All colors MUST be HSL.
   transform: translateX(150%) skewX(-20deg);
 }
 
-/* Film grain — a tiled feTurbulence texture over the whole page. The div
+/* Film grain: a tiled feTurbulence texture over the whole page. The div
    bleeds 48px past the viewport and jumps between sub-48px offsets in
-   discrete steps so the grain "boils" like film stock — the texture tiles,
+   discrete steps so the grain "boils" like film stock. The texture tiles,
    so small jumps read as fully new frames without paying for an oversized
    GPU layer. Transform-only: composites, never repaints. Animated on fine
-   pointers only — phones get the static texture. */
+   pointers only; phones get the static texture. */
 .grain-overlay {
   inset: -48px;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");

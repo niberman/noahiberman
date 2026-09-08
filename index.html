@@ -59,7 +59,7 @@
   <meta name="twitter:image" content="https://noahiberman.com/og-image.png" />
   <meta name="twitter:image:alt" content="Noah Berman | Founder, Pilot, Engineer, Visionary" />
 
-  <!-- Structured Data — one @graph, nodes joined by @id so Google resolves
+  <!-- Structured Data: one @graph, nodes joined by @id so Google resolves
        them as a single entity cluster. Facts verified against
        AI Context/public-profile.md (2026-08-10). -->
   <script type="application/ld+json">
@@ -236,8 +236,8 @@
 
 <body>
   <!-- Static hero shell: paints FCP/LCP at HTML parse time, before any JS.
-       createRoot().render() in src/main.tsx replaces it with identical markup —
-       keep structure/classes in sync with src/App.tsx wrappers and the hero in
+       createRoot().render() in src/main.tsx replaces it with identical markup.
+       Keep structure/classes in sync with src/App.tsx wrappers and the hero in
        src/pages/Home.tsx (the hero-enter-* classes play the entry stagger in
        CSS, so content is visible-by-default even when JS never runs). -->
   <div id="root">
@@ -305,7 +305,7 @@
   <script>
     // Once the shell's stagger has finished, suppress hero-enter-* (see
     // index.css .hero-done): createRoot() discards the shell DOM, and fresh
-    // nodes would restart the animation — blanking already-visible text when
+    // nodes would restart the animation, blanking already-visible text when
     // the bundle arrives late. Mid-flight remounts still replay; only the
     // vanish-after-completion case is closed.
     document.addEventListener("animationend", function (e) {

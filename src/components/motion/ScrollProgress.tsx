@@ -5,7 +5,7 @@ import { useLenis } from "lenis/react";
  * Hairline scroll progress bar pinned above the nav. Driven straight off
  * Lenis's progress (scroll / limit) through a light spring so it glides with
  * the smoothed scroll instead of ticking. Scroll-linked position feedback, so
- * it stays under reduced motion — the spring just follows the (then-native)
+ * it stays under reduced motion: the spring just follows the (then-native)
  * scroll.
  */
 export function ScrollProgress() {

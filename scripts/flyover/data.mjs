@@ -1,6 +1,6 @@
 // Track pipeline: data/tracklogs/* -> public/flyover/tracks*.bin/json + hero.
 // Formats per scripts/flyover/FORMATS.md. Published artifacts carry no
-// timestamps, dates, tails, names, or filenames — chronology is array order.
+// timestamps, dates, tails, names, or filenames. Chronology is array order.
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { CONFIG, OUT_DIR, REPO_ROOT, lonLatToXY } from "./frame.mjs";
@@ -36,7 +36,7 @@ function tailClasses() {
         map.set(cols[0].trim().toUpperCase(), /rotorcraft/i.test(cols[8]) ? "helicopter" : "airplane");
       }
     }
-  } catch { /* no logbook — patterns only */ }
+  } catch { /* no logbook, patterns only */ }
   return map;
 }
 
@@ -47,7 +47,7 @@ function loadTracks() {
   } catch { /* missing dir handled below */ }
   if (!files.length) {
     console.error(
-      "data/tracklogs/ is empty — run `npm run flyover:fixtures` or drop in the monthly ForeFlight export."
+      "data/tracklogs/ is empty. Run `npm run flyover:fixtures` or drop in the monthly ForeFlight export."
     );
     process.exit(1);
   }
@@ -131,7 +131,7 @@ function emitVariant(tracks, cap, perTrackMax, binName, jsonName) {
   const f32 = Float32Array.from(flat);
   assertFinite(f32, binName);
   if (o > cap) throw new Error(`${binName}: ${o} points exceeds cap ${cap}`);
-  // Quantize to uint16 per axis (pos = min + q * scale) — 6 bytes/point keeps
+  // Quantize to uint16 per axis (pos = min + q * scale): 6 bytes/point keeps
   // the desktop bin inside the 500 KB budget; worst-axis step is ~9 m, well
   // under a ribbon's on-screen width.
   const quant = {

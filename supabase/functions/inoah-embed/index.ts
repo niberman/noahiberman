@@ -2,7 +2,7 @@
 //
 // Splitting this out of the dashboard (rather than letting it insert rows via
 // RLS) keeps the Gemini key server-side and makes it impossible to save an
-// entry without an embedding — such a row would sit in the table looking saved
+// entry without an embedding: such a row would sit in the table looking saved
 // while never being retrieved.
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { isExcludedContent } from "../_shared/content_policy.ts";

@@ -24,8 +24,8 @@ const MAP_MAX_ZOOM = 16;
 /** Float tolerance vs getMinZoom(); keep tight so nav does not appear early. */
 const AT_MIN_ZOOM_TOLERANCE = 0.02;
 
-/** `onReady` fires on the map's first frame — or right away when there is no
- *  map to wait for — so Home can drop the loading state it holds. */
+/** `onReady` fires on the map's first frame (or right away when there is no
+ *  map to wait for), so Home can drop the loading state it holds. */
 export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   const { data: supabaseFlights } = useFlights();
   const { lookupMap: airportCoordsMap } = useAirportLookupMap();
@@ -109,7 +109,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   // One cinematic zoom-out that frames every flight. Returns false when the
   // airport data hasn't loaded yet. Used both on entering explore mode and by
   // the `fitRoutes` waypoint, which makes the same "every route, every
-  // airport" promise — hence the padding/duration overrides, since that stop
+  // airport" promise: hence the padding/duration overrides, since that stop
   // has to leave room for the bottom-centered card.
   const frameAllFlights = (
     opts?: { padding?: mapboxgl.PaddingOptions | number; duration?: number },
@@ -141,15 +141,15 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
 
   // Drive the camera based on the active waypoint and interactive state.
   // Three modes:
-  //   1. Interactive (user clicked Explore on the flight waypoint) — enable
+  //   1. Interactive (user clicked Explore on the flight waypoint): enable
   //      gestures, flatten view, no rotation.
-  //   2. Hero waypoint — fly to the wide view, then start slow rotation.
-  //   3. Any other waypoint — fly to its framing and sit still.
+  //   2. Hero waypoint: fly to the wide view, then start slow rotation.
+  //   3. Any other waypoint: fly to its framing and sit still.
   // Live in-flight tracking overrides everything (handled in its own effect).
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    // Always cancel any rotation before applying a new mode — including when a
+    // Always cancel any rotation before applying a new mode, including when a
     // flight goes live mid-session (the poll makes that routine), or the hero
     // rotation keeps spinning under the live-tracking view.
     if (rotationRef.current) {
@@ -237,7 +237,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       drawWaypointArc(wp);
 
       // Resume slow rotation only at hero, after the flyTo completes.
-      // Skipped under reduced motion — no autonomous camera movement.
+      // Skipped under reduced motion: no autonomous camera movement.
       if (wp.id === HERO_WAYPOINT.id && !prefersReducedMotion) {
         const startRotation = () => {
           if (activeWaypointIdRef.current !== HERO_WAYPOINT.id) return;
@@ -254,7 +254,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
               rotationRef.current = null;
               return;
             }
-            // Don't fight in-progress flyTo — wait for it.
+            // Don't fight in-progress flyTo; wait for it.
             if (!map.current.isMoving()) {
               bearing += 0.02;
               map.current.setBearing(bearing);
@@ -284,7 +284,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
   }, [activeWaypointId, shouldEnableInteractions, mapLoaded, currentFlight]);
 
   // If the all-flights framing was requested before the airport data loaded,
-  // deliver it as soon as it arrives — for explore mode and for the
+  // deliver it as soon as it arrives, for explore mode and for the
   // `fitRoutes` waypoint alike.
   useEffect(() => {
     if (!mapLoaded || exploreFramedRef.current) return;
@@ -374,7 +374,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
     }
 
     // Software WebGL (GPU-less browsers, Lighthouse) rasterizes every frame on
-    // the main thread — tens of seconds of jank. Skip the map there; the page
+    // the main thread: tens of seconds of jank. Skip the map there; the page
     // already renders fine without it (same path as a missing token).
     const glProbe = document.createElement("canvas").getContext("webgl2", {
       failIfMajorPerformanceCaveat: true,

@@ -15,7 +15,7 @@ Self-hosted AI chat interface powered by [Open WebUI](https://github.com/open-we
 3. Navigate to the **Developer** tab (the double-headed arrow icon `<->` in the left sidebar).
 4. Click **Start Server**.
 5. Confirm the server port is **1234** (this is the default).
-6. **Enable "Cross-Origin Resource Sharing (CORS)"** — this toggle is in the Developer tab settings. Docker containers need CORS to communicate with the host.
+6. **Enable "Cross-Origin Resource Sharing (CORS)"**. This toggle is in the Developer tab settings. Docker containers need CORS to communicate with the host.
 
 Once the server is running, you should see `Listening on port 1234` in LM Studio.
 
@@ -41,7 +41,7 @@ docker compose ps
 
 Open WebUI will be available at **http://localhost:3000**.
 
-On first visit, you'll create an admin account — this account is stored locally in the `./data` volume.
+On first visit, you'll create an admin account. This account is stored locally in the `./data` volume.
 
 ## Cloudflare Tunnel Setup
 

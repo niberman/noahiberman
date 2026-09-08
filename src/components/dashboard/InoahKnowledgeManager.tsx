@@ -50,7 +50,7 @@ function matchesFilter(entry: KnowledgeEntry, filter: TierFilter): boolean {
 
 /**
  * The corpus iNoah answers from: review, promote, demote, delete. The persona
- * and retrieval knobs are deliberately not editable here — `public-persona.md`
+ * and retrieval knobs are deliberately not editable here. `public-persona.md`
  * in Drive is the source of truth for the prompt, and a second edit surface
  * only competed with it.
  */
@@ -183,7 +183,7 @@ export default function InoahKnowledgeManager() {
                 id="entry-content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="One self-contained fact or story. Write it the way you'd want it repeated back — retrieval pulls the whole entry, so keep each one to a single topic."
+                placeholder="One self-contained fact or story. Write it the way you'd want it repeated back. Retrieval pulls the whole entry, so keep each one to a single topic."
                 className="min-h-[160px] text-sm"
               />
               <p className="text-xs text-muted-foreground">
@@ -201,7 +201,7 @@ export default function InoahKnowledgeManager() {
                 className="max-w-xs"
               />
               <p className="text-xs text-muted-foreground">
-                A label for grouping — e.g. aviation, ventures, personal.
+                A label for grouping, e.g. aviation, ventures, personal.
               </p>
             </div>
 

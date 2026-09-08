@@ -1,4 +1,4 @@
-// npm run flyover:terrain — build heightmap*.png + terrain*.json (FORMATS.md).
+// npm run flyover:terrain builds heightmap*.png + terrain*.json (FORMATS.md).
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fromFile } from "geotiff";
@@ -126,7 +126,7 @@ function emit(grid, pngName, jsonName, kapaElev) {
   }
   const q = new Uint16Array(w * h);
   const scale = 65535 / (maxElev - minElev);
-  // ponytail: drop the low 3 bits (~0.4 m steps over this range) — sub-meter
+  // ponytail: drop the low 3 bits (~0.4 m steps over this range). Sub-meter
   // noise is invisible under displacement but triples the deflated size.
   for (let i = 0; i < data.length; i++) q[i] = Math.round((data[i] - minElev) * scale) & 0xfff8;
   writeFileSync(path.join(OUT_DIR, pngName), encodePng16(q, w, h));
@@ -174,7 +174,7 @@ async function main() {
   const d = emit(desktop, "heightmap.png", "terrain.json", kapaElev);
   const m = emit(mobile, "heightmap-m.png", "terrain-m.json", kapaElev);
   process.stderr.write(
-    `terrain: done — elev ${d.minElev.toFixed(1)}..${d.maxElev.toFixed(1)} m, kapa ${kapaElev.toFixed(1)} m, ` +
+    `terrain: done, elev ${d.minElev.toFixed(1)}..${d.maxElev.toFixed(1)} m, kapa ${kapaElev.toFixed(1)} m, ` +
       `${d.size[0]}x${d.size[1]} + ${m.size[0]}x${m.size[1]}\n`
   );
 }

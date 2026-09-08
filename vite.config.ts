@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => ({
 
           if (!id.includes("node_modules")) return undefined;
 
-          // Pin core React into its own chunk — without this, Rollup can hoist
+          // Pin core React into its own chunk. Without this, Rollup can hoist
           // it into a lazy manual chunk (editor), dragging that chunk into the
           // eager preload graph.
           if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {

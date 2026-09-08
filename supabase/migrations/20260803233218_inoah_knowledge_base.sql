@@ -22,7 +22,7 @@ drop policy if exists "Authenticated can delete memories" on memories;
 create policy "Authenticated can delete memories"
   on memories for delete to authenticated using (true);
 
--- 3. Persona and retrieval knobs. Single row — `id` is a boolean pinned to true,
+-- 3. Persona and retrieval knobs. Single row: `id` is a boolean pinned to true,
 --    so a second row is impossible.
 create table if not exists inoah_settings (
   id boolean primary key default true check (id),

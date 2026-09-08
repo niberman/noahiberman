@@ -47,7 +47,7 @@ export function createDirector(fixes: HeroFix[], onT: (t: number) => void): Dire
     const next: Array<{ y: number; t: number }> = [{ y: 0, t: 0 }];
     for (const el of document.querySelectorAll<HTMLElement>("[data-fix]")) {
       const t = byId.get(el.dataset.fix ?? "");
-      if (t === undefined) continue; // no matching fix — skip
+      if (t === undefined) continue; // no matching fix, skip it
       const y = el.getBoundingClientRect().top + window.scrollY - line;
       const prev = next[next.length - 1];
       // sanitize: both axes must strictly increase; drop violators
@@ -75,7 +75,7 @@ export function createDirector(fixes: HeroFix[], onT: (t: number) => void): Dire
   window.addEventListener("resize", refresh);
   window.addEventListener("orientationchange", refresh);
   document.fonts?.ready.then(refresh);
-  // Document height moves when lazy content mounts — body resize covers it.
+  // Document height moves when lazy content mounts; body resize covers it.
   const ro = new ResizeObserver(refresh);
   ro.observe(document.body);
   compute();

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 /**
  * Home defers the map behind a first-interaction gate and a 460 KB lazy chunk,
- * and Mapbox then paints a black canvas until its first frame — several
+ * and Mapbox then paints a black canvas until its first frame: several
  * seconds of bare background that read as a broken page. This fills that whole
  * window: a faint sectional grid with routes drawing themselves and a jet
  * tracking the main one. Owned by Home (not the map) so it can cover the gate
@@ -21,7 +21,7 @@ const NODES: Array<[number, number]> = [
   [560, 214],
 ];
 
-// ponytail: read once at render — nobody flips the OS motion setting during a
+// ponytail: read once at render. Nobody flips the OS motion setting during a
 // two-second map load. The CSS animations honour the media query on their own.
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

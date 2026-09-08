@@ -1,7 +1,7 @@
 -- The private twin could retrieve 'never' rows.
 --
 -- guard_visibility() makes 'never' terminal, so a row can never be *promoted*
--- out of it — but nothing stopped it being *retrieved*. match_memories_private
+-- out of it. But nothing stopped it being *retrieved*. match_memories_private
 -- had no visibility predicate at all, so medical, legal, financial and
 -- client-anonymity material would have been served to the owner-facing twin
 -- and quoted back in answers. The standing directive is that this tier is

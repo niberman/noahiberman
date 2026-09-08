@@ -432,7 +432,7 @@ function CSVImportBody({
             <div>
               <p className="text-muted-foreground">Date Range</p>
               <p className="font-bold text-primary-foreground text-xs">
-                {parsed.flights[parsed.flights.length - 1]?.date} — {parsed.flights[0]?.date}
+                {parsed.flights[parsed.flights.length - 1]?.date} – {parsed.flights[0]?.date}
               </p>
             </div>
             <div>
@@ -683,7 +683,7 @@ function AddAirportForm() {
         latitude,
         longitude,
       });
-      toast({ title: 'Airport Added', description: `${code.toUpperCase()} — ${name}` });
+      toast({ title: 'Airport Added', description: `${code.toUpperCase()}: ${name}` });
       setCode(''); setName(''); setLat(''); setLon('');
     } catch (err) {
       toast({

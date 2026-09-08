@@ -47,7 +47,7 @@ Interface: Next.js Website Chat.
 
 Function: A read-only clone that represents you to the world. It recruits for you, explains your background, and showcases your expertise.
 
-Mechanism: Powered by the Neural Link—a sync bridge that pushes approved facts from your private server to the public cloud.
+Mechanism: Powered by the Neural Link, a sync bridge that pushes approved facts from your private server to the public cloud.
 
 3. The Wingman ("Dating Daemon")
 Domain: Personal / Background.

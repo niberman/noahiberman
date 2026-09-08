@@ -15,7 +15,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
       {showSEO && (
         <SEO
           title="Contact | Noah Berman"
-          description="Get in touch with Noah Berman — Denver-based commercial pilot and software engineer. Aviation services, AI systems, and collaborations."
+          description="Get in touch with Noah Berman, a Denver-based commercial pilot and software engineer. Aviation services, AI systems, and collaborations."
           structuredData={{
             "@context": "https://schema.org",
             "@type": "ContactPage",

@@ -1,6 +1,6 @@
 // A Drive file declares its own corpus tier in its frontmatter. Reading that,
 // rather than applying one tier to a whole folder, is what lets a single doc be
-// public while its neighbours stay private — and what keeps a credentials file
+// public while its neighbours stay private, and what keeps a credentials file
 // out of the corpus entirely.
 
 /** Leading `---` block only, so prose mentioning "visibility:" cannot vote. */
@@ -25,8 +25,8 @@ export const NOT_CORPUS = new Set(["secret", "config"]);
 /**
  * The document without its frontmatter block.
  *
- * Frontmatter is metadata about the file — who governs it, what consumes it,
- * its status — never knowledge about Noah. Embedding it dilutes every chunk 0
+ * Frontmatter is metadata about the file (who governs it, what consumes it,
+ * its status), never knowledge about Noah. Embedding it dilutes every chunk 0
  * with boilerplate, and on a file declared public it would serve internal
  * notes to strangers. A file whose body is empty yields no chunks at all,
  * which is the honest representation of a file that has nothing to say yet.
@@ -39,7 +39,7 @@ export function stripFrontmatter(text: string): string {
  * A heading may re-declare the tier of its own section:
  * `## Internal figures <!-- private -->`. Same vocabulary as the frontmatter,
  * so one document can be public without publishing the parts of itself it
- * says are internal — `public-profile.md` is public knowledge and a
+ * says are internal: `public-profile.md` is public knowledge and a
  * never-publish list living in one file, and the file is the wrong unit.
  *
  * An HTML comment because it stays invisible wherever the document is read,
