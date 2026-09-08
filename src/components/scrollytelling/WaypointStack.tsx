@@ -54,12 +54,15 @@ export function WaypointStack({ heroRef }: { heroRef: React.RefObject<HTMLElemen
       }
       setActiveWaypointId(activeId);
 
-      // Stack is "visible" while the spine has any vertical overlap with the
-      // viewport. Drive this from scroll metrics instead of an IO so it stays
-      // correct even in environments where IO is throttled (background tabs,
-      // automation harnesses).
+      // Stack is "visible" while its bottom is still below the same
+      // ACTIVATION_LINE handoff (not merely inside the viewport): once the
+      // spine's bottom crosses that line the contact section has arrived, so
+      // the floating card steps aside instead of hovering over Contact — even
+      // when scrollToId leaves contact's scroll-mt gap in view. Drive this from
+      // scroll metrics instead of an IO so it stays correct even where IO is
+      // throttled (background tabs, automation harnesses).
       const stackRect = stack.getBoundingClientRect();
-      setStackVisible(stackRect.bottom > 0 && stackRect.top < vh);
+      setStackVisible(stackRect.bottom > line && stackRect.top < vh);
     };
 
     const onResize = () => {
