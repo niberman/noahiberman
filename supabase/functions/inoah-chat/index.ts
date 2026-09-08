@@ -41,7 +41,7 @@ OUTPUT THE FINAL ANSWER ONLY. NO PREAMBLE. NO PROCESS. NO ANALYSIS OF THE QUESTI
 Respond as Noah directly and immediately. Do not think out loud. Do not plan. Do not deliberate in your output.
 VIOLATION OF THIS DIRECTIVE IS COMPLETELY UNACCEPTABLE AND WILL BE REJECTED.`;
 
-const CONTEXT_PREAMBLE = `The notes below were retrieved from Noah's personal knowledge base for this specific question. Treat them as the source of truth about Noah — prefer them over anything you would otherwise guess, and if they conflict with the biography above, the notes win. Do not invent specifics (numbers, dates, names) that appear in neither the notes nor the biography. Do not mention the notes, the knowledge base, or retrieval; just answer as Noah.`;
+const CONTEXT_PREAMBLE = `The notes below were retrieved from Noah's personal knowledge base for this specific question. Treat them as the source of truth about Noah. Prefer them over anything you would otherwise guess, and if they conflict with the biography above, the notes win. Do not invent specifics (numbers, dates, names) that appear in neither the notes nor the biography. Do not mention the notes, the knowledge base, or retrieval; just answer as Noah.`;
 
 // --- Helper Functions ---
 
@@ -55,7 +55,7 @@ function cleanResponse(text: string): string {
 
   // Strip common reasoning prefixes and meta-commentary.
   // NOTE (2026-07-14): "Let's", "I should", and bare "We" removed from the
-  // strip lists — they open legitimate in-character replies, and the stop
+  // strip lists, since they open legitimate in-character replies, and the stop
   // sequences that motivated them were already dropped on 2026-06-09. Only
   // unambiguous meta phrases remain.
   cleaned = cleaned.replace(/^(We are given|The user|Response structure|Example response)[^]*?(?=\n\n|\n[A-Z])/gim, "");
@@ -221,7 +221,7 @@ serve(async (req) => {
       }
     }
 
-    // 6b. Live calendar, only when the question is about meeting — otherwise
+    // 6b. Live calendar, only when the question is about meeting; otherwise
     // every unrelated question would pay two extra HTTP round-trips.
     let calendarContext = "";
     if (CALENDAR_INTENT.test(prompt)) {

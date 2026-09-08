@@ -13,14 +13,14 @@ export interface MapWaypoint {
   title: string;
   /** Optional Spanish subtitle */
   subtitle?: string;
-  /** Card body — keep short, 1–3 lines */
+  /** Card body: keep short, 1–3 lines */
   body: string;
   /** Camera target [lng, lat] */
   center: [number, number];
   zoom: number;
   pitch?: number;
   bearing?: number;
-  /** flyTo duration in ms (default 1400 — a trigger is ~1s of scrolling) */
+  /** flyTo duration in ms (default 1400; a trigger is ~1s of scrolling) */
   duration?: number;
   /** Optional secondary point to draw an arc to (e.g. IFR → KASE) */
   arcTo?: [number, number];
@@ -28,19 +28,19 @@ export interface MapWaypoint {
   cta?: { label: string; href?: string; event?: string };
   /** Optional logo path */
   logo?: string;
-  /** Visual accent — drives card chrome and pin color */
+  /** Visual accent: drives card chrome and pin color */
   accent?: "aviation" | "education" | "business";
   /**
    * Desktop card placement. "anchored" (default) positions the card next to
    * the map pin via map.project(). "centered" pins it to bottom-center of
-   * the viewport — useful for climax/CTA waypoints where the pin marks a
+   * the viewport, which is useful for climax/CTA waypoints where the pin marks a
    * hub area rather than a single visit, and a centered card reads better.
    */
   cardPlacement?: "anchored" | "centered";
   /**
    * Frame every drawn route instead of `center`/`zoom`. The route network grows
-   * as flights are logged, so the climax shot has to be fitted at runtime —
-   * a hardcoded framing leaves half the lines off-screen.
+   * as flights are logged, so the climax shot has to be fitted at runtime.
+   * A hardcoded framing leaves half the lines off-screen.
    */
   fitRoutes?: boolean;
 }
@@ -88,7 +88,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     code: "KASE",
     title: "Mountain Flying",
     subtitle: "Vuelo de montaña",
-    body: "Extensive mountain flying experience — high density altitude, dynamic weather, demanding terrain. Aspen is one of the most challenging airports in the country.",
+    body: "Extensive mountain flying experience: high density altitude, dynamic weather, demanding terrain. Aspen is one of the most challenging airports in the country.",
     center: [-106.868, 39.2232],
     zoom: 10.5,
     pitch: 65,
@@ -102,7 +102,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     year: "2024",
     title: "Commercial Pilot License",
     subtitle: "Piloto comercial",
-    body: "FAA Commercial Pilot certificate at Centennial. Now able to fly professionally — for hire and beyond.",
+    body: "FAA Commercial Pilot certificate at Centennial. Now able to fly professionally, for hire and beyond.",
     center: [-104.849, 39.5701],
     zoom: 11,
     pitch: 55,
@@ -129,7 +129,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     year: "2024",
     title: "Helicopter Private Pilot",
     subtitle: "De alas fijas a rotores",
-    body: "Added a rotorcraft-helicopter rating back at Rocky Mountain Metro — a different way to read the air.",
+    body: "Added a rotorcraft-helicopter rating back at Rocky Mountain Metro. A different way to read the air.",
     center: [-105.117, 39.9083],
     zoom: 12,
     pitch: 60,
@@ -155,7 +155,7 @@ export const WAYPOINTS: MapWaypoint[] = [
     code: "KAPA hub",
     title: "Every flight I've taken",
     subtitle: "Sigue mi vuelo",
-    body: "Every route, every airport. Click below to take the controls — pan, zoom, and explore.",
+    body: "Every route, every airport. Click below to take the controls: pan, zoom, and explore.",
     // With `fitRoutes` the camera ignores center/zoom; center still places the
     // pin, so put it on the actual hub the card names.
     center: [-104.849, 39.5701],

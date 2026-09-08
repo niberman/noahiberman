@@ -1,6 +1,6 @@
 // Synthesizes placeholder ForeFlight-style KML tracklogs into data/tracklogs/
 // (gitignored) from the shipped logbook flight list, so the pipeline can run
-// before the real track exports land. Dev-only fixtures — the pipeline scrubs
+// before the real track exports land. Dev-only fixtures: the pipeline scrubs
 // identity downstream regardless.
 import { mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";

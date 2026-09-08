@@ -17,7 +17,7 @@ const SECRET =
 
 export default function AgentControl() {
   const [status, setStatus] = useState(
-    "Click the live view to click the host Mac. Type below and use keys — grant Accessibility + Screen Recording to your terminal or Python."
+    "Click the live view to click the host Mac. Type below and use keys. Grant Accessibility + Screen Recording to your terminal or Python."
   );
   const [typeText, setTypeText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -62,7 +62,7 @@ export default function AgentControl() {
       } catch (err) {
         console.error(err);
         setStatus(
-          "Network error — start Hands (e.g. uvicorn) or set VITE_AGENT_URL to your tunnel."
+          "Network error: start Hands (e.g. uvicorn) or set VITE_AGENT_URL to your tunnel."
         );
       } finally {
         setBusy(false);

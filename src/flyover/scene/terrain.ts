@@ -59,7 +59,7 @@ void main() {
   ramp = mix(ramp, uPeak, smoothstep(0.75, 1.0, e));
   vec3 L = normalize(vec3(-0.55, 0.7, -0.45)); // NW-high
   vec3 N = normalize(vNormal);
-  // ambient floor + diffuse + up-facing sky fill — slopes away from the sun
+  // ambient floor + diffuse + up-facing sky fill. slopes away from the sun
   // must still read on a near-black page, not vanish into it
   float light = 0.38 + 0.5 * max(dot(N, L), 0.0) + 0.25 * max(N.y, 0.0);
   vec3 solid = ramp * light;
@@ -133,7 +133,7 @@ export function buildTerrain(
       uFogColor: { value: rgb(PALETTE.fog) },
       uFogDensity: { value: FOG_DENSITY },
       uSolid: { value: 0 },
-      // ponytail: grid every 4th segment — full density dissolves into haze from the intro vantage
+      // ponytail: grid every 4th segment; full density dissolves into haze from the intro vantage
       uGrid: { value: seg / 4 },
     },
   });

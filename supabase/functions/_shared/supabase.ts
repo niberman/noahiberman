@@ -10,7 +10,7 @@ export function serviceClient(url: string, serviceRoleKey: string): SupabaseClie
 // The caller's JWT, keyed by the client built from it. auth.getUser() resolves
 // the *stored session* and ignores the Authorization header the client carries,
 // so calling it bare in an edge function always fails with "Auth session
-// missing!" — there is no session in a server runtime. The token has to be
+// missing!": there is no session in a server runtime. The token has to be
 // handed to getUser() explicitly. Keeping it here rather than in each caller's
 // signature means no call site can forget, which is how this broke: the header
 // was set correctly everywhere and read nowhere.

@@ -1,7 +1,7 @@
 import { useRef, type ReactNode } from "react";
 import { m, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
-// Read once — pointer type doesn't change mid-session, and gating here keeps
+// Read once: pointer type doesn't change mid-session, and gating here keeps
 // touch scrolling from dragging buttons around under a moving finger.
 const finePointer =
   typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;

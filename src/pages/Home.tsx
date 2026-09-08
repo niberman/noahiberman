@@ -47,7 +47,7 @@ export default function Home() {
   const [deferredReady, setDeferredReady] = useState(showLaunch);
   // Cleared on the map's first frame; until then the loading state stands in.
   const [mapReady, setMapReady] = useState(false);
-  // The map's first frame is the readiness signal — it flips the launch bar to
+  // The map's first frame is the readiness signal. It flips the launch bar to
   // done so the intro dismisses with the map (the map-hero stand-in for the
   // old background-ready broadcast).
   const handleMapReady = useCallback(() => {
@@ -58,12 +58,12 @@ export default function Home() {
   useEffect(() => {
     if (showLaunch) return;
     const arm = () => setDeferredReady(true);
-    // pointermove is what saves real visitors from the 5s fallback below —
+    // pointermove is what saves real visitors from the 5s fallback below:
     // a mouse twitches within milliseconds of load, while Lighthouse never
     // moves a pointer at all, so the trace stays as clean as before.
     const events = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"] as const;
     events.forEach((e) => window.addEventListener(e, arm, { once: true, passive: true }));
-    // ponytail: plain setTimeout over requestIdleCallback — Safari lacks rIC,
+    // ponytail: plain setTimeout over requestIdleCallback. Safari lacks rIC,
     // and rIC fires exactly when the CPU goes quiet, which is what keeps the
     // Lighthouse trace alive. 5s past load is safely outside it.
     let timer: number | undefined;
@@ -158,7 +158,7 @@ export default function Home() {
   return (
     <MotionConfig reducedMotion="user">
     <main className="min-h-screen relative">
-      {/* Film grain + scroll progress — page-wide chrome for the homepage. */}
+      {/* Film grain + scroll progress: page-wide chrome for the homepage. */}
       <GrainOverlay />
       <ScrollProgress />
       <AnimatePresence>
@@ -167,10 +167,10 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Background Flight Map — fixed, full-bleed, drives camera from active waypoint */}
+      {/* Background Flight Map: fixed, full-bleed, drives camera from active waypoint */}
       {deferredReady && (
         <>
-          {/* Covers the whole wait — lazy chunk, style, tiles — not just the
+          {/* Covers the whole wait (lazy chunk, style, tiles), not just the
               tail end after the map component mounts. */}
           <MapLoadingState done={mapReady} />
           <Suspense fallback={null}>
@@ -182,14 +182,14 @@ export default function Home() {
       {/* Pin-anchored card (desktop) / bottom sheet (mobile) for the active waypoint */}
       <FloatingWaypointCard />
 
-      {/* Live Flight Status Indicator — renders nothing until its query
+      {/* Live Flight Status Indicator: renders nothing until its query
           resolves, so it rides the same gate to keep current_flight (and the
           query-key dedupe with the map's useCurrentFlight) off the LCP chain. */}
       {deferredReady && <LiveFlightIndicator />}
 
       <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         {/* Homepage structured data lives in index.html (one @graph with a
-            ProfilePage node) — no per-page structuredData here or it would
+            ProfilePage node). No per-page structuredData here or it would
             duplicate the entity. */}
         <SEO
           title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
@@ -204,7 +204,7 @@ export default function Home() {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
 
-          {/* Cursor aura over the map — sits under the z-10 hero copy. */}
+          {/* Cursor aura over the map: sits under the z-10 hero copy. */}
           <HeroSpotlight heroRef={heroRef} />
 
           <m.div
@@ -216,7 +216,7 @@ export default function Home() {
                 LCP element render delay. Siblings still stagger in around
                 it. */}
             <div className="text-center max-w-5xl mx-auto">
-              {/* The logo is the mobile LCP image — a scale-0 intro would hide
+              {/* The logo is the mobile LCP image. A scale-0 intro would hide
                   it from LCP until the spring finishes. animate-float keeps it
                   moving. */}
               <div className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative">
@@ -228,7 +228,7 @@ export default function Home() {
                   width={96}
                   height={96}
                   // React 18's DOM typings have no fetchPriority, and it drops
-                  // the camelCase prop silently — the lowercase attribute is
+                  // the camelCase prop silently. The lowercase attribute is
                   // what actually reaches the element. Spread past the types.
                   {...({ fetchpriority: "high" } as Record<string, string>)}
                   className="absolute inset-0 w-full h-full object-contain origin-center"
@@ -243,7 +243,7 @@ export default function Home() {
                 Noah Berman
               </p>
 
-              {/* Word cascade animates transform/filter only — opacity stays 1
+              {/* Word cascade animates transform/filter only; opacity stays 1
                   on the LCP element so the paint is never delayed. Markup is
                   mirrored in the index.html shell; keep them identical. */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
@@ -331,7 +331,7 @@ export default function Home() {
           </m.div>
         </section>
 
-        {/* SCROLLYTELLING SPINE — drives the map camera through every chapter */}
+        {/* SCROLLYTELLING SPINE: drives the map camera through every chapter */}
         <WaypointStack heroRef={heroRef} />
 
         {/* CONTACT */}

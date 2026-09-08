@@ -1,7 +1,7 @@
 version: "3.8"
 
 # ============================================================================
-# iNoah Sovereign Chat — Open WebUI + LM Studio + Cloudflare Tunnel
+# iNoah Sovereign Chat: Open WebUI + LM Studio + Cloudflare Tunnel
 # ============================================================================
 # Usage:
 #   cp .env.chat.example .env.chat   # fill in your secrets
@@ -10,7 +10,7 @@ version: "3.8"
 
 services:
   # --------------------------------------------------------------------------
-  # Open WebUI — LM Studio as primary OpenAI-compatible backend
+  # Open WebUI with LM Studio as primary OpenAI-compatible backend
   # --------------------------------------------------------------------------
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
@@ -44,7 +44,7 @@ services:
       start_period: 15s
 
   # --------------------------------------------------------------------------
-  # Cloudflared — Secure tunnel to chat.noahiberman.com
+  # Cloudflared: secure tunnel to chat.noahiberman.com
   # --------------------------------------------------------------------------
   cloudflared:
     image: cloudflare/cloudflared:latest

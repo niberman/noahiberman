@@ -18,7 +18,7 @@ const OpenClaw = () => {
   return (
     <>
       <SEO
-        title="Hermes — Noah I Berman"
+        title="Hermes: Noah I Berman"
         description="Hermes Agent chat"
       />
 

@@ -1,4 +1,4 @@
-# Flyover data formats — the binding contract
+# Flyover data formats: the binding contract
 
 Every module (pipeline scripts and `src/flyover/` runtime) conforms to this file.
 If something here is ambiguous, fix it HERE first, then in code.
@@ -9,8 +9,8 @@ Planar tangent frame, origin at KAPA (`data/flyover.config.json → airports.KAP
 
 - `x` = meters east of KAPA, `y` = meters north of KAPA, `z` = meters **MSL** (not relative).
 - Conversion lives in `scripts/flyover/frame.mjs` (`lonLatToXY`, `xyToLonLat`) and is the
-  single source of truth for the degree→meter constants. The runtime never converts —
-  it only consumes frame meters.
+  single source of truth for the degree→meter constants. The runtime never converts.
+  It only consumes frame meters.
 - Three.js mapping (runtime): scene `x = frame x`, scene `y = frame z − terrain.kapaElev`,
   scene `z = −frame y` (right-handed, Y-up, north = −Z).
 
@@ -42,7 +42,7 @@ bin inside its 500 KB budget; the loader hands the scene Float32.)
 
 ### `heightmap.png` / `heightmap-m.png`
 16-bit grayscale PNG (bit depth 16, color type 0), every row filter byte **0 or
-2 (Up)** — decoders handle exactly those two, nothing else. Samples are
+2 (Up)**: decoders handle exactly those two, nothing else. Samples are
 quantized to ~0.4 m steps before encoding (low 3 bits zeroed) so the Up-filtered
 IDAT deflates well under the 1.5 MB budget. Row 0 = **north** edge.
 Value `v` → elevation meters MSL: `minElev + (v / 65535) * (maxElev − minElev)`.

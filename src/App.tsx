@@ -29,7 +29,7 @@ const BookLanding = lazy(() => import("./pages/BookLanding"));
 const SchedulingAuthCallback = lazy(() => import("./pages/SchedulingAuthCallback"));
 
 // Both toast portals render nothing until a toast fires, and both libraries
-// queue toasts raised before mount — no need to pay for sonner + radix-toast
+// queue toasts raised before mount, so there's no need to pay for sonner + radix-toast
 // in the eager bundle.
 const Toasters = lazy(() =>
   Promise.all([
@@ -79,7 +79,7 @@ const App = () => {
   return (
     // Eager components use `m` + domAnimation instead of `motion`: the full
     // bundle gives every motion component a projection node, and mounting the
-    // window-level root node reads window.innerWidth mid-load — the forced
+    // window-level root node reads window.innerWidth mid-load, triggering the forced
     // reflow PageSpeed flags on the homepage. Lazy routes still use `motion`.
     <LazyMotion features={domAnimation}>
     <ReactLenis

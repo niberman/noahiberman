@@ -12,7 +12,7 @@ Every row in `memories` carries a `visibility`:
 | --- | --- | --- |
 | `public` | Anyone, through iNoah | Only by a human promoting one row at a time on the dashboard, or a source registered `public` because its content is already on the public site |
 | `private` | No assistant. Visible to the owner in the dashboard only | The default for every write path. A failed or missing classification hides data, never exposes it |
-| `never` | No assistant, and terminal — excluded from both match RPCs | Manual assignment for material that must not be promotable |
+| `never` | No assistant, and terminal: excluded from both match RPCs | Manual assignment for material that must not be promotable |
 
 Rules that hold everywhere:
 

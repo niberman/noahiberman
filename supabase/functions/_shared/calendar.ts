@@ -23,7 +23,7 @@ interface MeetingType {
 }
 
 const USAGE_GUIDANCE =
-  "Use these when asked about meeting, scheduling or availability: quote only times listed above, say they are Mountain Time, and point to the booking link so the guest confirms it themselves. Never invent times, and never claim to have booked anything — you cannot book on someone's behalf.";
+  "Use these when asked about meeting, scheduling or availability: quote only times listed above, say they are Mountain Time, and point to the booking link so the guest confirms it themselves. Never invent times, and never claim to have booked anything. You cannot book on someone's behalf.";
 
 const fmtSlot = (iso: string) =>
   new Date(iso).toLocaleString("en-US", {
@@ -101,9 +101,9 @@ export async function fetchCalendarContext(
       const url = `${SCHEDULING_API}/book/${t.slug}`;
       const label = `- ${t.name} (${t.duration_min} min, ${t.location_type})`;
       if (shown.length === 0) {
-        return `${label} — nothing open in the next ${CALENDAR_DAYS} days. Book: ${url}`;
+        return `${label}: nothing open in the next ${CALENDAR_DAYS} days. Book: ${url}`;
       }
-      return `${label} — next openings: ${shown.join("; ")}. Book: ${url}`;
+      return `${label}, next openings: ${shown.join("; ")}. Book: ${url}`;
     }),
   );
 

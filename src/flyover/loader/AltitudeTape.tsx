@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
  */
 
 // ponytail: KAPA field elevation mirrored by hand from data/flyover.config.json
-// (airports.KAPA.elevFt) — terrain.json's kapaElev is the same number ±1 ft and
+// (airports.KAPA.elevFt). terrain.json's kapaElev is the same number ±1 ft and
 // threading it through the loader just to seed a cosmetic tick strip isn't
 // worth the plumbing.
 const KAPA_FT = 5885;
@@ -29,7 +29,7 @@ export function AltitudeTape({
 }: {
   /** load fraction 0..1 */
   progress: number;
-  /** true once the scene has its first frame — settle, fade, unmount */
+  /** true once the scene has its first frame: settle, fade, unmount */
   done: boolean;
   reducedMotion: boolean;
 }) {
@@ -46,7 +46,7 @@ export function AltitudeTape({
     };
   }, [done]);
 
-  // Reduced motion: no tape at all — the poster crossfade is the whole show.
+  // Reduced motion: no tape at all. The poster crossfade is the whole show.
   if (reducedMotion || stage === "gone") return null;
 
   const alt = stage === "run" ? KAPA_FT + progress * (TOP_FT - KAPA_FT) : TOP_FT;

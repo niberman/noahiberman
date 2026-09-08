@@ -9,12 +9,12 @@ import { createDirector, type Director } from "./director";
 import { getLenis } from "@/lib/lenis-ref";
 
 /**
- * The logbook flyover — a fixed full-bleed WebGL canvas behind the page,
+ * The logbook flyover: a fixed full-bleed WebGL canvas behind the page,
  * flown along the hero track by scroll. Once the scene has a frame the
  * canvas fades in.
  *
- * Any failure — no WebGL, missing assets, no DecompressionStream, 8 s without
- * a first frame — renders nothing.
+ * Any failure (no WebGL, missing assets, no DecompressionStream, 8 s without
+ * a first frame) renders nothing.
  */
 
 const FAIL_MS = 8000;
@@ -31,7 +31,7 @@ const publishReady = (eventName: "flyover:ready" | "flyover:fallback") => {
 function probeWebgl(): boolean {
   // Same probe-and-lose-context pattern as BackgroundFlightMap: software GL
   // (failIfMajorPerformanceCaveat) would jank the main thread for a scene
-  // that is decorative — skip it there too. WebGL2 only: three r163+ dropped
+  // that is decorative, so skip it there too. WebGL2 only: three r163+ dropped
   // WebGL1, so a 1-only device must keep the poster.
   const c = document.createElement("canvas");
   const gl = c.getContext("webgl2", { failIfMajorPerformanceCaveat: true });
@@ -44,7 +44,7 @@ export default function FlyoverBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [webglOk] = useState(probeWebgl);
   // ponytail: #home is in the DOM before this ever mounts (static shell +
-  // Home's own render) — one lookup on mount is fine.
+  // Home's own render), so one lookup on mount is fine.
   const [homeEl] = useState(() => document.getElementById("home"));
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<"loading" | "live" | "dead">("loading");
@@ -81,7 +81,7 @@ export default function FlyoverBackground() {
     };
     const fail = (err?: unknown) => {
       if (dead) return;
-      if (err) console.warn("flyover: falling back to poster —", err);
+      if (err) console.warn("flyover: falling back to poster:", err);
       publishReady("flyover:fallback");
       teardown();
       setPhase("dead");
@@ -123,9 +123,9 @@ export default function FlyoverBackground() {
       setPhase("live");
       publishReady("flyover:ready");
 
-      // Director from the first frame on — the scene smooths raw t itself.
+      // Director from the first frame on; the scene smooths raw t itself.
       director = createDirector(assets.heroMeta.fixes, (t) => {
-        // debug/verification handle — the only runtime state the flyover exposes
+        // debug/verification handle: the only runtime state the flyover exposes
         (window as { __flyoverT?: number }).__flyoverT = t;
         scene?.setT(t);
       });
@@ -174,7 +174,7 @@ export default function FlyoverBackground() {
       cleanups.push(() => window.removeEventListener("resize", onResize));
 
       // A GPU reset after the poster has faded would leave an opaque dead
-      // canvas over the hero — fall back to the poster instead.
+      // canvas over the hero, so fall back to the poster instead.
       const onCtxLost = () => fail(new Error("webgl context lost"));
       canvas.addEventListener("webglcontextlost", onCtxLost);
       cleanups.push(() => canvas.removeEventListener("webglcontextlost", onCtxLost));
@@ -183,7 +183,7 @@ export default function FlyoverBackground() {
       try {
         seen = sessionStorage.getItem("flyover-intro-seen") === "1";
       } catch {
-        /* storage blocked — play the intro every visit */
+        /* storage blocked, so play the intro every visit */
       }
       if (!seen) {
         // Let the poster fade finish so the intro's rewind isn't hidden.
@@ -199,7 +199,7 @@ export default function FlyoverBackground() {
           /* ignore */
         }
       }
-      // Seen path starts here directly — the scene constructs fully drawn.
+      // Seen path starts here directly; the scene constructs fully drawn.
       apply();
       onScroll();
     })().catch(fail);

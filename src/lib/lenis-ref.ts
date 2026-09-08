@@ -15,7 +15,7 @@ export function getLenis(): Lenis | null {
 }
 
 /** Scroll the window to an element by id. Lenis subtracts the element's CSS
- * scroll-margin-top itself — do not pass it as offset or it applies twice. */
+ * scroll-margin-top itself, so do not pass it as offset or it applies twice. */
 export function scrollToId(id: string) {
   const element = document.getElementById(id);
   if (!element) return;

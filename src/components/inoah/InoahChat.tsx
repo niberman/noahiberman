@@ -101,7 +101,7 @@ export function InoahChat() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Enter sends, Shift+Enter is a newline — same on every device. The old
+    // Enter sends, Shift+Enter is a newline, same on every device. The old
     // build sniffed the user agent and used a different chord per platform.
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -196,7 +196,7 @@ export function InoahChat() {
             onClick={() => send(input)}
             disabled={isLoading || !input.trim()}
             size="icon"
-            /* Not the default variant — `--primary` and `--primary-foreground`
+            /* Not the default variant: `--primary` and `--primary-foreground`
                are both pure white in this theme, so the icon would vanish. */
             variant="secondary"
             className="h-8 w-8 flex-shrink-0 rounded-full"

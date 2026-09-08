@@ -35,7 +35,7 @@ export function chunkText(text: string): TextChunk[] {
     // A heading starts a new topic, so never pack across one. Without this a
     // Q&A document packs several unrelated answers into one chunk, and the
     // blended embedding fails to clear the match threshold for any single
-    // question — the corpus holds the answer and retrieval never surfaces it.
+    // question. The corpus holds the answer, but retrieval never surfaces it.
     // The same boundary is where a tier may change, which is why a section
     // marker is only ever read off a heading.
     if (para.startsWith("#")) {

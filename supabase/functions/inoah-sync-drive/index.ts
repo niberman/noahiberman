@@ -5,7 +5,7 @@
 // shared with it, and only folders registered in ingest_sources get read at
 // all. A Drive file decides its own tier in its frontmatter: `visibility:
 // public` is served to strangers, `private` (or no declaration) is owner-only,
-// and `secret`/`config` are not ingested at all — a credentials file has no
+// and `secret`/`config` are not ingested at all. A credentials file has no
 // business in a retrieval corpus, and a persona spec is configuration rather
 // than knowledge. Site tables have no frontmatter and keep the source row's
 // default_visibility. Files that declare nothing still default to private, so
@@ -202,7 +202,7 @@ async function syncChunks(
     const hash = await sha256Hex(c.content);
     const prior = byKey.get(`${c.sourceId} ${c.chunkIndex}`);
     // 'never' is terminal: guard_visibility() raises on any move off it, and a
-    // raise here would abort the whole run — this origin's stale deletes and
+    // raise here would abort the whole run: this origin's stale deletes and
     // every later source included. That the tier cannot be walked back is the
     // point of it, so an existing 'never' row keeps its tier no matter what the
     // file now declares.
@@ -216,7 +216,7 @@ async function syncChunks(
       }
       // Same text, different tier: the file re-declared itself, or the rule
       // that assigned the tier changed. Move the row without paying for an
-      // embedding — the vector is a function of the content, which is identical.
+      // embedding. The vector is a function of the content, which is identical.
       const { error } = await supabase
         .from("memories")
         .update({ visibility: tier, updated_at: now })
@@ -422,7 +422,7 @@ Deno.serve(async (req) => {
           const declared = declaredVisibility(text);
           if (declared && NOT_CORPUS.has(declared)) {
             // Never embedded, and any rows a previous run created are deleted
-            // below as stale — the file simply stops existing to the corpus.
+            // below as stale. The file simply stops existing to the corpus.
             notCorpus.push(`${f.name} (${declared})`);
             continue;
           }

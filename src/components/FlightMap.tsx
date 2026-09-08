@@ -125,7 +125,7 @@ export function FlightMap() {
   // Check if currently flying
   const isFlying = currentFlight && currentFlight.flight_status === "in_flight";
 
-  // Hub-and-spoke from KAPA (excludes Puerto Rico — those use multi-leg segments below)
+  // Hub-and-spoke from KAPA (excludes Puerto Rico, which uses multi-leg segments below)
   const hubFlightRoutes = useMemo<FlightRoute[]>(() => {
     const kapaCoords = getAirportCoordinates("KAPA");
     if (!kapaCoords) {

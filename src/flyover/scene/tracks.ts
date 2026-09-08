@@ -21,7 +21,7 @@ void main() {
   vClass = aClass;
   vec4 clipA = projectionMatrix * modelViewMatrix * vec4(aStart, 1.0);
   vec4 clipB = projectionMatrix * modelViewMatrix * vec4(aEnd, 1.0);
-  // ponytail: also collapses segments touching the camera plane — screen-space
+  // ponytail: also collapses segments touching the camera plane: screen-space
   // extrusion misprojects across w<=0 and proper clip-space clipping isn't worth it here
   if (aReveal > uReveal || clipA.w < 0.1 || clipB.w < 0.1) {
     gl_Position = vec4(0.0, 0.0, 2.0, 1.0);

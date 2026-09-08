@@ -1,5 +1,5 @@
 // Minimal 16-bit grayscale PNG codec (bit depth 16, color type 0, filter 2
-// "Up" on every row — vertical prediction compresses smooth terrain ~3x better
+// "Up" on every row: vertical prediction compresses smooth terrain ~3x better
 // than filter 0, and the runtime decoder handles both). No dependencies.
 import { deflateSync, inflateSync } from "node:zlib";
 
@@ -29,11 +29,11 @@ export function encodePng16(samples, w, h) {
   ihdr.writeUInt32BE(w, 0);
   ihdr.writeUInt32BE(h, 4);
   ihdr[8] = 16; // bit depth
-  // color type 0, compression 0, filter 0, interlace 0 — already zero
+  // color type 0, compression 0, filter 0, interlace 0 (already zero)
   const rowBytes = w * 2;
   const raw = Buffer.alloc(h * (1 + rowBytes));
   const cur = Buffer.alloc(rowBytes);
-  const above = Buffer.alloc(rowBytes); // zeroed — row 0 predicts from 0
+  const above = Buffer.alloc(rowBytes); // zeroed, so row 0 predicts from 0
   for (let row = 0, p = 0; row < h; row++) {
     raw[p++] = 2; // filter: Up
     for (let col = 0; col < w; col++) cur.writeUInt16BE(samples[row * w + col], col * 2);

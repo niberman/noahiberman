@@ -41,7 +41,7 @@ export function SEO({
       }
     };
 
-    // Update basic meta tags (no keywords — Google has ignored the tag since
+    // Update basic meta tags (no keywords: Google has ignored the tag since
     // 2009, and stale values here republished false credential claims)
     updateMetaTag('description', description);
 

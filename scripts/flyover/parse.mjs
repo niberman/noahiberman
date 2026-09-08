@@ -1,5 +1,5 @@
 // Lenient tracklog parsers: KML (gx:Track + LineString), GPX 1.1, ForeFlight
-// track CSV. Regex/string based on purpose — no XML dependency.
+// track CSV. Regex/string based on purpose, with no XML dependency.
 // All return { points: [{ lon, lat, alt, time }], meta: { tail?, name? } }
 // with alt in meters MSL and time in epoch ms (or null).
 
@@ -102,7 +102,7 @@ export function parseForeFlightCSV(text) {
   const lai = header.findIndex((c) => /latitude/i.test(c));
   const loi = header.findIndex((c) => /longitude/i.test(c));
   const ali = header.findIndex((c) => /alt/i.test(c));
-  // ForeFlight exports feet under a bare "Altitude" header — assume feet
+  // ForeFlight exports feet under a bare "Altitude" header, so assume feet
   // unless the header explicitly says meters.
   const altScale = ali >= 0 && /\bm\b|meter/i.test(header[ali]) ? 1 : 0.3048;
 

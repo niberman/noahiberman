@@ -28,7 +28,7 @@ const accentClasses: Record<NonNullable<MapWaypoint["accent"]>, { ring: string; 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 /** Staggered rise for the rows inside a card. Card instances remount per
- *  waypoint (key=waypoint.id), so these replay on every stop — the card
+ *  waypoint (key=waypoint.id), so these replay on every stop. The card
  *  composes itself instead of popping in as one block. */
 const rise = (order: number) => ({
   initial: { opacity: 0, y: 10 },
@@ -38,7 +38,7 @@ const rise = (order: number) => ({
 
 /**
  * Card that follows the active waypoint's pin on desktop and pins to the
- * bottom of the viewport on mobile. Two separate DOM nodes — the desktop
+ * bottom of the viewport on mobile. Two separate DOM nodes: the desktop
  * card uses `map.project()` to track the pin during flyTo; mobile uses a
  * fixed bottom-sheet that's friendlier for small screens and thumbs.
  */
@@ -46,11 +46,11 @@ export function FloatingWaypointCard() {
   const waypoint = useActiveWaypoint();
   const stackVisible = useStackVisible();
   const map = useMapRef();
-  // Hide whenever we're on hero or scrolled past the journey — the pin/card
+  // Hide whenever we're on hero or scrolled past the journey. The pin/card
   // would otherwise float over Contact/SEO content with no map underneath.
   const hidden = waypoint.id === HERO_WAYPOINT.id || !stackVisible;
   // Without a map (chunk still loading, or skipped on software GL) the
-  // anchored card can't position itself — show every stop centered instead.
+  // anchored card can't position itself, so show every stop centered instead.
   const centered = waypoint.cardPlacement === "centered" || !map;
 
   return (
@@ -103,7 +103,7 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
       className="fixed top-0 left-0 z-[105] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
     >
-      {/* Centering stays on a plain div — framer owns the inner transform. */}
+      {/* Centering stays on a plain div; framer owns the inner transform. */}
       <div className="relative -translate-x-1/2 -translate-y-1/2">
         <m.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -122,7 +122,7 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
 
 /** Desktop card anchored next to the pin via map.project(). Each waypoint gets
  *  its own instance so the outgoing card keeps tracking *its* pin while it
- *  fades — no teleporting to the next stop, no dead gap between cards. */
+ *  fades: no teleporting to the next stop, no dead gap between cards. */
 function DesktopCardAnchored({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <AnimatePresence>
@@ -218,7 +218,7 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
 }
 
 /** Bottom-sheet card on mobile. Sits above the chat bubble at bottom-right.
- *  Same grid-stack crossfade — the old sheet fades while the new one rises. */
+ *  Same grid-stack crossfade: the old sheet fades while the new one rises. */
 function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div

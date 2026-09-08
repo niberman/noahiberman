@@ -121,12 +121,12 @@ export const AircraftCard = () => {
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Tail Number</p>
                     <p className="font-bold text-lg font-mono">
-                      {aircraft?.aircraft_tail_number || "—"}
+                      {aircraft?.aircraft_tail_number || "–"}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Aircraft Type</p>
-                    <p className="font-medium">{aircraft?.aircraft_type || "—"}</p>
+                    <p className="font-medium">{aircraft?.aircraft_type || "–"}</p>
                   </div>
                 </div>
               </div>

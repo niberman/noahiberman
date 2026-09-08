@@ -56,8 +56,8 @@ export function createFlyoverScene(
   const rig = new ChaseRig(assets, aircraft.group);
 
   // Constructs fully drawn (FlyoverBackground contract): the first rendered
-  // frame — what the poster crossfades into, and all an intro-seen or
-  // reduced-motion visitor ever gets — is the finished scene. startIntro()
+  // frame (what the poster crossfades into, and all an intro-seen or
+  // reduced-motion visitor ever gets) is the finished scene. startIntro()
   // rewinds, then plays.
   terrain.setSolid(1);
   tracks.setReveal(REVEAL_DONE);
