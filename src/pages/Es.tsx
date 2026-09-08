@@ -73,8 +73,7 @@ export default function Es() {
           </p>
           <p className="text-foreground/90 leading-relaxed">
             Pasé el año 2024-2025 en Bilbao, España, estudiando en la
-            Universidad de Deusto y viviendo con una familia local. Desde
-            entonces soy socio del Athletic Club. También he enseñado inglés a
+            Universidad de Deusto y viviendo con una familia local. También he enseñado inglés a
             hispanohablantes adultos, y esa experiencia dentro del aula es la
             base de la tecnología educativa que construyo.
           </p>

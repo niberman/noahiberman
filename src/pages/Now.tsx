@@ -1,5 +1,5 @@
 import { m } from "framer-motion";
-import { Waves, Snowflake, Trophy } from "lucide-react";
+import { Waves, Snowflake, Mountain } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { BilingualHeading } from "@/components/BilingualHeading";
 import { CarillonEmbed } from "@/components/CarillonEmbed";
@@ -27,10 +27,6 @@ const RIGHT_NOW = [
 
 const NEXT = [
   {
-    title: "Latin America",
-    body: "Scouting a post-graduation base - Bucaramanga and Cordoba are the frontrunners. The work travels; the Spanish is already there.",
-  },
-  {
     title: "First clients for Aviari",
     body: "Conversations with operators across Denver's restaurant and small-business scene.",
   },
@@ -44,13 +40,13 @@ const FLAVOR = [
   },
   {
     icon: Snowflake,
-    title: "Skiing",
-    body: "Aspen regular. X Games 2022 was a highlight.",
+    title: "Skiing and snowboarding",
+    body: "Grew up in Aspen. I ride both, and I have been to X Games many times.",
   },
   {
-    icon: Trophy,
-    title: "Athletic Club de Bilbao",
-    body: "Member since my year in Bilbao. San Mames is a second home.",
+    icon: Mountain,
+    title: "AIARE 2",
+    body: "Avalanche certified through the AIARE 2 course - backcountry decision-making, not just resort laps.",
   },
 ];
 
