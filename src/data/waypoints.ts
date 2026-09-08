@@ -58,6 +58,20 @@ export const HERO_WAYPOINT: MapWaypoint = {
 
 export const WAYPOINTS: MapWaypoint[] = [
   {
+    id: "first-flights",
+    code: "KASE",
+    year: "2021",
+    title: "First Flights",
+    subtitle: "Los primeros vuelos",
+    body: "First logbook entries out of Aspen, then the start of structured training at McAir Aviation.",
+    center: [-106.868, 39.2232],
+    zoom: 10.5,
+    pitch: 60,
+    bearing: 25,
+    duration: 1600,
+    accent: "aviation",
+  },
+  {
     id: "ppl",
     code: "KBJC",
     year: "2023",
@@ -148,6 +162,19 @@ export const WAYPOINTS: MapWaypoint[] = [
     zoom: 11,
     pitch: 55,
     bearing: 15,
+    accent: "aviation",
+  },
+  {
+    id: "cfi-track",
+    code: "KBJC",
+    year: "Now",
+    title: "CFI In Progress",
+    subtitle: "El siguiente capítulo",
+    body: "Working toward the Certified Flight Instructor certificate - written tests done, lesson plans underway. Next: teaching others to fly.",
+    center: [-105.117, 39.9083],
+    zoom: 11,
+    pitch: 55,
+    bearing: -30,
     accent: "aviation",
   },
   {

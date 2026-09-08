@@ -18,12 +18,22 @@ export interface Venture {
 
 export const ventures: Venture[] = [
   {
+    id: "aviari",
+    title: "Aviari",
+    description: "Custom software and AI workflows for small businesses. Every engagement is a complete custom job, built alone.",
+    role: "Founder",
+    year: "2026 - Present",
+    status: "active",
+    tags: ["AI", "Software", "Small Business"],
+    size: "large",
+  },
+  {
     id: "freedom-aviation",
     title: "Freedom Aviation",
-    description: "Redefining aircraft ownership with professional management and elite instruction. Tailored programs for pilots who demand precision and performance.",
-    role: "Founder & Chief Executive Officer",
-    year: "2025 - Present",
-    status: "active",
+    description: "Aircraft management and flight instruction venture. Built the operating platform, pursued airport partnerships and insurance, wound down in May 2026.",
+    role: "Co-Founder",
+    year: "2025 - 2026",
+    status: "completed",
     link: "https://freedomaviationco.com",
     tags: ["Aviation", "Aircraft", "Startup"],
     logo: "/freedom-aviation.png",
