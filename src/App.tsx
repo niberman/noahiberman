@@ -27,6 +27,11 @@ const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Book = lazy(() => import("./pages/Book"));
 const BookLanding = lazy(() => import("./pages/BookLanding"));
 const SchedulingAuthCallback = lazy(() => import("./pages/SchedulingAuthCallback"));
+const Aviation = lazy(() => import("./pages/Aviation"));
+const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const CaseStudyDetail = lazy(() => import("./pages/CaseStudyDetail"));
+const Now = lazy(() => import("./pages/Now"));
+const Es = lazy(() => import("./pages/Es"));
 
 // Both toast portals render nothing until a toast fires, and both libraries
 // queue toasts raised before mount, so there's no need to pay for sonner + radix-toast
@@ -152,6 +157,11 @@ const App = () => {
                   path="/scheduling/auth/callback"
                   element={<SchedulingAuthCallback />}
                 />
+                <Route path="/aviation" element={<Aviation />} />
+                <Route path="/work" element={<CaseStudies />} />
+                <Route path="/work/:id" element={<CaseStudyDetail />} />
+                <Route path="/now" element={<Now />} />
+                <Route path="/es" element={<Es />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/about" element={<SectionRedirect sectionId="about" />} />

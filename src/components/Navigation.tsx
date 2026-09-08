@@ -38,10 +38,14 @@ export function Navigation() {
 
   const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
     { path: "/", label: "Home", id: "home", type: "section" },
+    { path: "/work", label: "Work", id: "work", type: "page" },
+    { path: "/aviation", label: "Aviation", id: "aviation", type: "page" },
+    { path: "/now", label: "Now", id: "now", type: "page" },
     { path: "/blog", label: "Blog", id: "blog", type: "page" },
     { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
     { path: "/#contact", label: "Contact", id: "contact", type: "section" },
     { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
+    { path: "/es", label: "ES", id: "es", type: "page" },
   ];
 
   // Note: Navigation already handles hash navigation correctly

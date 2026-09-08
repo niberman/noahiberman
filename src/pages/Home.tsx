@@ -193,7 +193,7 @@ export default function Home() {
             duplicate the entity. */}
         <SEO
           title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
-          description="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado. Founder of Aviari LLC. University of Denver, Class of 2026."
+          description="Noah Berman is a software founder and FAA Commercial Pilot with instrument, multi-engine, and rotorcraft-helicopter ratings, based in Denver, Colorado. Founder of Aviari LLC. University of Denver graduate."
         />
 
         {/* HERO */}
