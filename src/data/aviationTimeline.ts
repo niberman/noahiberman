@@ -51,7 +51,7 @@ export const aviationTimeline: AviationTimelineItem[] = [
     year: "2025",
     title: "Private Pilot, Rotorcraft-Helicopter",
     subtitleEs: "De alas fijas a rotores",
-    body: "One summer of training at Mile High Rotors, then a pause for the year in Spain. Came back over winter break and finished the rating quickly. A different way to read the air.",
+    body: "One summer of training at Mile High Rotors, then a pause for the year in Spain. Came back over winter break and finished the rating quickly.",
     status: "earned",
   },
   {

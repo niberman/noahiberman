@@ -107,25 +107,7 @@ export const caseStudies: CaseStudy[] = [
       "One-repo backup and restore",
     ],
     accent: "business",
-  },
-  {
-    id: "language-school-platform",
-    title: "Let's Start Talking",
-    tagline: "Digitizing a curriculum that already worked.",
-    category: "EdTech / AI",
-    year: "2025 - 2026",
-    status: "In use",
-    stack: ["React", "TypeScript", "Supabase", "OpenAI API", "Vercel"],
-    summary:
-      "A platform digitizing The Language School's English-fluency curriculum for Spanish-speaking adults: video lessons, an AI conversation partner, homework correction, and a bilingual job-matching feed. I also taught in this program, which is how I knew what to build.",
-    highlights: [
-      "AI conversation partner for speaking practice",
-      "Homework capture and correction",
-      "Bilingual job-matching feed",
-      "Built from inside the classroom, not outside it",
-    ],
-    accent: "education",
-  },
+  }
 ];
 
 export const caseStudyById = (id: string) =>

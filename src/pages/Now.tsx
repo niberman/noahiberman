@@ -41,12 +41,12 @@ const FLAVOR = [
   {
     icon: Snowflake,
     title: "Skiing and snowboarding",
-    body: "Grew up in Aspen. I ride both, and I have been to X Games many times.",
+    body: "Love them both, snowboard on powder days. Ski on groomers.",
   },
   {
     icon: Mountain,
     title: "AIARE 2",
-    body: "Avalanche certified through the AIARE 2 course - backcountry decision-making, not just resort laps.",
+    body: "Avalanche certified through the AIARE 2 course, backcountry decision-making, not just resort laps.",
   },
 ];
 
