@@ -1,43 +1,11 @@
-import { useState } from "react";
 import { m } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { caseStudyById } from "@/data/caseStudies";
 import NotFound from "./NotFound";
-
-/**
- * Screenshot slot: drop an image at the study's `screenshot` path under
- * /public and it appears. Until then the frame renders as an intentional
- * placeholder, not a broken image.
- */
-function ScreenshotSlot({ src, title }: { src?: string; title: string }) {
-  const [loaded, setLoaded] = useState(false);
-  if (!src || !loaded) {
-    return (
-      <div className="rounded-xl border border-dashed border-border/60 bg-card/30 overflow-hidden mb-10">
-        {src ? (
-          <img
-            src={src}
-            alt=""
-            className="hidden"
-            onLoad={() => setLoaded(true)}
-          />
-        ) : null}
-        <div className="flex items-center justify-center h-44 sm:h-56 text-muted-foreground/60 text-sm px-6 text-center">
-          Screenshot slot - drop an image at {src ?? "the configured path"} and it renders here
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className="rounded-xl border border-border/50 bg-card/40 overflow-hidden mb-10">
-      <img src={src} alt={`${title} screenshot`} className="w-full object-cover" />
-    </div>
-  );
-}
 
 export default function CaseStudyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -79,8 +47,6 @@ export default function CaseStudyDetail() {
             <span>{study.status}</span>
           </div>
 
-          <ScreenshotSlot src={study.screenshot} title={study.title} />
-
           <p className="text-lg text-foreground/90 leading-relaxed mb-8">{study.summary}</p>
 
           <h2 className="text-lg font-semibold text-primary-foreground mb-4">
@@ -103,16 +69,6 @@ export default function CaseStudyDetail() {
             ))}
           </div>
 
-          {study.link && (
-            <a
-              href={study.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-secondary hover:underline"
-            >
-              {study.linkLabel ?? "Visit"} <ArrowUpRight className="h-4 w-4" />
-            </a>
-          )}
         </m.div>
       </div>
     </main>

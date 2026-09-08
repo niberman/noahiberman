@@ -8,10 +8,6 @@ export interface CaseStudy {
   stack: string[];
   summary: string;
   highlights: string[];
-  /** Screenshot path under /public. Slot only - drop the image in and it renders. */
-  screenshot?: string;
-  link?: string;
-  linkLabel?: string;
   accent: "aviation" | "education" | "business";
   featured?: boolean;
 }
@@ -38,7 +34,6 @@ export const caseStudies: CaseStudy[] = [
       "Owner consoles for checklist authoring and reporting",
       "Row-level security across every table",
     ],
-    screenshot: "/case-studies/smoothie-king.png",
     accent: "business",
     featured: true,
   },
@@ -58,7 +53,6 @@ export const caseStudies: CaseStudy[] = [
       "Telemetry monitoring with automatic grounding",
       "Web and mobile clients on one Supabase backend",
     ],
-    screenshot: "/case-studies/flight-school-ops.png",
     accent: "aviation",
     featured: true,
   },
@@ -77,9 +71,6 @@ export const caseStudies: CaseStudy[] = [
       "Scenario-driven oral exam simulation",
       "Built by a pilot who has sat these checkrides",
     ],
-    screenshot: "/case-studies/mockchecker.png",
-    link: "https://github.com/niberman/mockchecker",
-    linkLabel: "View the repo",
     accent: "aviation",
   },
   {
@@ -97,7 +88,6 @@ export const caseStudies: CaseStudy[] = [
       "Spanish-language storefront, end to end",
       "Order delivery verified against the real inbox path",
     ],
-    screenshot: "/case-studies/artnimality.png",
     accent: "education",
   },
   {
@@ -116,7 +106,6 @@ export const caseStudies: CaseStudy[] = [
       "Scheduled digests delivered to Telegram",
       "One-repo backup and restore",
     ],
-    screenshot: "/case-studies/hermes.png",
     accent: "business",
   },
   {
@@ -135,9 +124,6 @@ export const caseStudies: CaseStudy[] = [
       "Bilingual job-matching feed",
       "Built from inside the classroom, not outside it",
     ],
-    screenshot: "/case-studies/language-school.png",
-    link: "https://thelanguageschool.us",
-    linkLabel: "The Language School",
     accent: "education",
   },
 ];

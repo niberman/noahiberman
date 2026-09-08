@@ -48,8 +48,8 @@ VALUES
 (
   'A year in Bilbao',
   'a-year-in-bilbao',
-  'Homestay, business Spanish, a flight club outreach in Spanish, and becoming an Athletic Club member. What a full year abroad actually does to you.',
-  E'# A year in Bilbao\n\nFrom August 2024 to May 2025 I lived in Bilbao with a host family and studied at the Universidad de Deusto - advanced composition, business Spanish, conversation, and a control systems course with LabVIEW.\n\nThe year looked like: morning classes in Spanish, afternoons exploring the city, Athletic Club matches as a club member, and weekends on trains and budget airlines - Marrakech, Sevilla, Frankfurt, Zermatt.\n\nI even emailed Spanish aeroclubs about discovery flights, in Spanish. Real Aeroclub de Vizcaya and the Aeroclub de Navarra both answered.\n\nYou do not come back the same. The Spanish stopped being a school subject and became a working tool - I now teach and build software in it.',
+  'Homestay, business Spanish, and a flight club outreach in Spanish. What a full year abroad actually does to you.',
+  E'# A year in Bilbao\n\nFrom August 2024 to May 2025 I lived in Bilbao with a host family and studied at the Universidad de Deusto - advanced composition, business Spanish, conversation, and a control systems course with LabVIEW.\n\nThe year looked like: morning classes in Spanish, afternoons exploring the city, and weekends on trains and budget airlines - Marrakech, Sevilla, Frankfurt, Zermatt.\n\nI even emailed Spanish aeroclubs about discovery flights, in Spanish. Real Aeroclub de Vizcaya and the Aeroclub de Navarra both answered.\n\nYou do not come back the same. The Spanish stopped being a school subject and became a working tool - I now teach and build software in it.',
   '[]'::jsonb,
   ARRAY['spain','bilbao','personal'],
   false,
