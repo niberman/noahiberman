@@ -12,6 +12,7 @@ import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
 import { SectionRedirect } from "@/components/SectionRedirect";
+import { Analytics } from "@vercel/analytics/react";
 
 // Every route except Home is code-split so the homepage doesn't pay for the
 // dashboard, editor, and auth bundles.
@@ -166,6 +167,7 @@ const App = () => {
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+    <Analytics />
     </ReactLenis>
     </LazyMotion>
   );
