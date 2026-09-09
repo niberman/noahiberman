@@ -7,9 +7,97 @@ import { scrollToId, scrollToTop } from "@/lib/lenis-ref";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-export function Navigation() {
+export type NavLink = {
+  path: string;
+  label: string;
+  id: string;
+  type: "section" | "page" | "external";
+};
+
+export const NAV_LINKS: NavLink[] = [
+  { path: "/", label: "Home", id: "home", type: "section" },
+  { path: "/work", label: "Work", id: "work", type: "page" },
+  { path: "/aviation", label: "Aviation", id: "aviation", type: "page" },
+  { path: "/now", label: "Now", id: "now", type: "page" },
+  { path: "/blog", label: "Blog", id: "blog", type: "page" },
+  { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
+  { path: "/#contact", label: "Contact", id: "contact", type: "section" },
+  { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
+  { path: "/es", label: "ES", id: "es", type: "page" },
+];
+
+/**
+ * Routing behaviour shared by the global bar and the page-local editorial
+ * nav (Work, Aviation, Now): page routes navigate; hash sections navigate
+ * home first, then scroll. Callers close their own menus.
+ */
+export function useNavLinks() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isActive = ({ path, id, type }: NavLink) => {
+    if (type === "external") return false;
+    if (type === "page") {
+      return location.pathname === path;
+    }
+    return (
+      location.hash === `#${id}` ||
+      (path === "/" && location.pathname === "/" && !location.hash)
+    );
+  };
+
+  const updateHash = (hash?: string) => {
+    const newUrl = hash ? `/#${hash}` : "/";
+    window.history.replaceState(null, "", newUrl);
+  };
+
+  const follow = (e: React.MouseEvent<HTMLAnchorElement>, { path, id, type }: NavLink) => {
+    if (type === "external") {
+      // Let the browser handle native <a href> navigation
+      return;
+    }
+
+    if (type === "page") {
+      e.preventDefault();
+      if (location.pathname !== path) {
+        navigate(path);
+      }
+      return;
+    }
+
+    if (path === "/") {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => scrollToTop(true), 100);
+      } else {
+        scrollToTop();
+      }
+      updateHash();
+      return;
+    }
+
+    if (path.startsWith("/#")) {
+      e.preventDefault();
+      if (location.pathname !== "/") {
+        navigate("/");
+        setTimeout(() => {
+          scrollToId(id);
+          updateHash(id);
+        }, 100);
+      } else {
+        scrollToId(id);
+        updateHash(id);
+      }
+    }
+  };
+
+  return { isActive, follow };
+}
+
+export function Navigation() {
+  const location = useLocation();
+  const { isActive, follow } = useNavLinks();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNavigationVisible, setIsNavigationVisible] = useState(true);
   // Over the homepage hero the bar goes fully transparent and lets the map
@@ -36,86 +124,6 @@ export function Navigation() {
     };
   }, []);
 
-  const sectionLinks: { path: string; label: string; id: string; type: "section" | "page" | "external" }[] = [
-    { path: "/", label: "Home", id: "home", type: "section" },
-    { path: "/work", label: "Work", id: "work", type: "page" },
-    { path: "/aviation", label: "Aviation", id: "aviation", type: "page" },
-    { path: "/now", label: "Now", id: "now", type: "page" },
-    { path: "/blog", label: "Blog", id: "blog", type: "page" },
-    { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
-    { path: "/#contact", label: "Contact", id: "contact", type: "section" },
-    { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
-    { path: "/es", label: "ES", id: "es", type: "page" },
-  ];
-
-  // Note: Navigation already handles hash navigation correctly
-  // Links scroll to sections on homepage or navigate + scroll from other pages
-  const isLinkActive = (path: string, id: string, type: "section" | "page" | "external") => {
-    if (type === "external") return false;
-    if (type === "page") {
-      return location.pathname === path;
-    }
-    return (
-      location.hash === `#${id}` ||
-      (path === "/" && location.pathname === "/" && !location.hash)
-    );
-  };
-
-  const updateHash = (hash?: string) => {
-    const newUrl = hash ? `/#${hash}` : "/";
-    window.history.replaceState(null, "", newUrl);
-  };
-
-  const scrollToSection = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    path: string,
-    id: string,
-    type: "section" | "page" | "external"
-  ) => {
-    if (type === "external") {
-      // Let the browser handle native <a href> navigation
-      setIsMenuOpen(false);
-      return;
-    }
-
-    if (type === "page") {
-      e.preventDefault();
-      if (location.pathname !== path) {
-        navigate(path);
-      }
-      setIsMenuOpen(false);
-      return;
-    }
-
-    if (path === "/") {
-      e.preventDefault();
-      if (location.pathname !== "/") {
-        navigate("/");
-        setTimeout(() => scrollToTop(true), 100);
-      } else {
-        scrollToTop();
-      }
-      updateHash();
-      setIsMenuOpen(false);
-      return;
-    }
-
-    if (path.startsWith("/#")) {
-      e.preventDefault();
-      if (location.pathname !== "/") {
-        navigate("/");
-        setTimeout(() => {
-          scrollToId(id);
-          updateHash(id);
-        }, 100);
-      } else {
-        scrollToId(id);
-        updateHash(id);
-      }
-      setIsMenuOpen(false);
-    }
-  };
-
   return (
     <m.nav
       initial={{ y: -100 }}
@@ -135,7 +143,7 @@ export function Navigation() {
           <Link
             to="/"
             className="flex items-center gap-2 sm:gap-3 group"
-            onClick={(e) => scrollToSection(e, "/", "home", "section")}
+            onClick={(e) => { follow(e, NAV_LINKS[0]); setIsMenuOpen(false); }}
           >
             <div className="h-6 w-6 sm:h-7 sm:w-7 overflow-hidden rounded group-hover:scale-110 transition-transform relative flex-shrink-0">
               <picture>
@@ -156,19 +164,19 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8 lg:gap-10">
-            {sectionLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <a
                 key={link.path}
                 href={link.path}
-                onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                onClick={(e) => { follow(e, link); setIsMenuOpen(false); }}
                 {...(link.type === "external" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${isLinkActive(link.path, link.id, link.type)
+                className={`text-sm lg:text-base font-medium transition-all hover:text-secondary relative group cursor-pointer whitespace-nowrap ${isActive(link)
                     ? "text-secondary"
                     : "text-muted-foreground"
                   }`}
               >
                 {link.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${isLinkActive(link.path, link.id, link.type) ? "w-full" : "w-0 group-hover:w-full"
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-secondary transition-all ${isActive(link) ? "w-full" : "w-0 group-hover:w-full"
                   }`} />
               </a>
             ))}
@@ -200,13 +208,13 @@ export function Navigation() {
             className="md:hidden bg-card/98 backdrop-blur-xl border-t border-border/50"
           >
             <div className="container mx-auto px-4 py-4 space-y-1">
-              {sectionLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <a
                   key={link.path}
                   href={link.path}
-                  onClick={(e) => scrollToSection(e, link.path, link.id, link.type)}
+                  onClick={(e) => { follow(e, link); setIsMenuOpen(false); }}
                   {...(link.type === "external" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${isLinkActive(link.path, link.id, link.type)
+                  className={`block px-4 py-3 rounded-lg font-medium transition-all ${isActive(link)
                       ? "bg-secondary/20 text-secondary"
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}

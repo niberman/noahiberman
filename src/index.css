@@ -777,3 +777,85 @@ All colors MUST be HSL.
     content: none;
   }
 }
+
+/* Editorial pages (Work, Aviation, Now). Keyframes the design carries inline;
+   see design_handoff_work_aviation_now/README.md. Entry delays come from --d
+   so a page sets per-element stagger without a class per delay. `backwards`
+   keeps content visible when the animation is disabled. */
+@keyframes ed-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+    filter: blur(12px);
+  }
+}
+.ed-rise {
+  animation: ed-rise var(--dur, 1s) var(--ease-out-expo) var(--d, 0s) backwards;
+}
+@keyframes ed-orb-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6vw, -4vh) scale(1.15); }
+}
+@keyframes ed-orb-b {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50% { transform: translate(-5vw, 6vh) scale(0.9); }
+}
+.ed-orb-a { animation: ed-orb-a 18s ease-in-out infinite; }
+.ed-orb-b { animation: ed-orb-b 22s ease-in-out infinite; }
+@keyframes ed-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 140, 240, 0.7); }
+  70% { box-shadow: 0 0 0 12px rgba(180, 140, 240, 0); }
+}
+.ed-pulse { animation: ed-pulse 2s ease-out infinite; }
+@keyframes ed-blink {
+  50% { opacity: 0.15; }
+}
+.ed-blink { animation: ed-blink 1.6s ease-in-out infinite; }
+@keyframes ed-marquee {
+  to { transform: translateX(-50%); }
+}
+.ed-marquee { animation: ed-marquee 38s linear infinite; }
+/* Cursor glow: the page sets --gx/--gy/--go from pointer events (fx.tsx). */
+.ed-glow {
+  background: radial-gradient(
+    var(--glow-size, 720px) circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(128, 51, 204, var(--glow-alpha, 0.2)),
+    transparent 60%
+  );
+  opacity: var(--go, 0);
+  transition: opacity var(--glow-fade, 0.6s) ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ed-rise,
+  .ed-orb-a,
+  .ed-orb-b,
+  .ed-pulse,
+  .ed-blink,
+  .ed-marquee {
+    animation: none;
+  }
+}
+/* Scroll reveal (fx.tsx Reveal): hidden until `is-in`, then a one-shot
+   transition whose delay comes from --d. Under reduced motion it never hides. */
+.ed-reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  filter: blur(8px);
+}
+.ed-reveal.is-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    opacity 0.9s var(--ease-out-expo) var(--d, 0s),
+    transform 0.9s var(--ease-out-expo) var(--d, 0s),
+    filter 0.9s var(--ease-out-expo) var(--d, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ed-reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

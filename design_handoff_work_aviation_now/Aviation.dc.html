@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+body{margin:0;background:#040208;color:#ece6f5;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:#b48cf0}a:hover{color:#fff}
+@keyframes rise{from{opacity:0;transform:translateY(.5em);filter:blur(12px)}}
+@keyframes grain{0%,100%{transform:translate3d(0,0,0)}20%{transform:translate3d(-34px,14px,0)}40%{transform:translate3d(-12px,38px,0)}60%{transform:translate3d(36px,4px,0)}80%{transform:translate3d(10px,44px,0)}}
+@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,-4vh) scale(1.15)}}
+@keyframes orb2{0%,100%{transform:translate(0,0) scale(1.1)}50%{transform:translate(-5vw,6vh) scale(.9)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(180,140,240,.7)}70%{box-shadow:0 0 0 12px rgba(180,140,240,0)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#12081f 0%,#040208 55%);color:#ece6f5">
+  <div style="position:fixed;inset:-48px;pointer-events:none;z-index:50;opacity:.06;background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E&quot;);background-size:160px 160px;animation:grain 1.6s steps(10,end) infinite"></div>
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+    <div style="position:absolute;left:10%;top:-20%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(128,51,204,.28),transparent 60%);filter:blur(60px);animation:orb 18s ease-in-out infinite"></div>
+    <div style="position:absolute;right:-20%;bottom:-30%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(70,20,130,.35),transparent 60%);filter:blur(70px);animation:orb2 22s ease-in-out infinite"></div>
+  </div>
+
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 clamp(16px,4vw,56px);height:76px;background:linear-gradient(180deg,rgba(4,2,8,.9),rgba(4,2,8,0))">
+    <a href="#" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:#ece6f5;flex-shrink:0">
+      <img src="assets/logo.png" alt="Noah Berman logo" style="width:24px;height:24px;object-fit:contain">
+      <span style="font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-.01em">Noah Berman</span>
+    </a>
+    <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:clamp(14px,2.2vw,30px);flex-wrap:wrap;justify-content:flex-end;font-size:13px;font-weight:500;letter-spacing:.02em">
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Home</a>
+      <a href="Work.dc.html" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Work</a>
+      <a href="Aviation.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-style:italic;font-size:17px">Aviation</a>
+      <a href="Now.dc.html" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Now</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Blog</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none;white-space:nowrap" style-hover="color:#fff">Follow My Flight</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Contact</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">iNoah</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">ES</a>
+    </div></sc-if>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;color:#ece6f5;background:none;border:0;padding:8px 0;cursor:pointer">{{ menuLabel }}</button>
+    </sc-if>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;inset:76px 0 0 0;z-index:150;background:rgba(4,2,8,.97);backdrop-filter:blur(20px);padding:24px clamp(16px,4vw,56px) 40px;display:flex;flex-direction:column;gap:4px;overflow:auto;text-align:center">
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Home</a>
+        <a href="Work.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Work</a>
+        <a href="Aviation.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Aviation</a>
+        <a href="Now.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Now</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Blog</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Follow My Flight</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Contact</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">iNoah</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">ES</a>
+        <p style="margin:auto 0 0;padding-top:32px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8">Founder, Pilot, Engineer</p>
+      </div>
+    </sc-if>
+  </nav>
+
+  <main data-screen-label="Aviation B" style="position:relative;z-index:1">
+    <section style="padding:clamp(130px,18vh,190px) clamp(16px,4vw,56px) 0;max-width:1300px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8;margin-bottom:clamp(16px,2vw,28px);animation:rise 1s cubic-bezier(.22,1,.36,1) .05s backwards">
+        <span>Aviation</span>
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:7px;height:7px;border-radius:50%;background:#b48cf0;animation:pulse 2s ease-out infinite"></span>Live from ForeFlight</span>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.12)">
+        <sc-for list="{{ stats }}" as="st" hint-placeholder-count="4">
+          <div data-glow style="position:relative;display:flex;align-items:baseline;justify-content:space-between;gap:clamp(12px,3vw,40px);flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.12);padding:clamp(6px,1vw,14px) 0;animation:rise 1.1s cubic-bezier(.22,1,.36,1) {{ st.delay }} backwards;overflow:hidden">
+            <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px circle at var(--gx,50%) var(--gy,50%),rgba(128,51,204,.18),transparent 60%);opacity:var(--go,0);transition:opacity .5s"></div>
+            <div data-count="{{ st.value }}" data-suffix="{{ st.suffix }}" data-decimals="{{ st.decimals }}" style="position:relative;font-family:'Instrument Serif',serif;font-size:clamp(72px,13vw,210px);line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums">{{ st.display }}</div>
+            <div style="position:relative;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(24px,3.4vw,52px);line-height:1;color:#b48cf0;padding-bottom:clamp(8px,1.5vw,24px)">{{ st.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:16px 0 0;font-size:13px;letter-spacing:.04em;color:#a79fb8;animation:rise 1s cubic-bezier(.22,1,.36,1) .9s backwards">Live numbers, synced from my ForeFlight logbook - never hand-edited, never stale.</p>
+    </section>
+
+    <section style="min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:clamp(96px,14vw,180px) clamp(16px,4vw,56px)">
+      <h1 data-parallax="0.08" style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(72px,15vw,240px);line-height:.88;letter-spacing:-.04em">
+        <span data-reveal style="display:inline-block">The</span>
+        <span data-reveal="120" style="display:inline-block;font-style:italic;color:#b48cf0">flying</span>
+      </h1>
+      <p data-reveal="220" style="margin:clamp(18px,3vw,32px) 0 0;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(24px,3vw,44px);line-height:1;color:#a79fb8">El vuelo</p>
+      <p data-reveal="300" style="margin:clamp(28px,4vw,48px) 0 0;font-size:clamp(17px,1.4vw,21px);line-height:1.55;color:#c9c3d6;max-width:560px;font-weight:300">Commercial pilot based at Centennial Airport (KAPA). Fixed-wing and rotorcraft, single and multi-engine, VFR and IFR.</p>
+    </section>
+
+    <section style="padding:0 0 clamp(72px,10vw,140px);overflow:hidden;text-align:center">
+      <p data-reveal style="margin:0 0 28px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8">Certificates and ratings</p>
+      <div style="white-space:nowrap">
+        <div style="display:inline-flex;gap:14px;padding-right:14px;animation:marquee 38s linear infinite">
+          <sc-for list="{{ ratings2 }}" as="r" hint-placeholder-count="12">
+            <span style="display:inline-flex;align-items:center;gap:12px;border:1px solid {{ r.border }};color:{{ r.color }};border-radius:999px;padding:14px 24px;font-family:'Instrument Serif',serif;font-size:clamp(20px,1.8vw,26px);letter-spacing:-.01em;background:{{ r.bg }};font-style:{{ r.style }}"><i data-lucide="{{ r.icon }}" style="width:18px;height:18px;display:inline-block;color:#b48cf0"></i>{{ r.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:0 clamp(16px,4vw,56px) clamp(72px,10vw,140px);max-width:1200px;margin:0 auto">
+      <h2 data-reveal style="margin:0 0 clamp(48px,7vw,96px);font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,7vw,110px);line-height:.92;letter-spacing:-.035em;text-align:center">The record, <em style="color:#b48cf0">in order</em></h2>
+      <ol style="list-style:none;margin:0;padding:0;position:relative">
+        <div style="position:absolute;left:{{ spineLeft }};top:0;bottom:0;width:1px;background:rgba(255,255,255,.1);transform:translateX(-50%)"></div>
+        <div data-progress-line style="position:absolute;left:{{ spineLeft }};top:0;bottom:0;width:1px;margin-left:-.5px;background:linear-gradient(180deg,#b48cf0,#8033cc);transform-origin:top;transform:scaleY(0)"></div>
+        <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="8">
+          <li style="position:relative;display:grid;grid-template-columns:{{ tlCols }};gap:0 clamp(24px,4vw,64px);padding:clamp(20px,3vw,40px) 0;align-items:start">
+            <div data-reveal style="grid-column:{{ t.yearCol }};grid-row:1;text-align:{{ t.yearAlign }};font-family:'Instrument Serif',serif;font-size:clamp(40px,6vw,96px);line-height:.9;letter-spacing:-.04em;color:{{ t.yearColor }};padding-top:2px">{{ t.year }}</div>
+            <span style="grid-column:{{ dotCol }};grid-row:1;justify-self:center;margin-top:clamp(8px,1.5vw,22px);width:11px;height:11px;border-radius:50%;background:{{ t.dotColor }};box-shadow:0 0 16px {{ t.dotColor }};border:2px solid #040208;animation:{{ t.anim }}"></span>
+            <div style="grid-column:{{ t.bodyCol }};grid-row:{{ t.bodyRow }};text-align:{{ t.bodyAlign }};min-width:0">
+              <h3 data-reveal="60" style="margin:0 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(26px,3.2vw,48px);line-height:1;letter-spacing:-.025em;text-wrap:balance">{{ t.title }}</h3>
+              <p data-reveal="110" style="margin:0 0 14px;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(18px,2vw,28px);line-height:1.1;color:#b48cf0">{{ t.subtitleEs }}</p>
+              <p data-reveal="160" style="margin:0;font-size:clamp(15px,1.2vw,17px);line-height:1.65;color:#c9c3d6;font-weight:300;max-width:460px;display:inline-block">{{ t.body }}</p>
+            </div>
+          </li>
+        </sc-for>
+      </ol>
+    </section>
+
+    <section style="padding:0 clamp(16px,4vw,56px) clamp(96px,14vw,180px);text-align:center">
+      <h2 data-reveal style="margin:0 0 16px;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,7vw,110px);line-height:.92;letter-spacing:-.035em;text-wrap:balance">Every route, <em style="color:#b48cf0">on the map</em></h2>
+      <p data-reveal="80" style="margin:0 auto clamp(28px,4vw,44px);font-size:clamp(16px,1.3vw,19px);line-height:1.55;color:#c9c3d6;max-width:520px;font-weight:300">The homepage map flies through the whole network - pan, zoom, and explore it.</p>
+      <a data-reveal="160" href="#" data-magnetic="0.3" style="display:inline-flex;align-items:center;gap:14px;text-decoration:none;background:#8033cc;color:#fff;border-radius:999px;padding:20px 36px;font-size:16px;font-weight:500;letter-spacing:.01em;box-shadow:0 0 80px rgba(128,51,204,.5)" style-hover="background:#9146db">Open the flight map <i data-lucide="arrow-up-right" style="width:18px;height:18px;display:inline-block"></i></a>
+    </section>
+  </main>
+
+  <footer style="position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.08);padding:clamp(72px,12vw,160px) clamp(16px,4vw,56px) 40px;text-align:center;overflow:hidden">
+    <p data-parallax="0.1" style="margin:0 auto;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(44px,9vw,150px);line-height:.95;letter-spacing:-.03em;color:#ece6f5;max-width:14ch;text-wrap:balance">"El cielo no es el límite."</p>
+    <p style="margin:20px 0 clamp(48px,7vw,96px);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8">The sky is not the limit.</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 32px;font-size:14px;margin-bottom:28px">
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Blog</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Follow My Flight</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Ask iNoah</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Contact</a>
+      <a href="mailto:noah@noahiberman.com" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Email</a>
+    </div>
+    <div style="display:flex;justify-content:center;gap:22px;color:#a79fb8;margin-bottom:40px">
+      <a href="https://github.com/niberman" aria-label="GitHub" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="github" style="width:20px;height:20px;display:inline-block"></i></a>
+      <a href="https://www.linkedin.com/in/noahiberman/" aria-label="LinkedIn" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="linkedin" style="width:20px;height:20px;display:inline-block"></i></a>
+      <a href="mailto:noah@noahiberman.com" aria-label="Email" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="mail" style="width:20px;height:20px;display:inline-block"></i></a>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px"><img src="assets/logo.png" alt="Noah Berman logo" style="width:20px;height:20px;object-fit:contain"><span style="font-family:'Instrument Serif',serif;font-size:22px">Noah Berman</span><span style="color:#a79fb8;font-size:13px;margin-left:8px">Founder, Pilot, Engineer</span></div>
+    <p style="margin:0;font-size:12px;color:#a79fb8">© 2026 Noah Berman. All rights reserved.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TIMELINE = [
+  { year: "2021", title: "First logged flights", subtitleEs: "Los primeros vuelos", body: "First logbook entries out of Aspen, then the start of structured training at McAir Aviation on the G1000 fleet at Rocky Mountain Metro." },
+  { year: "2023", title: "Private Pilot, Airplane Single-Engine Land", subtitleEs: "Piloto privado", body: "A summer of near-daily flying and PHAK study sessions. First certificate, earned at Rocky Mountain Metropolitan." },
+  { year: "2023", title: "Instrument Rating", subtitleEs: "Habilitación de vuelo por instrumentos", body: "Earned at Independence Aviation at Centennial. Cleared into the IFR system: clouds, low visibility, real cross-country capability." },
+  { year: "2024", title: "Commercial Pilot, Airplane Single-Engine Land", subtitleEs: "Piloto comercial", body: "The professional certificate. Authorized to fly for hire." },
+  { year: "2025", title: "Private Pilot, Rotorcraft-Helicopter", subtitleEs: "De alas fijas a rotores", body: "One summer of training at Mile High Rotors, then a pause for the year in Spain. Came back over winter break and finished the rating quickly." },
+  { year: "2025", title: "Commercial Pilot, Airplane Multi-Engine Land", subtitleEs: "Dos motores", body: "Multi-engine commercial rating after a spring of training. Bigger aircraft, bigger missions." },
+  { year: "Ongoing", title: "Mountain flying", subtitleEs: "Vuelo de montaña", body: "High density altitude, dynamic weather, demanding terrain. Aspen and the mountain airports are the regular circuit, not the exception." },
+  { year: "In progress", title: "Certified Flight Instructor", subtitleEs: "El siguiente capítulo", body: "Written tests complete, lesson plans underway. Next: teaching other people to fly.", inProgress: true },
+];
+const RATINGS = [
+  { icon: "plane", label: "Commercial Pilot, ASEL" }, { icon: "plane", label: "Commercial Pilot, AMEL" },
+  { icon: "radio", label: "Instrument Rating" }, { icon: "award", label: "Private Pilot, Rotorcraft-Helicopter" },
+  { icon: "wrench", label: "Wilderness First Responder (NOLS)" },
+  { icon: "graduation-cap", label: "CFI - in progress", outline: true },
+];
+class Component extends DCLogic {
+  state = { isMobile: false, menuOpen: false };
+  toggleMenu = () => this.setState((s) => ({ menuOpen: !s.menuOpen }));
+  async componentDidMount() {
+    this.mq = window.matchMedia("(max-width: 760px)");
+    this.onMq = () => this.setState({ isMobile: this.mq.matches, menuOpen: false });
+    this.mq.addEventListener("change", this.onMq); this.onMq();
+    window.lucide && window.lucide.createIcons();
+    const fx = await import("./fx.js");
+    this.off = fx.all(document.body);
+  }
+  componentWillUnmount() { this.mq && this.mq.removeEventListener("change", this.onMq); this.off && this.off(); }
+  renderVals() {
+    const isMobile = this.state.isMobile;
+    // Placeholder values: swap for the live ForeFlight stats feed.
+    const stats = [
+      { label: "total hours", value: 562, suffix: "+", decimals: 0 },
+      { label: "flights", value: 300, suffix: "+", decimals: 0 },
+      { label: "airports", value: 48, suffix: "", decimals: 0 },
+      { label: "mountain hours", value: 61.2, suffix: "", decimals: 1 },
+    ].map((s, i) => ({ ...s, delay: (0.15 + i * 0.12).toFixed(2) + "s", display: s.value.toFixed(s.decimals) + s.suffix }));
+    const r = RATINGS.map((x) => ({ ...x, border: x.outline ? "rgba(180,140,240,.7)" : "rgba(255,255,255,.14)", color: x.outline ? "#b48cf0" : "#ece6f5", bg: x.outline ? "rgba(128,51,204,.1)" : "rgba(255,255,255,.02)", style: x.outline ? "italic" : "normal" }));
+    return { isMobile, desktop: !isMobile, menuOpen: this.state.menuOpen, toggleMenu: this.toggleMenu, menuLabel: this.state.menuOpen ? "Close" : "Menu", tlCols: isMobile ? "1px minmax(0,1fr)" : "minmax(0,1fr) 1px minmax(0,1fr)", spineLeft: isMobile ? "0" : "50%", dotCol: isMobile ? "1" : "2",
+      stats,
+      ratings2: [...r, ...r],
+      timeline: TIMELINE.map((t, i) => {
+        const left = i % 2 === 0; // year on the left, body on the right
+        return { ...t, yearCol: isMobile ? "2" : (left ? "1" : "3"), yearAlign: isMobile ? "left" : (left ? "right" : "left"), bodyCol: isMobile ? "2" : (left ? "3" : "1"), bodyRow: isMobile ? "2" : "1", bodyAlign: isMobile ? "left" : (left ? "left" : "right"),
+          dotColor: t.inProgress ? "#b48cf0" : "#8033cc", yearColor: t.inProgress ? "#b48cf0" : "rgba(236,230,245,.45)", anim: t.inProgress ? "pulse 2s ease-out infinite" : "none" };
+      }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+body{margin:0;background:#040208;color:#ece6f5;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:#b48cf0}a:hover{color:#fff}
+@keyframes rise{from{opacity:0;transform:translateY(.5em);filter:blur(12px)}}
+@keyframes grain{0%,100%{transform:translate3d(0,0,0)}20%{transform:translate3d(-34px,14px,0)}40%{transform:translate3d(-12px,38px,0)}60%{transform:translate3d(36px,4px,0)}80%{transform:translate3d(10px,44px,0)}}
+@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,-4vh) scale(1.15)}}
+@keyframes orb2{0%,100%{transform:translate(0,0) scale(1.1)}50%{transform:translate(-5vw,6vh) scale(.9)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(180,140,240,.7)}70%{box-shadow:0 0 0 12px rgba(180,140,240,0)}}
+@keyframes blink{50%{opacity:.15}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#12081f 0%,#040208 55%);color:#ece6f5">
+  <div style="position:fixed;inset:-48px;pointer-events:none;z-index:50;opacity:.06;background-image:url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E&quot;);background-size:160px 160px;animation:grain 1.6s steps(10,end) infinite"></div>
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+    <div style="position:absolute;left:10%;top:-20%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(128,51,204,.28),transparent 60%);filter:blur(60px);animation:orb 18s ease-in-out infinite"></div>
+    <div style="position:absolute;right:-20%;bottom:-30%;width:70vw;height:70vw;border-radius:50%;background:radial-gradient(circle,rgba(70,20,130,.35),transparent 60%);filter:blur(70px);animation:orb2 22s ease-in-out infinite"></div>
+  </div>
+
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 clamp(16px,4vw,56px);height:76px;background:linear-gradient(180deg,rgba(4,2,8,.9),rgba(4,2,8,0))">
+    <a href="#" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:#ece6f5;flex-shrink:0">
+      <img src="assets/logo.png" alt="Noah Berman logo" style="width:24px;height:24px;object-fit:contain">
+      <span style="font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-.01em">Noah Berman</span>
+    </a>
+    <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:clamp(14px,2.2vw,30px);flex-wrap:wrap;justify-content:flex-end;font-size:13px;font-weight:500;letter-spacing:.02em">
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Home</a>
+      <a href="Work.dc.html" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Work</a>
+      <a href="Aviation.dc.html" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Aviation</a>
+      <a href="Now.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-style:italic;font-size:17px">Now</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Blog</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none;white-space:nowrap" style-hover="color:#fff">Follow My Flight</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">Contact</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">iNoah</a>
+      <a href="#" style="color:#a79fb8;text-decoration:none" style-hover="color:#fff">ES</a>
+    </div></sc-if>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;color:#ece6f5;background:none;border:0;padding:8px 0;cursor:pointer">{{ menuLabel }}</button>
+    </sc-if>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;inset:76px 0 0 0;z-index:150;background:rgba(4,2,8,.97);backdrop-filter:blur(20px);padding:24px clamp(16px,4vw,56px) 40px;display:flex;flex-direction:column;gap:4px;overflow:auto;text-align:center">
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Home</a>
+        <a href="Work.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Work</a>
+        <a href="Aviation.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Aviation</a>
+        <a href="Now.dc.html" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Now</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Blog</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Follow My Flight</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">Contact</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">iNoah</a>
+        <a href="#" style="color:#ece6f5;text-decoration:none;font-family:'Instrument Serif',serif;font-size:clamp(40px,11vw,56px);line-height:1.15;letter-spacing:-.02em">ES</a>
+        <p style="margin:auto 0 0;padding-top:32px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8">Founder, Pilot, Engineer</p>
+      </div>
+    </sc-if>
+  </nav>
+
+  <main data-screen-label="Now B" style="position:relative;z-index:1;padding:clamp(130px,18vh,190px) clamp(16px,4vw,56px) clamp(96px,14vw,180px);max-width:1200px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8;margin-bottom:clamp(24px,4vw,48px);animation:rise 1s cubic-bezier(.22,1,.36,1) .05s backwards">
+      <span>Now</span>
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:10px"><span style="width:7px;height:7px;border-radius:50%;background:#b48cf0;animation:pulse 2s ease-out infinite"></span>Live</span>
+        <span>Denver <span ref="{{ clockRef }}" style="color:#ece6f5;font-variant-numeric:tabular-nums;letter-spacing:.1em">--:--:--</span></span>
+        <span>Updated September 2026.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px 48px;flex-wrap:wrap;margin-bottom:clamp(56px,8vw,110px)">
+      <h1 data-parallax="0.06" style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(110px,24vw,360px);line-height:.78;letter-spacing:-.06em"><span style="display:inline-block;animation:rise 1.2s cubic-bezier(.22,1,.36,1) .15s backwards">Now</span><span style="display:inline-block;font-style:italic;color:#b48cf0;animation:rise 1.2s cubic-bezier(.22,1,.36,1) .35s backwards">.</span></h1>
+      <div style="padding-bottom:clamp(8px,1.5vw,24px)">
+        <p style="margin:0 0 12px;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(30px,4vw,60px);line-height:1;color:#b48cf0;animation:rise 1s cubic-bezier(.22,1,.36,1) .5s backwards">Ahora</p>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,21px);line-height:1.5;color:#c9c3d6;font-weight:300;animation:rise 1s cubic-bezier(.22,1,.36,1) .65s backwards">What I am doing right now.</p>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,.12)">
+      <sc-for list="{{ rightNow }}" as="it" hint-placeholder-count="4">
+        <div data-glow data-reveal style="position:relative;display:grid;grid-template-columns:{{ rowCols }};gap:clamp(16px,3vw,48px);padding:clamp(28px,4vw,52px) 0;border-bottom:1px solid rgba(255,255,255,.12);overflow:hidden;align-items:start">
+          <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(640px circle at var(--gx,50%) var(--gy,50%),rgba(128,51,204,.18),transparent 60%);opacity:var(--go,0);transition:opacity .5s"></div>
+          <div style="position:relative;display:flex;flex-direction:column;gap:10px;padding-top:.35em">
+            <sc-if value="{{ mNumber }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Instrument Serif',serif;font-size:clamp(28px,3vw,44px);line-height:1;color:rgba(236,230,245,.4);letter-spacing:-.03em">{{ it.idx }}</span></sc-if>
+            <sc-if value="{{ mBullet }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:10px;height:10px;border-radius:50%;background:#b48cf0;box-shadow:0 0 18px #8033cc;margin-top:.5em"></span></sc-if>
+            <sc-if value="{{ mDash }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:clamp(28px,4vw,64px);height:1px;background:linear-gradient(90deg,#b48cf0,rgba(180,140,240,.2));margin-top:.9em"></span></sc-if>
+            <sc-if value="{{ mStatus }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#b48cf0"><span style="width:6px;height:6px;border-radius:50%;background:#b48cf0;animation:blink 1.6s ease-in-out infinite"></span>Active</span></sc-if>
+          </div>
+          <h2 style="position:relative;margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(28px,3.6vw,56px);line-height:.98;letter-spacing:-.03em;text-wrap:balance">{{ it.title }}</h2>
+          <p style="position:relative;margin:0;font-size:clamp(15px,1.25vw,18px);line-height:1.65;color:#c9c3d6;font-weight:300">{{ it.body }}</p>
+        </div>
+      </sc-for>
+      <div data-glow data-reveal style="position:relative;display:grid;grid-template-columns:{{ rowCols }};gap:clamp(16px,3vw,48px);padding:clamp(28px,4vw,52px) 0;border-bottom:1px solid rgba(255,255,255,.12);overflow:hidden;align-items:start">
+        <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(640px circle at var(--gx,50%) var(--gy,50%),rgba(128,51,204,.18),transparent 60%);opacity:var(--go,0);transition:opacity .5s"></div>
+        <div style="position:relative;display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(28px,3vw,44px);line-height:1;color:#b48cf0;letter-spacing:-.03em">Next</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#a79fb8"><span style="width:6px;height:6px;border-radius:50%;border:1px solid #b48cf0"></span>Queued</span>
+        </div>
+        <h2 style="position:relative;margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(28px,3.6vw,56px);line-height:.98;letter-spacing:-.03em;text-wrap:balance">First clients for Aviari</h2>
+        <p style="position:relative;margin:0;font-size:clamp(15px,1.25vw,18px);line-height:1.65;color:#c9c3d6;font-weight:300">Conversations with operators across Denver's restaurant and small-business scene.</p>
+      </div>
+    </div>
+
+    <h2 data-reveal style="margin:clamp(72px,10vw,140px) 0 clamp(32px,4vw,56px);font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,7vw,110px);line-height:.92;letter-spacing:-.035em;text-align:center">Beyond <em style="color:#b48cf0">the cockpit</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:clamp(32px,4vw,56px) clamp(24px,3vw,48px)">
+      <sc-for list="{{ flavor }}" as="f" hint-placeholder-count="3">
+        <div data-reveal="{{ f.delay }}" data-tilt="4" style="text-align:center;padding:clamp(24px,3vw,40px) clamp(16px,2vw,28px);border:1px solid rgba(255,255,255,.1);border-radius:24px;background:radial-gradient(400px circle at var(--mx,50%) var(--my,30%),rgba(128,51,204,.16),transparent 60%);backdrop-filter:blur(8px)">
+          <i data-lucide="{{ f.icon }}" style="width:28px;height:28px;color:#b48cf0;display:inline-block;margin-bottom:20px"></i>
+          <h3 style="margin:0 0 10px;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(26px,2.4vw,34px);line-height:1;letter-spacing:-.02em">{{ f.title }}</h3>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:#c9c3d6;font-weight:300">{{ f.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+
+    <div data-reveal data-tilt="2" style="margin-top:clamp(32px,4vw,56px);display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:clamp(24px,3vw,40px);border:1px solid rgba(255,255,255,.1);border-radius:24px;background:radial-gradient(500px circle at var(--mx,20%) var(--my,50%),rgba(128,51,204,.16),transparent 60%);backdrop-filter:blur(8px)">
+      <div style="display:flex;align-items:center;gap:20px">
+        <i data-lucide="music" style="width:28px;height:28px;color:#b48cf0;display:block;flex-shrink:0"></i>
+        <div>
+          <h3 style="margin:0 0 6px;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(26px,2.4vw,34px);line-height:1;letter-spacing:-.02em">Carillon</h3>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:#c9c3d6;font-weight:300">Played the DU carillon at hockey games and recitals.</p>
+        </div>
+      </div>
+      <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;color:#a79fb8">Recording coming soon.</span>
+    </div>
+  </main>
+
+  <footer style="position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.08);padding:clamp(72px,12vw,160px) clamp(16px,4vw,56px) 40px;text-align:center;overflow:hidden">
+    <p data-parallax="0.1" style="margin:0 auto;font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(44px,9vw,150px);line-height:.95;letter-spacing:-.03em;color:#ece6f5;max-width:14ch;text-wrap:balance">"El cielo no es el límite."</p>
+    <p style="margin:20px 0 clamp(48px,7vw,96px);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#a79fb8">The sky is not the limit.</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px 32px;font-size:14px;margin-bottom:28px">
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Blog</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Follow My Flight</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Ask iNoah</a>
+      <a href="#" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Contact</a>
+      <a href="mailto:noah@noahiberman.com" style="color:#ece6f5;text-decoration:none" style-hover="color:#b48cf0">Email</a>
+    </div>
+    <div style="display:flex;justify-content:center;gap:22px;color:#a79fb8;margin-bottom:40px">
+      <a href="https://github.com/niberman" aria-label="GitHub" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="github" style="width:20px;height:20px;display:inline-block"></i></a>
+      <a href="https://www.linkedin.com/in/noahiberman/" aria-label="LinkedIn" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="linkedin" style="width:20px;height:20px;display:inline-block"></i></a>
+      <a href="mailto:noah@noahiberman.com" aria-label="Email" style="color:inherit;display:inline-flex" style-hover="color:#b48cf0"><i data-lucide="mail" style="width:20px;height:20px;display:inline-block"></i></a>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px"><img src="assets/logo.png" alt="Noah Berman logo" style="width:20px;height:20px;object-fit:contain"><span style="font-family:'Instrument Serif',serif;font-size:22px">Noah Berman</span><span style="color:#a79fb8;font-size:13px;margin-left:8px">Founder, Pilot, Engineer</span></div>
+    <p style="margin:0;font-size:12px;color:#a79fb8">© 2026 Noah Berman. All rights reserved.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;marker&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;status&quot;,&quot;options&quot;:[&quot;status&quot;,&quot;bullet&quot;,&quot;dash&quot;,&quot;number&quot;],&quot;tsType&quot;:&quot;'status' | 'bullet' | 'dash' | 'number'&quot;,&quot;section&quot;:&quot;Right-now rows&quot;}}">
+class Component extends DCLogic {
+  state = { isMobile: false, menuOpen: false };
+  toggleMenu = () => this.setState((s) => ({ menuOpen: !s.menuOpen }));
+  clockRef = React.createRef();
+  async componentDidMount() {
+    this.mq = window.matchMedia("(max-width: 760px)");
+    this.onMq = () => this.setState({ isMobile: this.mq.matches, menuOpen: false });
+    this.mq.addEventListener("change", this.onMq); this.onMq();
+    window.lucide && window.lucide.createIcons();
+    const fx = await import("./fx.js");
+    this.off = fx.all(document.body);
+    this.offClock = fx.clock(this.clockRef.current);
+  }
+  componentWillUnmount() { this.mq && this.mq.removeEventListener("change", this.onMq); this.off && this.off(); this.offClock && this.offClock(); }
+  renderVals() {
+    const isMobile = this.state.isMobile;
+    const m = this.props.marker ?? "status";
+    return { isMobile, desktop: !isMobile, menuOpen: this.state.menuOpen, toggleMenu: this.toggleMenu, menuLabel: this.state.menuOpen ? "Close" : "Menu", rowCols: isMobile ? "minmax(0,1fr)" : "minmax(120px,.5fr) minmax(0,1.2fr) minmax(0,1.4fr)",
+      mNumber: m === "number", mBullet: m === "bullet", mDash: m === "dash",
+      mStatus: m !== "dash",
+      clockRef: this.clockRef,
+      rightNow: [
+        { title: "Founder, Aviari LLC", body: "Building custom software and AI workflows for small businesses. Recent shipped work is on the Work page." },
+        { title: "Working toward the CFI", body: "Written tests done, lesson plans underway. Teaching other people to fly is the next rating." },
+        { title: "Flying out of Centennial (KAPA)", body: "Single and multi-engine, fixed-wing and helicopter, mountains whenever the weather allows." },
+        { title: "Fresh out of DU", body: "BA Applied Computing, minors in Entrepreneurship and Spanish, June 2026. Closed the summer with the BASE Camp accelerator final pitch." },
+      ].map((x, i) => ({ ...x, idx: String(i + 1).padStart(2, "0") })),
+      flavor: [
+        { icon: "waves", title: "Whitewater kayaking", body: "Colorado rivers, as often as the season and the snowpack allow." },
+        { icon: "snowflake", title: "Skiing and snowboarding", body: "Love them both, snowboard on powder days. Ski on groomers." },
+        { icon: "mountain", title: "AIARE 2", body: "Avalanche certified through the AIARE 2 course, backcountry decision-making, not just resort laps." },
+      ].map((x, i) => ({ ...x, delay: i * 80 })),
+    };
+  }
+}
+</script>
+</body>
+</html>

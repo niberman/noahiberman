@@ -30,8 +30,21 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Playfair Display', 'Georgia', 'serif'],
+        // Editorial pages (Work, Aviation, Now) only; the global tokens stay.
+        editorial: ['Instrument Serif', 'Georgia', 'serif'],
+        body: ['Geist', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // Editorial palette (hex by design; see design_handoff README).
+        ed: {
+          bg: "#040208",
+          ink: "#ece6f5",
+          body: "#c9c3d6",
+          muted: "#a79fb8",
+          accent: "#8033cc",
+          light: "#b48cf0",
+          hover: "#9146db",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
