@@ -1,26 +1,33 @@
 import { useState } from "react";
 import { Music } from "lucide-react";
+import { tilt } from "@/components/editorial/fx";
 
 const RECORDING_SRC = "/audio/carillon.mp3";
 
 /**
- * Carillon recording slot. Drop the audio file at /public/audio/carillon.mp3
- * and the player appears; until then the card renders a quiet placeholder
- * instead of a dead control.
+ * Carillon recording slot on the Now page. Drop the audio file at
+ * /public/audio/carillon.mp3 and the player appears; until then the card
+ * renders a quiet placeholder instead of a dead control.
  */
 export function CarillonEmbed() {
   const [available, setAvailable] = useState(false);
 
   return (
-    <div className="rounded-xl border border-border/50 bg-card/50 p-5 sm:p-6 shadow-elegant">
-      <div className="flex items-center gap-2 mb-2">
-        <Music className="h-4 w-4 text-secondary" />
-        <h3 className="font-semibold text-primary-foreground">Carillon</h3>
+    <div
+      {...tilt(2)}
+      className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-white/[.1] p-[clamp(24px,3vw,40px)] backdrop-blur-[8px] [background:radial-gradient(500px_circle_at_var(--mx,20%)_var(--my,50%),rgba(128,51,204,.16),transparent_60%)]"
+    >
+      <div className="flex items-center gap-5">
+        <Music className="h-7 w-7 shrink-0 text-ed-light" />
+        <div>
+          <h3 className="mb-1.5 font-editorial font-normal text-[clamp(26px,2.4vw,34px)] leading-none tracking-[-.02em]">
+            Carillon
+          </h3>
+          <p className="text-[15px] font-light leading-[1.6] text-ed-body">
+            Played the DU carillon at hockey games and recitals.
+          </p>
+        </div>
       </div>
-      <p className="text-sm text-muted-foreground mb-3">
-        Played the DU carillon at hockey games and recitals, including a guest
-        concert and a final concert in my last spring on campus.
-      </p>
       <audio
         src={RECORDING_SRC}
         onCanPlay={() => setAvailable(true)}
@@ -28,13 +35,11 @@ export function CarillonEmbed() {
         preload="metadata"
       />
       {available ? (
-        <audio controls src={RECORDING_SRC} className="w-full">
+        <audio controls src={RECORDING_SRC} className="w-full max-w-sm">
           Your browser does not support the audio element.
         </audio>
       ) : (
-        <p className="text-xs text-muted-foreground/70 italic">
-          Recording coming soon.
-        </p>
+        <span className="font-editorial italic text-xl text-ed-muted">Recording coming soon.</span>
       )}
     </div>
   );

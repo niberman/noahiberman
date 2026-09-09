@@ -52,6 +52,15 @@ const Toasters = lazy(() =>
 
 const queryClient = new QueryClient();
 
+// Work, Aviation, and Now render their own nav and footer (EditorialPage), so
+// the global bar and footer step aside on exactly those routes.
+const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now"]);
+function SiteChrome({ slot }: { slot: "nav" | "footer" }) {
+  const { pathname } = useLocation();
+  if (EDITORIAL_ROUTES.has(pathname)) return null;
+  return slot === "nav" ? <Navigation /> : <Footer />;
+}
+
 // Publishes the root Lenis instance to lib/lenis-ref for the scattered
 // scroll call sites (Navigation, Footer, Home, SectionRedirect).
 function LenisBridge() {
@@ -111,7 +120,7 @@ const App = () => {
           <ScrollResetOnNavigate />
           <SecretDashboardAccess />
           <div className="min-h-screen flex flex-col relative">
-            <Navigation />
+            <SiteChrome slot="nav" />
             <div className="flex-1 relative z-10">
               <Suspense fallback={null}>
               <Routes>
@@ -172,7 +181,7 @@ const App = () => {
               </Routes>
               </Suspense>
             </div>
-            <Footer />
+            <SiteChrome slot="footer" />
           </div>
         </BrowserRouter>
       </TooltipProvider>

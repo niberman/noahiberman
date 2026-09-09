@@ -1,42 +1,13 @@
-import { m } from "framer-motion";
-import { Plane, Award, Wrench, Radio } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowUpRight, Award, GraduationCap, Plane, Radio, Wrench } from "lucide-react";
 import { SEO } from "@/components/SEO";
-import { BilingualHeading } from "@/components/BilingualHeading";
-import { Badge } from "@/components/ui/badge";
 import { useFlightStats } from "@/hooks/use-flight-stats";
 import { aviationTimeline } from "@/data/aviationTimeline";
 import { scrollToId } from "@/lib/lenis-ref";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-
-function LiveStats() {
-  const { stats, isLoading } = useFlightStats();
-  const items = [
-    { label: "Total hours", value: isLoading ? "..." : stats.totalHoursDisplay },
-    { label: "Flights", value: isLoading ? "..." : stats.totalFlightsDisplay },
-    { label: "Airports", value: isLoading ? "..." : String(stats.uniqueAirports) },
-    { label: "Mountain hours", value: isLoading ? "..." : stats.mountainHours },
-  ];
-  return (
-    <div className="rounded-xl border border-border/50 bg-card/50 p-6 sm:p-8 mb-14 shadow-elegant">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        {items.map((item) => (
-          <div key={item.label}>
-            <div className="text-3xl sm:text-4xl font-bold text-primary-foreground font-display">
-              {item.value}
-            </div>
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">
-              {item.label}
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="text-center text-xs text-muted-foreground/70 mt-6">
-        Live numbers, synced from my ForeFlight logbook - never hand-edited, never stale.
-      </p>
-    </div>
-  );
-}
+import { EditorialPage, EYEBROW, PAD_X } from "@/components/editorial/EditorialPage";
+import { m } from "framer-motion";
+import { CountUp, Reveal, glow, rise, useParallax, useProgressLine } from "@/components/editorial/fx";
+import { Magnetic } from "@/components/motion/Magnetic";
 
 const RATINGS = [
   { icon: Plane, label: "Commercial Pilot, ASEL" },
@@ -44,114 +15,214 @@ const RATINGS = [
   { icon: Radio, label: "Instrument Rating" },
   { icon: Award, label: "Private Pilot, Rotorcraft-Helicopter" },
   { icon: Wrench, label: "Wilderness First Responder (NOLS)" },
+  { icon: GraduationCap, label: "CFI - in progress", outline: true },
 ];
+
+const H2 = "font-editorial font-normal text-[clamp(44px,7vw,110px)] leading-[.92] tracking-[-.035em]";
+
+function LiveStats() {
+  const { stats, isLoading } = useFlightStats();
+  const ledger = [
+    { label: "total hours", value: stats.totalHoursDisplay },
+    { label: "flights", value: stats.totalFlightsDisplay },
+    { label: "airports", value: String(stats.uniqueAirports) },
+    { label: "mountain hours", value: stats.mountainHours },
+  ];
+  return (
+    <section className={`mx-auto max-w-[1300px] pt-[clamp(130px,18vh,190px)] ${PAD_X}`}>
+      <div
+        className={`ed-rise mb-[clamp(16px,2vw,28px)] flex flex-wrap items-center justify-between gap-4 ${EYEBROW}`}
+        style={rise(0.05)}
+      >
+        <span>Aviation</span>
+        <span className="flex items-center gap-2.5">
+          <span className="ed-pulse h-[7px] w-[7px] rounded-full bg-ed-light" />
+          Live from ForeFlight
+        </span>
+      </div>
+      <div className="border-t border-white/[.12]">
+        {ledger.map((st, i) => (
+          <div
+            key={st.label}
+            {...glow}
+            className="ed-rise relative flex flex-wrap items-baseline justify-between gap-[clamp(12px,3vw,40px)] overflow-hidden border-b border-white/[.12] py-[clamp(6px,1vw,14px)]"
+            style={rise(0.15 + i * 0.12, 1.1)}
+          >
+            <div aria-hidden className="ed-glow pointer-events-none absolute inset-0 [--glow-alpha:.18] [--glow-fade:.5s] [--glow-size:600px]" />
+            <CountUp
+              value={isLoading ? "…" : st.value}
+              className="relative font-editorial text-[clamp(72px,13vw,210px)] leading-[.9] tracking-[-.05em] tabular-nums"
+            />
+            <div className="relative pb-[clamp(8px,1.5vw,24px)] font-editorial italic text-[clamp(24px,3.4vw,52px)] leading-none text-ed-light">
+              {st.label}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="ed-rise mt-4 text-[13px] tracking-[.04em] text-ed-muted" style={rise(0.9)}>
+        Live numbers, synced from my ForeFlight logbook - never hand-edited, never stale.
+      </p>
+    </section>
+  );
+}
 
 export default function Aviation() {
   const navigate = useNavigate();
+  const title = useParallax<HTMLHeadingElement>(0.08);
+  const spine = useProgressLine<HTMLOListElement>();
+
   return (
-    <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-20 px-4 sm:px-6">
+    <EditorialPage>
       <SEO
         title="Aviation | Noah Berman"
         description="Commercial pilot, single and multi-engine, instrument rated, rotorcraft-helicopter. The full flying record, synced live from ForeFlight."
       />
-      <div className="container mx-auto max-w-4xl">
-        <m.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+
+      <LiveStats />
+
+      <section className={`flex min-h-[70vh] flex-col items-center justify-center py-[clamp(96px,14vw,180px)] text-center ${PAD_X}`}>
+        <m.h1
+          ref={title.ref}
+          style={{ y: title.y }}
+          className="font-editorial font-normal text-[clamp(72px,15vw,240px)] leading-[.88] tracking-[-.04em]"
         >
-          <BilingualHeading
-            english="The flying"
-            spanish="El vuelo"
-            as="h1"
-            className="mb-3"
-          />
-          <p className="text-muted-foreground text-lg max-w-2xl mb-10">
-            Commercial pilot based at Centennial Airport (KAPA). Fixed-wing and
-            rotorcraft, single and multi-engine, VFR and IFR.
-          </p>
-        </m.div>
-
-        <LiveStats />
-
-        <m.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-14"
+          <Reveal as="span" className="inline-block">The</Reveal>{" "}
+          <Reveal as="span" delay={120} className="inline-block italic text-ed-light">flying</Reveal>
+        </m.h1>
+        <Reveal
+          as="p"
+          delay={220}
+          className="mt-[clamp(18px,3vw,32px)] font-editorial italic text-[clamp(24px,3vw,44px)] leading-none text-ed-muted"
         >
-          <h2 className="text-xl font-semibold text-primary-foreground mb-4">
-            Certificates and ratings
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {RATINGS.map(({ icon: Icon, label }) => (
-              <Badge
-                key={label}
-                variant="secondary"
-                className="font-normal py-1.5 px-3 text-sm"
-              >
-                <Icon className="mr-1.5 h-3.5 w-3.5" />
-                {label}
-              </Badge>
-            ))}
-            <Badge variant="outline" className="font-normal py-1.5 px-3 text-sm border-secondary/50 text-secondary">
-              CFI - in progress
-            </Badge>
-          </div>
-        </m.div>
+          El vuelo
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={300}
+          className="mt-[clamp(28px,4vw,48px)] max-w-[560px] text-[clamp(17px,1.4vw,21px)] font-light leading-[1.55] text-ed-body"
+        >
+          Commercial pilot based at Centennial Airport (KAPA). Fixed-wing and rotorcraft, single and
+          multi-engine, VFR and IFR.
+        </Reveal>
+      </section>
 
-        <h2 className="text-xl font-semibold text-primary-foreground mb-8">
-          The record, in order
-        </h2>
-        <ol className="relative border-l border-border/60 ml-2 space-y-10 mb-14">
-          {aviationTimeline.map((item, i) => (
-            <m.li
-              key={item.id}
-              initial={{ opacity: 0, x: -16 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.45, delay: 0.04 * i }}
-              className="ml-6 relative"
-            >
+      <section className="overflow-hidden pb-[clamp(72px,10vw,140px)] text-center">
+        <Reveal as="p" className={`mb-7 ${EYEBROW}`}>Certificates and ratings</Reveal>
+        <div className="whitespace-nowrap">
+          <div className="ed-marquee inline-flex gap-3.5 pr-3.5">
+            {[...RATINGS, ...RATINGS].map(({ icon: Icon, label, outline }, i) => (
               <span
-                className={`absolute -left-[31px] top-1.5 h-3 w-3 rounded-full border-2 border-background ${
-                  item.status === "in-progress" ? "bg-secondary animate-pulse" : "bg-sky-400"
+                key={i}
+                aria-hidden={i >= RATINGS.length}
+                className={`inline-flex items-center gap-3 rounded-full border px-6 py-3.5 font-editorial text-[clamp(20px,1.8vw,26px)] tracking-[-.01em] ${
+                  outline
+                    ? "border-[rgba(180,140,240,.7)] bg-[rgba(128,51,204,.1)] italic text-ed-light"
+                    : "border-white/[.14] bg-white/[.02] text-ed-ink"
                 }`}
-              />
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                {item.year}
-              </p>
-              <h3 className="text-lg font-semibold text-primary-foreground">
-                {item.title}
-              </h3>
-              {item.subtitleEs && (
-                <p className="text-secondary/90 font-display italic text-sm mb-1">
-                  {item.subtitleEs}
-                </p>
-              )}
-              <p className="text-muted-foreground leading-relaxed max-w-xl">{item.body}</p>
-            </m.li>
-          ))}
-        </ol>
-
-        <div className="rounded-xl border border-border/50 bg-card/50 p-6 sm:p-8 text-center shadow-elegant">
-          <h2 className="text-xl font-semibold text-primary-foreground mb-2">
-            Every route, on the map
-          </h2>
-          <p className="text-muted-foreground mb-5">
-            The homepage map flies through the whole network - pan, zoom, and explore it.
-          </p>
-          <Button
-            onClick={() => {
-              navigate("/");
-              setTimeout(() => scrollToId("follow-my-flight"), 120);
-            }}
-            className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-8"
-          >
-            Open the flight map
-          </Button>
+              >
+                <Icon className="h-[18px] w-[18px] text-ed-light" />
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </section>
+
+      <section className={`mx-auto max-w-[1200px] pb-[clamp(72px,10vw,140px)] ${PAD_X}`}>
+        <Reveal as="h2" className={`mb-[clamp(48px,7vw,96px)] text-center ${H2}`}>
+          The record, <em className="text-ed-light">in order</em>
+        </Reveal>
+        <ol ref={spine.ref} className="relative">
+          <div aria-hidden className="absolute inset-y-0 left-0 w-px -translate-x-1/2 bg-white/[.1] md:left-1/2" />
+          <m.div
+            aria-hidden
+            style={{ scaleY: spine.scaleY }}
+            className="absolute inset-y-0 left-0 ml-[-.5px] w-px origin-top bg-gradient-to-b from-ed-light to-ed-accent md:left-1/2"
+          />
+          {aviationTimeline.map((t, i) => {
+            const left = i % 2 === 0;
+            const inProgress = t.status === "in-progress";
+            return (
+              <li
+                key={t.id}
+                className="relative grid grid-cols-[1px_minmax(0,1fr)] items-start gap-x-[clamp(24px,4vw,64px)] py-[clamp(20px,3vw,40px)] md:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]"
+              >
+                <Reveal
+                  className={`col-start-2 row-start-1 pt-0.5 text-left font-editorial text-[clamp(40px,6vw,96px)] leading-[.9] tracking-[-.04em] ${
+                    left ? "md:col-start-1 md:text-right" : "md:col-start-3 md:text-left"
+                  } ${inProgress ? "text-ed-light" : "text-[rgba(236,230,245,.45)]"}`}
+                >
+                  {t.year}
+                </Reveal>
+                <span
+                  aria-hidden
+                  className={`col-start-1 row-start-1 mt-[clamp(8px,1.5vw,22px)] h-[11px] w-[11px] justify-self-center rounded-full border-2 border-ed-bg md:col-start-2 ${
+                    inProgress
+                      ? "ed-pulse bg-ed-light shadow-[0_0_16px_#b48cf0]"
+                      : "bg-ed-accent shadow-[0_0_16px_#8033cc]"
+                  }`}
+                />
+                <div
+                  className={`col-start-2 row-start-2 min-w-0 text-left md:row-start-1 ${
+                    left ? "md:col-start-3 md:text-left" : "md:col-start-1 md:text-right"
+                  }`}
+                >
+                  <Reveal
+                    as="h3"
+                    delay={60}
+                    className="mb-1.5 text-balance font-editorial font-normal text-[clamp(26px,3.2vw,48px)] leading-none tracking-[-.025em]"
+                  >
+                    {t.title}
+                  </Reveal>
+                  {t.subtitleEs && (
+                    <Reveal
+                      as="p"
+                      delay={110}
+                      className="mb-3.5 font-editorial italic text-[clamp(18px,2vw,28px)] leading-[1.1] text-ed-light"
+                    >
+                      {t.subtitleEs}
+                    </Reveal>
+                  )}
+                  <Reveal
+                    as="p"
+                    delay={160}
+                    className="inline-block max-w-[460px] text-[clamp(15px,1.2vw,17px)] font-light leading-[1.65] text-ed-body"
+                  >
+                    {t.body}
+                  </Reveal>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      <section className={`pb-[clamp(96px,14vw,180px)] text-center ${PAD_X}`}>
+        <Reveal as="h2" className={`mb-4 text-balance ${H2}`}>
+          Every route, <em className="text-ed-light">on the map</em>
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={80}
+          className="mx-auto mb-[clamp(28px,4vw,44px)] max-w-[520px] text-[clamp(16px,1.3vw,19px)] font-light leading-[1.55] text-ed-body"
+        >
+          The homepage map flies through the whole network - pan, zoom, and explore it.
+        </Reveal>
+        <Reveal delay={160}>
+          <Magnetic strength={0.3} className="inline-block">
+            <button
+              type="button"
+              onClick={() => {
+                navigate("/");
+                setTimeout(() => scrollToId("follow-my-flight"), 120);
+              }}
+              className="inline-flex items-center gap-3.5 rounded-full bg-ed-accent px-9 py-5 text-base font-medium tracking-[.01em] text-white shadow-[0_0_80px_rgba(128,51,204,.5)] transition-colors hover:bg-ed-hover"
+            >
+              Open the flight map <ArrowUpRight className="h-[18px] w-[18px]" />
+            </button>
+          </Magnetic>
+        </Reveal>
+      </section>
+    </EditorialPage>
   );
 }
