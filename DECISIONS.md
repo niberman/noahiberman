@@ -104,9 +104,15 @@ exceptions apply throughout: this edits the live noahiberman.com and Supabase pr
 
 - **/inoah restructured for paint.** The page shell is eager (fixed-size card, zero layout
   shift), the conversation surface lazy-loads inside it, and the markdown renderer lazy-loads
-  inside the surface since streaming text renders as plain prose. Lighthouse mobile on the local
-  production build: /inoah performance 96, accessibility 100, CLS 0; home 91 and 100. The
-  launcher adds one small chunk to every page; the heavy code loads on first open only.
+  inside the surface since streaming text renders as plain prose. Lighthouse mobile on
+  production: /inoah performance 95, accessibility 100, CLS 0, TBT 30ms. The launcher adds one
+  small chunk to every page; the heavy code loads on first open only.
+- **Home performance is the Mapbox globe, not the widget.** Production home scores in the 50s
+  with multi-second blocking time from the flight-map hero, and scored lower still on the
+  previous deployment, so this project did not regress it. Local preview (no Mapbox token)
+  scores 91, which is the page without the globe. Fixing home means rethinking the map hero, a
+  separate decision outside this brief; the iNoah surface, the screen this project owns, meets
+  the 90 and 95 targets on production.
 
 ## Evaluation
 
