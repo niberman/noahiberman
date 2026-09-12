@@ -8,9 +8,13 @@ import "lenis/dist/lenis.css";
 import { setLenis, getLenis } from "@/lib/lenis-ref";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { InoahWidget } from "@/components/inoah/InoahWidget";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
+// Eager: the /inoah shell is tiny (the heavy surface lazy-loads inside it),
+// and an eager shell paints a fixed-size card instead of shifting the footer.
+import Inoah from "./pages/Inoah";
 import { SectionRedirect } from "@/components/SectionRedirect";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -20,7 +24,6 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const OpenClaw = lazy(() => import("./pages/OpenClaw"));
 const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const Inoah = lazy(() => import("./pages/Inoah"));
 const Logo = lazy(() => import("./pages/Logo"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -119,6 +122,7 @@ const App = () => {
         <BrowserRouter>
           <ScrollResetOnNavigate />
           <SecretDashboardAccess />
+          <InoahWidget />
           <div className="min-h-screen flex flex-col relative">
             <SiteChrome slot="nav" />
             <div className="flex-1 relative z-10">
