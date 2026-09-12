@@ -11,11 +11,14 @@ import { componentTagger } from "lovable-tagger";
 // never linked from index.html, so it's untouched.
 const criticalCss = (): Plugin => ({
   name: "critical-css",
-  apply: "build",
+  apply: (config, env) => env.command === "build" && !config.build?.ssr,
   async closeBundle() {
     const { default: Beasties } = await import("beasties");
     const file = path.resolve(__dirname, "dist/index.html");
     const html = await fs.readFile(file, "utf8");
+    // Pristine copy for scripts/prerender.mjs: each prerendered route needs
+    // the un-inlined stylesheet link so it can run its own critical pass.
+    await fs.writeFile(path.resolve(__dirname, "dist/.prerender-template.html"), html);
     const beasties = new Beasties({
       path: path.resolve(__dirname, "dist"),
       preload: "media",
@@ -26,7 +29,7 @@ const criticalCss = (): Plugin => ({
 });
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, isSsrBuild }) => ({
   server: {
     host: "localhost",
     port: Number(process.env.PORT) || 8080,
@@ -44,7 +47,11 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1700,
     rollupOptions: {
       output: {
-        manualChunks(id) {
+        // The SSR bundle (scripts/prerender.mjs) is a single inlined entry;
+        // manualChunks is incompatible with it and unnecessary there.
+        manualChunks: isSsrBuild
+          ? undefined
+          : function manualChunks(id) {
           // Rollup's virtual commonjs interop helper is imported from nearly
           // everywhere; left unassigned it can land inside a lazy chunk and
           // drag it into the eager preload graph.

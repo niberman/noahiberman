@@ -1,0 +1,36 @@
+name: Demo uptime check
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # daily, 07:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Ping demo URLs
+        run: node scripts/check-demos.mjs
+      - name: Commit status if changed
+        run: |
+          if git diff --quiet -- public/demo-status.json; then
+            echo "No status change"
+            exit 0
+          fi
+          # Only the status map matters; a timestamp-only change is not a change.
+          if git diff -- public/demo-status.json | grep '^[+-]' | grep -v '^[+-][+-]' | grep -vq 'checkedAt'; then
+            git config user.name "demo-uptime-bot"
+            git config user.email "actions@github.com"
+            git add public/demo-status.json
+            git commit -m "chore: daily demo uptime status"
+            git push
+          else
+            echo "Only the timestamp moved; skipping commit"
+          fi

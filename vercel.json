@@ -71,6 +71,33 @@
       ]
     },
     {
+      "source": "/projects/(.*)\\.(mp4|webm|png|jpg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=31536000"
+        }
+      ]
+    },
+    {
+      "source": "/preview/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/demo-status.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=3600"
+        }
+      ]
+    },
+    {
       "source": "/sitemap.xml",
       "headers": [
         {

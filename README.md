@@ -31,6 +31,18 @@ Frontend (React/Vite)        Backend (FastAPI/Python)       Edge Functions (Deno
 
 ## Key Features
 
+### /projects, the Live Demo Gallery
+
+The finished home for the public project demos. A grid of nine cards, each with a six second silent loop that plays on hover (or while in view on touch devices), a status badge, a daily uptime dot, and a Demo button that opens the deployed demo in a new tab. Each card opens `/projects/[slug]` with the loop full width, a plain description, and the demo, repository, and case study buttons that apply.
+
+**How it works**
+
+- `src/data/projects.json` is the single source of truth: slug, name, one line description, status, demo URL, repo URL, write up URL, loop paths, poster, accent color. Edit that file to add or update a project; everything else derives from it.
+- `npm run build` runs three steps: `scripts/check-repos.mjs` (HEAD checks every repo URL and drops the button for private or missing repos), `vite build`, then `scripts/prerender.mjs`, which writes a real HTML file per route with its own title, description, Open Graph image, and JSON-LD. `/projects` and every `/projects/[slug]` are fully rendered at build time via `src/entry-server.tsx`, so crawlers and AI agents see the complete content without JavaScript.
+- **Daily uptime check:** `.github/workflows/demo-uptime.yml` runs `scripts/check-demos.mjs` every day at 07:00 UTC, pings every demo URL, and rewrites `public/demo-status.json` (committing only when a status actually changes, which triggers a redeploy). The page reads that file and renders a live or offline dot; an offline demo loses its button instead of serving visitors a dead link.
+- Run it locally: `npm ci && npm run dev`, or `npm run build && node scripts/serve-dist.mjs` to serve the prerendered output the way Vercel does. `node scripts/qa-interactions.mjs` runs the interaction checks (hover playback, keyboard reach, reduced motion, mobile autoplay, 375px overflow).
+- Media pipeline (local tooling, outputs committed): `scripts/gen-media.mjs` renders the designed posters and Open Graph images, `scripts/make-loop.mjs` captures six second loops from live demos, and `/preview` holds the page's own preview clip.
+
 ### Interactive 3D Flight Map
 Mapbox GL globe on the homepage renders every flight from the logbook as arc routes. Data is sourced from Supabase (synced from ForeFlight) with a static fallback. Supports live aircraft position tracking when the pilot toggles "Currently Flying" in the dashboard. Hub routes fan out from KAPA with separate handling for Puerto Rico connecting segments.
 

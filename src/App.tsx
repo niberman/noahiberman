@@ -11,6 +11,12 @@ import { Footer } from "@/components/Footer";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Home from "./pages/Home";
+// Eager, not lazy: /projects and /projects/[slug] are prerendered to static
+// HTML, and an eager import guarantees React's first commit reproduces that
+// markup instead of blanking it behind a Suspense fallback while the chunk
+// loads. Both pages are data-light so the cost to the eager bundle is small.
+import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import { SectionRedirect } from "@/components/SectionRedirect";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -52,12 +58,14 @@ const Toasters = lazy(() =>
 
 const queryClient = new QueryClient();
 
-// Work, Aviation, and Now render their own nav and footer (EditorialPage), so
-// the global bar and footer step aside on exactly those routes.
-const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now"]);
+// Work, Aviation, Now, and Projects render their own nav and footer
+// (EditorialPage), so the global bar and footer step aside on those routes.
+const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now", "/projects"]);
+const isEditorialRoute = (pathname: string) =>
+  EDITORIAL_ROUTES.has(pathname) || pathname.startsWith("/projects/");
 function SiteChrome({ slot }: { slot: "nav" | "footer" }) {
   const { pathname } = useLocation();
-  if (EDITORIAL_ROUTES.has(pathname)) return null;
+  if (isEditorialRoute(pathname)) return null;
   return slot === "nav" ? <Navigation /> : <Footer />;
 }
 
@@ -167,6 +175,8 @@ const App = () => {
                   element={<SchedulingAuthCallback />}
                 />
                 <Route path="/aviation" element={<Aviation />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:slug" element={<ProjectDetail />} />
                 <Route path="/work" element={<CaseStudies />} />
                 <Route path="/work/:id" element={<CaseStudyDetail />} />
                 <Route path="/now" element={<Now />} />

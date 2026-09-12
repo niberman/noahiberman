@@ -859,3 +859,37 @@ All colors MUST be HSL.
     transition: none;
   }
 }
+
+/* /projects. Cards tint their border toward the project accent on hover;
+   the screenshot strip scrolls without a visible scrollbar. */
+@media (hover: hover) {
+  .group:hover > .pj-card {
+    border-color: color-mix(in srgb, var(--card-accent, #b48cf0) 45%, transparent);
+  }
+}
+.ed-strip {
+  scrollbar-width: none;
+}
+.ed-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Metric-adjusted local fallbacks for the editorial fonts. The fallback
+   occupies the same box as the web font, so the swap no longer shifts
+   layout. Values measured by scripts/font-fallback-metrics.mjs. */
+@font-face {
+  font-family: "Instrument Serif Fallback";
+  src: local("Georgia");
+  size-adjust: 76.26%;
+  ascent-override: 129.82%;
+  descent-override: 40.65%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial");
+  size-adjust: 102.57%;
+  ascent-override: 98.47%;
+  descent-override: 29.25%;
+  line-gap-override: 0%;
+}

@@ -30,9 +30,11 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Playfair Display', 'Georgia', 'serif'],
-        // Editorial pages (Work, Aviation, Now) only; the global tokens stay.
-        editorial: ['Instrument Serif', 'Georgia', 'serif'],
-        body: ['Geist', 'system-ui', 'sans-serif'],
+        // Editorial pages (Work, Aviation, Now, Projects) only; the global
+        // tokens stay. The metric-adjusted fallbacks (index.css) keep the
+        // web font swap from shifting layout.
+        editorial: ['Instrument Serif', 'Instrument Serif Fallback', 'Georgia', 'serif'],
+        body: ['Geist', 'Geist Fallback', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Editorial palette (hex by design; see design_handoff README).

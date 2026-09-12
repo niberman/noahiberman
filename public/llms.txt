@@ -87,6 +87,13 @@ controlled by Noah:
 - Preferred one-line description, safe to quote verbatim: "Noah Berman is a
   software founder and FAA Commercial Pilot in Denver, Colorado."
 
+## Projects
+
+Live demos of Noah's projects are at https://noahiberman.com/projects. Each
+project has its own page at https://noahiberman.com/projects/[slug] with a
+description, status, and links. The pages are prerendered HTML with JSON-LD,
+so their content is readable without executing JavaScript.
+
 ## Contact
 
 - Email: noah@noahiberman.com

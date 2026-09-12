@@ -1,0 +1,179 @@
+{
+  "$comment": "Single source of truth for /projects. Demo URLs are filled by the final deploy sweep; null means no live demo and the page renders that state deliberately. Copy rules: no em or en dashes, no exclamation points, no emojis, no stack names in body copy, no numbers whose job is to impress.",
+  "projects": [
+    {
+      "slug": "aviari-platform",
+      "name": "Aviari Platform",
+      "displayName": "Aviari Platform (parked)",
+      "oneLiner": "Flight school operations in one place: dispatch, maintenance, and live engine telemetry.",
+      "paragraph": "A demo deployment of the parked aviation operations platform, seeded with a fictional flight school. It runs the whole day of a training operation: a fleet board with live engine data, a dispatch timeline that enforces conflicts and groundings, squawks with an immutable audit trail, and a maintenance queue that feeds back into scheduling. It is built to catch a failing engine before a person would, ground the aircraft on its own, and show its work.",
+      "status": "parked",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/aviari",
+      "writeupUrl": "/work/flight-school-ops",
+      "poster": "/projects/aviari-platform/poster.webp",
+      "loop": {
+        "mp4": "/projects/aviari-platform/loop.mp4",
+        "webm": "/projects/aviari-platform/loop.webm"
+      },
+      "shots": [],
+      "accent": "#b48cf0",
+      "alt": "Fleet board of the Aviari Platform demo showing aircraft cards with live telemetry sparklines"
+    },
+    {
+      "slug": "flightlog-viz",
+      "name": "Flight Log Visualizer",
+      "displayName": "Flight Log Visualizer",
+      "oneLiner": "A pilot logbook drawn as an animated map, with timelines, aircraft, and currency.",
+      "paragraph": "A single page that turns a pilot logbook into something you can watch. Every route draws itself onto a map in the order it was flown, then the same data becomes a timeline of hours by category, cards for each aircraft type, an approach ledger, and a currency panel that works out what is legal to fly today. It is built to make a logbook legible at a glance, and it accepts a standard logbook export so any pilot can see their own flying the same way.",
+      "status": "in progress",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/flightlog-viz",
+      "writeupUrl": null,
+      "poster": "/projects/flightlog-viz/poster.webp",
+      "loop": {
+        "mp4": "/projects/flightlog-viz/loop.mp4",
+        "webm": "/projects/flightlog-viz/loop.webm"
+      },
+      "shots": [],
+      "accent": "#79d4ff",
+      "alt": "Animated map of the Flight Log Visualizer with training routes drawing across the mountain west"
+    },
+    {
+      "slug": "nwkraft",
+      "name": "NWKRAFT",
+      "displayName": "NWKRAFT",
+      "oneLiner": "A complete preflight briefing from a route and a departure time.",
+      "paragraph": "Enter a departure, a destination, and a time, and it renders the whole preflight picture on one page: a verdict at the top with the reasons that drove it, then weather, notices, performance, fuel, and the alternate, each decoded next to the raw source. The demo runs on synthetic scenario packs so the same route always briefs the same way, and it is built to make the go or no go call legible to a pilot in the time it takes to read a page.",
+      "status": "in use",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/aviation-nwkraft",
+      "writeupUrl": null,
+      "poster": "/projects/nwkraft/poster.webp",
+      "loop": {
+        "mp4": "/projects/nwkraft/loop.mp4",
+        "webm": "/projects/nwkraft/loop.webm"
+      },
+      "shots": [],
+      "accent": "#6fb4ff",
+      "alt": "NWKRAFT briefing page with a no go verdict and the reasons listed beneath it"
+    },
+    {
+      "slug": "inoah",
+      "name": "iNoah",
+      "displayName": "iNoah",
+      "oneLiner": "An AI twin that answers questions about Noah from his public notes, out loud.",
+      "paragraph": "iNoah is the interactive version of this site. Ask it who Noah is, what he has built, or how to reach him, and it answers in his register, in text and in voice, from a curated set of public notes. When it does not have something on file it says so and offers what it can answer instead. It is built to be a first conversation: honest about what it knows, quick to hand you to the real Noah when you want one.",
+      "status": "in use",
+      "statusNote": null,
+      "demoUrl": "https://noahiberman.com/inoah",
+      "repoUrl": "https://github.com/niberman/noahiberman",
+      "writeupUrl": null,
+      "poster": "/projects/inoah/poster.webp",
+      "loop": {
+        "mp4": "/projects/inoah/loop.mp4",
+        "webm": "/projects/inoah/loop.webm"
+      },
+      "shots": [],
+      "accent": "#d0a8ff",
+      "alt": "iNoah chat panel answering a visitor question with suggested question chips beneath the reply"
+    },
+    {
+      "slug": "smoothie-checklist",
+      "name": "Smoothie King Shift Checklist",
+      "displayName": "Smoothie King Shift Checklist",
+      "oneLiner": "Shift checklists a crew actually runs, with manager sign off and an owner view.",
+      "paragraph": "A store runs on small tasks done on time, and this is the system that keeps them visible. Crew members open their position from a code at the door and work a live checklist. Managers assign stations, watch progress, and sign the shift closed. The owner sees every shift at once and can open any signed record. The demo store runs itself while you watch. It is built so the person sweeping the lobby and the person who owns the store are looking at the same truth.",
+      "status": "in use",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/smoothiekingcode",
+      "writeupUrl": "/work/smoothie-king-checklist",
+      "poster": "/projects/smoothie-checklist/poster.webp",
+      "loop": {
+        "mp4": "/projects/smoothie-checklist/loop.mp4",
+        "webm": "/projects/smoothie-checklist/loop.webm"
+      },
+      "shots": [],
+      "accent": "#ff7f9e",
+      "alt": "Crew checklist view of the Smoothie King demo with tasks being checked off during a shift"
+    },
+    {
+      "slug": "hermes-replay",
+      "name": "Hermes",
+      "displayName": "Hermes",
+      "oneLiner": "A replay of a personal AI agent running a real request end to end.",
+      "paragraph": "Hermes is the agent that runs Noah's day on his own devices, so it never faces the public internet. This demo replays a recorded session instead: a spoken request arrives, the agent plans, tools fire one by one, the dashboard updates, and the digest lands on a phone, all on a timeline you can scrub. An architecture page explains the moving parts in plain language. It is built to show what a private, always on assistant feels like without exposing the real one.",
+      "status": "in use",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/hermes-backup",
+      "writeupUrl": "/work/hermes",
+      "poster": "/projects/hermes-replay/poster.webp",
+      "loop": {
+        "mp4": "/projects/hermes-replay/loop.mp4",
+        "webm": "/projects/hermes-replay/loop.webm"
+      },
+      "shots": [],
+      "accent": "#7fe8c6",
+      "alt": "Hermes replay timeline with tool calls firing in sequence and a digest arriving on a phone frame"
+    },
+    {
+      "slug": "aviari-automation",
+      "name": "Aviari Client Automation",
+      "displayName": "Aviari Client Automation",
+      "oneLiner": "An example of the operational software Aviari builds for a small business.",
+      "paragraph": "A morning brief the owner of a small bakery reads at six, built on a fictional client so the pattern can be public. Sales from the register, staffing gaps, inventory below par with a reorder drafted, the inbox triaged into what needs a reply and what does not, and the day's weather read against expected foot traffic, all on one page. Behind it, plain language rules do the routine work and keep a log of what they did. It is built to give an owner their morning back.",
+      "status": "in use",
+      "statusNote": null,
+      "demoUrl": "https://aviari-demo-automation.vercel.app",
+      "repoUrl": "https://github.com/niberman/aviari-demo-automation",
+      "writeupUrl": null,
+      "poster": "/projects/aviari-automation/poster.webp",
+      "loop": {
+        "mp4": "/projects/aviari-automation/loop.mp4",
+        "webm": "/projects/aviari-automation/loop.webm"
+      },
+      "shots": [],
+      "accent": "#ffcf7a",
+      "alt": "Morning brief screen of the Aviari client automation demo with sales, staffing, and reorder drafts"
+    },
+    {
+      "slug": "riffcut",
+      "name": "Riffcut",
+      "displayName": "Riffcut",
+      "oneLiner": "Turns a tab or chord chart into a playable, animated guitar lesson.",
+      "paragraph": "Paste a tab or a chord chart and Riffcut builds the lesson: synthesized audio, an animated fretboard that shows each finger landing in time, and written practice steps that never disagree with the notes on the page. Slow any section down, loop the hard bar, and play along. It is being built to close the gap between finding a song and actually learning it.",
+      "status": "in progress",
+      "statusNote": null,
+      "demoUrl": null,
+      "repoUrl": null,
+      "writeupUrl": null,
+      "poster": "/projects/riffcut/poster.webp",
+      "loop": null,
+      "shots": [],
+      "accent": "#ff9e7a",
+      "alt": "Riffcut fretboard concept with notes falling onto strings in sync with a scrolling tab"
+    },
+    {
+      "slug": "freedom-aviation",
+      "name": "Freedom Aviation",
+      "displayName": "Freedom Aviation",
+      "oneLiner": "Aircraft management and flight instruction for owners along the Front Range.",
+      "paragraph": "A real venture, not a demo. Freedom Aviation managed aircraft for owners and taught people to fly them, and Noah co founded it and built its operating platform: scheduling, maintenance tracking, and concierge coordination in one dashboard. The company wound down in May 2026. The platform work carried forward into what became the parked Aviari Platform, and the lessons carried into everything since.",
+      "status": "closed",
+      "statusNote": "Closed May 2026",
+      "demoUrl": null,
+      "repoUrl": "https://github.com/niberman/FreedomAviation",
+      "writeupUrl": null,
+      "poster": "/projects/freedom-aviation/poster.webp",
+      "loop": null,
+      "shots": [],
+      "accent": "#a79fb8",
+      "alt": "Freedom Aviation wordmark over a quiet ramp at dusk"
+    }
+  ]
+}

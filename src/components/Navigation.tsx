@@ -17,6 +17,7 @@ export type NavLink = {
 export const NAV_LINKS: NavLink[] = [
   { path: "/", label: "Home", id: "home", type: "section" },
   { path: "/work", label: "Work", id: "work", type: "page" },
+  { path: "/projects", label: "Projects", id: "projects", type: "page" },
   { path: "/aviation", label: "Aviation", id: "aviation", type: "page" },
   { path: "/now", label: "Now", id: "now", type: "page" },
   { path: "/blog", label: "Blog", id: "blog", type: "page" },
@@ -38,7 +39,10 @@ export function useNavLinks() {
   const isActive = ({ path, id, type }: NavLink) => {
     if (type === "external") return false;
     if (type === "page") {
-      return location.pathname === path;
+      return (
+        location.pathname === path ||
+        (path !== "/" && location.pathname.startsWith(`${path}/`))
+      );
     }
     return (
       location.hash === `#${id}` ||

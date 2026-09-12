@@ -45,3 +45,4 @@ docs/public-profile.md
 # Flyover: raw ForeFlight track exports and DEM tile cache stay local
 data/tracklogs/
 scripts/flyover/.cache/
+C:*
