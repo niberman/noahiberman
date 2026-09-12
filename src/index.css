@@ -859,3 +859,113 @@ All colors MUST be HSL.
     transition: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   iNoah widget. One visual system, scoped: #0B0F14 ground, #131A22 surface,
+   #4FB3FF accent, Inter UI, JetBrains Mono data, 8px grid, 12px radius,
+   180ms state motion, 400ms panel motion. --in-surface-2 is the derived
+   elevation tone between surface and text. */
+.inoah-surface {
+  --in-bg: #0B0F14;
+  --in-surface: #131A22;
+  --in-surface-2: #1B2531;
+  --in-text: #E6EDF3;
+  --in-muted: #8B98A5;
+  --in-accent: #4FB3FF;
+  --in-warning: #FFB020;
+  --in-danger: #FF4D4F;
+  --in-success: #2ECC71;
+}
+
+.inoah-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  color: var(--in-muted);
+  transition: color 180ms ease-out, background-color 180ms ease-out;
+}
+.inoah-icon-btn:hover {
+  color: var(--in-text);
+  background-color: rgba(230, 237, 243, 0.06);
+}
+.inoah-icon-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--in-accent);
+}
+
+/* Streaming caret */
+@keyframes inoah-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.inoah-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--in-accent);
+  animation: inoah-blink 1s steps(1) infinite;
+}
+
+/* Empty-state orb: a quiet breathing mark, not a mascot. */
+@keyframes inoah-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.inoah-orb {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 32% 30%, rgba(79, 179, 255, 0.9), rgba(79, 179, 255, 0.25) 55%, transparent 75%),
+    radial-gradient(circle at 68% 72%, rgba(46, 204, 113, 0.35), transparent 60%),
+    #131A22;
+  box-shadow:
+    0 0 40px -8px rgba(79, 179, 255, 0.55),
+    inset 0 0 18px rgba(79, 179, 255, 0.25);
+  animation: inoah-breathe 4.5s ease-in-out infinite;
+}
+
+/* Chips fade up one by one on the empty state. */
+@keyframes inoah-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.inoah-chip {
+  animation: inoah-rise 400ms ease-out both;
+}
+
+/* Launcher glyph: tiny equalizer at rest. */
+@keyframes inoah-launcher {
+  0%, 100% { transform: scaleY(0.55); }
+  50% { transform: scaleY(1); }
+}
+.inoah-launcher-bar {
+  transform-origin: bottom;
+  animation: inoah-launcher 1.6s ease-in-out infinite;
+}
+
+/* A whisper of accent light at the top of the transcript. */
+.inoah-glow {
+  background:
+    radial-gradient(120% 60px at 50% 0%, rgba(79, 179, 255, 0.07), transparent 70%),
+    var(--in-bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inoah-caret,
+  .inoah-orb,
+  .inoah-chip,
+  .inoah-launcher-bar {
+    animation: none;
+  }
+  .inoah-chip {
+    opacity: 1;
+    transform: none;
+  }
+}

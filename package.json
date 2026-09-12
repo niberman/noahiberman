@@ -8,6 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "eval:inoah": "node scripts/inoah-eval.mjs",
     "test:backend": "cd backend && pytest -q",
     "env:from-supabase": "bash scripts/print-frontend-env-from-supabase.sh",
     "preview": "vite preview",

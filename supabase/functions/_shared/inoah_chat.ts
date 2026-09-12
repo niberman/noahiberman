@@ -31,6 +31,7 @@ export interface ChatRequest {
   include_context: boolean;
   max_tokens: number;
   debug_mode: boolean;
+  stream: boolean;
   turnstileToken?: string;
 }
 
@@ -39,6 +40,7 @@ export interface ChatRequestPayload {
   include_context?: boolean;
   max_tokens?: unknown;
   debug_mode?: boolean;
+  stream?: boolean;
   turnstileToken?: string;
 }
 
@@ -48,6 +50,7 @@ export function parseChatRequest(payload: ChatRequestPayload | null): ChatReques
     include_context: payload?.include_context ?? true,
     max_tokens: Math.min(Number(payload?.max_tokens) || DEFAULT_MAX_TOKENS, MAX_TOKENS_CAP),
     debug_mode: payload?.debug_mode ?? false,
+    stream: payload?.stream === true,
     turnstileToken: payload?.turnstileToken,
   };
 }
@@ -162,6 +165,41 @@ export interface ChatCompletionResult {
 
 type ChatCompletionParams = OpenAI.Chat.ChatCompletionCreateParamsNonStreaming;
 
+function openrouterClient(openrouterKey: string, appTitle: string): OpenAI {
+  return new OpenAI({
+    apiKey: openrouterKey,
+    baseURL: OPENROUTER_BASE_URL,
+    defaultHeaders: { "HTTP-Referer": "https://noahiberman.com", "X-Title": appTitle },
+  });
+}
+
+/**
+ * Streaming variant of createChatCompletion: yields content deltas as they
+ * arrive from OpenRouter. Reasoning deltas are a separate field on the chunk
+ * and are never yielded, so the stream carries answer text only.
+ */
+export async function* streamChatCompletion(opts: {
+  openrouterKey: string;
+  appTitle: string;
+  messages: { role: string; content: string }[];
+  maxTokens: number;
+}): AsyncGenerator<string> {
+  const client = openrouterClient(opts.openrouterKey, opts.appTitle);
+  const stream = await client.chat.completions.create({
+    model: CHAT_MODEL,
+    messages: opts.messages,
+    max_tokens: opts.maxTokens,
+    reasoning: { effort: "low" },
+    stream: true,
+    // deno-lint-ignore no-explicit-any
+  } as any) as unknown as AsyncIterable<{ choices: { delta?: { content?: string } }[] }>;
+  for await (const chunk of stream) {
+    const delta = chunk.choices?.[0]?.delta?.content;
+    if (delta) yield delta;
+  }
+  console.log(`${opts.appTitle} streamed via openrouter (${CHAT_MODEL})`);
+}
+
 /**
  * One chat completion, on OpenRouter. There is no second provider: a single
  * route means a single bill and one place to change models, at the cost of
@@ -177,12 +215,7 @@ export async function createChatCompletion(opts: {
   messages: { role: string; content: string }[];
   maxTokens: number;
 }): Promise<ChatCompletionResult> {
-  const client = new OpenAI({
-    apiKey: opts.openrouterKey,
-    baseURL: OPENROUTER_BASE_URL,
-    // OpenRouter attributes usage to the app in its dashboard.
-    defaultHeaders: { "HTTP-Referer": "https://noahiberman.com", "X-Title": opts.appTitle },
-  });
+  const client = openrouterClient(opts.openrouterKey, opts.appTitle);
 
   const completion = await client.chat.completions.create({
     model: CHAT_MODEL,

@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "node scripts/inoah-eval.mjs && npm run build",
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.py": {

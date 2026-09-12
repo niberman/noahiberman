@@ -33,6 +33,7 @@ export default {
         // Editorial pages (Work, Aviation, Now) only; the global tokens stay.
         editorial: ['Instrument Serif', 'Georgia', 'serif'],
         body: ['Geist', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       colors: {
         // Editorial palette (hex by design; see design_handoff README).
