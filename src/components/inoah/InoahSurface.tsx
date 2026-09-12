@@ -91,11 +91,18 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
   useEffect(() => {
     const timer = window.setTimeout(() => setReady(true), 700);
     if (supabase) {
-      void supabase.from("inoah_events").insert({
-        type: "disclosure_shown",
-        session_id: sessionId(),
-        payload: { variant, muted: voice.muted, path: window.location.pathname },
-      });
+      // The builder is a lazy thenable: without .then() the request never
+      // fires, which is exactly the bug fire-and-forget `void` would hide.
+      supabase
+        .from("inoah_events")
+        .insert({
+          type: "disclosure_shown",
+          session_id: sessionId(),
+          payload: { variant, muted: voice.muted, path: window.location.pathname },
+        })
+        .then(({ error: logError }) => {
+          if (logError) console.warn("disclosure log failed:", logError.message);
+        });
     }
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
