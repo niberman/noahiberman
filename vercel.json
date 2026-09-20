@@ -29,6 +29,22 @@
       "destination": "/api/index"
     },
     {
+      "source": "/hermes",
+      "destination": "/hermes/index.html"
+    },
+    {
+      "source": "/hermes/",
+      "destination": "/hermes/index.html"
+    },
+    {
+      "source": "/hermes/privacy",
+      "destination": "/hermes/privacy/index.html"
+    },
+    {
+      "source": "/hermes/privacy/",
+      "destination": "/hermes/privacy/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
@@ -99,4 +115,3 @@
   ],
   "trailingSlash": false
 }
-
