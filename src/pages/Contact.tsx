@@ -81,7 +81,7 @@ export default function Contact({ showSEO = true }: PageSectionProps) {
                   <h2 className="text-xl sm:text-2xl font-display text-primary-foreground mb-2">
                     Let's Build Together
                   </h2>
-                  <p className="text-base sm:text-lg font-display italic text-secondary mb-3 sm:mb-4">
+                  <p className="text-base sm:text-lg font-display italic text-ed-light mb-3 sm:mb-4">
                     Construyamos Juntos
                   </p>
                   <p className="text-primary-foreground/95 text-sm sm:text-base leading-relaxed">
