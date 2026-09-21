@@ -53,7 +53,7 @@ function BlogPostCard({ post, index }: BlogPostCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="text-xl sm:text-2xl font-display font-bold text-primary-foreground mb-2">
+          <h3 className="text-xl sm:text-2xl font-display font-normal text-primary-foreground mb-2">
             <Link
               to={`/blog/${post.slug}`}
               className="hover:text-secondary transition-colors"
@@ -171,7 +171,6 @@ export function BlogSectionContent() {
     </div>
   );
 }
-
 
 
 
