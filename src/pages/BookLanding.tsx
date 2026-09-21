@@ -32,7 +32,7 @@ export default function BookLanding() {
             <div className="inline-flex items-center justify-center rounded-full bg-secondary/15 p-3 mb-4">
               <Calendar className="h-8 w-8 text-secondary" />
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.03em] text-white mb-2">
               Book a meeting
             </h1>
             <p className="text-white/65 text-sm sm:text-base max-w-lg mx-auto">
