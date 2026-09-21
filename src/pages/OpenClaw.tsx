@@ -36,7 +36,7 @@ const OpenClaw = () => {
             </Button>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
               <div>
-                <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 sm:mb-3">
+                <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[-0.03em] text-white mb-2 sm:mb-3">
                   Hermes
                 </h1>
                 <p className="text-white/80 text-base sm:text-lg">
