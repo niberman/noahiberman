@@ -246,7 +246,7 @@ export default function Home() {
               {/* Word cascade animates transform/filter only; opacity stays 1
                   on the LCP element so the paint is never delayed. Markup is
                   mirrored in the index.html shell; keep them identical. */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-normal mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                 {BrandWords.map((word, i) => (
                   <span key={word}>
                     <span
@@ -264,7 +264,7 @@ export default function Home() {
                 <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                   The sky is not the limit
                 </p>
-                <p className="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">
+                <p className="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">
                   El cielo no es el límite
                 </p>
               </div>
