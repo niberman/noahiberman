@@ -53,7 +53,7 @@ export function LaunchScreen({
         <p className="mb-3 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.34em] text-secondary sm:text-xs">
           Flyover systems
         </p>
-        <h2 className="mb-3 font-display text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+        <h2 className="mb-3 font-display text-4xl font-normal tracking-tight text-balance sm:text-5xl">
           Cleared for launch
         </h2>
         <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white/65 sm:text-base">

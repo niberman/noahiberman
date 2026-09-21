@@ -35,10 +35,10 @@ export default function Blog() {
             transition={{ duration: 0.5 }}
             className="mb-12 sm:mb-16"
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-3">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-normal text-primary-foreground mb-3">
               Blog
             </h1>
-            <p className="text-xl sm:text-2xl font-display italic text-secondary mb-6">
+            <p className="text-xl sm:text-2xl font-display italic text-ed-light mb-6">
               Publicaciones
             </p>
             <p className="text-lg text-foreground/70 leading-relaxed max-w-2xl">

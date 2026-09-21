@@ -45,13 +45,13 @@ export default function Es() {
           transition={{ duration: 0.5 }}
         >
           <p className="text-lg sm:text-xl font-display text-secondary mb-2">Noah Berman</p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-bold mb-4 text-primary-foreground leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-normal mb-4 text-primary-foreground leading-tight">
             Fundador, Piloto, Ingeniero
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/95 font-light mb-2">
             El cielo no es el límite
           </p>
-          <p className="text-lg text-secondary font-display italic mb-10">
+          <p className="text-lg text-ed-light font-display italic mb-10">
             The sky is not the limit
           </p>
         </m.div>
@@ -63,7 +63,7 @@ export default function Es() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-primary-foreground mb-4">Quién soy</h2>
+          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">Quién soy</h2>
           <p className="text-foreground/90 leading-relaxed mb-4">
             Soy fundador de Aviari LLC y piloto comercial en Denver, Colorado.
             Construyo software de producción por mi cuenta y trabajo en dos
@@ -86,7 +86,7 @@ export default function Es() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-primary-foreground mb-4">El vuelo</h2>
+          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">El vuelo</h2>
           <p className="text-foreground/90 leading-relaxed mb-4">
             Vuelo desde el Aeropuerto Centennial (KAPA). Empecé a volar en
             2021 y no he parado: avión monomotor y multimotor, vuelo por
@@ -110,7 +110,7 @@ export default function Es() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h2 className="text-2xl font-bold text-primary-foreground mb-4">
+          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">
             Lo que he construido
           </h2>
           <div className="space-y-4">
@@ -140,7 +140,7 @@ export default function Es() {
           transition={{ duration: 0.5 }}
           className="rounded-xl border border-border/50 bg-card/50 p-6 sm:p-8 text-center shadow-elegant"
         >
-          <h2 className="text-xl font-semibold text-primary-foreground mb-2">Contacto</h2>
+          <h2 className="text-2xl font-display font-normal text-primary-foreground mb-2">Contacto</h2>
           <p className="text-muted-foreground mb-5">
             Trabajo en inglés y en español. Escríbeme en el idioma que prefieras.
           </p>

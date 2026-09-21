@@ -1,3 +1,31 @@
+# Decisions, site-wide design-system unification, 2026-09-21
+
+Noah asked (WhatsApp, 2026-09-21) to make the fonts and design system uniform across the
+site, using the /work and /now pages as the base. Those pages came from the cinematic
+editorial redesign (PR #48), so the editorial system became the global one.
+
+- **Fonts.** The global tokens now carry the editorial families: `font-sans` = Geist,
+  `font-display` = Instrument Serif (aliases `font-body`/`font-editorial` unchanged).
+  Inter and Playfair Display are gone from the Google Fonts link. Instrument Serif ships
+  at 400 only, so every `font-display font-bold` became `font-normal` (bold was faux
+  anyway), with the editorial tight tracking on the big headings.
+- **Palette.** `--background` #040208, `--foreground` #ece6f5, `--muted-foreground`
+  #a79fb8, borders and the card/hero/dusk gradients re-derived from the editorial hex
+  values in `design_handoff_work_aviation_now/README.md`. The body ground is the
+  editorial radial page gradient, fixed.
+- **Chrome.** The editorial nav and footer (previously Work/Aviation/Now only) are now
+  the single site-wide nav and footer, rendered by App on every route. The old global
+  Navigation/Footer components are no longer mounted; Navigation.tsx stays because it
+  owns NAV_LINKS/useNavLinks. The hide-on-map-interaction contract
+  (`flightMapNavVisibilityChange`) was ported to the editorial nav.
+- **Ambient.** The editorial orbs render on every route except `/` (the flight map owns
+  that backdrop) and the three editorial routes (they mount their own ambient layer).
+- **Pages.** 404 rewritten onto the system (was scaffold light-gray/blue). Es section
+  heads and case-study headings set in the display face. Italic Spanish subtitles use
+  the editorial light accent (#b48cf0). Copy untouched everywhere.
+- **Out of scope.** The iNoah widget keeps its own scoped visual system by design.
+  /hermes and /hermes/privacy are static files, untouched (Google OAuth consent URLs).
+
 # Decisions, iNoah upgrade, 2026-09-11
 
 Every call that the brief left open, and why it went the way it did. The brief's preamble

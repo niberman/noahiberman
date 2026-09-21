@@ -509,7 +509,7 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
                   {/* Flight History Section */}
                   <div className="mt-8 pt-8 border-t border-border/50">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                      <h2 className="text-xl md:text-2xl font-display font-bold text-primary-foreground">
+                      <h2 className="text-xl md:text-2xl font-display font-normal text-primary-foreground">
                         Flight History
                       </h2>
                       <Badge variant="outline" className="text-sm w-fit">
@@ -547,4 +547,3 @@ export default function FollowMyFlight({ showSEO = true }: PageSectionProps) {
   </main>
   );
 }
-

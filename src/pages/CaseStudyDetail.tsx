@@ -36,10 +36,10 @@ export default function CaseStudyDetail() {
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-2">
             {study.category}
           </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-foreground mb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-normal tracking-[-0.03em] text-primary-foreground mb-2">
             {study.title}
           </h1>
-          <p className="text-xl text-secondary font-display italic mb-6">{study.tagline}</p>
+          <p className="text-xl text-ed-light font-display italic mb-6">{study.tagline}</p>
 
           <div className="flex flex-wrap items-center gap-3 mb-10 text-sm text-muted-foreground">
             <span>{study.year}</span>
@@ -49,7 +49,7 @@ export default function CaseStudyDetail() {
 
           <p className="text-lg text-foreground/90 leading-relaxed mb-8">{study.summary}</p>
 
-          <h2 className="text-lg font-semibold text-primary-foreground mb-4">
+          <h2 className="text-2xl font-display font-normal text-primary-foreground mb-4">
             What makes it interesting
           </h2>
           <ul className="space-y-3 mb-10">

@@ -13,10 +13,10 @@ export function BilingualHeading({
 }: BilingualHeadingProps) {
   return (
     <div className={className}>
-      <Component className="text-4xl md:text-5xl font-bold mb-2">
+      <Component className="text-4xl md:text-5xl font-display font-normal tracking-[-0.03em] mb-2">
         {english}
       </Component>
-      <p className="text-xl md:text-2xl text-secondary font-display italic">
+      <p className="text-xl md:text-2xl text-ed-light font-display italic">
         {spanish}
       </p>
     </div>

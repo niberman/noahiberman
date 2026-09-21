@@ -6,8 +6,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 import { ReactLenis, useLenis } from "lenis/react";
 import "lenis/dist/lenis.css";
 import { setLenis, getLenis } from "@/lib/lenis-ref";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { AmbientOrbs, EditorialNav, EditorialFooter } from "@/components/editorial/EditorialPage";
 import { InoahWidget } from "@/components/inoah/InoahWidget";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -55,13 +54,18 @@ const Toasters = lazy(() =>
 
 const queryClient = new QueryClient();
 
-// Work, Aviation, and Now render their own nav and footer (EditorialPage), so
-// the global bar and footer step aside on exactly those routes.
+// One chrome for the whole site: the editorial nav and footer (from the
+// Work/Aviation/Now design system) render on every route. The ambient orbs
+// join every page except the editorial routes (they mount their own) and
+// the homepage (the flight map owns that backdrop).
 const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now"]);
-function SiteChrome({ slot }: { slot: "nav" | "footer" }) {
+function SiteChrome({ slot }: { slot: "nav" | "footer" | "ambient" }) {
   const { pathname } = useLocation();
-  if (EDITORIAL_ROUTES.has(pathname)) return null;
-  return slot === "nav" ? <Navigation /> : <Footer />;
+  if (slot === "ambient") {
+    if (pathname === "/" || EDITORIAL_ROUTES.has(pathname)) return null;
+    return <AmbientOrbs />;
+  }
+  return slot === "nav" ? <EditorialNav /> : <EditorialFooter />;
 }
 
 // Publishes the root Lenis instance to lib/lenis-ref for the scattered
@@ -124,6 +128,7 @@ const App = () => {
           <SecretDashboardAccess />
           <InoahWidget />
           <div className="min-h-screen flex flex-col relative">
+            <SiteChrome slot="ambient" />
             <SiteChrome slot="nav" />
             <div className="flex-1 relative z-10">
               <Suspense fallback={null}>

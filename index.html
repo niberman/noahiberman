@@ -226,11 +226,11 @@
   <!-- Fonts load without blocking first paint (display=swap shows fallback text
        immediately); the media swap defers stylesheet evaluation until loaded. -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
     media="print" onload="this.media='all'" />
   <noscript>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
   </noscript>
 </head>
 
@@ -265,7 +265,7 @@
                        so the LCP paint is never delayed. Keep in sync with the
                        hero-word markup in src/pages/Home.tsx. -->
                   <h1
-                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
+                    class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-normal mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
                     <span class="hero-word" style="--word-i:0">Founder,</span>
                     <span class="hero-word" style="--word-i:1">Pilot,</span>
                     <span class="hero-word" style="--word-i:2">Engineer</span>
@@ -273,7 +273,7 @@
                   <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                     <p class="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
                       The sky is not the limit</p>
-                    <p class="text-lg sm:text-xl md:text-2xl text-secondary font-display italic px-4">El cielo no es el
+                    <p class="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">El cielo no es el
                       límite</p>
                   </div>
                   <!-- Wrapper divs mirror the Magnetic wrappers in Home.tsx:

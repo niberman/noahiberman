@@ -8,9 +8,11 @@ import { m } from "framer-motion";
 import { useParallax } from "./fx";
 
 /**
- * Chrome for the "cinematic editorial" routes (Work, Aviation, Now): page
- * background, ambient grain + orbs, a page-local nav and footer. App.tsx
- * hides the global Navigation/Footer on exactly these routes. Values follow
+ * The site-wide design system, from the "cinematic editorial" redesign:
+ * page background, ambient grain + orbs, and the nav/footer chrome. App.tsx
+ * renders EditorialNav/EditorialFooter on every route, so these components
+ * are the single nav and footer for the whole site; EditorialPage adds the
+ * ambient layer (grain + orbs) for the routes that want it. Values follow
  * design_handoff_work_aviation_now/README.md verbatim.
  */
 
@@ -24,18 +26,25 @@ export function EditorialPage({ children }: { children: ReactNode }) {
     <div className="relative min-h-screen font-body text-ed-ink antialiased [background:radial-gradient(ellipse_at_50%_0%,#12081f_0%,#040208_55%)]">
       {/* Ambient layer: film grain (site's .grain-overlay tile) + two orbs. */}
       <div aria-hidden className="grain-overlay fixed z-50 pointer-events-none" style={{ opacity: 0.06 }} />
-      <div aria-hidden className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="ed-orb-a absolute left-[10%] top-[-20%] h-[70vw] w-[70vw] rounded-full blur-[60px] [background:radial-gradient(circle,rgba(128,51,204,.28),transparent_60%)]" />
-        <div className="ed-orb-b absolute right-[-20%] bottom-[-30%] h-[70vw] w-[70vw] rounded-full blur-[70px] [background:radial-gradient(circle,rgba(70,20,130,.35),transparent_60%)]" />
-      </div>
-      <EditorialNav />
+      <AmbientOrbs />
       <main className="relative z-[1]">{children}</main>
-      <EditorialFooter />
     </div>
   );
 }
 
-function EditorialNav() {
+/** The two blurred color orbs from the editorial ambient layer. Rendered
+ *  globally by App on non-editorial routes so every page shares the same
+ *  atmosphere; the homepage skips it (the flight map owns that backdrop). */
+export function AmbientOrbs() {
+  return (
+    <div aria-hidden className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      <div className="ed-orb-a absolute left-[10%] top-[-20%] h-[70vw] w-[70vw] rounded-full blur-[60px] [background:radial-gradient(circle,rgba(128,51,204,.28),transparent_60%)]" />
+      <div className="ed-orb-b absolute right-[-20%] bottom-[-30%] h-[70vw] w-[70vw] rounded-full blur-[70px] [background:radial-gradient(circle,rgba(70,20,130,.35),transparent_60%)]" />
+    </div>
+  );
+}
+
+export function EditorialNav() {
   const { isActive, follow } = useNavLinks();
   const { pathname } = useLocation();
   const isMobile = useIsMobile();
@@ -43,9 +52,24 @@ function EditorialNav() {
   // Closes on navigation and on breakpoint change.
   useEffect(() => setOpen(false), [pathname, isMobile]);
 
+  // The homepage flight map broadcasts when it takes over the screen; the bar
+  // slides away and returns with it (same contract the old global nav had).
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const isVisible = (event as CustomEvent<{ visible?: boolean }>).detail?.visible !== false;
+      setVisible(isVisible);
+      if (!isVisible) setOpen(false);
+    };
+    window.addEventListener("flightMapNavVisibilityChange", handler);
+    return () => window.removeEventListener("flightMapNavVisibilityChange", handler);
+  }, []);
+
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X} bg-gradient-to-b from-[rgba(4,2,8,.9)] to-[rgba(4,2,8,0)]`}
+      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X} bg-gradient-to-b from-[rgba(4,2,8,.9)] to-[rgba(4,2,8,0)] transition-[transform,opacity] duration-500 ${
+        visible ? "" : "-translate-y-full opacity-0 pointer-events-none"
+      }`}
     >
       <a
         href="/"
@@ -111,7 +135,7 @@ const FOOTER_LINK = "text-ed-ink transition-colors hover:text-ed-light";
 const ICON_LINK = "inline-flex transition-colors hover:text-ed-light";
 const sectionLink = (id: string) => NAV_LINKS.find((l) => l.id === id)!;
 
-function EditorialFooter() {
+export function EditorialFooter() {
   const { follow } = useNavLinks();
   const quote = useParallax<HTMLParagraphElement>(0.1);
 
