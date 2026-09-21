@@ -287,7 +287,7 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
             />
           )}
           <div className="min-w-0">
-            <h3 className={`font-display font-bold text-white leading-tight ${compact ? "text-lg" : "text-xl"}`}>
+            <h3 className={`font-display font-normal text-white leading-tight ${compact ? "text-lg" : "text-xl"}`}>
               {waypoint.title}
             </h3>
             {waypoint.subtitle && (
