@@ -28,9 +28,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
-        // Editorial pages (Work, Aviation, Now) only; the global tokens stay.
+        // One type system site-wide, taken from the editorial pages (Work,
+        // Aviation, Now): Geist for body/UI, Instrument Serif for display.
+        // `editorial` and `body` stay as aliases of the same families.
+        sans: ['Geist', 'system-ui', 'sans-serif'],
+        display: ['Instrument Serif', 'Georgia', 'serif'],
         editorial: ['Instrument Serif', 'Georgia', 'serif'],
         body: ['Geist', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
