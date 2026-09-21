@@ -443,7 +443,7 @@ export function FlightMap() {
       <div className="w-full h-full flex items-center justify-center bg-card/50 rounded-lg border border-border/50">
         <div className="text-center p-8 max-w-md">
           <Plane className="h-12 w-12 text-secondary mx-auto mb-4" />
-          <h3 className="text-lg font-display font-bold text-primary-foreground mb-2">
+          <h3 className="text-lg font-display font-normal text-primary-foreground mb-2">
             Mapbox Token Required
           </h3>
           <p className="text-sm text-muted-foreground mb-4">
@@ -885,4 +885,3 @@ export function FlightMap() {
     </div>
   );
 }
-
