@@ -8,14 +8,14 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --background: 260 60% 2%; /* #040208 */
+    --foreground: 264 43% 93%; /* #ece6f5 */
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
+    --card: 264 35% 5%;
+    --card-foreground: 264 43% 93%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 264 35% 5%;
+    --popover-foreground: 264 43% 93%;
 
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 100%;
@@ -23,8 +23,8 @@ All colors MUST be HSL.
     --secondary: 270 60% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 85%;
+    --muted: 264 25% 8%;
+    --muted-foreground: 259 15% 67%; /* #a79fb8 */
 
     --accent: 270 60% 50%;
     --accent-foreground: 0 0% 100%;
@@ -32,16 +32,16 @@ All colors MUST be HSL.
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
+    --border: 264 20% 14%;
+    --input: 264 20% 14%;
     --ring: 270 60% 50%;
 
     --radius: 1rem;
     
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(270 50% 10%) 50%, hsl(270 60% 15%) 100%);
-    --gradient-dusk: linear-gradient(180deg, hsl(0 0% 0%), hsl(270 40% 8%), hsl(270 50% 12%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 5%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(270 30% 8%) 100%);
+    --gradient-hero: radial-gradient(ellipse at 50% 0%, hsl(266 59% 8%) 0%, hsl(260 60% 2%) 55%);
+    --gradient-dusk: linear-gradient(180deg, hsl(264 45% 6%), hsl(260 60% 2%));
+    --gradient-subtle: linear-gradient(180deg, hsl(260 60% 2%), hsl(264 30% 4%));
+    --gradient-card: linear-gradient(135deg, hsl(264 35% 5%) 0%, hsl(266 45% 8%) 100%);
     --texture-overlay: radial-gradient(circle at 20% 50%, hsl(270 50% 15% / 0.2) 0%, transparent 50%);
     --shadow-elegant: 0 20px 60px -15px hsl(270 60% 20% / 0.5);
     --shadow-glow: 0 0 60px hsl(270 60% 50% / 0.6);
@@ -65,14 +65,14 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --background: 260 60% 2%; /* #040208 */
+    --foreground: 264 43% 93%; /* #ece6f5 */
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
+    --card: 264 35% 5%;
+    --card-foreground: 264 43% 93%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 264 35% 5%;
+    --popover-foreground: 264 43% 93%;
 
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 100%;
@@ -80,8 +80,8 @@ All colors MUST be HSL.
     --secondary: 270 60% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 85%;
+    --muted: 264 25% 8%;
+    --muted-foreground: 259 15% 67%; /* #a79fb8 */
 
     --accent: 270 60% 50%;
     --accent-foreground: 0 0% 100%;
@@ -89,14 +89,14 @@ All colors MUST be HSL.
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
+    --border: 264 20% 14%;
+    --input: 264 20% 14%;
     --ring: 270 60% 50%;
     
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(270 50% 10%) 50%, hsl(270 60% 15%) 100%);
-    --gradient-dusk: linear-gradient(180deg, hsl(0 0% 0%), hsl(270 40% 8%), hsl(270 50% 12%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 5%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 5%) 0%, hsl(270 30% 8%) 100%);
+    --gradient-hero: radial-gradient(ellipse at 50% 0%, hsl(266 59% 8%) 0%, hsl(260 60% 2%) 55%);
+    --gradient-dusk: linear-gradient(180deg, hsl(264 45% 6%), hsl(260 60% 2%));
+    --gradient-subtle: linear-gradient(180deg, hsl(260 60% 2%), hsl(264 30% 4%));
+    --gradient-card: linear-gradient(135deg, hsl(264 35% 5%) 0%, hsl(266 45% 8%) 100%);
     --texture-overlay: radial-gradient(circle at 20% 50%, hsl(270 50% 15% / 0.2) 0%, transparent 50%);
     --shadow-elegant: 0 20px 60px -15px hsl(270 60% 20% / 0.5);
     --shadow-glow: 0 0 60px hsl(270 60% 50% / 0.6);
@@ -127,6 +127,9 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    /* Editorial page ground, site-wide: the same radial Work/Aviation/Now use. */
+    background-image: var(--gradient-hero);
+    background-attachment: fixed;
     position: relative;
     /* iOS safe area support */
     padding-top: env(safe-area-inset-top);
@@ -175,7 +178,7 @@ All colors MUST be HSL.
   }
   
   .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Instrument Serif', Georgia, serif;
   }
   
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -399,15 +402,15 @@ All colors MUST be HSL.
   }
   
   .tiptap-editor .ProseMirror h1 {
-    @apply text-2xl font-display font-bold text-primary-foreground mb-4;
+    @apply text-2xl font-display font-normal text-primary-foreground mb-4;
   }
   
   .tiptap-editor .ProseMirror h2 {
-    @apply text-xl font-display font-bold text-primary-foreground mb-3;
+    @apply text-xl font-display font-normal text-primary-foreground mb-3;
   }
   
   .tiptap-editor .ProseMirror h3 {
-    @apply text-lg font-display font-semibold text-primary-foreground mb-2;
+    @apply text-lg font-display font-normal text-primary-foreground mb-2;
   }
   
   .tiptap-editor .ProseMirror p {
