@@ -159,7 +159,7 @@ export default function Book() {
         <div className="container mx-auto px-4 max-w-3xl">
           {/* Header */}
           <div className="mb-6 sm:mb-8 animate-fade-in text-center">
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.03em] text-white mb-2">
               {data?.meeting?.name || "Loading..."}
             </h1>
             {data?.meeting && (
@@ -384,7 +384,7 @@ export default function Book() {
             <Card className="bg-card/95 backdrop-blur animate-slide-up">
               <CardContent className="py-12 text-center space-y-4">
                 <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto" />
-                <h2 className="text-2xl font-display font-bold text-white">
+                <h2 className="text-2xl font-display font-normal text-white">
                   You are booked.
                 </h2>
                 <div className="text-white/70 space-y-1">
