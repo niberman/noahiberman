@@ -23,7 +23,7 @@ export const EYEBROW = "text-xs tracking-[.3em] uppercase text-ed-muted";
 
 export function EditorialPage({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen font-body text-ed-ink antialiased [background:radial-gradient(ellipse_at_50%_0%,#12081f_0%,#040208_55%)]">
+    <div className="relative min-h-screen font-body text-ed-ink antialiased [background:radial-gradient(ellipse_at_50%_0%,#12081f_0%,#040208_55%)] print:[background:#fff] print:text-black">
       {/* Ambient layer: film grain (site's .grain-overlay tile) + two orbs. */}
       <div aria-hidden className="grain-overlay fixed z-50 pointer-events-none" style={{ opacity: 0.06 }} />
       <AmbientOrbs />
@@ -134,6 +134,8 @@ export function EditorialNav() {
 const FOOTER_LINK = "text-ed-ink transition-colors hover:text-ed-light";
 const ICON_LINK = "inline-flex transition-colors hover:text-ed-light";
 const sectionLink = (id: string) => NAV_LINKS.find((l) => l.id === id)!;
+// Not in the top bar any more, so the footer carries its own link record.
+const FOLLOW_MY_FLIGHT = { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" } as const;
 
 export function EditorialFooter() {
   const { follow } = useNavLinks();
@@ -153,8 +155,10 @@ export function EditorialFooter() {
       <p className={`mt-5 mb-[clamp(48px,7vw,96px)] ${EYEBROW}`}>The sky is not the limit.</p>
 
       <div className="mb-7 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm">
+        <Link to="/work" className={FOOTER_LINK}>Work</Link>
+        <Link to="/resume" className={FOOTER_LINK}>Resume</Link>
         <Link to="/blog" className={FOOTER_LINK}>Blog</Link>
-        <a href="/#follow-my-flight" onClick={(e) => follow(e, sectionLink("follow-my-flight"))} className={FOOTER_LINK}>
+        <a href="/#follow-my-flight" onClick={(e) => follow(e, FOLLOW_MY_FLIGHT)} className={FOOTER_LINK}>
           Follow My Flight
         </a>
         <Link to="/inoah" className={FOOTER_LINK}>Ask iNoah</Link>

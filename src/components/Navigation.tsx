@@ -17,10 +17,12 @@ export type NavLink = {
 export const NAV_LINKS: NavLink[] = [
   { path: "/", label: "Home", id: "home", type: "section" },
   { path: "/work", label: "Work", id: "work", type: "page" },
+  { path: "/resume", label: "Resume", id: "resume", type: "page" },
   { path: "/aviation", label: "Aviation", id: "aviation", type: "page" },
   { path: "/now", label: "Now", id: "now", type: "page" },
   { path: "/blog", label: "Blog", id: "blog", type: "page" },
-  { path: "/#follow-my-flight", label: "Follow My Flight", id: "follow-my-flight", type: "section" },
+  // Follow My Flight lives in the footer and on the homepage map; the top
+  // bar gives its slot to Resume (2026-10-13, job-search redesign).
   { path: "/#contact", label: "Contact", id: "contact", type: "section" },
   { path: "/inoah", label: "iNoah", id: "inoah", type: "page" },
   { path: "/es", label: "ES", id: "es", type: "page" },

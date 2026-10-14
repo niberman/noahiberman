@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 // Read the CSV file
-const csv = fs.readFileSync('public/logbook_2025-11-02_15_21_00.csv', 'utf-8');
+const csv = fs.readFileSync('data/logbook_2025-11-02_15_21_00.csv', 'utf-8');
 const lines = csv.split('\n');
 
 // Airport code to city name mapping (common airports from the logbook)

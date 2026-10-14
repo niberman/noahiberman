@@ -2,6 +2,7 @@ import { m } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { ROUTE_META } from "@/data/routeMeta";
 import { Button } from "@/components/ui/button";
 
 const RATINGS_ES = [
@@ -13,20 +14,20 @@ const RATINGS_ES = [
 
 const WORK_ES = [
   {
-    title: "Plataforma de listas de turno",
-    body: "Sistema completo de listas de verificación para restaurantes de servicio rápido. Construido solo. En uso en una franquicia de Smoothie King en Denver.",
+    title: "Plataforma de operaciones de aviación",
+    body: "Plataforma multiempresa para escuelas de vuelo y FBO: programación, estado de las aeronaves, mantenimiento y facturación. Deja la aeronave en tierra cuando los datos del motor salen de los límites del fabricante.",
   },
   {
-    title: "Plataforma de operaciones para escuelas de vuelo",
-    body: "Sistema multiempresa para escuelas de vuelo pequeñas: reservas con validación de cumplimiento, motor de averías con puesta en tierra condicional, monitoreo de telemetría y facturación.",
+    title: "Briefing automático antes del vuelo",
+    body: "Servicio en Python que reúne el tiempo y los NOTAM de un vuelo y envía el briefing al teléfono. El peso y balance se calcula con código determinista, no con un modelo de lenguaje.",
   },
   {
-    title: "MockChecker",
-    body: "Simulador de exámenes prácticos de la FAA para pilotos, construido con generación aumentada por recuperación sobre los estándares reales de certificación.",
+    title: "Portal para propietarios de aeronaves",
+    body: "Portal de programación y facturación para Freedom Aviation, usado por propietarios, instructores y mecánicos.",
   },
   {
-    title: "Hermes",
-    body: "Mi propia infraestructura de agentes autónomos, alojada en mis máquinas sobre una red privada, con entrada de voz y resúmenes programados.",
+    title: "Lista de verificación por turno",
+    body: "Aplicación construida solo. En uso en tiendas de Smoothie King en Denver.",
   },
 ];
 
@@ -34,10 +35,7 @@ export default function Es() {
   const navigate = useNavigate();
   return (
     <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-20 px-4 sm:px-6" lang="es">
-      <SEO
-        title="Noah Berman | Fundador y piloto comercial en Denver, Colorado"
-        description="Noah Berman es fundador de software y piloto comercial de la FAA con habilitaciones de instrumentos, multimotor y helicóptero, basado en Denver, Colorado. Fundador de Aviari LLC. Graduado de la Universidad de Denver."
-      />
+      <SEO title={ROUTE_META["/es"].title} description={ROUTE_META["/es"].description} />
       <div className="container mx-auto max-w-3xl">
         <m.div
           initial={{ opacity: 0, y: 24 }}
@@ -46,13 +44,13 @@ export default function Es() {
         >
           <p className="text-lg sm:text-xl font-display text-secondary mb-2">Noah Berman</p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-normal mb-4 text-primary-foreground leading-tight">
-            Fundador, Piloto, Ingeniero
+            Piloto, Ingeniero de software
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/95 font-light mb-2">
-            El cielo no es el límite
+            Software de aviación, hecho por un piloto.
           </p>
           <p className="text-lg text-ed-light font-display italic mb-10">
-            The sky is not the limit
+            Aviation software, built by a pilot.
           </p>
         </m.div>
 
@@ -65,17 +63,18 @@ export default function Es() {
         >
           <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">Quién soy</h2>
           <p className="text-foreground/90 leading-relaxed mb-4">
-            Soy fundador de Aviari LLC y piloto comercial en Denver, Colorado.
-            Construyo software de producción por mi cuenta y trabajo en dos
-            idiomas. Me gradué de la Universidad de Denver en junio de 2026,
+            Soy ingeniero de software y piloto comercial en Denver, Colorado.
+            Construyo software para la aviación y trabajo en inglés y en
+            español. Me gradué de la Universidad de Denver en junio de 2026,
             con una licenciatura en Computación Aplicada y especializaciones en
-            Emprendimiento y Español.
+            Emprendimiento y Español. Busco un puesto de tiempo completo en
+            software de aviación o aeroespacial, en Boulder, San Francisco o en
+            el extranjero.
           </p>
           <p className="text-foreground/90 leading-relaxed">
             Pasé el año 2024-2025 en Bilbao, España, estudiando en la
-            Universidad de Deusto y viviendo con una familia local. También he enseñado inglés a
-            hispanohablantes adultos, y esa experiencia dentro del aula es la
-            base de la tecnología educativa que construyo.
+            Universidad de Deusto y viviendo con una familia local. También
+            enseñé inglés y español a adultos en The Language School.
           </p>
         </m.section>
 
@@ -89,8 +88,8 @@ export default function Es() {
           <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">El vuelo</h2>
           <p className="text-foreground/90 leading-relaxed mb-4">
             Vuelo desde el Aeropuerto Centennial (KAPA). Empecé a volar en
-            2021 y no he parado: avión monomotor y multimotor, vuelo por
-            instrumentos, helicóptero y vuelo de montaña. Ahora trabajo para
+            2021: avión monomotor y multimotor, vuelo por instrumentos,
+            helicóptero y vuelo de montaña. Ahora trabajo para
             obtener el certificado de instructor de vuelo (CFI).
           </p>
           <ul className="space-y-2">
@@ -142,7 +141,7 @@ export default function Es() {
         >
           <h2 className="text-2xl font-display font-normal text-primary-foreground mb-2">Contacto</h2>
           <p className="text-muted-foreground mb-5">
-            Trabajo en inglés y en español. Escríbeme en el idioma que prefieras.
+            Trabajo en inglés y en español. Escríbame en el idioma que prefiera.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
@@ -153,6 +152,13 @@ export default function Es() {
             </Button>
             <Button
               variant="outline"
+              onClick={() => navigate("/resume")}
+              className="rounded-full px-8"
+            >
+              Currículum (en inglés)
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => navigate("/")}
               className="rounded-full px-8"
             >

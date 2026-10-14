@@ -1,13 +1,15 @@
 import { AnimatePresence, m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, BookOpen } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
+import { ROUTE_META } from "@/data/routeMeta";
 import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
+import { WorkTeaser } from "@/components/sections/WorkTeaser";
 import { BrandWords } from "@/data/brand";
 import { MapLoadingState } from "@/components/MapLoadingState";
 import { scrollToId } from "@/lib/lenis-ref";
@@ -191,10 +193,7 @@ export default function Home() {
         {/* Homepage structured data lives in index.html (one @graph with a
             ProfilePage node). No per-page structuredData here or it would
             duplicate the entity. */}
-        <SEO
-          title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
-          description="Noah Berman is a software founder and FAA Commercial Pilot with instrument, multi-engine, and rotorcraft-helicopter ratings, based in Denver, Colorado. Founder of Aviari LLC. University of Denver graduate."
-        />
+        <SEO title={ROUTE_META["/"].title} description={ROUTE_META["/"].description} />
 
         {/* HERO */}
         <section
@@ -262,10 +261,10 @@ export default function Home() {
 
               <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
-                  The sky is not the limit
+                  Aviation software, built by a pilot.
                 </p>
                 <p className="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">
-                  El cielo no es el límite
+                  Software de aviación, hecho por un piloto.
                 </p>
               </div>
 
@@ -274,24 +273,24 @@ export default function Home() {
               <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate("/inoah")}
+                    onClick={() => navigate("/work")}
                     size="lg"
                     className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
                   >
-                    <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Access iNoah
+                    See my work
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </Magnetic>
 
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/resume")}
                     size="lg"
                     variant="outline"
                     className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
                   >
-                    <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Blog
+                    <FileText className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Resume
                   </Button>
                 </Magnetic>
 
@@ -306,6 +305,10 @@ export default function Home() {
                   </Button>
                 </Magnetic>
               </div>
+
+              <p className="hero-enter-3 mt-6 sm:mt-8 text-sm sm:text-base text-primary-foreground/70 text-balance px-4">
+                Based in Denver. Open to roles in Boulder, San Francisco and abroad.
+              </p>
             </div>
           </m.div>
 
@@ -333,6 +336,9 @@ export default function Home() {
 
         {/* SCROLLYTELLING SPINE: drives the map camera through every chapter */}
         <WaypointStack heroRef={heroRef} />
+
+        {/* SELECTED WORK: the recruiter's shortcut past the map */}
+        <WorkTeaser />
 
         {/* CONTACT */}
         <ContactSection />

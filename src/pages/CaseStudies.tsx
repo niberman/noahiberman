@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { ROUTE_META } from "@/data/routeMeta";
 import { caseStudies } from "@/data/caseStudies";
 import { EditorialPage, EYEBROW, PAD_X } from "@/components/editorial/EditorialPage";
 import { m } from "framer-motion";
@@ -13,10 +14,7 @@ export default function CaseStudies() {
 
   return (
     <EditorialPage>
-      <SEO
-        title="Work | Noah Berman"
-        description="Shipped work by Noah Berman: production platforms built alone and in use, across restaurant operations, aviation training, education, and AI infrastructure."
-      />
+      <SEO title={ROUTE_META["/work"].title} description={ROUTE_META["/work"].description} />
 
       <section className={`flex min-h-[92vh] flex-col items-center justify-center pt-[140px] pb-[60px] text-center ${PAD_X}`}>
         <p className={`ed-rise mb-7 ${EYEBROW}`} style={rise(0.05)}>Work</p>
@@ -39,7 +37,7 @@ export default function CaseStudies() {
           className="ed-rise mt-[clamp(28px,4vw,48px)] max-w-[560px] text-[clamp(17px,1.4vw,21px)] font-light leading-[1.55] text-ed-body"
           style={rise(0.8)}
         >
-          Production software, not mockups. Every project here is shipped, and every one was built alone.
+          Aviation software first, then the rest of what I have shipped. I built each one myself.
         </p>
         <div
           className="ed-rise mt-[clamp(48px,8vh,96px)] flex flex-col items-center gap-2.5 text-[11px] uppercase tracking-[.3em] text-ed-muted"

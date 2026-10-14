@@ -45,6 +45,54 @@
       "destination": "/hermes/privacy/index.html"
     },
     {
+      "source": "/work",
+      "destination": "/work/index.html"
+    },
+    {
+      "source": "/resume",
+      "destination": "/resume/index.html"
+    },
+    {
+      "source": "/aviation",
+      "destination": "/aviation/index.html"
+    },
+    {
+      "source": "/now",
+      "destination": "/now/index.html"
+    },
+    {
+      "source": "/es",
+      "destination": "/es/index.html"
+    },
+    {
+      "source": "/work/flight-school-ops",
+      "destination": "/work/flight-school-ops/index.html"
+    },
+    {
+      "source": "/work/preflight-briefing",
+      "destination": "/work/preflight-briefing/index.html"
+    },
+    {
+      "source": "/work/owner-portal",
+      "destination": "/work/owner-portal/index.html"
+    },
+    {
+      "source": "/work/flight-log",
+      "destination": "/work/flight-log/index.html"
+    },
+    {
+      "source": "/work/inoah",
+      "destination": "/work/inoah/index.html"
+    },
+    {
+      "source": "/work/smoothie-king-checklist",
+      "destination": "/work/smoothie-king-checklist/index.html"
+    },
+    {
+      "source": "/work/artnimality",
+      "destination": "/work/artnimality/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

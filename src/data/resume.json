@@ -1,0 +1,169 @@
+{
+  "_comment": "Public resume for noahiberman.com/resume. Source: Noah's master resume (Drive, 00 CURRENT, reviewed 2026-10-13) and noah.md. Public-site differences on Noah's 2026-10-13 instruction: Aviari reads as consulting, not founding; no phone number; flight time is read live from the ForeFlight sync, never typed here. Read by src/pages/Resume.tsx and scripts/prerender-routes.mjs.",
+  "name": "Noah Berman",
+  "headline": "Software Engineer and Commercial Pilot",
+  "location": "Denver, Colorado",
+  "availability": "Open to aviation and aerospace software roles in Boulder, San Francisco and abroad.",
+  "contact": {
+    "email": "noah@noahiberman.com",
+    "site": "noahiberman.com",
+    "github": "github.com/niberman",
+    "linkedin": "linkedin.com/in/noahiberman"
+  },
+  "summary": "I am a commercial pilot who writes software. I have built scheduling, maintenance and grounding logic for flight schools, a preflight briefing service, and the owner portal for an aircraft management company. I talk with the people who operate aircraft, build what fits how they work, and check the aviation math against the source. I work in English and Spanish.",
+  "experience": [
+    {
+      "org": "Aviari LLC",
+      "title": "Software Consultant",
+      "place": "Denver, CO",
+      "dates": "Apr 2026 to Present",
+      "bullets": [
+        "Run discovery with small business owners in restaurants, hospitality and education, turning POS, scheduling and back-office needs into custom software and AI workflows.",
+        "Built alone and support a phone-first shift checklist app in use at Smoothie King stores in Denver, replacing paper checklists with QR access, POS PIN sign-in, position-based tasks, manager sign-off and timestamped owner reporting.",
+        "Defined the app's requirements through staff interviews and live-shift observation. Built on Next.js and Supabase with PostgreSQL row-level security.",
+        "Build with automated tests, AI-assisted code review and deployment evals."
+      ]
+    },
+    {
+      "org": "Freedom Aviation LLC",
+      "title": "Co-Founder",
+      "place": "Centennial Airport (KAPA)",
+      "dates": "Sep 2025 to May 2026",
+      "bullets": [
+        "Co-founded an aircraft management and concierge company for owner-pilots at Centennial Airport with two partners.",
+        "Built and deployed the company's software platform and aircraft owner portal for scheduling and billing, used by clients, flight instructors and mechanics.",
+        "Managed customer relationships, aircraft operations, hangar partnerships, marketing, finances and accounting."
+      ]
+    },
+    {
+      "org": "The Language School",
+      "title": "Spanish and English Teacher",
+      "place": "Denver, CO",
+      "dates": "Sep 2025 to Sep 2026",
+      "bullets": [
+        "Taught English to adult Spanish speakers and Spanish to adult English speakers, working in both languages daily.",
+        "Built a bilingual learning platform with lesson content, progress tracking and staff tools, including a live AI voice conversation partner."
+      ]
+    },
+    {
+      "org": "The RoomPlace",
+      "title": "Commission Sales Associate",
+      "place": "",
+      "dates": "Mar 2022 to Sep 2022",
+      "bullets": [
+        "Sold furniture on commission in person and online.",
+        "Created 3D furniture visualizations with the COOHOM API and built Adobe InDesign price-sign templates populated with MAP data."
+      ]
+    },
+    {
+      "org": "Reality Garage",
+      "title": "Software Engineering Intern",
+      "place": "",
+      "dates": "Jul 2018 to Mar 2019",
+      "bullets": [
+        "Promoted from paid intern to programmer.",
+        "Developed VR and interactive 3D experiences in Unity and C# with senior software engineers.",
+        "Unit testing and debugging, validated JSON scene configurations, and edited 360-degree video and imagery."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Aviation operations platform",
+      "kind": "Independent project",
+      "link": "/work/flight-school-ops",
+      "bullets": [
+        "Interviewed flight school and FBO operators at Centennial and Rocky Mountain Metro airports.",
+        "Built and deployed a multi-tenant platform to production for scheduling, aircraft readiness, maintenance tracking and billing.",
+        "Engine monitoring against manufacturer limits with telemetry-based grounding rules, MEL handling, and an immutable squawk log with a full audit trail.",
+        "NestJS, GraphQL, Prisma and PostgreSQL backend with tenant isolation, role-based permissions and a database-backed notification queue. End-to-end tests against a live database, packaged in Docker with GitHub Actions builds."
+      ]
+    },
+    {
+      "name": "Preflight briefing automation",
+      "kind": "Personal tool",
+      "link": "/work/preflight-briefing",
+      "bullets": [
+        "Built a Python FastAPI briefing service with Telegram delivery and deterministic weight-and-balance calculations.",
+        "Checked the aviation calculations against source documents in code review, catching and correcting a fabricated Vyse adjustment formula and an empty-weight error."
+      ]
+    },
+    {
+      "name": "iNoah and noahiberman.com",
+      "kind": "Retrieval-augmented assistant and personal site",
+      "link": "/work/inoah",
+      "bullets": [
+        "Built a bilingual React and TypeScript site with a retrieval-augmented assistant that answers questions about my work, plus a flight log map synced nightly from ForeFlight exports.",
+        "Runs on Supabase Edge Functions with hourly Google Drive ingestion into pgvector and public and private visibility enforced in SQL.",
+        "Deterministic low-confidence refusals, and deployment gates that use held-out evaluations to fail builds on prohibited claims."
+      ]
+    },
+    {
+      "name": "The Cooler Scooter",
+      "kind": "University of Denver design project",
+      "link": "",
+      "bullets": [
+        "Proposed the concept selected for the final frame and ice-holding seat on a four-person team.",
+        "Modeled the knee seat in SolidWorks, integrated teammates' parts into a 20% scale assembly, 3D printed it, and ran turning and obstacle-clearance tests."
+      ]
+    }
+  ],
+  "certificates": [
+    "Commercial Pilot, Airplane Single-Engine Land (2024)",
+    "Commercial Pilot, Airplane Multi-Engine Land (2025)",
+    "Instrument Rating, Airplane (2023)",
+    "Private Pilot, Rotorcraft Helicopter (2025)",
+    "FAA First Class Medical",
+    "FCC Restricted Radiotelephone Operator Permit"
+  ],
+  "aircraft": "Cessna 172, 182T, T182T, Cirrus SR20, SR22T, Piper PA-28-181, Beechcraft Baron 55, Beechcraft Travel Air, American Champion Decathlon, Robinson R44",
+  "flightExperience": [
+    "Cessna high-wing singles, from the G1000 172S to the 182T and turbocharged T182T.",
+    "Cross-country out of Rocky Mountain Metro (KBJC) and Centennial (KAPA) across Colorado, Wyoming and Montana.",
+    "Mountain and high density altitude flying, regularly into Aspen, plus Leadville, Telluride, Eagle and Steamboat Springs.",
+    "Single-pilot IFR under the Denver Class B, with filing, clearances, approaches and holds in actual conditions.",
+    "Multi-engine commercial training in the Baron 55, now flying a Beechcraft Travel Air as pilot in command.",
+    "Glass and legacy panels: Garmin G1000, Cirrus Perspective and a conventional six-pack.",
+    "Helicopter add-on in the Robinson R44."
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "items": "TypeScript, Python, SQL, JavaScript"
+    },
+    {
+      "label": "Frameworks and data",
+      "items": "React, Next.js, NestJS, FastAPI, PostgreSQL, Supabase, GraphQL, Prisma"
+    },
+    {
+      "label": "AI",
+      "items": "RAG, pgvector, agents, evals"
+    },
+    {
+      "label": "Delivery",
+      "items": "Docker, GitHub Actions, Linux"
+    },
+    {
+      "label": "Design",
+      "items": "SolidWorks, 3D printing, LabVIEW"
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Denver",
+      "detail": "B.A. Applied Computing, minors in Entrepreneurship and Spanish",
+      "dates": "June 2026"
+    },
+    {
+      "school": "Universidad de Deusto, Bilbao, Spain",
+      "detail": "Full academic year of coursework in Spanish, plus Intelligent Control Systems with LabVIEW",
+      "dates": "Aug 2024 to May 2025"
+    }
+  ],
+  "additional": [
+    "English and Spanish, professional working proficiency in Spanish",
+    "Carillonist, University of Denver Carillon Studio, performed at DU hockey games and recitals",
+    "Wilderness First Responder, NOLS",
+    "AIARE 2 Advanced Avalanche Rescue Training"
+  ]
+}

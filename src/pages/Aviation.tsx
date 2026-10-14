@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, Award, GraduationCap, Plane, Radio, Wrench } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { ROUTE_META } from "@/data/routeMeta";
 import { useFlightStats } from "@/hooks/use-flight-stats";
 import { aviationTimeline } from "@/data/aviationTimeline";
+import resume from "@/data/resume.json";
 import { scrollToId } from "@/lib/lenis-ref";
 import { EditorialPage, EYEBROW, PAD_X } from "@/components/editorial/EditorialPage";
 import { m } from "framer-motion";
@@ -15,7 +17,7 @@ const RATINGS = [
   { icon: Radio, label: "Instrument Rating" },
   { icon: Award, label: "Private Pilot, Rotorcraft-Helicopter" },
   { icon: Wrench, label: "Wilderness First Responder (NOLS)" },
-  { icon: GraduationCap, label: "CFI - in progress", outline: true },
+  { icon: GraduationCap, label: "CFI, in progress", outline: true },
 ];
 
 const H2 = "font-editorial font-normal text-[clamp(44px,7vw,110px)] leading-[.92] tracking-[-.035em]";
@@ -60,7 +62,7 @@ function LiveStats() {
         ))}
       </div>
       <p className="ed-rise mt-4 text-[13px] tracking-[.04em] text-ed-muted" style={rise(0.9)}>
-        Live numbers, synced from my ForeFlight logbook - never hand-edited, never stale.
+        Live numbers, synced from my ForeFlight logbook every night. Nothing here is typed in by hand.
       </p>
     </section>
   );
@@ -73,10 +75,7 @@ export default function Aviation() {
 
   return (
     <EditorialPage>
-      <SEO
-        title="Aviation | Noah Berman"
-        description="Commercial pilot, single and multi-engine, instrument rated, rotorcraft-helicopter. The full flying record, synced live from ForeFlight."
-      />
+      <SEO title={ROUTE_META["/aviation"].title} description={ROUTE_META["/aviation"].description} />
 
       <LiveStats />
 
@@ -102,7 +101,8 @@ export default function Aviation() {
           className="mt-[clamp(28px,4vw,48px)] max-w-[560px] text-[clamp(17px,1.4vw,21px)] font-light leading-[1.55] text-ed-body"
         >
           Commercial pilot based at Centennial Airport (KAPA). Fixed-wing and rotorcraft, single and
-          multi-engine, VFR and IFR.
+          multi-engine, VFR and IFR. I also write the software around it, the aviation work is on the{" "}
+          <a href="/work" onClick={(e) => { e.preventDefault(); navigate("/work"); }} className="underline decoration-ed-light/50 underline-offset-4 hover:text-ed-light">Work page</a>.
         </Reveal>
       </section>
 
@@ -125,6 +125,29 @@ export default function Aviation() {
               </span>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className={`mx-auto max-w-[1200px] pb-[clamp(72px,10vw,140px)] ${PAD_X}`}>
+        <Reveal as="h2" className={`mb-[clamp(40px,6vw,72px)] text-center ${H2}`}>
+          Aircraft <em className="text-ed-light">and panels</em>
+        </Reveal>
+        <div className="grid gap-[clamp(24px,4vw,56px)] border-t border-white/[.12] pt-[clamp(28px,4vw,48px)] md:grid-cols-2">
+          <Reveal>
+            <p className={`mb-4 ${EYEBROW}`}>Pilot in command in</p>
+            <p className="text-[clamp(17px,1.4vw,21px)] font-light leading-[1.6] text-ed-body">{resume.aircraft}</p>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className={`mb-4 ${EYEBROW}`}>Experience</p>
+            <ul className="space-y-2.5">
+              {resume.flightExperience.map((line) => (
+                <li key={line} className="flex items-start gap-3 text-[clamp(15px,1.2vw,17px)] font-light leading-[1.6] text-ed-body">
+                  <span aria-hidden className="mt-[0.7em] h-1 w-1 shrink-0 rounded-full bg-ed-light" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </section>
 
@@ -206,7 +229,7 @@ export default function Aviation() {
           delay={80}
           className="mx-auto mb-[clamp(28px,4vw,44px)] max-w-[520px] text-[clamp(16px,1.3vw,19px)] font-light leading-[1.55] text-ed-body"
         >
-          The homepage map flies through the whole network - pan, zoom, and explore it.
+          The homepage map flies through the whole network. Pan, zoom and explore it.
         </Reveal>
         <Reveal delay={160}>
           <Magnetic strength={0.3} className="inline-block">
