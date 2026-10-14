@@ -17,16 +17,16 @@
   <meta name="format-detection" content="telephone=no" />
 
   <!-- Primary Meta Tags -->
-  <title>Noah Berman | Founder and Commercial Pilot in Denver, Colorado</title>
-  <meta name="title" content="Noah Berman | Founder and Commercial Pilot in Denver, Colorado" />
+  <title>Noah Berman | Software Engineer and Commercial Pilot</title>
+  <meta name="title" content="Noah Berman | Software Engineer and Commercial Pilot" />
   <meta name="description"
-    content="Noah Berman is a software founder and FAA Commercial Pilot with instrument, multi-engine, and rotorcraft-helicopter ratings, based in Denver, Colorado. Founder of Aviari LLC. University of Denver graduate." />
+    content="Noah Berman is a software engineer and FAA commercial pilot, multi-engine and instrument rated, who builds aviation software. University of Denver, Applied Computing. Based in Denver, open to Boulder, San Francisco and international roles." />
   <meta name="author" content="Noah Berman" />
 
   <!-- Language -->
   <meta name="language" content="en-US" />
   <link rel="alternate" hreflang="en" href="https://noahiberman.com/" />
-  <link rel="alternate" hreflang="es" href="https://noahiberman.com/" />
+  <link rel="alternate" hreflang="es" href="https://noahiberman.com/es" />
   <link rel="alternate" hreflang="x-default" href="https://noahiberman.com/" />
 
   <!-- Canonical -->
@@ -35,13 +35,13 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="profile" />
   <meta property="og:url" content="https://noahiberman.com/" />
-  <meta property="og:title" content="Noah Berman | Founder, Pilot, Engineer" />
+  <meta property="og:title" content="Noah Berman | Pilot, Software Engineer" />
   <meta property="og:description"
-    content="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado." />
+    content="Software engineer and FAA commercial pilot who builds aviation software. Based in Denver, open to Boulder, San Francisco and international roles." />
   <meta property="og:image" content="https://noahiberman.com/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Noah Berman | Founder, Pilot, Engineer" />
+  <meta property="og:image:alt" content="Noah Berman | Pilot, Software Engineer" />
   <meta property="og:site_name" content="Noah Berman" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="es_ES" />
@@ -53,15 +53,17 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://noahiberman.com/" />
-  <meta name="twitter:title" content="Noah Berman | Founder, Pilot, Engineer" />
+  <meta name="twitter:title" content="Noah Berman | Pilot, Software Engineer" />
   <meta name="twitter:description"
-    content="Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado." />
+    content="Software engineer and FAA commercial pilot who builds aviation software. Based in Denver, open to Boulder, San Francisco and international roles." />
   <meta name="twitter:image" content="https://noahiberman.com/og-image.png" />
-  <meta name="twitter:image:alt" content="Noah Berman | Founder, Pilot, Engineer" />
+  <meta name="twitter:image:alt" content="Noah Berman | Pilot, Software Engineer" />
 
   <!-- Structured Data: one @graph, nodes joined by @id so Google resolves
-       them as a single entity cluster. Facts verified against
-       AI Context/public-profile.md (2026-08-10). -->
+       them as a single entity cluster. Facts from AI Context/noah.md and
+       Noah's master resume, reviewed 2026-10-13. Aviari is the LLC he
+       consults through; no founder framing on the public site (Noah,
+       2026-10-13). -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -75,8 +77,8 @@
           "url": "https://noahiberman.com/",
           "mainEntityOfPage": { "@id": "https://noahiberman.com/#webpage" },
           "image": "https://noahiberman.com/og-image.png",
-          "jobTitle": ["Founder", "Commercial Pilot", "Software Engineer"],
-          "description": "Noah Berman is the founder of Aviari LLC in Denver, Colorado, and an FAA Commercial Pilot with instrument and multi-engine ratings and a private rotorcraft rating.",
+          "jobTitle": ["Software Engineer", "Commercial Pilot"],
+          "description": "Noah Berman is a software engineer and FAA Commercial Pilot in Denver, Colorado, with instrument and multi-engine ratings and a private rotorcraft rating. He builds aviation software and does software consulting through Aviari LLC.",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Denver",
@@ -84,14 +86,7 @@
             "addressCountry": "US"
           },
           "email": "noah@noahiberman.com",
-          "worksFor": [
-            { "@id": "https://noahiberman.com/#aviari" },
-            {
-              "@type": "Organization",
-              "name": "The Language School",
-              "url": "https://thelanguageschool.us"
-            }
-          ],
+          "worksFor": { "@id": "https://noahiberman.com/#aviari" },
           "alumniOf": [
             {
               "@type": "CollegeOrUniversity",
@@ -109,12 +104,18 @@
             { "@type": "Language", "name": "Spanish", "alternateName": "es" }
           ],
           "knowsAbout": [
-            "Aviation",
-            "Commercial flight operations",
+            "Aviation software",
+            "Flight school operations",
+            "Aircraft maintenance tracking",
+            "Weight and balance",
+            "Instrument flying",
+            "Mountain flying",
             "Software engineering",
-            "Applied AI for small business operations",
-            "Custom software implementation",
-            "Multi-tenant SaaS architecture"
+            "TypeScript",
+            "Python",
+            "PostgreSQL",
+            "Retrieval-augmented generation",
+            "LLM evaluation"
           ],
           "hasCredential": [
             {
@@ -173,17 +174,12 @@
           "@id": "https://noahiberman.com/#aviari",
           "name": "Aviari LLC",
           "legalName": "Aviari LLC",
-          "foundingDate": "2026-07-14",
-          "foundingLocation": {
-            "@type": "Place",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Denver",
-              "addressRegion": "CO",
-              "addressCountry": "US"
-            }
-          },
-          "founder": { "@id": "https://noahiberman.com/#noah" }
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Denver",
+            "addressRegion": "CO",
+            "addressCountry": "US"
+          }
         },
         {
           "@type": "WebSite",
@@ -286,7 +282,7 @@
                     </div>
                     <div class="w-full sm:w-auto">
                       <button
-                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium border h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Blog</button>
+                        class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium border h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Resume</button>
                     </div>
                     <div class="w-full sm:w-auto">
                       <button

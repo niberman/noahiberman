@@ -1,3 +1,33 @@
+# Decisions, job-search redesign, 2026-10-13
+
+Noah asked (chat, 2026-10-13) to redo noahiberman.com for the best job matches. His
+answers: target aviation and aerospace software roles; take "founder" out and call the
+Aviari work consulting; locations Boulder, San Francisco or international; fix the
+iNoah prompt and keep the eval gate.
+
+- **Positioning.** Hero is "Pilot, Software Engineer" with "Aviation software, built by
+  a pilot." CTAs are Work, Resume, Contact. iNoah stays in the nav and the widget.
+- **Design system untouched.** The editorial system from #51 stays; this is content,
+  structure and metadata.
+- **Facts.** noah.md and the master resume Noah reviewed 2026-10-13 win over older site
+  copy. Fixed: aviation platform stack (NestJS, GraphQL, Prisma, PostgreSQL, not
+  Next.js and Expo), helicopter rating year (2025), "license" to "certificate",
+  The Language School removed as a current employer. Hermes is folded into iNoah
+  (Noah, 2026-10-12) and MockChecker is gone from the record; both URLs redirect.
+- **Public titles.** The resume page uses employer titles (Spanish and English
+  Teacher, Commission Sales Associate) with the software work in the bullets, because
+  the site is public and background checks verify titles. No phone number on the site.
+- **Flight time.** Never typed into the site. The resume and Aviation pages read the
+  nightly ForeFlight sync, same as before.
+- **Prerendered heads.** scripts/prerender-routes.mjs writes dist/<route>/index.html
+  with the right title, description, canonical and a static text version of the page,
+  for crawlers and link previews. Each route needs a rewrite in vercel.json; the
+  script fails the build if one is missing. Titles and descriptions live in
+  src/data/routeMeta.ts so the pages and the prerender cannot drift.
+- **Raw logbook moved out of public/.** public/logbook_2025-11-02_15_21_00.csv was
+  served at the site root with instructor names and comments. It now lives in data/
+  for the two scripts that read it.
+
 # Decisions, site-wide design-system unification, 2026-09-21
 
 Noah asked (WhatsApp, 2026-09-21) to make the fonts and design system uniform across the

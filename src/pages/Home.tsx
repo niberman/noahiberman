@@ -1,14 +1,16 @@
 import { AnimatePresence, m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, BookOpen } from "lucide-react";
+import { MessageCircle, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
+import { ROUTE_META } from "@/data/routeMeta";
 import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { LiveFlightIndicator } from "@/components/LiveFlightIndicator";
 import { WaypointStack } from "@/components/scrollytelling/WaypointStack";
 import { FloatingWaypointCard } from "@/components/scrollytelling/FloatingWaypointCard";
 import { ContactSection } from "@/components/sections/ContactSection";
-import { BrandWords } from "@/data/brand";
+import { WorkTeaser } from "@/components/sections/WorkTeaser";
+import { HeroWords } from "@/data/brand";
 import { MapLoadingState } from "@/components/MapLoadingState";
 import { scrollToId } from "@/lib/lenis-ref";
 import { Magnetic } from "@/components/motion/Magnetic";
@@ -191,10 +193,7 @@ export default function Home() {
         {/* Homepage structured data lives in index.html (one @graph with a
             ProfilePage node). No per-page structuredData here or it would
             duplicate the entity. */}
-        <SEO
-          title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
-          description="Noah Berman is a software founder and FAA Commercial Pilot with instrument, multi-engine, and rotorcraft-helicopter ratings, based in Denver, Colorado. Founder of Aviari LLC. University of Denver graduate."
-        />
+        <SEO title={ROUTE_META["/"].title} description={ROUTE_META["/"].description} />
 
         {/* HERO */}
         <section
@@ -247,15 +246,15 @@ export default function Home() {
                   on the LCP element so the paint is never delayed. Markup is
                   mirrored in the index.html shell; keep them identical. */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-normal mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
-                {BrandWords.map((word, i) => (
+                {HeroWords.map((word, i) => (
                   <span key={word}>
                     <span
                       className="hero-word"
                       style={{ "--word-i": i } as React.CSSProperties}
                     >
-                      {i < BrandWords.length - 1 ? `${word},` : word}
+                      {i < HeroWords.length - 1 ? `${word},` : word}
                     </span>
-                    {i < BrandWords.length - 1 ? " " : ""}
+                    {i < HeroWords.length - 1 ? " " : ""}
                   </span>
                 ))}
               </h1>
@@ -285,13 +284,13 @@ export default function Home() {
 
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/resume")}
                     size="lg"
                     variant="outline"
                     className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
                   >
-                    <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Blog
+                    <FileText className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Resume
                   </Button>
                 </Magnetic>
 
@@ -333,6 +332,9 @@ export default function Home() {
 
         {/* SCROLLYTELLING SPINE: drives the map camera through every chapter */}
         <WaypointStack heroRef={heroRef} />
+
+        {/* SELECTED WORK: the recruiter's shortcut past the map */}
+        <WorkTeaser />
 
         {/* CONTACT */}
         <ContactSection />

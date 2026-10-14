@@ -1,6 +1,6 @@
 import { m } from "framer-motion";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ export default function CaseStudyDetail() {
           <p className="text-lg text-foreground/90 leading-relaxed mb-8">{study.summary}</p>
 
           <h2 className="text-2xl font-display font-normal text-primary-foreground mb-4">
-            What makes it interesting
+            What I built
           </h2>
           <ul className="space-y-3 mb-10">
             {study.highlights.map((h) => (
@@ -61,12 +61,29 @@ export default function CaseStudyDetail() {
             ))}
           </ul>
 
-          <div className="flex flex-wrap gap-2 mb-10">
-            {study.stack.map((tech) => (
-              <Badge key={tech} variant="secondary" className="font-normal">
-                {tech}
-              </Badge>
-            ))}
+          {study.stack.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-10">
+              {study.stack.map((tech) => (
+                <Badge key={tech} variant="secondary" className="font-normal">
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          <div className="border-t border-white/[.08] pt-8 flex flex-col sm:flex-row gap-3">
+            <Link
+              to="/resume"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-secondary px-6 py-3 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90"
+            >
+              Resume <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href="mailto:noah@noahiberman.com"
+              className="inline-flex items-center justify-center rounded-full border border-[rgba(236,230,245,.25)] px-6 py-3 text-sm font-medium text-ed-ink transition-colors hover:border-ed-light"
+            >
+              noah@noahiberman.com
+            </a>
           </div>
 
         </m.div>

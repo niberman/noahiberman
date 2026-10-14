@@ -20,7 +20,7 @@ export function ContactSection() {
             className="mb-4"
           />
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed px-4">
-            Whether you want to talk aviation, technology, or a potential collaboration, I'd love to hear from you.
+            Hiring for aviation or aerospace software, or want to talk flying? Send a note here or email noah@noahiberman.com.
           </p>
         </div>
 

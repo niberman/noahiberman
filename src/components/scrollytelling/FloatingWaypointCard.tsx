@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, m } from "framer-motion";
 import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -245,9 +246,14 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
 
 function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: boolean }) {
   const accent = accentClasses[waypoint.accent ?? "aviation"];
+  const navigate = useNavigate();
   const handleCta = () => {
     if (waypoint.cta?.event) {
       window.dispatchEvent(new CustomEvent(waypoint.cta.event));
+    } else if (waypoint.cta?.href?.startsWith("/")) {
+      // Internal routes stay in the tab (the Work page is the next step for
+      // a hiring manager, not a side trip).
+      navigate(waypoint.cta.href);
     } else if (waypoint.cta?.href) {
       window.open(waypoint.cta.href, "_blank", "noopener,noreferrer");
     }
@@ -310,7 +316,7 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
               className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
             >
               {waypoint.cta.label}
-              {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
+              {waypoint.cta.href && !waypoint.cta.href.startsWith("/") && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
             </Button>
           </m.div>
         )}

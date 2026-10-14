@@ -34,6 +34,7 @@ const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const CaseStudyDetail = lazy(() => import("./pages/CaseStudyDetail"));
 const Now = lazy(() => import("./pages/Now"));
 const Es = lazy(() => import("./pages/Es"));
+const Resume = lazy(() => import("./pages/Resume"));
 
 // Both toast portals render nothing until a toast fires, and both libraries
 // queue toasts raised before mount, so there's no need to pay for sonner + radix-toast
@@ -58,7 +59,7 @@ const queryClient = new QueryClient();
 // Work/Aviation/Now design system) render on every route. The ambient orbs
 // join every page except the editorial routes (they mount their own) and
 // the homepage (the flight map owns that backdrop).
-const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now"]);
+const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now", "/resume"]);
 function SiteChrome({ slot }: { slot: "nav" | "footer" | "ambient" }) {
   const { pathname } = useLocation();
   if (slot === "ambient") {
@@ -177,8 +178,13 @@ const App = () => {
                 />
                 <Route path="/aviation" element={<Aviation />} />
                 <Route path="/work" element={<CaseStudies />} />
+                {/* Retired case studies: Hermes folded into iNoah, MockChecker
+                    dropped from the record (2026-10-13). Keep old links alive. */}
+                <Route path="/work/hermes" element={<Navigate to="/work/inoah" replace />} />
+                <Route path="/work/mockchecker" element={<Navigate to="/work" replace />} />
                 <Route path="/work/:id" element={<CaseStudyDetail />} />
                 <Route path="/now" element={<Now />} />
+                <Route path="/resume" element={<Resume />} />
                 <Route path="/es" element={<Es />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />

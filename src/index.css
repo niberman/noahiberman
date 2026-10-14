@@ -972,3 +972,27 @@ All colors MUST be HSL.
     transform: none;
   }
 }
+
+/* Print: the resume page is the one people print or save as PDF. Drop the
+   site chrome and the dark ground so it comes out as plain black on white. */
+@media print {
+  @page {
+    margin: 0.5in;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  nav,
+  footer,
+  .inoah-surface,
+  .grain-overlay,
+  .ed-orb-a,
+  .ed-orb-b {
+    display: none !important;
+  }
+  .ed-rise {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
