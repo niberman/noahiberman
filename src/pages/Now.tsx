@@ -53,7 +53,7 @@ const FLAVOR = [
   {
     icon: Cross,
     title: "Wilderness First Responder (NOLS)",
-    body: "Wilderness medicine certified through NOLS, the medical side of backcountry travel.",
+    body: "",
   },
 ];
 
