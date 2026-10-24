@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Waves, Snowflake, Mountain } from "lucide-react";
+import { Waves, Snowflake, Mountain, Cross } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { CarillonEmbed } from "@/components/CarillonEmbed";
 import { EditorialPage, EYEBROW, PAD_X } from "@/components/editorial/EditorialPage";
@@ -49,6 +49,11 @@ const FLAVOR = [
     icon: Mountain,
     title: "AIARE 2",
     body: "Avalanche certified through the AIARE 2 course, backcountry decision-making, not just resort laps.",
+  },
+  {
+    icon: Cross,
+    title: "Wilderness First Responder (NOLS)",
+    body: "Wilderness medicine certified through NOLS, the medical side of backcountry travel.",
   },
 ];
 
