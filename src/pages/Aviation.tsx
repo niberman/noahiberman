@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowUpRight, Award, GraduationCap, Plane, Radio, Wrench } from "lucide-react";
+import { ArrowUpRight, Award, GraduationCap, Plane, Radio } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { useFlightStats } from "@/hooks/use-flight-stats";
 import { aviationTimeline } from "@/data/aviationTimeline";
@@ -14,7 +14,6 @@ const RATINGS = [
   { icon: Plane, label: "Commercial Pilot, AMEL" },
   { icon: Radio, label: "Instrument Rating" },
   { icon: Award, label: "Private Pilot, Rotorcraft-Helicopter" },
-  { icon: Wrench, label: "Wilderness First Responder (NOLS)" },
   { icon: GraduationCap, label: "CFI - in progress", outline: true },
 ];
 
