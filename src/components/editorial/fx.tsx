@@ -24,7 +24,7 @@ const reduced = () =>
 export const rise = (delay: number, duration = 1) =>
   ({ "--d": `${delay}s`, "--dur": `${duration}s` }) as CSSProperties;
 
-type RevealTag = "div" | "h1" | "h2" | "h3" | "p" | "span" | "li" | "a";
+type RevealTag = "div" | "h1" | "h2" | "h3" | "p" | "span" | "li" | "a" | "article" | "section";
 
 /**
  * Scroll reveal: from blurred and 36px low to settled, once, when 12% of the

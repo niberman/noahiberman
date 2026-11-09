@@ -196,17 +196,17 @@ export function HermesChat() {
   /* ---------------------------------------------------------------- */
 
   return (
-    <Card className="bg-card/95 backdrop-blur animate-slide-up">
+    <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-secondary flex-shrink-0" />
-            <CardTitle className="text-lg sm:text-xl">Hermes</CardTitle>
+            <Bot className="h-5 w-5 text-ed-light flex-shrink-0" />
+            <CardTitle>Hermes</CardTitle>
             <Badge
               variant={connected ? "default" : "secondary"}
               className={
                 connected
-                  ? "bg-green-500/20 text-green-400 border-green-500/40"
+                  ? "border-[rgba(180,140,240,.5)] bg-[rgba(128,51,204,.15)] text-ed-light"
                   : ""
               }
             >

@@ -112,7 +112,7 @@ function FlightLogSection({
     <div className="space-y-4 border-b border-border/50 pb-6 last:border-b-0 last:pb-0">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 shrink-0 text-secondary" />
+          <Icon className="h-4 w-4 shrink-0 text-ed-light" />
           <h3 className="text-base font-semibold leading-none tracking-tight">
             {title}
           </h3>
@@ -142,7 +142,7 @@ function FlightLogCollapsibleCard({
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <Card className="bg-card/95 backdrop-blur overflow-hidden">
+      <Card className="overflow-hidden">
         <CollapsibleTrigger asChild>
           <button
             type="button"
@@ -151,8 +151,8 @@ function FlightLogCollapsibleCard({
             <CardHeader className="flex flex-row items-start justify-between gap-4">
               <div className="min-w-0 flex-1 space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <Icon className="h-5 w-5 shrink-0 text-secondary" />
-                  <CardTitle className="text-lg">{title}</CardTitle>
+                  <Icon className="h-5 w-5 shrink-0 text-ed-light" />
+                  <CardTitle>{title}</CardTitle>
                 </div>
                 <CardDescription>{description}</CardDescription>
               </div>
@@ -475,7 +475,7 @@ function CSVImportBody({
 
       {/* Import success */}
       {importResult && (
-        <div className="flex items-center gap-2 rounded-md bg-green-500/10 border border-green-500/30 px-3 py-2 text-sm text-green-400">
+        <div className="flex items-center gap-2 rounded-2xl bg-[rgba(128,51,204,.1)] border border-[rgba(180,140,240,.4)] px-4 py-2.5 text-sm text-ed-light">
           <CheckCircle2 className="h-4 w-4" />
           Imported {importResult.flights} flights and {importResult.airports} new airports.
         </div>

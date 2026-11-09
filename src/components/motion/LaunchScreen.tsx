@@ -50,7 +50,7 @@ export function LaunchScreen({
           </picture>
         </div>
 
-        <p className="mb-3 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.34em] text-secondary sm:text-xs">
+        <p className="mb-3 font-mono text-[0.68rem] font-semibold uppercase tracking-[0.34em] text-ed-light sm:text-xs">
           Flyover systems
         </p>
         <h2 className="mb-3 font-display text-4xl font-normal tracking-tight text-balance sm:text-5xl">

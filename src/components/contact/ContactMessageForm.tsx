@@ -43,10 +43,10 @@ export function ContactMessageForm() {
   };
 
   return (
-    <Card className="bg-gradient-card border-border/50 shadow-elegant h-full">
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-display">Send a Message</CardTitle>
-        <CardDescription className="text-sm sm:text-base">
+        <CardTitle className="text-[clamp(28px,2.8vw,40px)]">Send a Message</CardTitle>
+        <CardDescription className="text-[15px]">
           Fill out the form and I'll get back to you as soon as possible.
         </CardDescription>
       </CardHeader>
@@ -83,7 +83,7 @@ export function ContactMessageForm() {
           </div>
           <Button
             type="submit"
-            className="w-full text-sm sm:text-base py-5 sm:py-6 rounded-full active:scale-95 md:hover:scale-105 transition-transform bg-secondary hover:bg-secondary/90"
+            className="btn-sheen w-full"
             size="lg"
             disabled={submitMessage.isPending}
           >

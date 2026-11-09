@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Plane, Radio, Navigation } from "lucide-react";
+import { Plane, Navigation } from "lucide-react";
 import { useCurrentFlight } from "@/hooks/use-supabase-flights";
 import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
 import type { AircraftPosition } from "@/lib/aircraft-position";
@@ -30,65 +28,47 @@ export function LiveFlightIndicator() {
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
         className="fixed top-[72px] sm:top-20 md:top-24 right-2 sm:right-4 z-[105] w-44 sm:w-48 md:w-56"
       >
-        <Card className="bg-gradient-to-br from-green-500/95 via-green-600/95 to-green-700/95 backdrop-blur-xl border-2 border-green-400/50 shadow-2xl overflow-hidden">
-          {/* Animated background effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-
-          {/* Pulsing glow effect */}
-          <div className="absolute -inset-1 bg-green-400 blur-xl opacity-30 animate-pulse" />
-
-          <div className="relative p-2.5 sm:p-3">
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-2">
-              <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-white rounded-full blur-sm animate-pulse" />
-                <div className="relative bg-white/20 p-1 sm:p-1.5 rounded-full backdrop-blur-sm">
-                  <Plane className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" style={{ transform: `rotate(${aircraftPosition?.heading || 0}deg)` }} />
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <Radio className="h-2 w-2 text-white animate-pulse flex-shrink-0" />
-                  <span className="text-[9px] sm:text-[10px] font-bold text-white/90 tracking-wider uppercase truncate">Flying</span>
-                </div>
-                <p className="font-mono text-xs sm:text-sm font-black text-white tracking-wide truncate">
-                  {currentFlight.tail_number}
-                </p>
-              </div>
+        {/* Editorial glass card: the "Live from ForeFlight" pulse dot, serif
+            tail number, hairline-ruled readouts. */}
+        <div className="relative overflow-hidden rounded-3xl border border-[rgba(180,140,240,.35)] bg-[rgba(4,2,8,.82)] p-3 shadow-[0_0_48px_-12px_rgba(128,51,204,.6)] backdrop-blur-xl sm:p-4">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(240px_circle_at_20%_0%,rgba(128,51,204,.22),transparent_60%)]"
+          />
+          <div className="relative">
+            <div className="mb-2 flex items-center gap-2.5 text-[10px] uppercase tracking-[.26em] text-ed-light sm:text-[11px]">
+              <span className="ed-pulse h-[7px] w-[7px] shrink-0 rounded-full bg-ed-light" />
+              Flying
+              <Plane
+                className="ml-auto h-3.5 w-3.5 text-ed-light"
+                style={{ transform: `rotate(${aircraftPosition?.heading || 0}deg)` }}
+              />
             </div>
+            <p className="truncate font-editorial text-[24px] leading-none tracking-[-.01em] text-ed-ink sm:text-[28px]">
+              {currentFlight.tail_number}
+            </p>
 
-            {/* Flight Data - Compact */}
             {aircraftPosition && (
-              <div className="space-y-1 sm:space-y-1.5 text-[11px] sm:text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">Alt</span>
-                  <span className="font-bold text-white">{aircraftPosition.altitude.toLocaleString()} ft</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">Speed</span>
-                  <span className="font-bold text-white">{Math.round(aircraftPosition.speed)} kts</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">Hdg</span>
-                  <span className="font-bold text-white">{Math.round(aircraftPosition.heading)}°</span>
-                </div>
+              <div className="mt-3 border-t border-white/[.1] text-[11px] sm:text-xs">
+                {[
+                  ["Alt", `${aircraftPosition.altitude.toLocaleString()} ft`],
+                  ["Speed", `${Math.round(aircraftPosition.speed)} kts`],
+                  ["Hdg", `${Math.round(aircraftPosition.heading)}°`],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between border-b border-white/[.08] py-1.5">
+                    <span className="uppercase tracking-[.2em] text-ed-muted">{label}</span>
+                    <span className="tabular-nums text-ed-ink">{value}</span>
+                  </div>
+                ))}
               </div>
             )}
 
-            {/* Status bar */}
-            <div className="mt-2 pt-2 border-t border-white/20 flex items-center justify-between">
-              <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] h-auto">
-                <Navigation className="h-2 w-2 mr-0.5 sm:mr-1" />
-                <span className="font-bold">LIVE</span>
-              </Badge>
-              <div className="flex items-center gap-1">
-                <div className="h-1 w-1 bg-white rounded-full animate-pulse" />
-                <div className="h-1 w-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
-                <div className="h-1 w-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
-              </div>
-            </div>
+            <p className="mt-2.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[.26em] text-ed-muted">
+              <Navigation className="h-2.5 w-2.5" />
+              Live
+            </p>
           </div>
-        </Card>
+        </div>
       </m.div>
     </AnimatePresence>
   );

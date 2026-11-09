@@ -24,23 +24,25 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
   return (
     <div
       className={cn(
+        // Editorial reading type: Instrument Serif headings, Geist 300 body
+        // in the body tone, light-purple accents, hairline rules.
         "prose prose-invert prose-sm sm:prose-base max-w-none",
-        "prose-headings:font-display prose-headings:text-primary-foreground",
-        "prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg",
-        "prose-p:text-foreground/80 prose-p:leading-relaxed",
-        "prose-a:text-secondary prose-a:no-underline hover:prose-a:underline",
-        "prose-strong:text-foreground prose-strong:font-semibold",
-        "prose-em:text-foreground/90",
-        "prose-code:text-secondary prose-code:bg-secondary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none",
-        "prose-pre:bg-muted/50 prose-pre:border prose-pre:border-border/50",
-        "prose-blockquote:border-l-secondary prose-blockquote:bg-secondary/5 prose-blockquote:pl-4 prose-blockquote:py-1 prose-blockquote:not-italic",
-        "prose-ul:text-foreground/80 prose-ol:text-foreground/80",
-        "prose-li:marker:text-secondary",
-        "prose-hr:border-border/50",
-        "prose-table:text-foreground/80",
-        "prose-th:text-foreground prose-th:border-border",
-        "prose-td:border-border",
-        "[&_a]:text-secondary [&_a]:underline hover:[&_a]:text-secondary/80",
+        "prose-headings:font-editorial prose-headings:font-normal prose-headings:tracking-[-.02em] prose-headings:text-ed-ink",
+        "prose-h1:text-[clamp(32px,3.4vw,48px)] prose-h2:text-[clamp(28px,2.8vw,40px)] prose-h3:text-[clamp(22px,2.2vw,30px)]",
+        "prose-p:font-light prose-p:text-ed-body prose-p:leading-[1.7]",
+        "prose-a:text-ed-light prose-a:no-underline hover:prose-a:underline",
+        "prose-strong:text-ed-ink prose-strong:font-medium",
+        "prose-em:text-ed-ink",
+        "prose-code:text-ed-light prose-code:bg-[rgba(128,51,204,.12)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none",
+        "prose-pre:bg-white/[.03] prose-pre:border prose-pre:border-white/[.1] prose-pre:rounded-2xl",
+        "prose-blockquote:border-l-ed-light prose-blockquote:pl-5 prose-blockquote:py-1 prose-blockquote:font-editorial prose-blockquote:font-normal prose-blockquote:italic prose-blockquote:text-[1.35em] prose-blockquote:leading-snug prose-blockquote:text-ed-ink",
+        "prose-ul:font-light prose-ul:text-ed-body prose-ol:font-light prose-ol:text-ed-body",
+        "prose-li:marker:text-ed-light",
+        "prose-hr:border-white/[.12]",
+        "prose-table:text-ed-body",
+        "prose-th:text-ed-ink prose-th:border-white/[.12]",
+        "prose-td:border-white/[.08]",
+        "[&_a]:text-ed-light [&_a]:underline hover:[&_a]:text-ed-light/80",
         className
       )}
     >

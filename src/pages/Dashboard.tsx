@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { SEO } from "@/components/SEO";
+import { PageHeader, PageShell } from "@/components/editorial/EditorialPage";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,29 +120,16 @@ const Dashboard = () => {
         description="Flight tracking command center"
       />
      
-      <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24">
-        <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 max-w-3xl">
-          {/* Header */}
-          <div className="mb-8 sm:mb-10 animate-fade-in">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-0">
-              <div>
-                <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-[-0.03em] text-white mb-2 sm:mb-3">
-                  Flight Command
-                </h1>
-                <p className="text-white/80 text-base sm:text-lg">
-                  Set your aircraft to display live FlightAware tracking
-                </p>
-              </div>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="flex items-center gap-2 w-full sm:w-auto justify-center"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
-            </div>
-          </div>
+      <PageShell width="max-w-[860px]">
+          <PageHeader
+            title="Flight Command"
+            intro="Set your aircraft to display live FlightAware tracking"
+          >
+            <Button onClick={handleLogout} variant="outline" className="w-full sm:w-auto">
+              <LogOut />
+              Logout
+            </Button>
+          </PageHeader>
           
           {/* Scheduler Manager */}
         <div className="mt-8 sm:mt-10">
@@ -149,17 +137,14 @@ const Dashboard = () => {
         </div>
 
           {/* Main Flight Card */}
-          <Card className="bg-card/95 backdrop-blur animate-slide-up">
+          <Card className="mt-8 sm:mt-10">
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Plane className="h-5 w-5 text-secondary flex-shrink-0" />
+                  <Plane className="h-5 w-5 text-ed-light flex-shrink-0" />
                   <CardTitle className="text-lg sm:text-xl">Current Aircraft</CardTitle>
                 </div>
-                <Badge 
-                  variant={isFlying ? "default" : "secondary"}
-                  className={`${isFlying ? "bg-green-500/20 text-green-400 border-green-500/40" : ""} w-fit`}
-                >
+                <Badge variant={isFlying ? "default" : "outline"} className="w-fit">
                   {isFlying ? "Flying" : "Not Flying"}
                 </Badge>
               </div>
@@ -176,7 +161,7 @@ const Dashboard = () => {
                   placeholder="N12345"
                   value={tailNumber}
                   onChange={(e) => setTailNumber(e.target.value.toUpperCase())}
-                  className="font-mono text-base sm:text-lg"
+                  className="text-base tracking-[.08em] tabular-nums sm:text-lg"
                 />
                 <p className="text-xs text-muted-foreground">
                   Enter the aircraft registration you're currently flying
@@ -184,7 +169,7 @@ const Dashboard = () => {
               </div>
 
               {/* Flying Status Toggle */}
-              <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/50">
+              <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl border border-white/[.08] bg-white/[.02]">
                 <div className="space-y-0.5 flex-1 mr-4">
                   <Label htmlFor="flying-status" className="text-sm sm:text-base">
                     Currently Flying
@@ -202,7 +187,7 @@ const Dashboard = () => {
               </div>
 
               {/* Save Button */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-4 border-t">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-4 border-t border-white/[.08]">
                 <div className="text-xs sm:text-sm text-muted-foreground">
                   {lastSaved && (
                     <>Last updated: {lastSaved.toLocaleTimeString()}</>
@@ -211,9 +196,9 @@ const Dashboard = () => {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving || !tailNumber}
-                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                  className="w-full sm:w-auto"
                 >
-                  <Save className="h-4 w-4" />
+                  <Save />
                   {isSaving ? "Saving..." : "Save"}
                 </Button>
               </div>
@@ -248,15 +233,15 @@ const Dashboard = () => {
                   navigate("/openclaw");
                 }
               }}
-              className="bg-card/95 backdrop-blur animate-slide-up cursor-pointer transition-all hover:bg-card hover:shadow-elegant hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+              className="cursor-pointer transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-ed-light/50 hover:bg-[rgba(128,51,204,.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ed-light"
             >
               <CardHeader>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <Bot className="h-5 w-5 text-secondary flex-shrink-0" />
+                    <Bot className="h-5 w-5 text-ed-light flex-shrink-0" />
                     <CardTitle className="text-lg sm:text-xl">Hermes</CardTitle>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <ArrowRight className="h-4 w-4 text-ed-muted flex-shrink-0" />
                 </div>
                 <CardDescription className="text-sm">
                   Open the Hermes Agent chat
@@ -269,8 +254,7 @@ const Dashboard = () => {
           <div className="mt-8 sm:mt-10">
             <AgentControl />
           </div>
-        </div>
-      </div>
+      </PageShell>
     </>
   );
 };

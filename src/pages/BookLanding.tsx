@@ -1,7 +1,8 @@
 import { Link, Navigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { EYEBROW, PageHeader, PageShell } from "@/components/editorial/EditorialPage";
+import { Reveal, glow } from "@/components/editorial/fx";
 import { Calendar, Clock, Loader2, MapPin, ArrowRight } from "lucide-react";
 import { usePublicMeetingTypes } from "@/hooks/use-scheduling";
 
@@ -26,80 +27,70 @@ export default function BookLanding() {
         description="Choose a meeting type and pick a time that works for you."
       />
 
-      <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24 pb-12">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="mb-8 sm:mb-10 animate-fade-in text-center">
-            <div className="inline-flex items-center justify-center rounded-full bg-secondary/15 p-3 mb-4">
-              <Calendar className="h-8 w-8 text-secondary" />
-            </div>
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.03em] text-white mb-2">
-              Book a meeting
-            </h1>
-            <p className="text-white/65 text-sm sm:text-base max-w-lg mx-auto">
-              Select the kind of conversation you want. You will choose an available time on the next
-              step.
-            </p>
-          </div>
+      <PageShell width="max-w-[960px]">
+          <PageHeader
+            align="center"
+            eyebrow={<Calendar className="mx-auto h-6 w-6 text-ed-light" />}
+            title="Book a meeting"
+            intro="Select the kind of conversation you want. You will choose an available time on the next step."
+          />
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="h-6 w-6 animate-spin text-ed-muted" />
             </div>
           ) : error ? (
-            <Card className="bg-card/95 backdrop-blur border-destructive/30">
-              <CardContent className="py-10 text-center text-sm text-destructive">
-                Could not load meeting types. Please try again later.
-              </CardContent>
-            </Card>
+            <p className="border-t border-white/[.12] py-12 text-center text-sm text-destructive">
+              Could not load meeting types. Please try again later.
+            </p>
           ) : meetings.length === 0 ? (
-            <Card className="bg-card/95 backdrop-blur">
-              <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                No meetings are available to book right now. Reach out through the contact form
-                instead.
-              </CardContent>
-            </Card>
+            <p className="border-t border-white/[.12] py-12 text-center text-[15px] font-light text-ed-body">
+              No meetings are available to book right now. Reach out through the contact form
+              instead.
+            </p>
           ) : (
-            <ul className="space-y-4 animate-slide-up">
-              {meetings.map((mt) => (
-                <li key={mt.slug}>
-                  <Card className="bg-card/95 backdrop-blur border-border/60 hover:border-secondary/40 transition-colors">
-                    <CardHeader className="space-y-3">
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="min-w-0 space-y-2">
-                          <CardTitle className="text-lg sm:text-xl font-display text-foreground">
-                            {mt.name}
-                          </CardTitle>
-                          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              {mt.duration_min} min
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <MapPin className="h-3.5 w-3.5" />
-                              {locationLabel(mt.location_type)}
-                            </span>
-                          </div>
-                        </div>
-                        <Button asChild className="w-full sm:w-auto shrink-0">
-                          <Link to={`/book/${mt.slug}`}>
-                            Choose time
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                      {mt.description ? (
-                        <CardDescription className="text-sm leading-relaxed">
-                          {mt.description}
-                        </CardDescription>
-                      ) : null}
-                    </CardHeader>
-                  </Card>
-                </li>
+            // Ledger rows, as on Now: hairline-separated, glow on hover.
+            <ul className="border-t border-white/[.12]">
+              {meetings.map((mt, i) => (
+                <Reveal
+                  as="li"
+                  key={mt.slug}
+                  delay={i * 80}
+                  {...glow}
+                  className="relative flex flex-col gap-5 overflow-hidden border-b border-white/[.12] py-[clamp(24px,3.5vw,44px)] sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div aria-hidden className="ed-glow pointer-events-none absolute inset-0 [--glow-alpha:.18] [--glow-fade:.5s] [--glow-size:640px]" />
+                  <div className="relative min-w-0">
+                    <h2 className="font-editorial font-normal text-[clamp(28px,3.6vw,52px)] leading-none tracking-[-.03em]">
+                      {mt.name}
+                    </h2>
+                    <div className={`mt-3 flex flex-wrap items-center gap-5 ${EYEBROW} tracking-[.2em]`}>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />
+                        {mt.duration_min} min
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {locationLabel(mt.location_type)}
+                      </span>
+                    </div>
+                    {mt.description ? (
+                      <p className="mt-3 max-w-[520px] text-[15px] font-light leading-[1.6] text-ed-body">
+                        {mt.description}
+                      </p>
+                    ) : null}
+                  </div>
+                  <Button asChild variant="outline" className="relative w-full shrink-0 sm:w-auto">
+                    <Link to={`/book/${mt.slug}`}>
+                      Choose time
+                      <ArrowRight />
+                    </Link>
+                  </Button>
+                </Reveal>
               ))}
             </ul>
           )}
-        </div>
-      </div>
+      </PageShell>
     </>
   );
 }

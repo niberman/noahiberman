@@ -137,7 +137,7 @@ export default function AgentControl() {
         </h2>
         <div className="flex items-center gap-2">
           <span
-            className={`w-2 h-2 rounded-full ${busy ? "bg-yellow-500 animate-pulse" : "bg-green-500"}`}
+            className={`w-2 h-2 rounded-full ${busy ? "bg-ed-muted animate-pulse" : "bg-ed-light"}`}
           />
           <span className="text-xs text-zinc-600 font-mono">
             {AGENT_URL.replace(/^https?:\/\//, "")}

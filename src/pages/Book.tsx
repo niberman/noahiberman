@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Video,
 } from "lucide-react";
+import { PageHeader, PageShell } from "@/components/editorial/EditorialPage";
 import {
   useAvailableSlots,
   useBookSlot,
@@ -138,9 +139,9 @@ export default function Book() {
 
   if (!slug) {
     return (
-      <div className="min-h-screen bg-gradient-dusk pt-20 flex items-center justify-center">
-        <p className="text-white/60">No meeting type specified.</p>
-      </div>
+      <PageShell width="max-w-[960px]">
+        <PageHeader align="center" title="No meeting type specified." />
+      </PageShell>
     );
   }
 
@@ -155,48 +156,43 @@ export default function Book() {
         description={data?.meeting?.description || "Schedule a meeting"}
       />
 
-      <div className="min-h-screen bg-gradient-dusk pt-20 sm:pt-24 pb-12">
-        <div className="container mx-auto px-4 max-w-3xl">
-          {/* Header */}
-          <div className="mb-6 sm:mb-8 animate-fade-in text-center">
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.03em] text-white mb-2">
-              {data?.meeting?.name || "Loading..."}
-            </h1>
-            {data?.meeting && (
-              <div className="flex items-center justify-center gap-4 text-white/70 text-sm">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4" />
-                  {data.meeting.duration_min} min
+      <PageShell width="max-w-[960px]">
+          <PageHeader
+            align="center"
+            title={data?.meeting?.name || "Loading..."}
+            eyebrow={
+              data?.meeting && (
+                <span className="flex items-center justify-center gap-5">
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    {data.meeting.duration_min} min
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {data.meeting.location_type === "google_meet"
+                      ? "Google Meet"
+                      : data.meeting.location_type === "zoom"
+                      ? "Video Call"
+                      : data.meeting.location_type === "phone"
+                      ? "Phone"
+                      : "In Person"}
+                  </span>
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4" />
-                  {data.meeting.location_type === "google_meet"
-                    ? "Google Meet"
-                    : data.meeting.location_type === "zoom"
-                    ? "Video Call"
-                    : data.meeting.location_type === "phone"
-                    ? "Phone"
-                    : "In Person"}
-                </span>
-              </div>
-            )}
-            {data?.meeting?.description && (
-              <p className="text-white/60 mt-3 max-w-md mx-auto text-sm">
-                {data.meeting.description}
-              </p>
-            )}
-          </div>
+              )
+            }
+            intro={data?.meeting?.description}
+          />
 
           {/* Step: Select */}
           {step === "select" && (
-            <Card className="bg-card/95 backdrop-blur animate-slide-up">
+            <Card className="ed-rise">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-secondary" />
+                  <CardTitle className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-ed-light" />
                     Select a Time
                   </CardTitle>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline">
                     {guestTz.replace(/_/g, " ")}
                   </Badge>
                 </div>
@@ -211,7 +207,7 @@ export default function Book() {
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </Button>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs uppercase tracking-[.2em] text-ed-muted">
                     Week of{" "}
                     {new Intl.DateTimeFormat("en-US", {
                       month: "short",
@@ -232,14 +228,14 @@ export default function Book() {
               <CardContent>
                 {isLoading ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <Loader2 className="h-6 w-6 animate-spin text-ed-muted" />
                   </div>
                 ) : error ? (
                   <p className="text-sm text-destructive text-center py-8">
                     Failed to load availability. Try again later.
                   </p>
                 ) : slotsByDate.size === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
+                  <p className="text-[15px] font-light text-ed-body text-center py-8">
                     No available times this week. Try the next week.
                   </p>
                 ) : (
@@ -251,15 +247,15 @@ export default function Book() {
                           <div key={dateKey}>
                             {/* Date row -- accordion trigger on mobile, always open on desktop */}
                             <button
-                              className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors text-left min-h-[44px] lg:cursor-default"
+                              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-white/[.04] transition-colors text-left min-h-[44px] lg:cursor-default"
                               onClick={() =>
                                 setExpandedDate(isExpanded ? null : dateKey)
                               }
                             >
-                              <span className="text-sm font-medium">
+                              <span className="font-editorial text-[22px] leading-none tracking-[-.01em]">
                                 {formatDateHeading(dateKey, guestTz)}
                               </span>
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline">
                                 {slots.length} slot{slots.length !== 1 ? "s" : ""}
                               </Badge>
                             </button>
@@ -277,7 +273,7 @@ export default function Book() {
                                   <Button
                                     key={slot.start}
                                     variant="outline"
-                                    className="min-h-[44px] text-sm font-mono"
+                                    className="min-h-[44px] tabular-nums"
                                     onClick={() => handleSelectSlot(slot)}
                                   >
                                     {formatSlotTime(slot.start, guestTz)}
@@ -297,22 +293,22 @@ export default function Book() {
 
           {/* Step: Confirm */}
           {step === "confirm" && selectedSlot && (
-            <Card className="bg-card/95 backdrop-blur animate-slide-up">
+            <Card className="ed-rise">
               <CardHeader>
-                <CardTitle className="text-base sm:text-lg">
+                <CardTitle>
                   Confirm Your Booking
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <div className="p-4 rounded-lg bg-muted/50 space-y-1">
-                  <p className="text-sm font-medium">
+                <div className="p-5 rounded-2xl border border-white/[.08] bg-white/[.02] space-y-1">
+                  <p className="text-xs uppercase tracking-[.2em] text-ed-muted">
                     {formatSlotDate(selectedSlot.start, guestTz)}
                   </p>
-                  <p className="text-lg font-mono">
+                  <p className="font-editorial text-[clamp(28px,3vw,40px)] leading-tight tabular-nums">
                     {formatSlotTime(selectedSlot.start, guestTz)} -{" "}
                     {formatSlotTime(selectedSlot.end, guestTz)}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-ed-muted">
                     {guestTz.replace(/_/g, " ")}
                   </p>
                 </div>
@@ -360,7 +356,7 @@ export default function Book() {
                   >
                     {bookSlot.isPending ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="animate-spin" />
                         Booking...
                       </>
                     ) : (
@@ -381,17 +377,17 @@ export default function Book() {
 
           {/* Step: Done */}
           {step === "done" && selectedSlot && (
-            <Card className="bg-card/95 backdrop-blur animate-slide-up">
+            <Card className="ed-rise">
               <CardContent className="py-12 text-center space-y-4">
-                <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto" />
-                <h2 className="text-2xl font-display font-normal text-white">
-                  You are booked.
+                <CheckCircle2 className="h-10 w-10 text-ed-light mx-auto" />
+                <h2 className="font-editorial font-normal text-[clamp(40px,5vw,64px)] leading-none tracking-[-.03em]">
+                  You are <em className="text-ed-light">booked.</em>
                 </h2>
-                <div className="text-white/70 space-y-1">
-                  <p className="font-medium">
+                <div className="text-ed-body space-y-1">
+                  <p className="text-xs uppercase tracking-[.2em] text-ed-muted">
                     {formatSlotDate(selectedSlot.start, guestTz)}
                   </p>
-                  <p className="text-lg font-mono">
+                  <p className="font-editorial text-[clamp(28px,3vw,40px)] leading-tight tabular-nums">
                     {formatSlotTime(selectedSlot.start, guestTz)} -{" "}
                     {formatSlotTime(selectedSlot.end, guestTz)}
                   </p>
@@ -406,19 +402,18 @@ export default function Book() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Video className="h-4 w-4 mr-2" />
+                      <Video />
                       Join with Google Meet
                     </a>
                   </Button>
                 )}
-                <p className="text-sm text-white/50 pt-2">
+                <p className="text-sm font-light text-ed-muted pt-2">
                   A calendar invite has been sent to {guestEmail}.
                 </p>
               </CardContent>
             </Card>
           )}
-        </div>
-      </div>
+      </PageShell>
     </>
   );
 }

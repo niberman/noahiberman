@@ -1,12 +1,14 @@
+// Brand mark on the site ground. It used to sit on a white page, which left
+// the dark site nav and footer framing a white slab.
 const Logo = () => {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-white">
-      <img 
+    <main className="flex min-h-screen w-full items-center justify-center px-[clamp(16px,4vw,56px)] pt-[76px]">
+      <img
         src="/logo-full.png"
-        alt="Noah Iberman Logo" 
-        className="max-w-full max-h-screen p-8"
+        alt="Noah Iberman Logo"
+        className="ed-rise w-[min(560px,80vw)] p-8 drop-shadow-glow"
       />
-    </div>
+    </main>
   );
 };
 

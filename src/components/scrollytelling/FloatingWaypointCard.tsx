@@ -6,22 +6,13 @@ import { HERO_WAYPOINT, type MapWaypoint } from "@/data/waypoints";
 import { useActiveWaypoint, useStackVisible } from "@/hooks/use-active-waypoint";
 import { useMapRef } from "@/lib/map-ref";
 
-const accentClasses: Record<NonNullable<MapWaypoint["accent"]>, { ring: string; eyebrow: string; pin: string }> = {
-  aviation: {
-    ring: "ring-secondary/40 shadow-[0_0_40px_-12px_rgba(168,85,247,0.6)]",
-    eyebrow: "text-secondary",
-    pin: "bg-secondary",
-  },
-  education: {
-    ring: "ring-amber-300/40 shadow-[0_0_40px_-12px_rgba(252,211,77,0.55)]",
-    eyebrow: "text-amber-300",
-    pin: "bg-amber-300",
-  },
-  business: {
-    ring: "ring-emerald-300/40 shadow-[0_0_40px_-12px_rgba(110,231,183,0.55)]",
-    eyebrow: "text-emerald-300",
-    pin: "bg-emerald-300",
-  },
+// One accent for every stop, from the editorial palette. The amber
+// (education) and emerald (business) variants were the only non-purple hues
+// left on the public site; the stop's code in the eyebrow already names it.
+const ACCENT = {
+  ring: "ring-[rgba(180,140,240,.3)] shadow-[0_0_48px_-12px_rgba(128,51,204,.6)]",
+  eyebrow: "text-ed-light",
+  pin: "bg-ed-light",
 };
 
 /** One timing curve for pin + every card variant so transitions read as one system. */
@@ -79,7 +70,7 @@ function PinOverlay({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
 function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
   const map = useMapRef();
   const ref = useRef<HTMLDivElement>(null);
-  const accent = accentClasses[waypoint.accent ?? "aviation"];
+  const accent = ACCENT;
 
   useLayoutEffect(() => {
     if (!map) return;
@@ -244,7 +235,7 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
 }
 
 function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: boolean }) {
-  const accent = accentClasses[waypoint.accent ?? "aviation"];
+  const accent = ACCENT;
   const handleCta = () => {
     if (waypoint.cta?.event) {
       window.dispatchEvent(new CustomEvent(waypoint.cta.event));
@@ -255,26 +246,22 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl ring-1 ${accent.ring} ${
-        compact ? "p-4" : "p-5"
+      className={`relative overflow-hidden rounded-3xl border border-white/[.1] bg-[rgba(4,2,8,.8)] backdrop-blur-xl ring-1 ${accent.ring} ${
+        compact ? "p-4" : "p-6"
       }`}
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_0%,rgba(255,255,255,0.16),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_44%)]"
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(420px_circle_at_20%_0%,rgba(128,51,204,.2),transparent_60%)]"
       />
       <div className="relative">
         <m.div {...rise(0)} className="flex items-center gap-2 mb-2">
-          <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${accent.eyebrow}`}>
+          <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[.26em] ${accent.eyebrow}`}>
             <MapPin className="h-3 w-3" />
             {waypoint.code ?? "Location"}
           </span>
           {waypoint.year && (
-            <span className="ml-auto text-[11px] font-medium text-white/50 tabular-nums">{waypoint.year}</span>
+            <span className="ml-auto text-[11px] tracking-[.1em] text-ed-muted tabular-nums">{waypoint.year}</span>
           )}
         </m.div>
 
@@ -283,22 +270,22 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
             <img
               src={waypoint.logo}
               alt=""
-              className="h-10 w-10 rounded-md object-contain bg-white/5 p-1 flex-shrink-0"
+              className="h-10 w-10 rounded-xl object-contain bg-white/[.04] p-1 flex-shrink-0"
             />
           )}
           <div className="min-w-0">
-            <h3 className={`font-display font-normal text-white leading-tight ${compact ? "text-lg" : "text-xl"}`}>
+            <h3 className={`font-editorial font-normal text-ed-ink leading-none tracking-[-.02em] ${compact ? "text-[24px]" : "text-[30px]"}`}>
               {waypoint.title}
             </h3>
             {waypoint.subtitle && (
-              <p className={`italic text-white/60 mt-0.5 ${compact ? "text-xs" : "text-sm"}`}>
+              <p className={`font-editorial italic text-ed-light mt-1 ${compact ? "text-[16px]" : "text-[19px]"}`}>
                 {waypoint.subtitle}
               </p>
             )}
           </div>
         </m.div>
 
-        <m.p {...rise(2)} className={`mt-3 text-white/80 leading-relaxed ${compact ? "text-sm" : "text-[0.95rem]"}`}>
+        <m.p {...rise(2)} className={`mt-3 font-light text-ed-body leading-relaxed ${compact ? "text-sm" : "text-[15px]"}`}>
           {waypoint.body}
         </m.p>
 
@@ -307,10 +294,10 @@ function CardChrome({ waypoint, compact }: { waypoint: MapWaypoint; compact?: bo
             <Button
               onClick={handleCta}
               size="sm"
-              className="mt-4 w-full sm:w-auto bg-white text-black hover:bg-white/90 font-medium"
+              className="mt-5 w-full sm:w-auto"
             >
               {waypoint.cta.label}
-              {waypoint.cta.href && <ExternalLink className="ml-1.5 h-3.5 w-3.5" />}
+              {waypoint.cta.href && <ExternalLink />}
             </Button>
           </m.div>
         )}

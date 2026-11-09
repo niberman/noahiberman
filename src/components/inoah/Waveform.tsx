@@ -61,7 +61,7 @@ export function Waveform({ active, getLevel, className }: WaveformProps) {
         const barHeight = Math.max(2, h * cssHeight);
         const x = i * (barWidth + gap);
         const y = (cssHeight - barHeight) / 2;
-        ctx.fillStyle = active ? "#4FB3FF" : "rgba(139, 152, 165, 0.5)";
+        ctx.fillStyle = active ? "#b48cf0" : "rgba(167, 159, 184, 0.5)";
         ctx.beginPath();
         ctx.roundRect(x, y, barWidth, barHeight, 1.5);
         ctx.fill();

@@ -3,9 +3,10 @@
 // floating panel (variant "panel", with a close button) and the /inoah page
 // (variant "page").
 //
-// Visual system is scoped under .inoah-surface (see index.css): #0B0F14
-// ground, #131A22 surfaces, #4FB3FF accent, Inter for UI, JetBrains Mono for
-// data, 8px spacing grid, 12px radius, 180ms state and 400ms panel motion.
+// Tokens are scoped under .inoah-surface (see index.css) and carry the site's
+// editorial palette: #040208-family grounds, #ece6f5 ink, #b48cf0 accent,
+// Instrument Serif for titles, Geist for UI and labels. The 8px grid and the
+// 180ms state / 400ms panel motion from the iNoah brief are unchanged.
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUp, Check, Copy, RefreshCw, Square, Volume2, VolumeX, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -289,7 +290,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
     <div
       className={cn(
         "inoah-surface flex h-full min-h-0 flex-col overflow-hidden bg-[var(--in-bg)] font-sans text-[var(--in-text)] antialiased",
-        variant === "page" && "rounded-[12px] border border-white/10 shadow-2xl",
+        variant === "page" && "rounded-[24px] border border-white/10 shadow-[0_30px_80px_-20px_rgba(70,20,130,.5)]",
       )}
     >
       {/* Header */}
@@ -304,8 +305,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--in-success)]" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-[15px] font-semibold leading-tight tracking-tight">iNoah</h2>
-          <p className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--in-muted)]">
+          <h2 className="font-editorial text-[22px] font-normal leading-none tracking-[-.01em]">iNoah</h2>
+          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.26em] text-[var(--in-muted)]">
             AI twin · public notes only
           </p>
         </div>
@@ -344,7 +345,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
       >
         <span
           aria-hidden="true"
-          className="mt-px flex-none rounded-[4px] border border-[var(--in-accent)]/40 px-1 py-px font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-[var(--in-accent)]"
+          className="mt-px flex-none rounded-[4px] border border-[var(--in-accent)]/40 px-1 py-px text-[9px] font-medium uppercase tracking-[0.12em] text-[var(--in-accent)]"
         >
           AI
         </span>
@@ -366,7 +367,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
           <div className="flex min-h-full flex-col items-center justify-center gap-6 px-2 py-4 text-center">
             <div className="inoah-orb" aria-hidden="true" />
             <div className="space-y-1.5">
-              <p className="text-lg font-semibold tracking-tight">Ask me anything on file.</p>
+              <p className="font-editorial text-[30px] font-normal leading-none tracking-[-.02em]">Ask me anything on file.</p>
               <p className="mx-auto max-w-[280px] text-[13px] leading-relaxed text-[var(--in-muted)]">
                 Answers come from Noah's public notes, in his voice, read aloud.
               </p>
@@ -391,7 +392,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
                   type="button"
                   onClick={rotateChips}
                   className={cn(
-                    "mx-auto mt-3 flex items-center gap-1.5 rounded-[8px] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--in-muted)]",
+                    "mx-auto mt-3 flex items-center gap-1.5 rounded-[8px] px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-[var(--in-muted)]",
                     "transition-colors [transition-duration:180ms] hover:text-[var(--in-text)]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--in-accent)]",
                   )}
@@ -413,7 +414,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
                 </div>
               ) : (
                 <div key={m.id} className="max-w-[94%]">
-                  <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--in-accent)]/80">
+                  <p className="mb-1 text-[9px] uppercase tracking-[0.16em] text-[var(--in-accent)]/80">
                     iNoah
                   </p>
                   {m.status === "streaming" ? (
@@ -444,7 +445,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
               ),
             )}
             {sending && messages[messages.length - 1]?.content === "" && (
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--in-muted)]">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--in-muted)]">
                 <span className="inline-block animate-pulse motion-reduce:animate-none">Reading the notes</span>
               </p>
             )}
@@ -477,7 +478,7 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
             <div className="h-6 flex-1" role="img" aria-label="iNoah is speaking">
               <Waveform active={voice.speaking} getLevel={voice.getLevel} />
             </div>
-            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--in-muted)]">
+            <span className="text-[9px] uppercase tracking-[0.16em] text-[var(--in-muted)]">
               Speaking
             </span>
             <button
@@ -521,8 +522,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
             aria-label="Send question"
             className={cn(
               "flex h-8 w-8 flex-none items-center justify-center rounded-full",
-              "bg-[var(--in-accent)] text-[#08121C] transition-[opacity,transform] [transition-duration:180ms] ease-out",
-              "hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--in-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--in-surface)]",
+              "bg-ed-accent text-white shadow-[0_0_24px_-4px_rgba(128,51,204,.6)] transition-[opacity,background-color] [transition-duration:180ms] ease-out",
+              "hover:bg-ed-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--in-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--in-surface)]",
               "disabled:opacity-30 disabled:pointer-events-none motion-reduce:transition-none",
             )}
           >
@@ -533,14 +534,14 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
           <a
             href="mailto:noah@noahiberman.com"
             className={cn(
-              "font-mono text-[10px] tracking-wide text-[var(--in-muted)] underline-offset-2",
+              "text-[10px] tracking-wide text-[var(--in-muted)] underline-offset-2",
               "transition-colors [transition-duration:180ms] hover:text-[var(--in-accent)] hover:underline",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--in-accent)] rounded-[4px]",
             )}
           >
             Ask Noah directly
           </a>
-          <span className="hidden font-mono text-[10px] text-[var(--in-muted)]/60 sm:inline" aria-hidden="true">
+          <span className="hidden text-[10px] text-[var(--in-muted)]/60 sm:inline" aria-hidden="true">
             Enter to send
           </span>
         </div>

@@ -50,10 +50,10 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-dusk flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <p className="mt-4 text-muted-foreground">Checking access...</p>
+          <span className="ed-pulse inline-block h-[7px] w-[7px] rounded-full bg-ed-light" />
+          <p className="mt-5 text-xs uppercase tracking-[.3em] text-ed-muted">Checking access...</p>
         </div>
       </div>
     );

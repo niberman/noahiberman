@@ -1,76 +1,71 @@
-import { m } from "framer-motion";
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { caseStudyById } from "@/data/caseStudies";
+import { BODY, BackLink, CARD_TITLE, EYEBROW, PageHeader, PageShell } from "@/components/editorial/EditorialPage";
+import { Reveal } from "@/components/editorial/fx";
 import NotFound from "./NotFound";
 
 export default function CaseStudyDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const study = id ? caseStudyById(id) : undefined;
   if (!study) return <NotFound />;
 
   return (
-    <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-20 px-4 sm:px-6">
+    <PageShell width="max-w-[1000px]">
       <SEO
         title={`${study.title} | Noah Berman`}
         description={study.summary}
       />
-      <div className="container mx-auto max-w-3xl">
-        <m.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/work")}
-            className="mb-8 -ml-3 text-muted-foreground"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> All work
-          </Button>
+      <BackLink to="/work">All work</BackLink>
 
-          <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-2">
+      {/* Same eyebrow, title, and tagline treatment as the row on /work. */}
+      <PageHeader
+        size="item"
+        eyebrow={
+          <span className="flex items-center gap-3">
+            <span className="h-px w-8 bg-ed-accent" />
             {study.category}
-          </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-normal tracking-[-0.03em] text-primary-foreground mb-2">
-            {study.title}
-          </h1>
-          <p className="text-xl text-ed-light font-display italic mb-6">{study.tagline}</p>
+          </span>
+        }
+        title={study.title}
+        es={study.tagline}
+      >
+        <div className={`flex flex-wrap items-center gap-3 ${EYEBROW}`}>
+          <span>{study.year}</span>
+          <span aria-hidden="true">·</span>
+          <span>{study.status}</span>
+        </div>
+      </PageHeader>
 
-          <div className="flex flex-wrap items-center gap-3 mb-10 text-sm text-muted-foreground">
-            <span>{study.year}</span>
-            <span aria-hidden="true">·</span>
-            <span>{study.status}</span>
-          </div>
+      <Reveal as="p" className={`mb-[clamp(48px,7vw,96px)] max-w-[680px] ${BODY}`}>
+        {study.summary}
+      </Reveal>
 
-          <p className="text-lg text-foreground/90 leading-relaxed mb-8">{study.summary}</p>
+      <Reveal as="h2" className={`mb-[clamp(20px,3vw,32px)] ${CARD_TITLE}`}>
+        What makes it interesting
+      </Reveal>
+      <ul className="mb-[clamp(40px,6vw,72px)] border-t border-white/[.12]">
+        {study.highlights.map((h, i) => (
+          <Reveal
+            as="li"
+            key={h}
+            delay={i * 60}
+            className="flex items-start gap-4 border-b border-white/[.12] py-[clamp(16px,2.2vw,24px)] text-[clamp(16px,1.3vw,19px)] font-light leading-[1.6] text-ed-body"
+          >
+            <span className="mt-[.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-ed-light" />
+            {h}
+          </Reveal>
+        ))}
+      </ul>
 
-          <h2 className="text-2xl font-display font-normal text-primary-foreground mb-4">
-            What makes it interesting
-          </h2>
-          <ul className="space-y-3 mb-10">
-            {study.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-3 text-foreground/85">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-secondary shrink-0" />
-                {h}
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex flex-wrap gap-2 mb-10">
-            {study.stack.map((tech) => (
-              <Badge key={tech} variant="secondary" className="font-normal">
-                {tech}
-              </Badge>
-            ))}
-          </div>
-
-        </m.div>
-      </div>
-    </main>
+      <Reveal className="flex flex-wrap gap-2">
+        {study.stack.map((tech) => (
+          <Badge key={tech} variant="secondary">
+            {tech}
+          </Badge>
+        ))}
+      </Reveal>
+    </PageShell>
   );
 }

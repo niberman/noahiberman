@@ -478,13 +478,13 @@ export default function SchedulerManager() {
 
   return (
     <>
-      <Card className="bg-card/95 backdrop-blur">
+      <Card>
         <CardHeader>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 min-w-0">
               <div className="flex items-center gap-2 shrink-0">
-                <Calendar className="h-5 w-5 text-secondary flex-shrink-0" />
-                <CardTitle className="text-lg sm:text-xl">Scheduling</CardTitle>
+                <Calendar className="h-5 w-5 text-ed-light flex-shrink-0" />
+                <CardTitle>Scheduling</CardTitle>
               </div>
               <div
                 className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/30 px-2 py-1 max-w-full"
@@ -497,8 +497,8 @@ export default function SchedulerManager() {
                   variant="outline"
                   className={`text-[10px] px-1.5 py-0 h-5 shrink-0 ${
                     authStatus?.connected
-                      ? "border-green-500/40 text-green-400"
-                      : "border-amber-500/40 text-amber-400"
+                      ? "border-[rgba(180,140,240,.5)] text-ed-light"
+                      : "border-white/[.14] text-ed-muted"
                   }`}
                 >
                   {authLoading
@@ -641,7 +641,7 @@ export default function SchedulerManager() {
                               variant={mt.is_active ? "default" : "secondary"}
                               className={
                                 mt.is_active
-                                  ? "bg-green-500/20 text-green-400 border-green-500/40"
+                                  ? "border-[rgba(180,140,240,.5)] bg-[rgba(128,51,204,.15)] text-ed-light"
                                   : ""
                               }
                             >
@@ -651,7 +651,7 @@ export default function SchedulerManager() {
                               {mt.duration_min}m
                             </Badge>
                             {mt.is_primary && (
-                              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/40">
+                              <Badge className="border-white/[.14] bg-white/[.03] text-ed-muted">
                                 Homepage CTA
                               </Badge>
                             )}
@@ -675,7 +675,7 @@ export default function SchedulerManager() {
                             <Star
                               className={`h-4 w-4 ${
                                 mt.is_primary
-                                  ? "fill-amber-400 text-amber-400"
+                                  ? "fill-ed-light text-ed-light"
                                   : "text-muted-foreground"
                               }`}
                             />
@@ -687,7 +687,7 @@ export default function SchedulerManager() {
                             onClick={() => copyBookingLink(mt.slug)}
                           >
                             {copiedSlug === mt.slug ? (
-                              <Check className="h-4 w-4 text-green-400" />
+                              <Check className="h-4 w-4 text-ed-light" />
                             ) : (
                               <Copy className="h-4 w-4" />
                             )}

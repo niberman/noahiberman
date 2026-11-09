@@ -28,7 +28,7 @@ export interface MapWaypoint {
   cta?: { label: string; href?: string; event?: string };
   /** Optional logo path */
   logo?: string;
-  /** Visual accent: drives card chrome and pin color */
+  /** Stop category. All categories render in the one editorial accent (see FloatingWaypointCard). */
   accent?: "aviation" | "education" | "business";
   /**
    * Desktop card placement. "anchored" (default) positions the card next to

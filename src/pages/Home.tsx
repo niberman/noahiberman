@@ -239,18 +239,18 @@ export default function Home() {
               {/* Entry stagger is CSS (hero-enter-*) so the static shell in
                   index.html plays the identical animation pre-JS and nothing
                   defaults to hidden. */}
-              <p className="hero-enter-1 text-lg sm:text-xl md:text-2xl font-display text-secondary mb-2">
+              <p className="hero-enter-1 mb-5 sm:mb-7 text-xs uppercase tracking-[.3em] text-ed-muted">
                 Noah Berman
               </p>
 
               {/* Word cascade animates transform/filter only; opacity stays 1
                   on the LCP element so the paint is never delayed. Markup is
                   mirrored in the index.html shell; keep them identical. */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-normal mb-4 sm:mb-6 text-primary-foreground text-balance leading-tight">
+              <h1 className="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
                 {BrandWords.map((word, i) => (
                   <span key={word}>
                     <span
-                      className="hero-word"
+                      className={i === BrandWords.length - 1 ? "hero-word italic text-ed-light" : "hero-word"}
                       style={{ "--word-i": i } as React.CSSProperties}
                     >
                       {i < BrandWords.length - 1 ? `${word},` : word}
@@ -261,7 +261,7 @@ export default function Home() {
               </h1>
 
               <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                <p className="text-xl sm:text-2xl md:text-3xl text-primary-foreground/95 font-light text-balance px-4">
+                <p className="text-xl sm:text-2xl md:text-3xl text-ed-body font-light text-balance px-4">
                   The sky is not the limit
                 </p>
                 <p className="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">
@@ -276,7 +276,7 @@ export default function Home() {
                   <Button
                     onClick={() => navigate("/inoah")}
                     size="lg"
-                    className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-glow text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
+                    className="btn-sheen shadow-[0_0_80px_rgba(128,51,204,.5)] text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 w-full"
                   >
                     <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Access iNoah
@@ -288,7 +288,7 @@ export default function Home() {
                     onClick={() => navigate("/blog")}
                     size="lg"
                     variant="outline"
-                    className="bg-background/10 border-primary-foreground/30 text-primary-foreground hover:bg-background/20 backdrop-blur-sm text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full transition-all hover:scale-105 active:scale-95 w-full"
+                    className="text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 w-full"
                   >
                     <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Blog
@@ -300,7 +300,7 @@ export default function Home() {
                     onClick={() => scrollToId("contact")}
                     size="lg"
                     variant="ghost"
-                    className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-background/10 text-base sm:text-lg px-6 py-5 sm:py-6 rounded-full transition-all w-full"
+                    className="text-base sm:text-lg px-6 py-5 sm:py-6 w-full"
                   >
                     Get in Touch
                   </Button>

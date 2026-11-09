@@ -1,8 +1,9 @@
-import { m } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
+import { BODY, CARD_TITLE, EYEBROW, H2, INTRO, PageShell } from "@/components/editorial/EditorialPage";
+import { Reveal, rise } from "@/components/editorial/fx";
 
 const RATINGS_ES = [
   "Piloto comercial, avión monomotor (ASEL)",
@@ -30,137 +31,116 @@ const WORK_ES = [
   },
 ];
 
+const SECTION =
+  "grid grid-cols-1 gap-[clamp(16px,3vw,48px)] border-b border-white/[.12] py-[clamp(36px,5vw,72px)] md:grid-cols-[minmax(0,.8fr)_minmax(0,1.5fr)]";
+const SECTION_TITLE =
+  "text-balance font-editorial font-normal text-[clamp(32px,4vw,60px)] leading-[.95] tracking-[-.03em]";
+
 export default function Es() {
   const navigate = useNavigate();
   return (
-    <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-20 px-4 sm:px-6" lang="es">
+    <PageShell lang="es">
       <SEO
         title="Noah Berman | Fundador y piloto comercial en Denver, Colorado"
         description="Noah Berman es fundador de software y piloto comercial de la FAA con habilitaciones de instrumentos, multimotor y helicóptero, basado en Denver, Colorado. Fundador de Aviari LLC. Graduado de la Universidad de Denver."
       />
-      <div className="container mx-auto max-w-3xl">
-        <m.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+      <header className="mb-[clamp(48px,7vw,96px)]">
+        <p className={`ed-rise mb-[clamp(20px,3vw,32px)] ${EYEBROW}`} style={rise(0.05)}>
+          Noah Berman
+        </p>
+        <h1
+          className="ed-rise text-balance font-editorial font-normal text-[clamp(56px,10vw,160px)] leading-[.9] tracking-[-.035em]"
+          style={rise(0.15, 1.2)}
         >
-          <p className="text-lg sm:text-xl font-display text-secondary mb-2">Noah Berman</p>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-normal mb-4 text-primary-foreground leading-tight">
-            Fundador, Piloto, Ingeniero
-          </h1>
-          <p className="text-xl sm:text-2xl text-primary-foreground/95 font-light mb-2">
-            El cielo no es el límite
-          </p>
-          <p className="text-lg text-ed-light font-display italic mb-10">
-            The sky is not the limit
-          </p>
-        </m.div>
+          Fundador, Piloto, <em className="text-ed-light">Ingeniero</em>
+        </h1>
+        <p className={`ed-rise mt-[clamp(20px,3vw,36px)] ${INTRO}`} style={rise(0.4)}>
+          El cielo no es el límite
+        </p>
+        <p
+          className="ed-rise mt-2 font-editorial italic text-[clamp(22px,2.6vw,38px)] leading-[1.05] text-ed-muted"
+          style={rise(0.55)}
+        >
+          The sky is not the limit
+        </p>
+      </header>
 
-        <m.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">Quién soy</h2>
-          <p className="text-foreground/90 leading-relaxed mb-4">
-            Soy fundador de Aviari LLC y piloto comercial en Denver, Colorado.
-            Construyo software de producción por mi cuenta y trabajo en dos
-            idiomas. Me gradué de la Universidad de Denver en junio de 2026,
-            con una licenciatura en Computación Aplicada y especializaciones en
-            Emprendimiento y Español.
-          </p>
-          <p className="text-foreground/90 leading-relaxed">
-            Pasé el año 2024-2025 en Bilbao, España, estudiando en la
-            Universidad de Deusto y viviendo con una familia local. También he enseñado inglés a
-            hispanohablantes adultos, y esa experiencia dentro del aula es la
-            base de la tecnología educativa que construyo.
-          </p>
-        </m.section>
-
-        <m.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">El vuelo</h2>
-          <p className="text-foreground/90 leading-relaxed mb-4">
-            Vuelo desde el Aeropuerto Centennial (KAPA). Empecé a volar en
-            2021 y no he parado: avión monomotor y multimotor, vuelo por
-            instrumentos, helicóptero y vuelo de montaña. Ahora trabajo para
-            obtener el certificado de instructor de vuelo (CFI).
-          </p>
-          <ul className="space-y-2">
-            {RATINGS_ES.map((r) => (
-              <li key={r} className="flex items-start gap-3 text-foreground/85">
-                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-secondary shrink-0" />
-                {r}
-              </li>
-            ))}
-          </ul>
-        </m.section>
-
-        <m.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="font-display font-normal text-3xl tracking-[-0.02em] text-primary-foreground mb-4">
-            Lo que he construido
-          </h2>
-          <div className="space-y-4">
-            {WORK_ES.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-xl border border-border/50 bg-card/50 p-5 shadow-elegant"
-              >
-                <h3 className="font-semibold text-primary-foreground mb-1">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
-              </div>
-            ))}
+      <div className="border-t border-white/[.12]">
+        <Reveal as="section" className={SECTION}>
+          <h2 className={SECTION_TITLE}>Quién soy</h2>
+          <div className="space-y-5">
+            <p className={BODY}>
+              Soy fundador de Aviari LLC y piloto comercial en Denver, Colorado.
+              Construyo software de producción por mi cuenta y trabajo en dos
+              idiomas. Me gradué de la Universidad de Denver en junio de 2026,
+              con una licenciatura en Computación Aplicada y especializaciones en
+              Emprendimiento y Español.
+            </p>
+            <p className={BODY}>
+              Pasé el año 2024-2025 en Bilbao, España, estudiando en la
+              Universidad de Deusto y viviendo con una familia local. También he enseñado inglés a
+              hispanohablantes adultos, y esa experiencia dentro del aula es la
+              base de la tecnología educativa que construyo.
+            </p>
           </div>
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/work")}
-            className="mt-4 text-secondary"
-          >
-            Ver todo el trabajo (en inglés) <ArrowUpRight className="ml-1 h-4 w-4" />
-          </Button>
-        </m.section>
+        </Reveal>
 
-        <m.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="rounded-xl border border-border/50 bg-card/50 p-6 sm:p-8 text-center shadow-elegant"
-        >
-          <h2 className="text-2xl font-display font-normal text-primary-foreground mb-2">Contacto</h2>
-          <p className="text-muted-foreground mb-5">
-            Trabajo en inglés y en español. Escríbeme en el idioma que prefieras.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={() => navigate("/book")}
-              className="btn-sheen bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-full px-8"
-            >
-              Reservar una reunión
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/")}
-              className="rounded-full px-8"
-            >
-              Versión en inglés
+        <Reveal as="section" className={SECTION}>
+          <h2 className={SECTION_TITLE}>El vuelo</h2>
+          <div>
+            <p className={`mb-6 ${BODY}`}>
+              Vuelo desde el Aeropuerto Centennial (KAPA). Empecé a volar en
+              2021 y no he parado: avión monomotor y multimotor, vuelo por
+              instrumentos, helicóptero y vuelo de montaña. Ahora trabajo para
+              obtener el certificado de instructor de vuelo (CFI).
+            </p>
+            <ul className="flex flex-wrap gap-2.5">
+              {RATINGS_ES.map((r) => (
+                <li
+                  key={r}
+                  className="rounded-full border border-white/[.14] bg-white/[.02] px-5 py-2.5 font-editorial text-[clamp(17px,1.5vw,21px)] tracking-[-.01em] text-ed-ink"
+                >
+                  {r}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+
+        <Reveal as="section" className={SECTION}>
+          <h2 className={SECTION_TITLE}>Lo que he construido</h2>
+          <div>
+            <div className="border-t border-white/[.08]">
+              {WORK_ES.map((item) => (
+                <div key={item.title} className="border-b border-white/[.08] py-[clamp(18px,2.4vw,28px)]">
+                  <h3 className={`mb-2 ${CARD_TITLE}`}>{item.title}</h3>
+                  <p className="text-[15px] font-light leading-[1.6] text-ed-body">{item.body}</p>
+                </div>
+              ))}
+            </div>
+            <Button variant="outline" onClick={() => navigate("/work")} className="mt-8">
+              Ver todo el trabajo (en inglés) <ArrowUpRight />
             </Button>
           </div>
-        </m.section>
+        </Reveal>
       </div>
-    </main>
+
+      <Reveal as="section" className="pt-[clamp(72px,10vw,140px)] text-center">
+        <h2 className={H2}>
+          <em className="text-ed-light">Contacto</em>
+        </h2>
+        <p className={`mx-auto mt-6 mb-10 max-w-[520px] ${BODY}`}>
+          Trabajo en inglés y en español. Escríbeme en el idioma que prefieras.
+        </p>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
+          <Button size="lg" onClick={() => navigate("/book")} className="btn-sheen">
+            Reservar una reunión
+          </Button>
+          <Button size="lg" variant="outline" onClick={() => navigate("/")}>
+            Versión en inglés
+          </Button>
+        </div>
+      </Reveal>
+    </PageShell>
   );
 }
