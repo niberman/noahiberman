@@ -38,17 +38,17 @@ export function InoahWidget() {
           aria-label="Open iNoah, Noah's AI assistant"
           className={cn(
             "inoah-surface fixed bottom-5 right-5 z-40 flex h-12 items-center gap-2.5 rounded-full",
-            "border border-[#4FB3FF]/25 bg-[#131A22]/95 px-4 text-[#E6EDF3] shadow-[0_8px_32px_-8px_rgba(79,179,255,0.45)] backdrop-blur",
+            "border border-[rgba(180,140,240,.3)] bg-[rgba(10,6,18,.92)] px-4 text-ed-ink shadow-[0_8px_32px_-8px_rgba(128,51,204,.5)] backdrop-blur",
             "transition-[transform,box-shadow,border-color] [transition-duration:180ms] ease-out",
-            "hover:-translate-y-0.5 hover:border-[#4FB3FF]/60 hover:shadow-[0_12px_40px_-8px_rgba(79,179,255,0.6)]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4FB3FF] focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+            "hover:-translate-y-0.5 hover:border-[rgba(180,140,240,.6)] hover:shadow-[0_12px_40px_-8px_rgba(128,51,204,.65)]",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ed-light focus-visible:ring-offset-2 focus-visible:ring-offset-black",
             "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
           )}
         >
-          <span className="text-[#4FB3FF]">
+          <span className="text-ed-light">
             <LauncherGlyph />
           </span>
-          <span className="text-[13px] font-medium tracking-tight">Ask iNoah</span>
+          <span className="text-[13px] font-medium tracking-[.02em]">Ask iNoah</span>
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -86,8 +86,8 @@ export function InoahWidget() {
           </Dialog.Description>
           <Suspense
             fallback={
-              <div className="flex h-full items-center justify-center bg-[#0B0F14]">
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#8B98A5] animate-pulse motion-reduce:animate-none">
+              <div className="flex h-full items-center justify-center bg-[#06030c]">
+                <span className="text-[10px] uppercase tracking-[0.26em] text-ed-muted animate-pulse motion-reduce:animate-none">
                   Waking iNoah
                 </span>
               </div>

@@ -6,7 +6,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 import { ReactLenis, useLenis } from "lenis/react";
 import "lenis/dist/lenis.css";
 import { setLenis, getLenis } from "@/lib/lenis-ref";
-import { AmbientOrbs, EditorialNav, EditorialFooter } from "@/components/editorial/EditorialPage";
+import { Ambient, EditorialNav, EditorialFooter } from "@/components/editorial/EditorialPage";
 import { InoahWidget } from "@/components/inoah/InoahWidget";
 import { SecretDashboardAccess } from "@/components/SecretDashboardAccess";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -55,15 +55,15 @@ const Toasters = lazy(() =>
 const queryClient = new QueryClient();
 
 // One chrome for the whole site: the editorial nav and footer (from the
-// Work/Aviation/Now design system) render on every route. The ambient orbs
-// join every page except the editorial routes (they mount their own) and
-// the homepage (the flight map owns that backdrop).
+// Work/Aviation/Now design system) render on every route. The ambient layer
+// (grain + orbs) joins every page except the editorial routes (they mount
+// their own) and the homepage (the flight map owns that backdrop).
 const EDITORIAL_ROUTES = new Set(["/work", "/aviation", "/now"]);
 function SiteChrome({ slot }: { slot: "nav" | "footer" | "ambient" }) {
   const { pathname } = useLocation();
   if (slot === "ambient") {
     if (pathname === "/" || EDITORIAL_ROUTES.has(pathname)) return null;
-    return <AmbientOrbs />;
+    return <Ambient />;
   }
   return slot === "nav" ? <EditorialNav /> : <EditorialFooter />;
 }

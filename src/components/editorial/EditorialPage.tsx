@@ -1,11 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { ArrowLeft, Github, Linkedin, Mail } from "lucide-react";
 import { NAV_LINKS, useNavLinks } from "@/components/Navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BrandWordsString } from "@/data/brand";
 import { m } from "framer-motion";
-import { useParallax } from "./fx";
+import { rise, useParallax } from "./fx";
 
 /**
  * The site-wide design system, from the "cinematic editorial" redesign:
@@ -20,15 +20,143 @@ import { useParallax } from "./fx";
 export const PAD_X = "px-[clamp(16px,4vw,56px)]";
 /** Eyebrow / label type. */
 export const EYEBROW = "text-xs tracking-[.3em] uppercase text-ed-muted";
+/** Section H2 (Aviation, Now): centered display heading, last phrase in <em>. */
+export const H2 = "font-editorial font-normal text-[clamp(44px,7vw,110px)] leading-[.92] tracking-[-.035em]";
+/** Hero intro paragraph. */
+export const INTRO = "text-[clamp(17px,1.4vw,21px)] font-light leading-[1.55] text-ed-body";
+/** Running body copy. */
+export const BODY = "text-[clamp(16px,1.3vw,19px)] font-light leading-[1.65] text-ed-body";
+/** Small serif title for cards and list items. */
+export const CARD_TITLE = "font-editorial font-normal text-[clamp(26px,2.4vw,34px)] leading-none tracking-[-.02em]";
 
 export function EditorialPage({ children }: { children: ReactNode }) {
   return (
     <div className="relative min-h-screen font-body text-ed-ink antialiased [background:radial-gradient(ellipse_at_50%_0%,#12081f_0%,#040208_55%)]">
-      {/* Ambient layer: film grain (site's .grain-overlay tile) + two orbs. */}
-      <div aria-hidden className="grain-overlay fixed z-50 pointer-events-none" style={{ opacity: 0.06 }} />
-      <AmbientOrbs />
+      <Ambient />
       <main className="relative z-[1]">{children}</main>
     </div>
+  );
+}
+
+/** The full ambient layer: film grain (site's .grain-overlay tile) + the two
+ *  orbs. App renders it on every route that doesn't mount EditorialPage,
+ *  except the homepage, whose flight map owns the backdrop. */
+export function Ambient() {
+  return (
+    <>
+      <div aria-hidden className="grain-overlay fixed z-50 pointer-events-none" style={{ opacity: 0.06 }} />
+      <AmbientOrbs />
+    </>
+  );
+}
+
+/**
+ * Interior page frame: the Now page's top clearance (clears the 76px nav),
+ * bottom breathing room, and gutters. `width` narrows the column for reading
+ * pages (articles, forms).
+ */
+export function PageShell({
+  width = "max-w-[1200px]",
+  className = "",
+  children,
+  ...rest
+}: {
+  width?: string;
+  className?: string;
+  children: ReactNode;
+} & Record<string, unknown>) {
+  return (
+    <main
+      className={`relative mx-auto w-full ${width} pt-[clamp(130px,18vh,190px)] pb-[clamp(96px,14vw,180px)] ${PAD_X} ${className}`}
+      {...rest}
+    >
+      {children}
+    </main>
+  );
+}
+
+const TITLE_SIZE = {
+  /** Work hero H1. */
+  hero: "text-[clamp(64px,13vw,210px)] leading-[.9] tracking-[-.035em]",
+  /** Work case-study title; detail pages reuse it so list and page match. */
+  item: "max-w-[16ch] text-[clamp(48px,8vw,136px)] leading-[.92] tracking-[-.035em]",
+  /** Section H2 scale, for utility pages (booking, sign-in, dashboard). */
+  page: "text-[clamp(44px,7vw,110px)] leading-[.92] tracking-[-.035em]",
+} as const;
+
+/**
+ * Page header in the editorial pattern: eyebrow, serif H1 that rises in,
+ * Spanish italic line, light intro. Every interior route opens with this so
+ * the type scale and entry motion match Work, Aviation, and Now.
+ */
+export function PageHeader({
+  eyebrow,
+  title,
+  es,
+  intro,
+  size = "page",
+  align = "left",
+  className = "",
+  children,
+}: {
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  es?: ReactNode;
+  intro?: ReactNode;
+  size?: keyof typeof TITLE_SIZE;
+  align?: "left" | "center";
+  className?: string;
+  children?: ReactNode;
+}) {
+  const center = align === "center";
+  return (
+    <header className={`mb-[clamp(48px,7vw,96px)] flex flex-col ${center ? "items-center text-center" : "items-start text-left"} ${className}`}>
+      {eyebrow && (
+        <div className={`ed-rise mb-[clamp(20px,3vw,32px)] ${EYEBROW}`} style={rise(0.05)}>
+          {eyebrow}
+        </div>
+      )}
+      <h1
+        className={`ed-rise text-balance font-editorial font-normal text-ed-ink ${TITLE_SIZE[size]}`}
+        style={rise(0.15, 1.2)}
+      >
+        {title}
+      </h1>
+      {es && (
+        <p
+          className={`ed-rise mt-[clamp(16px,2.5vw,32px)] font-editorial italic leading-[1.05] ${
+            size === "hero" ? "text-[clamp(24px,3vw,44px)] text-ed-muted" : "text-[clamp(22px,2.6vw,38px)] text-ed-light"
+          }`}
+          style={rise(0.4)}
+        >
+          {es}
+        </p>
+      )}
+      {intro && (
+        <div className={`ed-rise mt-[clamp(20px,3vw,36px)] max-w-[600px] ${INTRO}`} style={rise(0.55)}>
+          {intro}
+        </div>
+      )}
+      {children && (
+        <div className="ed-rise mt-[clamp(24px,3.5vw,44px)]" style={rise(0.7)}>
+          {children}
+        </div>
+      )}
+    </header>
+  );
+}
+
+/** Quiet back link that sits above a PageHeader. */
+export function BackLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="ed-rise mb-[clamp(28px,4vw,48px)] inline-flex items-center gap-2 text-[13px] font-medium tracking-[.02em] text-ed-muted transition-colors hover:text-ed-ink"
+      style={rise(0)}
+    >
+      <ArrowLeft className="h-4 w-4" />
+      {children}
+    </Link>
   );
 }
 

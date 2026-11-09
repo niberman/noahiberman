@@ -17,7 +17,10 @@ All colors MUST be HSL.
     --popover: 264 35% 5%;
     --popover-foreground: 264 43% 93%;
 
-    --primary: 0 0% 100%;
+    /* Editorial accent #8033cc. Was white-on-white (both 0 0% 100%), which
+       left every default <Button> unreadable. text-primary-foreground stays
+       white, so headings that use it as "ink" are unchanged. */
+    --primary: 270 60% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 270 60% 50%;
@@ -74,7 +77,10 @@ All colors MUST be HSL.
     --popover: 264 35% 5%;
     --popover-foreground: 264 43% 93%;
 
-    --primary: 0 0% 100%;
+    /* Editorial accent #8033cc. Was white-on-white (both 0 0% 100%), which
+       left every default <Button> unreadable. text-primary-foreground stays
+       white, so headings that use it as "ink" are unchanged. */
+    --primary: 270 60% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 270 60% 50%;
@@ -435,7 +441,7 @@ All colors MUST be HSL.
   }
   
   .tiptap-editor .ProseMirror li::marker {
-    @apply text-secondary;
+    @apply text-ed-light;
   }
   
   .tiptap-editor .ProseMirror blockquote {
@@ -443,7 +449,7 @@ All colors MUST be HSL.
   }
   
   .tiptap-editor .ProseMirror code {
-    @apply bg-secondary/10 text-secondary px-1.5 py-0.5 rounded text-sm font-mono;
+    @apply bg-secondary/10 text-ed-light px-1.5 py-0.5 rounded text-sm font-mono;
   }
   
   .tiptap-editor .ProseMirror pre {
@@ -455,7 +461,7 @@ All colors MUST be HSL.
   }
   
   .tiptap-editor .ProseMirror a {
-    @apply text-secondary underline hover:text-secondary/80 transition-colors;
+    @apply text-ed-light underline hover:text-ed-light/80 transition-colors;
   }
   
   .tiptap-editor .ProseMirror hr {
@@ -471,7 +477,7 @@ All colors MUST be HSL.
   }
   
   .tiptap-toolbar button.is-active {
-    @apply bg-secondary/20 text-secondary;
+    @apply bg-secondary/20 text-ed-light;
   }
   
   .tiptap-toolbar button:disabled {
@@ -864,20 +870,22 @@ All colors MUST be HSL.
 }
 
 /* ---------------------------------------------------------------------------
-   iNoah widget. One visual system, scoped: #0B0F14 ground, #131A22 surface,
-   #4FB3FF accent, Inter UI, JetBrains Mono data, 8px grid, 12px radius,
-   180ms state motion, 400ms panel motion. --in-surface-2 is the derived
-   elevation tone between surface and text. */
+   iNoah widget. Scoped tokens, editorial values: the grounds are lifted steps
+   of the page's #040208 so the panel reads as a surface over it, ink and
+   muted are the editorial text tones, the accent is the light purple
+   (#b48cf0) used for accent text site-wide. The brief's 8px grid and 180ms
+   state / 400ms panel motion are unchanged. Danger and warning stay
+   semantic. */
 .inoah-surface {
-  --in-bg: #0B0F14;
-  --in-surface: #131A22;
-  --in-surface-2: #1B2531;
-  --in-text: #E6EDF3;
-  --in-muted: #8B98A5;
-  --in-accent: #4FB3FF;
+  --in-bg: #07040d;
+  --in-surface: #0e0818;
+  --in-surface-2: #1a1029;
+  --in-text: #ece6f5;
+  --in-muted: #a79fb8;
+  --in-accent: #b48cf0;
   --in-warning: #FFB020;
   --in-danger: #FF4D4F;
-  --in-success: #2ECC71;
+  --in-success: #b48cf0;
 }
 
 .inoah-icon-btn {
@@ -892,7 +900,7 @@ All colors MUST be HSL.
 }
 .inoah-icon-btn:hover {
   color: var(--in-text);
-  background-color: rgba(230, 237, 243, 0.06);
+  background-color: rgba(236, 230, 245, 0.06);
 }
 .inoah-icon-btn:focus-visible {
   outline: none;
@@ -925,12 +933,12 @@ All colors MUST be HSL.
   height: 56px;
   border-radius: 9999px;
   background:
-    radial-gradient(circle at 32% 30%, rgba(79, 179, 255, 0.9), rgba(79, 179, 255, 0.25) 55%, transparent 75%),
-    radial-gradient(circle at 68% 72%, rgba(46, 204, 113, 0.35), transparent 60%),
-    #131A22;
+    radial-gradient(circle at 32% 30%, rgba(180, 140, 240, 0.9), rgba(128, 51, 204, 0.3) 55%, transparent 75%),
+    radial-gradient(circle at 68% 72%, rgba(70, 20, 130, 0.55), transparent 60%),
+    #0e0818;
   box-shadow:
-    0 0 40px -8px rgba(79, 179, 255, 0.55),
-    inset 0 0 18px rgba(79, 179, 255, 0.25);
+    0 0 40px -8px rgba(128, 51, 204, 0.6),
+    inset 0 0 18px rgba(180, 140, 240, 0.25);
   animation: inoah-breathe 4.5s ease-in-out infinite;
 }
 
@@ -956,7 +964,7 @@ All colors MUST be HSL.
 /* A whisper of accent light at the top of the transcript. */
 .inoah-glow {
   background:
-    radial-gradient(120% 60px at 50% 0%, rgba(79, 179, 255, 0.07), transparent 70%),
+    radial-gradient(120% 60px at 50% 0%, rgba(128, 51, 204, 0.12), transparent 70%),
     var(--in-bg);
 }
 

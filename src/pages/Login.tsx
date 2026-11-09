@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plane } from "lucide-react";
 import { SEO } from "@/components/SEO";
+import { PageHeader, PageShell } from "@/components/editorial/EditorialPage";
+import { rise } from "@/components/editorial/fx";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -54,20 +56,16 @@ export default function Login() {
         description="Access the flight command center"
       />
       
-      <div className="min-h-screen bg-gradient-dusk flex items-center justify-center px-4">
-        <Card className="w-full max-w-md bg-card/95 backdrop-blur">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center justify-center mb-4">
-              <Plane className="h-12 w-12 text-secondary" />
-            </div>
-            <CardTitle className="text-2xl font-display text-center">
-              Flight Command Center
-            </CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials to access the dashboard
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <PageShell width="max-w-[760px]" className="flex min-h-[80vh] flex-col justify-center">
+        <PageHeader
+          align="center"
+          className="!mb-[clamp(28px,4vw,48px)]"
+          eyebrow={<Plane className="mx-auto h-6 w-6 text-ed-light" />}
+          title="Flight Command Center"
+          intro="Enter your credentials to access the dashboard"
+        />
+        <Card className="ed-rise mx-auto w-full max-w-md" style={rise(0.6)}>
+          <CardContent className="pt-6">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -101,12 +99,13 @@ export default function Login() {
               
               <Button
                 type="submit"
+                size="lg"
                 className="w-full"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="animate-spin" />
                     Authenticating...
                   </>
                 ) : (
@@ -116,7 +115,7 @@ export default function Login() {
             </form>
           </CardContent>
         </Card>
-      </div>
+      </PageShell>
     </>
   );
 }

@@ -1,13 +1,12 @@
-import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar, ArrowLeft } from "lucide-react";
 import { useBlogPost } from "@/hooks/use-supabase-blog";
-import { cn, formatLongDate } from "@/lib/utils";
+import { formatLongDate } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { BlogImageGallery } from "@/components/BlogImageGallery";
 import { SEO } from "@/components/SEO";
+import { BackLink, EYEBROW, PageHeader, PageShell } from "@/components/editorial/EditorialPage";
+import { Reveal } from "@/components/editorial/fx";
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -15,25 +14,18 @@ export default function BlogPost() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">
-          Loading post...
-        </div>
-      </div>
+      <PageShell width="max-w-[760px]" className="flex min-h-[70vh] items-center justify-center">
+        <p className={`animate-pulse ${EYEBROW}`}>Loading post...</p>
+      </PageShell>
     );
   }
 
   if (error || !post) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">Post not found</p>
-        <Button asChild variant="outline">
-          <Link to="/blog">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Blog
-          </Link>
-        </Button>
-      </div>
+      <PageShell width="max-w-[760px]">
+        <BackLink to="/blog">Back to Blog</BackLink>
+        <PageHeader title="Post not found" />
+      </PageShell>
     );
   }
 
@@ -57,115 +49,44 @@ export default function BlogPost() {
         }}
       />
 
-      <article className="min-h-screen pt-24 pb-16">
-        <div className="container max-w-4xl mx-auto px-4 sm:px-6">
-          {/* Back button */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-8"
+      <PageShell width="max-w-[860px]">
+        <article>
+          <BackLink to="/blog">Back to Blog</BackLink>
+          <PageHeader
+            eyebrow={
+              <time dateTime={post.published_at || undefined}>{formatLongDate(post.published_at)}</time>
+            }
+            title={post.title}
+            intro={post.excerpt}
           >
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/blog">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Blog
-              </Link>
-            </Button>
-          </motion.div>
-
-          {/* Header */}
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-8"
-          >
-            {/* Date */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-              <Calendar className="h-4 w-4" />
-              <time dateTime={post.published_at || undefined}>
-                {formatLongDate(post.published_at)}
-              </time>
-            </div>
-
-            {/* Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-normal text-primary-foreground mb-6">
-              {post.title}
-            </h1>
-
-            {/* Excerpt */}
-            {post.excerpt && (
-              <p className="text-lg text-foreground/80 leading-relaxed">
-                {post.excerpt}
-              </p>
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             )}
-          </motion.header>
+          </PageHeader>
 
-          {/* Image gallery */}
           {post.images && post.images.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="mb-8"
-            >
+            <Reveal className="mb-[clamp(32px,5vw,64px)]">
               <BlogImageGallery images={post.images} title={post.title} />
-            </motion.div>
+            </Reveal>
           )}
 
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.15 }}
-              className="flex flex-wrap gap-2 mb-8"
-            >
-              {post.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="secondary"
-                  className="text-sm rounded-full"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </motion.div>
-          )}
-
-          {/* Content */}
           {post.content && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className={cn(
-                "rounded-xl border border-border/50 p-6 sm:p-8 lg:p-10",
-                "bg-gradient-to-br from-background/80 via-background/60 to-background/40",
-                "backdrop-blur-sm"
-              )}
-            >
+            <Reveal className="border-t border-white/[.12] pt-[clamp(32px,5vw,64px)]">
               <MarkdownRenderer content={post.content} />
-            </motion.div>
+            </Reveal>
           )}
 
-          {/* Footer navigation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="mt-12 pt-8 border-t border-border/50"
-          >
-            <Button asChild variant="outline">
-              <Link to="/blog">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to all posts
-              </Link>
-            </Button>
-          </motion.div>
-        </div>
-      </article>
+          <div className="mt-[clamp(48px,7vw,96px)] border-t border-white/[.08] pt-8">
+            <BackLink to="/blog">Back to all posts</BackLink>
+          </div>
+        </article>
+      </PageShell>
     </>
   );
 }

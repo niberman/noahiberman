@@ -141,12 +141,12 @@ export default function InoahKnowledgeManager() {
   };
 
   return (
-    <Card className="bg-card/95 backdrop-blur">
+    <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-secondary flex-shrink-0" />
-            <CardTitle className="text-lg sm:text-xl">iNoah Knowledge Base</CardTitle>
+            <Brain className="h-5 w-5 text-ed-light flex-shrink-0" />
+            <CardTitle>iNoah Knowledge Base</CardTitle>
           </div>
           <Button
             size="sm"
@@ -396,7 +396,7 @@ export default function InoahKnowledgeManager() {
 function TierBadge({ visibility }: { visibility: KnowledgeEntry["visibility"] }) {
   if (visibility === "public") {
     return (
-      <Badge className="text-[11px] bg-green-500/15 text-green-500 border-green-500/30" variant="outline">
+      <Badge className="text-[11px] border-[rgba(180,140,240,.5)] bg-[rgba(128,51,204,.15)] text-ed-light" variant="outline">
         <Globe className="h-3 w-3 mr-1" />
         public
       </Badge>

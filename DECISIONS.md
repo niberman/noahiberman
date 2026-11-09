@@ -1,3 +1,43 @@
+# Decisions, design-system unification pass 2, 2026-11-09
+
+Noah asked to make sure every page on noahiberman.com uses the same design system. The
+2026-09-21 pass unified fonts, palette, and chrome; this pass closes what it left behind.
+Work, Aviation, and Now remain the reference and are visually unchanged.
+
+- **Primitives carry the system.** Button, Card, Badge, Input, Textarea, Select, and the
+  dialog/sheet/drawer titles now render the editorial vocabulary (pills, 24px glass
+  cards, Instrument Serif titles, hairline fields), so every page and the dashboard
+  inherit it instead of restyling per page.
+- **`--primary` was white on white.** Both `--primary` and `--primary-foreground` were
+  `0 0% 100%`, so every default `<Button>` (Login, Book "Choose time", dashboard Save)
+  rendered blank. `--primary` is now the editorial accent #8033cc.
+- **Accent text uses #b48cf0.** `text-secondary` (#8033cc) on the dark ground fails
+  contrast; live components now use `text-ed-light` for accent text and keep #8033cc for
+  fills and rules, as the handoff specifies. Unmounted legacy files (old Footer,
+  Navigation's component, FollowMyFlight and its map) were left alone.
+- **Interior pages share one frame.** `PageShell` (Now's top clearance and gutters) and
+  `PageHeader` (eyebrow, serif H1, Spanish italic, intro, `ed-rise` stagger) now open
+  Blog, blog posts, case-study detail, Es, Book, Login, Dashboard, Hermes chat, and the
+  OAuth callback. Blog posts and booking options are Now-style ledger rows. The ambient
+  layer (grain + orbs) now renders on every route except `/`; opaque page backgrounds
+  that hid it were removed.
+- **Homepage.** Hero label is the eyebrow, H1 uses the editorial tracking with the last
+  word in light-purple italic, mirrored exactly in the `index.html` shell. Contact
+  section heading is the H2 scale. Waypoint cards drop the amber and emerald variants
+  for the one accent. The live-flight badge is an editorial glass card instead of green.
+- **iNoah moved onto the palette.** Reverses the 2026-09-21 carve-out because the ask was
+  every page. Only the scoped `--in-*` token values, the orb, the launcher, and the
+  waveform colors changed; titles use Instrument Serif and labels use Geist instead of
+  JetBrains Mono. Layout, the 8px grid, and the 180/400ms motion are untouched, so
+  reverting is one token block.
+- **Hermes static pages restyled, CSS only.** /hermes and /hermes/privacy keep their
+  URLs, markup, and copy (Google OAuth consent pages); only the inline stylesheet and a
+  font link changed.
+- **/logo** sits on the site ground instead of a white slab between the dark nav and
+  footer.
+- **Copy untouched everywhere.** Italic-accent `<em>` wraps were added to existing words
+  only.
+
 # Decisions, site-wide design-system unification, 2026-09-21
 
 Noah asked (WhatsApp, 2026-09-21) to make the fonts and design system uniform across the

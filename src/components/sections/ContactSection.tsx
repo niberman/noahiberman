@@ -1,4 +1,5 @@
 import { BilingualHeading } from "@/components/BilingualHeading";
+import { INTRO, PAD_X } from "@/components/editorial/EditorialPage";
 import { ContactMessageForm } from "@/components/contact/ContactMessageForm";
 import { DirectContactCard, ScheduleMeetingCard } from "@/components/contact/ContactCards";
 
@@ -7,24 +8,24 @@ export function ContactSection() {
     <section
       id="contact"
       data-fix="contact"
-      className="py-16 sm:py-20 md:py-24 lg:py-32 scroll-mt-24 relative bg-background/90 backdrop-blur-xs [content-visibility:auto] [contain-intrinsic-size:auto_1100px]"
+      className={`py-[clamp(72px,10vw,140px)] scroll-mt-24 relative border-t border-white/[.08] bg-background/90 backdrop-blur-xs [content-visibility:auto] [contain-intrinsic-size:auto_1100px] ${PAD_X}`}
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="mx-auto max-w-[1200px]">
         {/* reveal-view: CSS scroll-driven rise (see index.css), replacing the
             old framer whileInView so scrolling costs no JS here. */}
-        <div className="reveal-view max-w-3xl mx-auto mb-10 sm:mb-12 md:mb-16 text-center">
-          <BilingualHeading 
+        <div className="reveal-view max-w-3xl mx-auto mb-[clamp(40px,6vw,80px)] text-center">
+          <BilingualHeading
             english="Get in Touch"
             spanish="Conectemos"
             as="h2"
-            className="mb-4"
+            className="mb-[clamp(20px,3vw,32px)]"
           />
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed px-4">
+          <p className={`mx-auto max-w-[560px] ${INTRO}`}>
             Whether you want to talk aviation, technology, or a potential collaboration, I'd love to hear from you.
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
+        <div>
           {/* Main Contact Section */}
           <div className="grid lg:grid-cols-3 gap-5 sm:gap-6 mb-6 sm:mb-8">
             {/* Contact Form - Takes 2 columns on large screens */}

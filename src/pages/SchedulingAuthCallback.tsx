@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/SEO";
+import { PageHeader, PageShell } from "@/components/editorial/EditorialPage";
+import { rise } from "@/components/editorial/fx";
 import { useExchangeSchedulingAuthCode } from "@/hooks/use-scheduling";
 
 export default function SchedulingAuthCallback() {
@@ -44,24 +45,23 @@ export default function SchedulingAuthCallback() {
         description="Connect Google Calendar for scheduling."
       />
 
-      <div className="min-h-screen bg-gradient-dusk pt-24 pb-12">
-        <div className="container mx-auto px-4 max-w-xl">
-          <Card className="bg-card/95 backdrop-blur animate-slide-up">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4">
-                {exchangeCode.isSuccess ? (
-                  <CheckCircle2 className="h-14 w-14 text-green-400" />
-                ) : error || exchangeCode.isError || !code ? (
-                  <AlertCircle className="h-14 w-14 text-destructive" />
-                ) : (
-                  <Loader2 className="h-14 w-14 animate-spin text-secondary" />
-                )}
-              </div>
-              <CardTitle className="text-2xl font-display">{title}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-center">
+      <PageShell width="max-w-[720px]">
+          <PageHeader
+            align="center"
+            eyebrow={
+              exchangeCode.isSuccess ? (
+                <CheckCircle2 className="mx-auto h-7 w-7 text-ed-light" />
+              ) : error || exchangeCode.isError || !code ? (
+                <AlertCircle className="mx-auto h-7 w-7 text-destructive" />
+              ) : (
+                <Loader2 className="mx-auto h-7 w-7 animate-spin text-ed-light" />
+              )
+            }
+            title={title}
+          />
+          <div className="ed-rise space-y-4 text-center" style={rise(0.6)}>
               {exchangeCode.isSuccess ? (
-                <p className="text-muted-foreground">
+                <p className="text-[15px] font-light text-ed-body">
                   Your refresh token was saved successfully. You will be taken
                   back to the dashboard shortly.
                 </p>
@@ -92,10 +92,8 @@ export default function SchedulingAuthCallback() {
                   <Link to="/dashboard">Return to dashboard</Link>
                 </Button>
               ) : null}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+          </div>
+      </PageShell>
     </>
   );
 }
