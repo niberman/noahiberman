@@ -19,6 +19,10 @@ const criticalCss = (): Plugin => ({
     const beasties = new Beasties({
       path: path.resolve(__dirname, "dist"),
       preload: "media",
+      // Leave index.html's own <style> block alone. It holds the
+      // metric-matched Instrument Serif fallback faces, which this pass
+      // would strip (it drops any @font-face whose src has no url()).
+      reduceInlineStyles: false,
       logLevel: "warn",
     });
     await fs.writeFile(file, await beasties.process(html));

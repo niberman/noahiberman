@@ -139,7 +139,7 @@ export default function Book() {
 
   if (!slug) {
     return (
-      <PageShell width="max-w-[960px]">
+      <PageShell width="max-w-[960px]" className="min-h-screen">
         <PageHeader align="center" title="No meeting type specified." />
       </PageShell>
     );
@@ -156,7 +156,7 @@ export default function Book() {
         description={data?.meeting?.description || "Schedule a meeting"}
       />
 
-      <PageShell width="max-w-[960px]">
+      <PageShell width="max-w-[960px]" className="min-h-screen">
           <PageHeader
             align="center"
             title={data?.meeting?.name || "Loading..."}

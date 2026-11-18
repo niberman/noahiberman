@@ -1,3 +1,50 @@
+# Decisions, front-end audit and polish pass, 2026-11-18
+
+Noah asked to fix all front-end artifacts and bugs, make the site look smoother, and test the
+screens extensively. Method: every public route driven in headless Chrome at 320, 390, 768
+and 1440px (plus 844x390 landscape, 360x740, 430x932 and reduced motion), first against
+production to find defects, then against this build served under the production origin so
+the Mapbox token and Supabase CORS behaved as they do live. Checks per screen: horizontal
+overflow, clipped text, broken images, console and page errors, failed requests, layout
+shift with its sources, and a filmstrip read by eye. The full defect list is in CHANGELOG.md.
+
+- **The secret dashboard access was the worst bug on the site.** Its Shift+D shortcut fired
+  inside text fields, so a visitor typing "Dear" or "Denver" into the contact form landed on
+  the login page. Its invisible corner hit box blocked the nav logo and the Exit Map button.
+  All three gestures still work for the owner: the shortcut skips editable fields and the
+  corner is matched by pointer coordinates instead of an overlay.
+- **The nav keeps the handoff's top-down fade and gains a blur.** The handoff specifies a
+  plain gradient, which let headings run through the wordmark at full sharpness. The fade is
+  slightly denser at the top and a masked backdrop blur dissolves what scrolls under it. The
+  blur lives on a child element because a backdrop-filter on the nav itself would make it
+  the containing block for the fixed mobile menu.
+- **The static shell is hidden off the homepage, not removed.** It still paints the
+  homepage LCP before JS. A head script injects the one hiding rule, because the critical-CSS
+  pass prunes any rule that matches nothing in the static document.
+- **Map place names drop to a trace behind the hero.** At the wide hero zoom every state name
+  lands on the copy. They return to full strength on the journey stops, where they are
+  wayfinding. Desktop framing is unchanged.
+- **Phones get their own hero camera.** The desktop framing put the route hub half off the
+  left edge of a 390px screen. On phones the camera centers the hub and parks it in the open
+  band under the buttons, measured from the page so it holds at any phone height. Waypoints
+  can now carry `mobile` camera overrides.
+- **Font fallbacks are tuned, not guessed.** Instrument Serif is about 30% narrower than
+  Georgia, so headlines wrapped differently until the web font arrived. The fallback faces
+  scale local Georgia or Times New Roman to the measured average advance width and take
+  Instrument Serif's line box. Verified with the metric-compatible clones (Gelasio,
+  Liberation Serif): headline boxes match the web font to within about 2% in width, with
+  identical line counts and positions. They sit inline in index.html because the stylesheet
+  loads async.
+- **iNoah shows four suggested questions on narrow phones, six elsewhere.** Six stacked
+  chips do not fit a phone panel next to the heading. "More questions" rotates the rest in.
+- **The phone launcher folds to its glyph after 160px of scroll.** The full pill covered
+  the end of a line of body copy on nearly every phone screen. It is the full pill again at
+  the top of each page.
+- **Left alone on purpose.** The alternating right-aligned case-study rows on phones (the
+  handoff specifies them), the desktop hero framing, the 404 console.error, and all copy.
+  The dashboard sits behind sign-in and was not tested; the login page was checked for
+  layout only.
+
 # Decisions, design-system unification pass 2, 2026-11-09
 
 Noah asked to make sure every page on noahiberman.com uses the same design system. The

@@ -56,7 +56,10 @@ export function LaunchScreen({
         <h2 className="mb-3 font-display text-4xl font-normal tracking-tight text-balance sm:text-5xl">
           Cleared for launch
         </h2>
-        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white/65 sm:text-base">
+        {/* Two lines reserved below sm: the loading line wraps on a narrow
+            phone and the "entering" line does not, and without the floor the
+            whole centered block re-centers when the copy swaps. */}
+        <p className="mx-auto mb-8 min-h-[3.25em] max-w-md text-sm leading-relaxed text-white/65 sm:min-h-0 sm:text-base">
           {pct < 99
             ? "Loading terrain, routes, and cockpit animation."
             : "Entering the flight path."}

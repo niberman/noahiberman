@@ -11,6 +11,21 @@
   <meta name="color-scheme" content="only dark" />
   <meta name="darkreader-lock" />
 
+  <!-- The static shell in <body> is the homepage hero, and every route is
+       served this same file. On a deep link (/work, /blog/...) the visitor
+       used to see the homepage hero flash before React swapped in the real
+       page. This runs before <body> is parsed, so the shell never paints
+       there. Inline on purpose: the main stylesheet loads async. -->
+  <script>
+    if (location.pathname !== "/") {
+      // Injected, not written as a <style> tag: the build's critical-CSS pass
+      // prunes any rule that matches nothing in this static document.
+      var shellStyle = document.createElement("style");
+      shellStyle.textContent = "[data-shell]{visibility:hidden}";
+      document.head.appendChild(shellStyle);
+    }
+  </script>
+
   <!-- iOS specific meta tags -->
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -223,6 +238,66 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://yvblwphbfekmmpoxowjr.supabase.co" crossorigin />
 
+  <style>
+    /* Metric-matched stand-ins for Instrument Serif while the web font loads.
+       Instrument Serif is a condensed face: set in plain Georgia, a headline runs
+       about 30% wider, wraps onto an extra line, then snaps back when the real
+       font arrives (the one layout shift left on first visits). These faces
+       reuse the visitor's local Georgia or Times New Roman, scaled so the average
+       advance width matches (size-adjust), with the line box of the real font
+       (ascent/descent overrides), so the swap changes letterforms and nothing
+       moves. Numbers: frequency-weighted mean advance of a-z + space, Instrument
+       Serif 0.337em (italic 0.356em) against Georgia 0.439em (0.448em) and Times
+       New Roman 0.400em (0.401em); line box 0.99 / 0.31 em over size-adjust.
+       Gelasio and Liberation Serif are the metric-compatible Linux clones.
+       Inline in the document, not in index.css: the stylesheet loads async,
+       and these only help if they exist at first paint. (The build's
+       critical-CSS pass cannot carry them over: it drops any @font-face whose
+       src has no url(), hence reduceInlineStyles: false in vite.config.) Where
+       neither font is installed the stack falls through to plain serif, as
+       before. The families are referenced from tailwind.config.ts. */
+    @font-face {
+      font-family: "Instrument Serif Fallback";
+      font-style: normal;
+      font-weight: 400;
+      src: local("Georgia"), local("Gelasio Regular"), local("Gelasio");
+      size-adjust: 76.8%;
+      ascent-override: 128.9%;
+      descent-override: 40.4%;
+      line-gap-override: 0%;
+    }
+    @font-face {
+      font-family: "Instrument Serif Fallback";
+      font-style: italic;
+      font-weight: 400;
+      src: local("Georgia Italic"), local("Georgia-Italic"), local("Gelasio Italic");
+      size-adjust: 79.4%;
+      ascent-override: 124.7%;
+      descent-override: 39%;
+      line-gap-override: 0%;
+    }
+    @font-face {
+      font-family: "Instrument Serif Fallback TNR";
+      font-style: normal;
+      font-weight: 400;
+      src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif");
+      size-adjust: 84.3%;
+      ascent-override: 117.4%;
+      descent-override: 36.8%;
+      line-gap-override: 0%;
+    }
+    @font-face {
+      font-family: "Instrument Serif Fallback TNR";
+      font-style: italic;
+      font-weight: 400;
+      src: local("Times New Roman Italic"), local("TimesNewRomanPS-ItalicMT"), local("Liberation Serif Italic");
+      size-adjust: 88.6%;
+      ascent-override: 111.7%;
+      descent-override: 35%;
+      line-gap-override: 0%;
+    }
+  </style>
+
   <!-- Fonts load without blocking first paint (display=swap shows fallback text
        immediately); the media swap defers stylesheet evaluation until loaded. -->
   <link rel="stylesheet"
@@ -241,36 +316,36 @@
        src/pages/Home.tsx (the hero-enter-* classes play the entry stagger in
        CSS, so content is visible-by-default even when JS never runs). -->
   <div id="root">
-    <div class="min-h-screen flex flex-col relative">
+    <div data-shell class="min-h-screen flex flex-col relative">
       <div class="flex-1 relative z-10">
         <main class="min-h-screen relative">
           <div class="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
             <section id="home"
-              class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6">
+              class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 short:pt-[76px]">
               <div class="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70">
               </div>
-              <div class="container mx-auto px-4 relative z-10 pb-16 sm:pb-20">
-                <div class="text-center max-w-5xl mx-auto">
+              <div class="container mx-auto px-4 relative z-10 pb-16 sm:pb-20 short:!pb-4">
+                <div data-hero-copy class="text-center max-w-5xl mx-auto">
                   <div
-                    class="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative">
+                    class="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 short:!mb-4 short:!h-12 short:!w-12 [@media(max-height:600px)]:hidden overflow-hidden rounded drop-shadow-glow animate-float relative">
                     <picture>
                       <source srcset="/logo.webp" type="image/webp" />
                       <img src="/logo.png" alt="Noah Berman logo" width="96" height="96" fetchpriority="high"
                         class="absolute inset-0 w-full h-full object-contain origin-center" />
                     </picture>
                   </div>
-                  <p class="hero-enter-1 mb-5 sm:mb-7 text-xs uppercase tracking-[.3em] text-ed-muted">Noah
+                  <p class="hero-enter-1 mb-5 sm:mb-7 short:!mb-3 text-xs uppercase tracking-[.3em] text-ed-muted">Noah
                     Berman</p>
                   <!-- Word spans animate transform/filter only (opacity stays 1)
                        so the LCP paint is never delayed. Keep in sync with the
                        hero-word markup in src/pages/Home.tsx. -->
                   <h1
-                    class="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
+                    class="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 short:!mb-4 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
                     <span class="hero-word" style="--word-i:0">Founder,</span>
                     <span class="hero-word" style="--word-i:1">Pilot,</span>
                     <span class="hero-word italic text-ed-light" style="--word-i:2">Engineer</span>
                   </h1>
-                  <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                  <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8 short:!mb-5">
                     <p class="text-xl sm:text-2xl md:text-3xl text-ed-body font-light text-balance px-4">
                       The sky is not the limit</p>
                     <p class="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">El cielo no es el
@@ -278,7 +353,7 @@
                   </div>
                   <!-- Wrapper divs mirror the Magnetic wrappers in Home.tsx:
                        they carry the responsive width, buttons fill them. -->
-                  <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
+                  <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 short:!gap-3 justify-center items-center px-4">
                     <div class="w-full sm:w-auto">
                       <button
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium tracking-[.02em] h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Access

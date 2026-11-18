@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 export default {
   darkMode: ["class"],
@@ -32,8 +33,10 @@ export default {
         // Aviation, Now): Geist for body/UI, Instrument Serif for display.
         // `editorial` and `body` stay as aliases of the same families.
         sans: ['Geist', 'system-ui', 'sans-serif'],
-        display: ['Instrument Serif', 'Georgia', 'serif'],
-        editorial: ['Instrument Serif', 'Georgia', 'serif'],
+        // The two Fallback families are metric-matched local stand-ins
+        // (see the @font-face block in index.html's <head>).
+        display: ['Instrument Serif', 'Instrument Serif Fallback', 'Instrument Serif Fallback TNR', 'Georgia', 'serif'],
+        editorial: ['Instrument Serif', 'Instrument Serif Fallback', 'Instrument Serif Fallback TNR', 'Georgia', 'serif'],
         body: ['Geist', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
@@ -184,5 +187,15 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    // Height-based variant for small phones and phones in landscape, where a
+    // full-viewport composition has to tighten up to stay on screen. Added as
+    // a variant (not a raw `screens` entry) so the max-* width variants keep
+    // working.
+    plugin(({ addVariant }) => {
+      addVariant("short", "@media (max-height: 700px)");
+    }),
+  ],
 } satisfies Config;

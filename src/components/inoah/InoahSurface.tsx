@@ -147,9 +147,14 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
   }, []);
 
   // Keep the transcript pinned to the newest text without fighting Lenis.
+  // Only once there is a transcript: on mount this used to scroll the empty
+  // state to its bottom, which on a phone pushed the orb and the heading out
+  // of the top of the panel and then left "More questions" cut off when it
+  // arrived a moment later.
   useEffect(() => {
     const el = logRef.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    if (!el || messages.length === 0) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
 
   // Composer grows with content instead of reserving empty rows.
@@ -266,7 +271,12 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
 
   const isEmpty = messages.length === 0;
 
-  const chipButton = (label: string, key: string, delayMs = 0) => (
+  // Below 420px the chips stack in one column; six of them do not fit a
+  // phone panel next to the heading, so the last two wait behind
+  // "More questions" there.
+  const NARROW_EXTRA = "max-[419px]:hidden";
+
+  const chipButton = (label: string, key: string, delayMs = 0, extraClass = "") => (
     <button
       key={key}
       type="button"
@@ -274,7 +284,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
       disabled={sending || !ready}
       style={{ animationDelay: `${delayMs}ms` }}
       className={cn(
-        "inoah-chip flex min-h-[52px] items-center rounded-[12px] border border-white/10 bg-[var(--in-surface)] px-4 py-2",
+        extraClass,
+        "inoah-chip flex min-h-[48px] items-center rounded-[12px] border border-white/10 bg-[var(--in-surface)] px-4 py-2 sm:min-h-[52px]",
         "text-left text-[13px] leading-snug text-[var(--in-text)]/90",
         "transition-[border-color,background-color,transform] [transition-duration:180ms] ease-out",
         "hover:border-[var(--in-accent)]/50 hover:bg-[var(--in-surface-2)] hover:-translate-y-px",
@@ -306,8 +317,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="font-editorial text-[22px] font-normal leading-none tracking-[-.01em]">iNoah</h2>
-          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.26em] text-[var(--in-muted)]">
-            AI twin · public notes only
+          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.26em] text-[var(--in-muted)] max-[359px]:tracking-[0.12em]">
+            <span className="max-[419px]:hidden">AI twin · </span>public notes only
           </p>
         </div>
         <div className="flex items-center gap-1">
@@ -364,8 +375,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
         {isEmpty ? (
           // min-h-full, not h-full: when the panel is short the content grows
           // past it and scrolls instead of clipping the orb off the top.
-          <div className="flex min-h-full flex-col items-center justify-center gap-6 px-2 py-4 text-center">
-            <div className="inoah-orb" aria-hidden="true" />
+          <div className="flex min-h-full flex-col items-center justify-center gap-4 px-2 text-center sm:gap-6 sm:py-4">
+            <div className="inoah-orb short:hidden max-sm:!h-10 max-sm:!w-10" aria-hidden="true" />
             <div className="space-y-1.5">
               <p className="font-editorial text-[30px] font-normal leading-none tracking-[-.02em]">Ask me anything on file.</p>
               <p className="mx-auto max-w-[280px] text-[13px] leading-relaxed text-[var(--in-muted)]">
@@ -375,14 +386,17 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
             <div className="w-full max-w-sm">
               <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
                 {chips.length > 0
-                  ? chips.map((c, i) => chipButton(c, `chip-${c}`, i * 50))
+                  ? chips.map((c, i) => chipButton(c, `chip-${c}`, i * 50, i >= 4 ? NARROW_EXTRA : ""))
                   : Array.from({ length: CHIPS_SHOWN }, (_, i) => (
                       // Same footprint as a real chip, so the grid does not
                       // shift when the pool arrives.
                       <div
                         key={`chip-skeleton-${i}`}
                         aria-hidden="true"
-                        className="min-h-[52px] animate-pulse rounded-[12px] border border-white/5 bg-[var(--in-surface)]/60 motion-reduce:animate-none"
+                        className={cn(
+                          "min-h-[48px] animate-pulse rounded-[12px] border border-white/5 bg-[var(--in-surface)]/60 motion-reduce:animate-none sm:min-h-[52px]",
+                          i >= 4 && NARROW_EXTRA,
+                        )}
                         style={{ animationDelay: `${i * 120}ms` }}
                       />
                     ))}
@@ -530,11 +544,13 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
             <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
           </button>
         </div>
-        <div className="mt-2 flex items-center justify-between px-1">
+        <div className="mt-1 flex items-center justify-between px-1">
           <a
             href="mailto:noah@noahiberman.com"
             className={cn(
-              "text-[10px] tracking-wide text-[var(--in-muted)] underline-offset-2",
+              // min-h-0: the site's 44px phone tap-target floor would turn
+              // this footnote into a blank band under the composer.
+              "inline-flex min-h-0 items-center py-1.5 text-[10px] tracking-wide text-[var(--in-muted)] underline-offset-2",
               "transition-colors [transition-duration:180ms] hover:text-[var(--in-accent)] hover:underline",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--in-accent)] rounded-[4px]",
             )}

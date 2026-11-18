@@ -62,3 +62,30 @@ function getStackSnapshot(): boolean {
 export function useStackVisible(): boolean {
   return useSyncExternalStore(subscribeStack, getStackSnapshot, getStackSnapshot);
 }
+
+// True while the visitor has taken the controls of the flight map ("Explore
+// Map"). The map publishes it; the floating card and the iNoah launcher step
+// aside so nothing sits on top of the map they are trying to pan.
+let mapExploringState = false;
+const exploringListeners = new Set<() => void>();
+
+export function setMapExploring(v: boolean) {
+  if (mapExploringState === v) return;
+  mapExploringState = v;
+  exploringListeners.forEach((l) => l());
+}
+
+function subscribeExploring(listener: () => void) {
+  exploringListeners.add(listener);
+  return () => {
+    exploringListeners.delete(listener);
+  };
+}
+
+function getExploringSnapshot(): boolean {
+  return mapExploringState;
+}
+
+export function useMapExploring(): boolean {
+  return useSyncExternalStore(subscribeExploring, getExploringSnapshot, getExploringSnapshot);
+}

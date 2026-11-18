@@ -12,7 +12,7 @@ import { useFlights, useCurrentFlight } from "@/hooks/use-supabase-flights";
 import { useAircraftPositionPolling } from "@/hooks/use-aircraft-position";
 import type { AircraftPosition } from "@/lib/aircraft-position";
 import { useAirportLookupMap } from "@/hooks/use-supabase-airports";
-import { useActiveWaypointId } from "@/hooks/use-active-waypoint";
+import { setMapExploring, useActiveWaypointId } from "@/hooks/use-active-waypoint";
 import { HERO_WAYPOINT, WAYPOINT_BY_ID, type MapWaypoint } from "@/data/waypoints";
 import { setMapRef } from "@/lib/map-ref";
 
@@ -23,6 +23,53 @@ const MAP_MIN_ZOOM = 2;
 const MAP_MAX_ZOOM = 16;
 /** Float tolerance vs getMinZoom(); keep tight so nav does not appear early. */
 const AT_MIN_ZOOM_TOLERANCE = 0.02;
+
+/** Opacity of the base map's own place labels. On the journey stops they are
+ *  wayfinding. Behind the hero they are noise: at the wide hero zoom every
+ *  state and province name lands on the headline, the tagline and the
+ *  buttons, so there they drop to a trace. */
+const LABEL_OPACITY = 0.75;
+const LABEL_OPACITY_HERO = 0.14;
+
+/**
+ * Viewport-height fraction at the middle of the open band under the hero
+ * copy. Read from layout offsets, not client rects, so the hero's scroll
+ * position and its scroll-linked scale don't skew it. When the band is too
+ * thin to hold anything (very short screens) the subject goes to the bottom
+ * edge, still clear of the headline.
+ */
+const belowHeroCopy = (): number => {
+  const section = document.getElementById("home");
+  const copy = section?.querySelector<HTMLElement>("[data-hero-copy]");
+  if (!section || !copy) return 0.5;
+  let bottom = copy.offsetHeight;
+  for (let el: HTMLElement | null = copy; el && el !== section; el = el.offsetParent as HTMLElement | null) {
+    bottom += el.offsetTop;
+  }
+  const vh = window.innerHeight;
+  const band = vh - bottom;
+  return band >= 96 ? (bottom + band / 2) / vh : 0.9;
+};
+
+/**
+ * The waypoint's camera, with its phone-width overrides applied. Padding is
+ * always stated, even as zero: Mapbox keeps the last padding a camera move
+ * set, so a stop that omitted it would inherit the previous stop's offset.
+ */
+const cameraFor = (wp: MapWaypoint) => {
+  const { anchor, ...mobile } = (window.innerWidth < 640 && wp.mobile) || {};
+  const anchorY = anchor === "below-copy" ? belowHeroCopy() : 0.5;
+  // Top padding p puts the center at p + (h - p) / 2, so p = (2a - 1) * h.
+  const top = Math.max(0, Math.round((2 * anchorY - 1) * window.innerHeight));
+  return {
+    center: wp.center,
+    zoom: wp.zoom,
+    pitch: wp.pitch ?? 45,
+    bearing: wp.bearing ?? 0,
+    ...mobile,
+    padding: { top, bottom: 0, left: 0, right: 0 },
+  };
+};
 
 /** `onReady` fires on the map's first frame (or right away when there is no
  *  map to wait for), so Home can drop the loading state it holds. */
@@ -98,6 +145,33 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
     shouldEnableInteractionsRef.current = shouldEnableInteractions;
   }, [shouldEnableInteractions]);
 
+  // Tell the floating card and the iNoah launcher to step aside while the
+  // visitor has the controls.
+  useEffect(() => {
+    setMapExploring(shouldEnableInteractions);
+    return () => setMapExploring(false);
+  }, [shouldEnableInteractions]);
+
+  // Base-map label layers, captured at load so later custom layers are never
+  // touched by the hero dimming below.
+  const baseLabelLayersRef = useRef<string[]>([]);
+  const heroLabelsDimmed =
+    activeWaypointId === HERO_WAYPOINT.id &&
+    !shouldEnableInteractions &&
+    currentFlight?.flight_status !== "in_flight";
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !mapLoaded) return;
+    const opacity = heroLabelsDimmed ? LABEL_OPACITY_HERO : LABEL_OPACITY;
+    baseLabelLayersRef.current.forEach((id) => {
+      if (!m.getLayer(id)) return;
+      // Mapbox tweens paint properties (300ms by default), so the labels
+      // fade with the camera move instead of popping.
+      m.setPaintProperty(id, "text-opacity", opacity);
+      m.setPaintProperty(id, "icon-opacity", opacity);
+    });
+  }, [heroLabelsDimmed, mapLoaded]);
+
   // True on the effect run right after explore mode ends, so the return
   // flight can be snappier than the scroll-storytelling durations.
   const wasInteractiveRef = useRef(false);
@@ -166,6 +240,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       // airport") instead of leaving the user at the waypoint's zoom-6.5
       // framing. If the data hasn't loaded yet, the airportsVersion effect
       // below retries once it arrives.
+      map.current.setPadding({ top: 0, bottom: 0, left: 0, right: 0 });
       exploreFramedRef.current = frameAllFlights();
       if (!exploreFramedRef.current) {
         map.current.easeTo({ pitch: 0, bearing: 0, duration: prefersReducedMotion ? 0 : 500 });
@@ -214,18 +289,10 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       if (framed) {
         // fitBounds already moved the camera.
       } else if (prefersReducedMotion) {
-        m.jumpTo({
-          center: wp.center,
-          zoom: wp.zoom,
-          pitch: wp.pitch ?? 45,
-          bearing: wp.bearing ?? 0,
-        });
+        m.jumpTo(cameraFor(wp));
       } else {
         m.flyTo({
-          center: wp.center,
-          zoom: wp.zoom,
-          pitch: wp.pitch ?? 45,
-          bearing: wp.bearing ?? 0,
+          ...cameraFor(wp),
           // Waypoint durations are tuned for scroll storytelling; the return
           // from explore mode should feel like closing a panel, not a tour.
           duration: returningFromExplore ? 1200 : wp.duration ?? 1800,
@@ -439,6 +506,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       // Reduce the opacity of all map layers to make them very faint
       if (map.current) {
         // Dim all the base map layers
+        baseLabelLayersRef.current = [];
         const layers = map.current.getStyle().layers;
         layers?.forEach((layer) => {
           if (layer.type === 'background') {
@@ -448,8 +516,12 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
           } else if (layer.type === 'line') {
             map.current!.setPaintProperty(layer.id, 'line-opacity', 0.55);
           } else if (layer.type === 'symbol') {
-            map.current!.setPaintProperty(layer.id, 'text-opacity', 0.75);
-            map.current!.setPaintProperty(layer.id, 'icon-opacity', 0.7);
+            // Starts at the hero level so the first frame never flashes the
+            // full label set behind the headline; the heroLabelsDimmed
+            // effect takes it from here.
+            baseLabelLayersRef.current.push(layer.id);
+            map.current!.setPaintProperty(layer.id, 'text-opacity', LABEL_OPACITY_HERO);
+            map.current!.setPaintProperty(layer.id, 'icon-opacity', LABEL_OPACITY_HERO);
           } else if (layer.type === 'raster') {
             map.current!.setPaintProperty(layer.id, 'raster-opacity', 0.4);
           }
@@ -863,6 +935,8 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
     map.current.easeTo({
       center: [aircraftPosition.longitude, aircraftPosition.latitude],
       zoom: 7,
+      // Explicit zero: camera padding persists, and the phone hero sets one.
+      padding: { top: 0, bottom: 0, left: 0, right: 0 },
       duration: 2000
     });
 
@@ -951,8 +1025,8 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
         
         {/* Instruction hint while actively interacting */}
         {shouldEnableInteractions && (
-          <div className="absolute bottom-[env(safe-area-inset-bottom,24px)] left-1/2 -translate-x-1/2 mb-4 z-[110] pointer-events-none">
-            <div className="bg-black/70 backdrop-blur-md rounded-full px-4 py-2 text-white/80 text-xs sm:text-sm font-medium animate-pulse">
+          <div className="absolute bottom-[max(env(safe-area-inset-bottom),24px)] left-1/2 -translate-x-1/2 z-[110] pointer-events-none">
+            <div className="whitespace-nowrap bg-black/70 backdrop-blur-md rounded-full px-4 py-2 text-white/80 text-xs sm:text-sm font-medium animate-pulse motion-reduce:animate-none">
               Pinch to zoom • Drag to pan
             </div>
           </div>
@@ -1029,7 +1103,7 @@ export function BackgroundFlightMap({ onReady }: { onReady?: () => void }) {
       {shouldEnableInteractions && (
         <button
           onClick={() => setIsInteractive(false)}
-          className={`fixed top-[env(safe-area-inset-top,16px)] left-3 sm:left-4 z-[120] 
+          className={`fixed top-[max(env(safe-area-inset-top),16px)] left-3 sm:left-4 z-[120] 
                      bg-black/90 hover:bg-black active:bg-black/90 backdrop-blur-xl 
                      rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 
                      text-white text-sm sm:text-base font-semibold 
