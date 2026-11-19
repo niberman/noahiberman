@@ -6,6 +6,21 @@ A consolidated history of fixes, features, and improvements.
 
 ## Recent Updates
 
+### iNoah voice and iOS pass (2026-11-19)
+Every public route was driven in WebKit, the engine behind iOS Safari, under iPhone 15, iPhone SE, iPhone 15 Pro Max, landscape iPhone 15 and iPad Mini profiles, then re-checked in Chrome.
+- **Changed**: iNoah no longer starts the browser's built-in voice by itself. When the ElevenLabs voice is unavailable, replies stay silent until the visitor taps the speaker, and that choice lasts for the page, not across visits. The ElevenLabs voice behaves as before (on by default, mute remembered)
+- **Fixed**: When ElevenLabs failed partway through a reply, the system voice took over unasked. It now drops to silent
+- **Fixed**: The homepage hero switched layouts partway down the first scroll on most iPhones. Its short-screen rules used a max-height media query, and Safari's toolbar collapsing makes the viewport about 90px taller. They now key off the small viewport height, which does not move
+- **Fixed**: The hero was sized to 100vh, which on iOS is the height with the toolbar hidden, so its lower edge and scroll cue started out under the toolbar. It is now sized to the visible area
+- **Fixed**: The iNoah page card and the mobile menu type were sized in dvh and resized as the toolbar came and went. Both use the stable small viewport now
+- **Fixed**: Entrances and scroll reveals animated a blur filter, which repaints every frame and stutters on a phone exactly as a section scrolls in. Touch devices get the same rise and fade with no blur. Pointer devices are unchanged
+- **Fixed**: Phone in landscape: map cards slid under the nav bar, the iNoah launcher sat on their last line, and the nav logo ignored the notch inset. Cards now stay below the bar and clear of the launcher, the launcher folds to its glyph, and fixed chrome adds the safe-area inset
+- **Fixed**: iNoah on phones: opening it raised the keyboard over the suggested questions, and with the keyboard up Safari pushed the header and close button off the top. It opens with the keyboard down and the sheet now sizes itself to the space above the keyboard
+- **Fixed**: iOS zoomed the page on focus for telephone, password, number and select fields (only text and email were covered), and contact fields were 14px on phones
+- **Added**: Motion a phone can use: a slow aura drifting across the hero in place of the cursor spotlight, ledger rows that light as they cross the middle of the screen in place of the cursor glow (Safari 26 and later), and a press-in on buttons and pills. All off under reduced motion
+- **Changed**: The iNoah eval gate retries a question twice on a network error, a 5xx or an empty answer, and reports unanswered questions separately from banned claims. It still fails the build in both cases
+- **Result**: 60 WebKit screens (12 routes on 5 iPhone and iPad profiles) and 72 Chrome screens (18 routes at 4 widths) with no crash, horizontal overflow, clipped text, broken image or page error. Before the blur change the same WebKit run crashed on most editorial pages. Worst layout shift is about 0.02. Not yet checked on a physical iPhone: the toolbar, keyboard and notch behaviour cannot be reproduced in a desktop build of WebKit
+
 ### Front-end audit and polish (2026-11-18)
 Every public route was driven in a headless browser at 320, 390, 768 and 1440px wide (plus a landscape phone and reduced motion), against the live site first and then against this build served under the production origin.
 - **Fixed**: Typing a capital D in any field (contact form, booking form, iNoah composer) fired the Shift+D dashboard shortcut and threw the visitor onto the login page. The shortcut now ignores keystrokes made while typing

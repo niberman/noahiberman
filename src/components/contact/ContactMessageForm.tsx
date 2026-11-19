@@ -58,7 +58,7 @@ export function ContactMessageForm() {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
-              className="text-sm sm:text-base py-5 sm:py-6"
+              className="text-base md:text-base py-5 sm:py-6"
             />
           </div>
           <div>
@@ -68,7 +68,7 @@ export function ContactMessageForm() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="text-sm sm:text-base py-5 sm:py-6"
+              className="text-base md:text-base py-5 sm:py-6"
             />
           </div>
           <div>
@@ -78,7 +78,7 @@ export function ContactMessageForm() {
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               required
-              className="text-sm sm:text-base resize-none"
+              className="text-base resize-none"
             />
           </div>
           <Button

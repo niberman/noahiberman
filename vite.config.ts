@@ -23,6 +23,11 @@ const criticalCss = (): Plugin => ({
       // metric-matched Instrument Serif fallback faces, which this pass
       // would strip (it drops any @font-face whose src has no url()).
       reduceInlineStyles: false,
+      // The short: and squat: variants hang off a class the inline head
+      // script adds to <html>, so they match nothing in the static document
+      // and would be pruned. Without them the shell paints tall, then
+      // tightens when the full stylesheet lands.
+      allowRules: [/\.vh-(short|squat)\b/],
       logLevel: "warn",
     });
     await fs.writeFile(file, await beasties.process(html));

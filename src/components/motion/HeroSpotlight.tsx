@@ -8,7 +8,9 @@ const finePointer =
  * Soft aura that trails the cursor across the hero, screen-blended over the
  * flight map. Listens on the hero section itself (passed by ref) so it dies
  * with the hero, springs behind the pointer for weight, and fades out on
- * leave. Desktop pointers only; inert under reduced motion.
+ * leave. A phone has no cursor to follow, so touch devices get the same aura
+ * drifting on its own slow loop (.hero-aura in index.css): transform only,
+ * no blend mode, so it stays on the compositor. Inert under reduced motion.
  */
 export function HeroSpotlight({ heroRef }: { heroRef: React.RefObject<HTMLElement> }) {
   const x = useMotionValue(0);
@@ -38,7 +40,21 @@ export function HeroSpotlight({ heroRef }: { heroRef: React.RefObject<HTMLElemen
     };
   }, [heroRef, reduceMotion, x, y, presence]);
 
-  if (!finePointer || reduceMotion) return null;
+  if (reduceMotion) return null;
+
+  if (!finePointer) {
+    return (
+      <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div
+          className="hero-aura absolute left-1/2 top-[44%] h-[34rem] w-[34rem] rounded-full"
+          style={{
+            background:
+              "radial-gradient(closest-side, hsl(var(--secondary) / 0.2), transparent 70%)",
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <m.div aria-hidden className="absolute inset-0 pointer-events-none" style={{ opacity }}>

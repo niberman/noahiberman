@@ -21,6 +21,14 @@ import { rise, useParallax } from "./fx";
 
 /** Horizontal page gutter shared by every editorial section. */
 export const PAD_X = "px-[clamp(16px,4vw,56px)]";
+/**
+ * The same gutter for fixed chrome (nav bar, menu overlay). <body> already
+ * pads the page by the safe-area insets, so in-flow sections line up with the
+ * notch for free. Fixed elements ignore that padding and have to add the
+ * inset themselves, or a landscape iPhone puts the logo under the island.
+ */
+const PAD_X_FIXED =
+  "pl-[calc(clamp(16px,4vw,56px)+env(safe-area-inset-left))] pr-[calc(clamp(16px,4vw,56px)+env(safe-area-inset-right))]";
 /** Eyebrow / label type. */
 export const EYEBROW = "text-xs tracking-[.3em] uppercase text-ed-muted";
 /** Section H2 (Aviation, Now): centered display heading, last phrase in <em>. */
@@ -238,7 +246,7 @@ export function EditorialNav() {
 
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X} transition-[transform,opacity] duration-500 ${
+      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X_FIXED} transition-[transform,opacity] duration-500 ${
         visible ? "" : "-translate-y-full opacity-0 pointer-events-none"
       }`}
       // Tabbing out of the open menu closes it instead of leaving focus on
@@ -311,7 +319,7 @@ export function EditorialNav() {
             // own content, above its backdrop), so there is no seam where the
             // bar ends. Link size also tracks viewport height so all nine fit
             // on a small phone without scrolling.
-            className={`fixed inset-0 z-[-1] flex flex-col gap-1 overflow-y-auto overscroll-contain ${PAD_X} pt-[100px] pb-10 short:pt-[84px] short:pb-5 text-center bg-[rgba(4,2,8,.97)] backdrop-blur-[20px] md:hidden`}
+            className={`fixed inset-0 z-[-1] flex flex-col gap-1 overflow-y-auto overscroll-contain ${PAD_X_FIXED} pt-[100px] pb-10 short:pt-[84px] short:pb-5 text-center bg-[rgba(4,2,8,.97)] backdrop-blur-[20px] md:hidden`}
           >
             {NAV_LINKS.map((link, i) => (
               <m.a
@@ -322,7 +330,7 @@ export function EditorialNav() {
                 initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.04 + i * 0.035 }}
-                className={`font-editorial text-[clamp(28px,min(11vw,5.6dvh),56px)] leading-[1.15] tracking-[-.02em] ${
+                className={`font-editorial text-[clamp(28px,min(11vw,5.6svh),56px)] leading-[1.15] tracking-[-.02em] ${
                   isActive(link) ? "italic text-ed-light" : "text-ed-ink"
                 }`}
               >

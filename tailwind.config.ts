@@ -190,12 +190,17 @@ export default {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    // Height-based variant for small phones and phones in landscape, where a
-    // full-viewport composition has to tighten up to stay on screen. Added as
-    // a variant (not a raw `screens` entry) so the max-* width variants keep
-    // working.
+    // Height-based variants for small phones and phones in landscape, where a
+    // full-viewport composition has to tighten up to stay on screen.
+    // short: is a viewport 700px tall or less, squat: is 600px or less.
+    // They key off classes the inline script in index.html sets on <html>
+    // from the small viewport height (100svh), not a max-height media query:
+    // Safari's toolbar collapses on the first scroll, the viewport grows by
+    // about 90px, and a media query would flip the hero layout mid-scroll.
+    // The extra class also outranks the sm:/md: rules, so no ! is needed.
     plugin(({ addVariant }) => {
-      addVariant("short", "@media (max-height: 700px)");
+      addVariant("short", ".vh-short &");
+      addVariant("squat", ".vh-squat &");
     }),
   ],
 } satisfies Config;
