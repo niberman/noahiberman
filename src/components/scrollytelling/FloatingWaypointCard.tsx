@@ -3,7 +3,7 @@ import { AnimatePresence, m } from "framer-motion";
 import { ExternalLink, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HERO_WAYPOINT, type MapWaypoint } from "@/data/waypoints";
-import { useActiveWaypoint, useStackVisible } from "@/hooks/use-active-waypoint";
+import { useActiveWaypoint, useMapExploring, useStackVisible } from "@/hooks/use-active-waypoint";
 import { useMapRef } from "@/lib/map-ref";
 
 // One accent for every stop, from the editorial palette. The amber
@@ -37,9 +37,13 @@ export function FloatingWaypointCard() {
   const waypoint = useActiveWaypoint();
   const stackVisible = useStackVisible();
   const map = useMapRef();
+  const exploring = useMapExploring();
   // Hide whenever we're on hero or scrolled past the journey. The pin/card
   // would otherwise float over Contact/SEO content with no map underneath.
-  const hidden = waypoint.id === HERO_WAYPOINT.id || !stackVisible;
+  // Also while the visitor is exploring the map: the card had done its job
+  // (its button started explore mode) but stayed parked over the lower third
+  // of the map, still offering "Click to Explore Map".
+  const hidden = waypoint.id === HERO_WAYPOINT.id || !stackVisible || exploring;
   // Without a map (chunk still loading, or skipped on software GL) the
   // anchored card can't position itself, so show every stop centered instead.
   const centered = waypoint.cardPlacement === "centered" || !map;
@@ -164,7 +168,7 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
   return (
     <div
       ref={ref}
-      className="fixed top-0 left-0 z-[110] hidden sm:block w-[min(380px,32vw)] pointer-events-none will-change-transform"
+      className="fixed top-0 left-0 z-[110] hidden sm:block w-[clamp(300px,32vw,380px)] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
     >
       <m.div
@@ -181,12 +185,16 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
   );
 }
 
-/** Bottom-center card for climax/CTA stops. Grid-stacks entering/exiting
- *  cards in the same cell so the crossfade never shifts layout. */
+/** Bottom-center card for climax/CTA stops. The wrapper is a zero-height
+ *  anchor line and each card hangs off it absolutely, so entering and exiting
+ *  cards overlap for the crossfade and neither one resizes anything. (A grid
+ *  cell sized to the taller card did resize: every handoff between cards of
+ *  different heights moved the wrapper's top edge, which the browser logs as
+ *  layout shift.) */
 function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] hidden sm:grid items-end w-full max-w-lg px-4 pointer-events-none"
+      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] hidden sm:block h-0 w-full max-w-lg pointer-events-none"
       aria-hidden={hidden}
     >
       <AnimatePresence>
@@ -198,7 +206,7 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
             exit={{ opacity: 0, y: 18, scale: 0.96 }}
             whileHover={{ scale: 1.018 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="pointer-events-auto col-start-1 row-start-1"
+            className="pointer-events-auto absolute inset-x-4 bottom-0"
           >
             <CardChrome waypoint={waypoint} />
           </m.div>
@@ -209,11 +217,12 @@ function DesktopCardCentered({ waypoint, hidden }: { waypoint: MapWaypoint; hidd
 }
 
 /** Bottom-sheet card on mobile. Sits above the chat bubble at bottom-right.
- *  Same grid-stack crossfade: the old sheet fades while the new one rises. */
+ *  Same zero-height anchor as the centered desktop card: the old sheet fades
+ *  while the new one rises, both pinned to the same bottom line. */
 function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boolean }) {
   return (
     <div
-      className="sm:hidden fixed inset-x-0 bottom-[max(env(safe-area-inset-bottom),16px)] z-[110] px-3 pt-2 mb-16 pointer-events-none grid items-end"
+      className="sm:hidden fixed inset-x-3 bottom-[calc(max(env(safe-area-inset-bottom),16px)+4rem)] z-[110] h-0 pointer-events-none"
       aria-hidden={hidden}
     >
       <AnimatePresence>
@@ -224,7 +233,7 @@ function MobileCard({ waypoint, hidden }: { waypoint: MapWaypoint; hidden: boole
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 28 }}
             transition={{ duration: 0.48, ease: EASE }}
-            className="pointer-events-auto col-start-1 row-start-1"
+            className="pointer-events-auto absolute inset-x-0 bottom-0"
           >
             <CardChrome waypoint={waypoint} compact />
           </m.div>

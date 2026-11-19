@@ -4,7 +4,10 @@ import { BackLink, PageHeader, PageShell } from "@/components/editorial/Editoria
 
 export default function Blog() {
   return (
-    <PageShell width="max-w-[1000px]">
+    // min-h-screen: the posts arrive after a fetch. Holding a full viewport
+    // keeps the footer below the fold while they load, instead of showing it
+    // and then shoving it down when the rows land.
+    <PageShell width="max-w-[1000px]" className="min-h-screen">
       <SEO
         title="Blog | Noah Berman"
         description="Aviation, AI systems, and technology insights from Noah Berman, a Denver-based commercial pilot, software engineer, and entrepreneur."

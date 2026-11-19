@@ -200,7 +200,14 @@ export default function Home() {
         <section
           id="home"
           ref={heroRef}
-          className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
+          // short: (max-height 700px) covers small phones and landscape.
+          // There the centered block is taller than the space under the nav,
+          // so it gets the nav's 76px as top padding and tighter spacing
+          // instead of sliding the logo underneath the wordmark. The short:
+          // overrides below carry `!` because plugin variants are emitted
+          // before the sm:/md: rules they need to beat. Mirrored in the
+          // index.html shell; keep them identical.
+          className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 short:pt-[76px]"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70" />
 
@@ -209,17 +216,19 @@ export default function Home() {
 
           <m.div
             style={{ opacity, scale }}
-            className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20"
+            className="container mx-auto px-4 relative z-10 pb-16 sm:pb-20 short:!pb-4"
           >
             {/* The h1 is the LCP element: it and every ancestor must render at
                 full opacity on first paint, or the fade delay is charged as
                 LCP element render delay. Siblings still stagger in around
                 it. */}
-            <div className="text-center max-w-5xl mx-auto">
+            {/* data-hero-copy: the map measures this block to park the route
+                hub in the open band beneath it on phones. */}
+            <div data-hero-copy className="text-center max-w-5xl mx-auto">
               {/* The logo is the mobile LCP image. A scale-0 intro would hide
                   it from LCP until the spring finishes. animate-float keeps it
                   moving. */}
-              <div className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 overflow-hidden rounded drop-shadow-glow animate-float relative">
+              <div className="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 short:!mb-4 short:!h-12 short:!w-12 [@media(max-height:600px)]:hidden overflow-hidden rounded drop-shadow-glow animate-float relative">
                 <picture>
                 <source srcSet="/logo.webp" type="image/webp" />
                 <img
@@ -239,14 +248,14 @@ export default function Home() {
               {/* Entry stagger is CSS (hero-enter-*) so the static shell in
                   index.html plays the identical animation pre-JS and nothing
                   defaults to hidden. */}
-              <p className="hero-enter-1 mb-5 sm:mb-7 text-xs uppercase tracking-[.3em] text-ed-muted">
+              <p className="hero-enter-1 mb-5 sm:mb-7 short:!mb-3 text-xs uppercase tracking-[.3em] text-ed-muted">
                 Noah Berman
               </p>
 
               {/* Word cascade animates transform/filter only; opacity stays 1
                   on the LCP element so the paint is never delayed. Markup is
                   mirrored in the index.html shell; keep them identical. */}
-              <h1 className="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
+              <h1 className="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 short:!mb-4 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
                 {BrandWords.map((word, i) => (
                   <span key={word}>
                     <span
@@ -260,7 +269,7 @@ export default function Home() {
                 ))}
               </h1>
 
-              <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+              <div className="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8 short:!mb-5">
                 <p className="text-xl sm:text-2xl md:text-3xl text-ed-body font-light text-balance px-4">
                   The sky is not the limit
                 </p>
@@ -271,7 +280,7 @@ export default function Home() {
 
               {/* Magnetic wrappers carry the responsive width; buttons fill
                   them so mobile stacking is unchanged. */}
-              <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center items-center px-4">
+              <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 short:!gap-3 justify-center items-center px-4">
                 <Magnetic className="w-full sm:w-auto">
                   <Button
                     onClick={() => navigate("/inoah")}
@@ -313,7 +322,7 @@ export default function Home() {
               which would otherwise drop a class-based -translate-x-1/2. */}
           <m.div
             style={{ y, x: "-50%", opacity: cueOpacity }}
-            className="absolute bottom-8 sm:bottom-12 left-1/2"
+            className="absolute bottom-8 sm:bottom-12 left-1/2 short:hidden"
           >
             <m.div
               animate={{ y: [0, 12, 0] }}

@@ -8,7 +8,15 @@ export function ContactSection() {
     <section
       id="contact"
       data-fix="contact"
-      className={`py-[clamp(72px,10vw,140px)] scroll-mt-24 relative border-t border-white/[.08] bg-background/90 backdrop-blur-xs [content-visibility:auto] [contain-intrinsic-size:auto_1100px] ${PAD_X}`}
+      // The fixed flight map sits behind this section. `backdrop-blur-xs` is
+      // not a Tailwind 3 class, so no blur was ever applied and the map's
+      // place names and routes showed through the form copy at 10%. A real
+      // blur plus a slightly denser ground keeps the glow and drops the text.
+      // The intrinsic sizes are the measured content heights (stacked below
+      // lg, three columns above), so the page length barely moves when the
+      // section first renders; the single 1100px guess was off by 200 to
+      // 280px on phones and jolted the scroll progress bar.
+      className={`py-[clamp(72px,10vw,140px)] scroll-mt-24 relative border-t border-white/[.08] bg-background/[.93] backdrop-blur-xl [content-visibility:auto] [contain-intrinsic-size:auto_1350px] lg:[contain-intrinsic-size:auto_960px] ${PAD_X}`}
     >
       <div className="mx-auto max-w-[1200px]">
         {/* reveal-view: CSS scroll-driven rise (see index.css), replacing the

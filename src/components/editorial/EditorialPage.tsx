@@ -1,10 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, Github, Linkedin, Mail } from "lucide-react";
-import { NAV_LINKS, useNavLinks } from "@/components/Navigation";
+import { NAV_LINKS, useNavLinks, type NavLink } from "@/components/Navigation";
+import { inoahLauncherHidden } from "@/lib/inoah-launcher";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BrandWordsString } from "@/data/brand";
-import { m } from "framer-motion";
+import { getLenis } from "@/lib/lenis-ref";
+import { prefetchRoute } from "@/lib/route-chunks";
+import { AnimatePresence, m, useReducedMotion } from "framer-motion";
 import { rise, useParallax } from "./fx";
 
 /**
@@ -172,11 +175,21 @@ export function AmbientOrbs() {
   );
 }
 
+/** Same curve the rest of the site's entries use (--ease-out-expo). */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Warm a page route's chunk on the first sign of intent. */
+const warm = (link: NavLink) => () => {
+  if (link.type === "page") prefetchRoute(link.path);
+};
+
 export function EditorialNav() {
   const { isActive, follow } = useNavLinks();
   const { pathname } = useLocation();
   const isMobile = useIsMobile();
+  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   // Closes on navigation and on breakpoint change.
   useEffect(() => setOpen(false), [pathname, isMobile]);
 
@@ -193,15 +206,60 @@ export function EditorialNav() {
     return () => window.removeEventListener("flightMapNavVisibilityChange", handler);
   }, []);
 
+  // While the menu is open the page behind it must not move, and Escape
+  // closes it. Lenis's stop() also clips the root's overflow (lenis.css), so
+  // it freezes wheel and touch scrolling alike.
+  useEffect(() => {
+    if (!open) return;
+    const lenis = getLenis();
+    lenis?.stop();
+    // The menu is the whole site map: have every page ready before the tap.
+    NAV_LINKS.forEach((link) => warm(link)());
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      lenis?.start();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const closeAndFollow = (e: React.MouseEvent<HTMLAnchorElement>, link: NavLink) => {
+    setOpen(false);
+    // Release the scroll lock now, not on the next commit: section links
+    // (Contact, Follow My Flight) scroll through Lenis inside follow(), and a
+    // stopped Lenis ignores scrollTo.
+    getLenis()?.start();
+    follow(e, link);
+  };
+
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X} bg-gradient-to-b from-[rgba(4,2,8,.9)] to-[rgba(4,2,8,0)] transition-[transform,opacity] duration-500 ${
+      className={`fixed inset-x-0 top-0 z-[100] flex h-[76px] items-center justify-between gap-4 ${PAD_X} transition-[transform,opacity] duration-500 ${
         visible ? "" : "-translate-y-full opacity-0 pointer-events-none"
       }`}
+      // Tabbing out of the open menu closes it instead of leaving focus on
+      // the page hidden underneath.
+      onBlur={(e) => {
+        if (open && e.relatedTarget instanceof Node && !e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+      }}
     >
+      {/* Backdrop. The design's top-down fade, plus a blur that fades out
+          with it: content scrolling under the bar dissolves instead of
+          running through the wordmark and links at full sharpness. Lives on
+          a child, never on <nav> itself, because a backdrop-filter there
+          would turn the nav into the containing block for the fixed menu. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[112px] bg-gradient-to-b from-[rgba(4,2,8,.94)] via-[rgba(4,2,8,.7)] to-[rgba(4,2,8,0)] backdrop-blur-[12px] [mask-image:linear-gradient(to_bottom,#000_50%,transparent)]"
+      />
+
       <a
         href="/"
-        onClick={(e) => follow(e, NAV_LINKS[0])}
+        onClick={(e) => (open ? closeAndFollow(e, NAV_LINKS[0]) : follow(e, NAV_LINKS[0]))}
         className="flex shrink-0 items-center gap-3 text-ed-ink"
       >
         <img src="/logo.png" alt="Noah Berman logo" width={24} height={24} className="h-6 w-6 object-contain" />
@@ -214,6 +272,9 @@ export function EditorialNav() {
             key={link.path}
             href={link.path}
             onClick={(e) => follow(e, link)}
+            onPointerEnter={warm(link)}
+            onFocus={warm(link)}
+            aria-current={isActive(link) ? "page" : undefined}
             className={
               isActive(link)
                 ? "font-editorial italic text-[17px] text-ed-ink"
@@ -226,35 +287,52 @@ export function EditorialNav() {
       </div>
 
       <button
+        ref={toggleRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label="Menu"
+        aria-label={open ? "Close menu" : "Menu"}
         aria-expanded={open}
+        aria-controls="site-menu"
         className="md:hidden py-2 font-editorial italic text-xl text-ed-ink"
       >
         {open ? "Close" : "Menu"}
       </button>
 
-      {open && (
-        <div
-          className={`fixed inset-x-0 top-[76px] bottom-0 z-[150] flex flex-col gap-1 overflow-auto ${PAD_X} pt-6 pb-10 text-center bg-[rgba(4,2,8,.97)] backdrop-blur-[20px] md:hidden`}
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.path}
-              href={link.path}
-              onClick={(e) => {
-                follow(e, link);
-                setOpen(false);
-              }}
-              className="font-editorial text-[clamp(40px,11vw,56px)] leading-[1.15] tracking-[-.02em] text-ed-ink"
-            >
-              {link.label}
-            </a>
-          ))}
-          <p className={`mt-auto pt-8 ${EYEBROW}`}>{BrandWordsString}</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <m.div
+            id="site-menu"
+            data-lenis-prevent
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.28, ease: EASE }}
+            // Covers the whole screen from behind the bar (z below the bar's
+            // own content, above its backdrop), so there is no seam where the
+            // bar ends. Link size also tracks viewport height so all nine fit
+            // on a small phone without scrolling.
+            className={`fixed inset-0 z-[-1] flex flex-col gap-1 overflow-y-auto overscroll-contain ${PAD_X} pt-[100px] pb-10 short:pt-[84px] short:pb-5 text-center bg-[rgba(4,2,8,.97)] backdrop-blur-[20px] md:hidden`}
+          >
+            {NAV_LINKS.map((link, i) => (
+              <m.a
+                key={link.path}
+                href={link.path}
+                onClick={(e) => closeAndFollow(e, link)}
+                aria-current={isActive(link) ? "page" : undefined}
+                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.04 + i * 0.035 }}
+                className={`font-editorial text-[clamp(28px,min(11vw,5.6dvh),56px)] leading-[1.15] tracking-[-.02em] ${
+                  isActive(link) ? "italic text-ed-light" : "text-ed-ink"
+                }`}
+              >
+                {link.label}
+              </m.a>
+            ))}
+            <p className={`mt-auto pt-8 short:hidden ${EYEBROW}`}>{BrandWordsString}</p>
+          </m.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
@@ -265,11 +343,25 @@ const sectionLink = (id: string) => NAV_LINKS.find((l) => l.id === id)!;
 
 export function EditorialFooter() {
   const { follow } = useNavLinks();
+  const { pathname } = useLocation();
   const quote = useParallax<HTMLParagraphElement>(0.1);
+  // On phones the iNoah launcher floats over the bottom-right corner and sat
+  // on top of the copyright line. Where the launcher shows, the footer keeps
+  // its last line above it (launcher: 20px inset + 48px tall, plus air).
+  const bottomPad = inoahLauncherHidden(pathname)
+    ? "pb-10"
+    : "pb-[calc(env(safe-area-inset-bottom)+5.75rem)] sm:pb-10";
+  // Every other route paints its own page ground behind the footer. The
+  // homepage's ground is the live flight map, which is fixed inside the
+  // route container (z-10), so at z-1 the footer rendered *under* the map:
+  // the quote and links showed through its tiles with routes and place names
+  // drawn across them. On the homepage the footer rises above that container
+  // and takes the same blurred ground as the contact section before it.
+  const layer = pathname === "/" ? "z-20 bg-background/[.93] backdrop-blur-xl" : "z-[1]";
 
   return (
     <footer
-      className={`relative z-[1] overflow-hidden border-t border-white/[.08] pt-[clamp(72px,12vw,160px)] pb-10 ${PAD_X} text-center`}
+      className={`relative ${layer} overflow-hidden border-t border-white/[.08] pt-[clamp(72px,12vw,160px)] ${bottomPad} ${PAD_X} text-center`}
     >
       <m.p
         ref={quote.ref}
@@ -304,10 +396,14 @@ export function EditorialFooter() {
         </a>
       </div>
 
-      <div className="mb-2.5 flex items-center justify-center gap-2.5">
-        <img src="/logo.png" alt="Noah Berman logo" width={20} height={20} loading="lazy" className="h-5 w-5 object-contain" />
-        <span className="font-editorial text-[22px]">Noah Berman</span>
-        <span className="ml-2 text-[13px] text-ed-muted">{BrandWordsString}</span>
+      {/* Wraps as two whole units (wordmark, then tagline) on narrow
+          screens instead of breaking "Noah / Berman" across lines. */}
+      <div className="mb-2.5 flex flex-wrap items-center justify-center gap-x-[18px] gap-y-1.5">
+        <span className="inline-flex items-center gap-2.5 whitespace-nowrap">
+          <img src="/logo.png" alt="Noah Berman logo" width={20} height={20} loading="lazy" className="h-5 w-5 object-contain" />
+          <span className="font-editorial text-[22px]">Noah Berman</span>
+        </span>
+        <span className="whitespace-nowrap text-[13px] text-ed-muted">{BrandWordsString}</span>
       </div>
       <p className="text-xs text-ed-muted">© {new Date().getFullYear()} Noah Berman. All rights reserved.</p>
     </footer>

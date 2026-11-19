@@ -2,92 +2,94 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { markSecretAccessGranted } from "@/lib/secretAccess";
 
+/** Side of the square top-left hot zone, in CSS pixels. */
+const ZONE = 96;
+
+const inZone = (x: number, y: number) => x <= ZONE && y <= ZONE;
+
+/** True when the event comes from somewhere the visitor is typing. */
+const isTyping = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  );
+};
+
 export const useSecretDashboardAccess = () => {
   const navigate = useNavigate();
   const clickCountRef = useRef(0);
-  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const tapCountRef = useRef(0);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tapTimestampsRef = useRef<number[]>([]);
 
   useEffect(() => {
+    const open = () => {
+      markSecretAccessGranted();
+      navigate("/dashboard");
+    };
+
     // === KEYBOARD SHORTCUT: Shift + D ===
+    // Never while typing: a capital D in the contact form, the booking form or
+    // the iNoah composer used to throw the visitor onto the login page and
+    // lose what they had written.
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === "D") {
-        e.preventDefault();
-        markSecretAccessGranted();
-        navigate("/dashboard");
-      }
+      if (!e.shiftKey || e.key !== "D") return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+      if (isTyping(e.target)) return;
+      e.preventDefault();
+      open();
     };
 
     // === HIDDEN CLICK ZONE: 5 clicks within 3 seconds ===
+    // Matched by pointer position, not by an overlay element, so whatever
+    // sits in the corner (the nav logo, the map's Exit button) keeps working.
+    // `detail` is 0 for keyboard and scripted clicks, which never count.
     const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      
-      // Check if the click is on the secret zone (by checking for a data attribute we'll add)
-      if (target.hasAttribute("data-secret-zone")) {
-        clickCountRef.current += 1;
+      if (e.detail === 0 || !inZone(e.clientX, e.clientY)) return;
 
-        // Clear existing timer
-        if (clickTimerRef.current) {
-          clearTimeout(clickTimerRef.current);
-        }
+      clickCountRef.current += 1;
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
 
-        // If 5 clicks reached, navigate
-        if (clickCountRef.current >= 5) {
-          markSecretAccessGranted();
-          navigate("/dashboard");
-          clickCountRef.current = 0;
-          return;
-        }
-
-        // Reset counter after 3 seconds
-        clickTimerRef.current = setTimeout(() => {
-          clickCountRef.current = 0;
-        }, 3000);
+      if (clickCountRef.current >= 5) {
+        clickCountRef.current = 0;
+        open();
+        return;
       }
+
+      clickTimerRef.current = setTimeout(() => {
+        clickCountRef.current = 0;
+      }, 3000);
     };
 
-    // === MOBILE TRIPLE-TAP: Top-left corner (100x100px) ===
+    // === MOBILE TRIPLE-TAP: top-left corner within one second ===
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
-      
-      // Check if tap is in top-left corner (100x100px)
-      if (touch.clientX <= 100 && touch.clientY <= 100) {
-        const now = Date.now();
-        tapTimestampsRef.current.push(now);
+      if (!touch || !inZone(touch.clientX, touch.clientY)) return;
 
-        // Keep only taps from the last 1 second
-        tapTimestampsRef.current = tapTimestampsRef.current.filter(
-          (timestamp) => now - timestamp < 1000
-        );
+      const now = Date.now();
+      tapTimestampsRef.current = [...tapTimestampsRef.current, now].filter(
+        (timestamp) => now - timestamp < 1000
+      );
 
-        // If 3 taps detected within 1 second, navigate
-        if (tapTimestampsRef.current.length >= 3) {
-          e.preventDefault();
-          markSecretAccessGranted();
-          navigate("/dashboard");
-          tapTimestampsRef.current = [];
-        }
+      if (tapTimestampsRef.current.length >= 3) {
+        tapTimestampsRef.current = [];
+        open();
       }
     };
 
-    // Attach listeners
     document.addEventListener("keydown", handleKeyPress);
     document.addEventListener("click", handleClick);
-    document.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
 
-    // Cleanup
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
       document.removeEventListener("click", handleClick);
       document.removeEventListener("touchstart", handleTouchStart);
-      
-      if (clickTimerRef.current) {
-        clearTimeout(clickTimerRef.current);
-      }
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
     };
   }, [navigate]);
 
   return null;
 };
-

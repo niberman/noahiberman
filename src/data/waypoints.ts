@@ -43,6 +43,20 @@ export interface MapWaypoint {
    * A hardcoded framing leaves half the lines off-screen.
    */
   fitRoutes?: boolean;
+  /**
+   * Camera overrides for phone-width viewports (<640px), merged over the
+   * fields above. A framing composed for a wide screen can leave the subject
+   * off the edge of a narrow one.
+   */
+  mobile?: Partial<Pick<MapWaypoint, "center" | "zoom" | "pitch" | "bearing">> & {
+    /**
+     * Where `center` lands on screen. Default is the middle of the viewport.
+     * "below-copy" parks it in the middle of the open band between the hero
+     * copy and the bottom of the screen, measured from the page (see
+     * BackgroundFlightMap), so it holds on any phone height.
+     */
+    anchor?: "below-copy";
+  };
 }
 
 export const HERO_WAYPOINT: MapWaypoint = {
@@ -54,6 +68,11 @@ export const HERO_WAYPOINT: MapWaypoint = {
   pitch: 35,
   bearing: -15,
   duration: 1800,
+  // At zoom 3.2 a 390px-wide screen shows about 30 degrees of longitude, which
+  // put the Denver hub (the whole route network) on the left edge, half cut
+  // off. On phones: pull back, center on the hub, and park it in the open
+  // band under the buttons so the routes glow below the copy, not through it.
+  mobile: { center: [-103.5, 39.5], zoom: 2.4, pitch: 0, anchor: "below-copy" },
 };
 
 export const WAYPOINTS: MapWaypoint[] = [

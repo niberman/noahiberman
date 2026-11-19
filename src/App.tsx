@@ -15,25 +15,27 @@ import Home from "./pages/Home";
 // and an eager shell paints a fixed-size card instead of shifting the footer.
 import Inoah from "./pages/Inoah";
 import { SectionRedirect } from "@/components/SectionRedirect";
+import { routeLoaders } from "@/lib/route-chunks";
 import { Analytics } from "@vercel/analytics/react";
 
 // Every route except Home is code-split so the homepage doesn't pay for the
-// dashboard, editor, and auth bundles.
+// dashboard, editor, and auth bundles. The public pages load through
+// routeLoaders so the nav can prefetch the same chunks on hover/touch.
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const OpenClaw = lazy(() => import("./pages/OpenClaw"));
 const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Logo = lazy(() => import("./pages/Logo"));
-const Blog = lazy(() => import("./pages/Blog"));
+const Blog = lazy(routeLoaders["/blog"]);
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Book = lazy(() => import("./pages/Book"));
-const BookLanding = lazy(() => import("./pages/BookLanding"));
+const BookLanding = lazy(routeLoaders["/book"]);
 const SchedulingAuthCallback = lazy(() => import("./pages/SchedulingAuthCallback"));
-const Aviation = lazy(() => import("./pages/Aviation"));
-const CaseStudies = lazy(() => import("./pages/CaseStudies"));
+const Aviation = lazy(routeLoaders["/aviation"]);
+const CaseStudies = lazy(routeLoaders["/work"]);
 const CaseStudyDetail = lazy(() => import("./pages/CaseStudyDetail"));
-const Now = lazy(() => import("./pages/Now"));
-const Es = lazy(() => import("./pages/Es"));
+const Now = lazy(routeLoaders["/now"]);
+const Es = lazy(routeLoaders["/es"]);
 
 // Both toast portals render nothing until a toast fires, and both libraries
 // queue toasts raised before mount, so there's no need to pay for sonner + radix-toast
@@ -91,7 +93,9 @@ function ScrollResetOnNavigate() {
     const prev = prevPathname.current;
     prevPathname.current = pathname;
     if (prev === null || prev === pathname || navigationType === "POP") return;
-    getLenis()?.scrollTo(0, { immediate: true });
+    // force: a route change must land at the top even if something (the
+    // mobile menu's scroll lock) still has Lenis stopped on this commit.
+    getLenis()?.scrollTo(0, { immediate: true, force: true });
   }, [pathname, navigationType]);
   return null;
 }
@@ -123,7 +127,10 @@ const App = () => {
         <Suspense fallback={null}>
           <Toasters />
         </Suspense>
-        <BrowserRouter>
+        {/* v7_startTransition: a navigation to a route whose chunk is still
+            loading keeps the current page on screen until the new one is
+            ready, instead of blanking the content area in between. */}
+        <BrowserRouter future={{ v7_startTransition: true }}>
           <ScrollResetOnNavigate />
           <SecretDashboardAccess />
           <InoahWidget />
@@ -131,7 +138,11 @@ const App = () => {
             <SiteChrome slot="ambient" />
             <SiteChrome slot="nav" />
             <div className="flex-1 relative z-10">
-              <Suspense fallback={null}>
+              {/* The fallback holds a full viewport. With `null` the footer
+                  rendered directly under the nav on a cold deep link, filled
+                  the screen for a beat, then jumped away when the page chunk
+                  arrived (a ~1.0 layout shift on every interior route). */}
+              <Suspense fallback={<div className="min-h-screen" aria-hidden />}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />

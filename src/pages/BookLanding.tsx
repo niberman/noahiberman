@@ -27,7 +27,8 @@ export default function BookLanding() {
         description="Choose a meeting type and pick a time that works for you."
       />
 
-      <PageShell width="max-w-[960px]">
+      {/* min-h-screen: meeting types arrive after a fetch; see Blog.tsx. */}
+      <PageShell width="max-w-[960px]" className="min-h-screen">
           <PageHeader
             align="center"
             eyebrow={<Calendar className="mx-auto h-6 w-6 text-ed-light" />}
