@@ -19,6 +19,51 @@ const InoahSurface = lazy(() => import("./InoahSurface"));
 /** Scroll depth (px) past which the phone launcher folds down to its glyph. */
 const COMPACT_AFTER = 160;
 
+/**
+ * Where the phone sheet should sit while the on-screen keyboard is up.
+ *
+ * iOS does not shrink the layout viewport for the keyboard. A fixed inset-0
+ * sheet keeps its full height, the keyboard covers its lower half, and Safari
+ * pans the whole sheet upward to show the focused field, which pushes the
+ * header and its close button off the top of the screen. The visual viewport
+ * does report the space that is left, so while something covers a real slice
+ * of the screen the sheet is pinned to that box instead. Returns null when
+ * nothing needs overriding (keyboard down, desktop, pinch-zoom, or a browser
+ * that already resizes the layout viewport itself).
+ */
+function useKeyboardBox(open: boolean) {
+  const [box, setBox] = useState<{ top: number; height: number } | null>(null);
+
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!open || !vv) return;
+    const phone = window.matchMedia("(max-width: 639px)");
+    // Applied straight from the viewport events, which already fire at most
+    // once per frame. Unchanged values bail out of the state update.
+    const apply = () => {
+      const layoutHeight = Math.max(window.innerHeight, document.documentElement.clientHeight);
+      const covered = layoutHeight - vv.height;
+      const next =
+        phone.matches && covered > 120 && Math.abs(vv.scale - 1) < 0.01
+          ? { top: Math.round(vv.offsetTop), height: Math.round(vv.height) }
+          : null;
+      setBox((prev) =>
+        prev?.top === next?.top && prev?.height === next?.height ? prev : next,
+      );
+    };
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    apply();
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      setBox(null);
+    };
+  }, [open]);
+
+  return box;
+}
+
 function LauncherGlyph() {
   return (
     <span className="flex h-3.5 items-end gap-[2px]" aria-hidden="true">
@@ -32,10 +77,12 @@ function LauncherGlyph() {
 
 export function InoahWidget() {
   const [open, setOpen] = useState(false);
+  const keyboardBox = useKeyboardBox(open);
   const { pathname } = useLocation();
   // The pill steps aside while the visitor is panning the flight map.
   const exploring = useMapExploring();
-  // Phones only (the classes below are max-sm): the full "Ask iNoah" pill at
+  // Phones only (the classes below are max-sm, or touch plus short:, which
+  // is a phone in landscape): the full "Ask iNoah" pill at
   // the top of a page, folding to the glyph once the visitor is reading, so
   // it stops covering a third of the last line on screen. setState bails
   // when the value is unchanged, so the per-frame Lenis callback is free.
@@ -56,7 +103,7 @@ export function InoahWidget() {
           aria-hidden={exploring || undefined}
           tabIndex={exploring ? -1 : undefined}
           className={cn(
-            "inoah-surface fixed bottom-[max(env(safe-area-inset-bottom),1.25rem)] right-5 z-40 flex h-12 items-center gap-2.5 rounded-full",
+            "inoah-surface fixed bottom-[max(env(safe-area-inset-bottom),1.25rem)] right-[calc(1.25rem+env(safe-area-inset-right))] z-40 flex h-12 items-center gap-2.5 rounded-full",
             "border border-[rgba(180,140,240,.3)] bg-[rgba(10,6,18,.92)] px-4 text-ed-ink shadow-[0_8px_32px_-8px_rgba(128,51,204,.5)] backdrop-blur",
             "transition-[transform,box-shadow,border-color,opacity] [transition-duration:180ms] ease-out",
             "hover:-translate-y-0.5 hover:border-[rgba(180,140,240,.6)] hover:shadow-[0_12px_40px_-8px_rgba(128,51,204,.65)]",
@@ -74,6 +121,10 @@ export function InoahWidget() {
               "max-w-[6rem] transition-[max-width,opacity,margin] duration-300 ease-out motion-reduce:transition-none",
               // -ml cancels the flex gap so the folded pill is a true circle.
               compact && "max-sm:-ml-2.5 max-sm:max-w-0 max-sm:opacity-0",
+              // A phone in landscape is wider than sm but only ~340px tall,
+              // where the full pill sits on top of the map cards.
+              compact &&
+                "[@media(pointer:coarse)]:short:-ml-2.5 [@media(pointer:coarse)]:short:max-w-0 [@media(pointer:coarse)]:short:opacity-0",
             )}
           >
             Ask iNoah
@@ -92,13 +143,23 @@ export function InoahWidget() {
         <Dialog.Content
           data-lenis-prevent
           onOpenAutoFocus={(e) => {
+            const content = e.currentTarget as HTMLElement | null;
+            // On a touch screen, focusing the composer raises the keyboard
+            // over the starter questions before anyone has read them. Focus
+            // the sheet itself and let the first tap decide.
+            if (window.matchMedia("(pointer: coarse)").matches) {
+              e.preventDefault();
+              content?.focus({ preventScroll: true });
+              return;
+            }
             // Land focus on the composer, not the first header button.
-            const textarea = (e.currentTarget as HTMLElement | null)?.querySelector("textarea");
+            const textarea = content?.querySelector("textarea");
             if (textarea instanceof HTMLTextAreaElement) {
               e.preventDefault();
               textarea.focus();
             }
           }}
+          style={keyboardBox ? { top: keyboardBox.top, bottom: "auto", height: keyboardBox.height } : undefined}
           className={cn(
             "fixed inset-0 z-[160] flex flex-col outline-none",
             "sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[420px] sm:border-l sm:border-white/10 sm:shadow-2xl",

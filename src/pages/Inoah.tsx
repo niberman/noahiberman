@@ -36,7 +36,7 @@ export default function Inoah() {
             above), so the composer sits on the fold with no dead band under
             it. The floor is low enough that a 568px-tall phone still gets
             the whole card on screen. */}
-        <div className="mx-auto h-[calc(100dvh-8.5rem)] min-h-[440px] max-w-2xl sm:h-[calc(100dvh-13rem)] sm:min-h-[540px]">
+        <div className="mx-auto h-[calc(100svh-8.5rem)] min-h-[440px] max-w-2xl sm:h-[calc(100svh-13rem)] sm:min-h-[540px]">
           <Suspense fallback={<SurfaceSkeleton />}>
             <InoahSurface variant="page" />
           </Suspense>

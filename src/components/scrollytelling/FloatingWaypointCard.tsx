@@ -115,6 +115,9 @@ function PinInstance({ waypoint }: { waypoint: MapWaypoint }) {
   );
 }
 
+/** Height of the fixed nav bar plus a little air (px). */
+const NAV_CLEARANCE = 84;
+
 /** Desktop card anchored next to the pin via map.project(). Each waypoint gets
  *  its own instance so the outgoing card keeps tracking *its* pin while it
  *  fades: no teleporting to the next stop, no dead gap between cards. */
@@ -140,6 +143,19 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
       if (rect.width > 0) sizeRef.current = { w: rect.width, h: rect.height };
     }
 
+    // The iNoah launcher owns the bottom-right corner. Measured per waypoint
+    // (it changes size when it folds), not per frame.
+    let corner = { w: 0, h: 0 };
+    const measureCorner = () => {
+      const r = document
+        .querySelector<HTMLElement>('button[aria-label^="Open iNoah"]')
+        ?.getBoundingClientRect();
+      corner = r?.width
+        ? { w: window.innerWidth - r.left + 12, h: window.innerHeight - r.top + 12 }
+        : { w: 0, h: 0 };
+    };
+    measureCorner();
+
     const update = () => {
       if (!ref.current) return;
       const p = map.project(waypoint.center);
@@ -151,24 +167,39 @@ function AnchoredCardInstance({ waypoint }: { waypoint: MapWaypoint }) {
       const flipY = p.y > vh * 0.6;
       let x = flipX ? p.x - w - gap : p.x + gap;
       let y = flipY ? p.y - h - gap : p.y + gap;
-      // Clamp to viewport with a small margin
+      // Clamp to the viewport, below the nav bar rather than over its links
+      // (unless the viewport is too short to hold the card under the bar).
+      const top = vh - h - 16 >= NAV_CLEARANCE ? NAV_CLEARANCE : 16;
       x = Math.max(16, Math.min(vw - w - 16, x));
-      y = Math.max(16, Math.min(vh - h - 16, y));
+      y = Math.max(top, Math.min(vh - h - 16, y));
+      // Stay out of the launcher's corner: lift the card above it, or on a
+      // viewport too short for that (a phone in landscape) slide it left.
+      if (corner.w && x + w > vw - corner.w && y + h > vh - corner.h) {
+        const lifted = vh - h - corner.h;
+        if (lifted >= top) y = lifted;
+        else x = Math.max(16, vw - w - corner.w);
+      }
       ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
+    const remeasure = () => {
+      measureCorner();
+      update();
     };
     update();
     map.on("move", update);
-    map.on("resize", update);
+    map.on("resize", remeasure);
     return () => {
       map.off("move", update);
-      map.off("resize", update);
+      map.off("resize", remeasure);
     };
   }, [map, waypoint]);
 
   return (
     <div
       ref={ref}
-      className="fixed top-0 left-0 z-[110] hidden sm:block w-[clamp(300px,32vw,380px)] pointer-events-none will-change-transform"
+      // short: a phone in landscape. A wider card wraps to fewer lines, so it
+      // fits the ~260px left under the nav bar.
+      className="fixed top-0 left-0 z-[110] hidden sm:block w-[clamp(300px,32vw,380px)] short:w-[min(440px,60vw)] pointer-events-none will-change-transform"
       style={{ transform: "translate3d(-9999px,-9999px,0)" }}
     >
       <m.div

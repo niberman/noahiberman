@@ -24,6 +24,30 @@
       shellStyle.textContent = "[data-shell]{visibility:hidden}";
       document.head.appendChild(shellStyle);
     }
+
+    // Height classes behind the short: and squat: Tailwind variants. Measured
+    // against the small viewport (100svh), which holds still while Safari's
+    // toolbar collapses and returns, so the layout picked at load does not
+    // flip partway down the first scroll. Rotation and desktop window
+    // resizes still re-measure.
+    (function () {
+      var root = document.documentElement;
+      function measure() {
+        var probe = document.createElement("div");
+        probe.style.cssText =
+          "position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none";
+        root.appendChild(probe);
+        var h = probe.offsetHeight || window.innerHeight;
+        root.removeChild(probe);
+        root.classList.toggle("vh-short", h <= 700);
+        root.classList.toggle("vh-squat", h <= 600);
+      }
+      measure();
+      window.addEventListener("resize", measure);
+      window.addEventListener("orientationchange", measure);
+      // iOS only applies :active styles when something listens for touches.
+      document.addEventListener("touchstart", function () {}, { passive: true });
+    })();
   </script>
 
   <!-- iOS specific meta tags -->
@@ -321,31 +345,31 @@
         <main class="min-h-screen relative">
           <div class="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
             <section id="home"
-              class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 short:pt-[76px]">
+              class="relative min-svh-screen flex items-center justify-center overflow-hidden px-4 sm:px-6 short:pt-[76px]">
               <div class="absolute inset-0 bg-gradient-to-b from-background/70 via-background/30 to-background/70">
               </div>
-              <div class="container mx-auto px-4 relative z-10 pb-16 sm:pb-20 short:!pb-4">
+              <div class="container mx-auto px-4 relative z-10 pb-16 sm:pb-20 short:pb-4">
                 <div data-hero-copy class="text-center max-w-5xl mx-auto">
                   <div
-                    class="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 short:!mb-4 short:!h-12 short:!w-12 [@media(max-height:600px)]:hidden overflow-hidden rounded drop-shadow-glow animate-float relative">
+                    class="inline-block mb-6 sm:mb-8 h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 short:mb-4 short:h-12 short:w-12 squat:hidden overflow-hidden rounded drop-shadow-glow animate-float relative">
                     <picture>
                       <source srcset="/logo.webp" type="image/webp" />
                       <img src="/logo.png" alt="Noah Berman logo" width="96" height="96" fetchpriority="high"
                         class="absolute inset-0 w-full h-full object-contain origin-center" />
                     </picture>
                   </div>
-                  <p class="hero-enter-1 mb-5 sm:mb-7 short:!mb-3 text-xs uppercase tracking-[.3em] text-ed-muted">Noah
+                  <p class="hero-enter-1 mb-5 sm:mb-7 short:mb-3 text-xs uppercase tracking-[.3em] text-ed-muted">Noah
                     Berman</p>
                   <!-- Word spans animate transform/filter only (opacity stays 1)
                        so the LCP paint is never delayed. Keep in sync with the
                        hero-word markup in src/pages/Home.tsx. -->
                   <h1
-                    class="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 short:!mb-4 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
+                    class="text-[clamp(44px,8vw,128px)] font-display font-normal mb-5 sm:mb-7 short:mb-4 text-primary-foreground text-balance leading-[.95] tracking-[-.035em]">
                     <span class="hero-word" style="--word-i:0">Founder,</span>
                     <span class="hero-word" style="--word-i:1">Pilot,</span>
                     <span class="hero-word italic text-ed-light" style="--word-i:2">Engineer</span>
                   </h1>
-                  <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8 short:!mb-5">
+                  <div class="hero-enter-2 space-y-2 sm:space-y-3 mb-6 sm:mb-8 short:mb-5">
                     <p class="text-xl sm:text-2xl md:text-3xl text-ed-body font-light text-balance px-4">
                       The sky is not the limit</p>
                     <p class="text-lg sm:text-xl md:text-2xl text-ed-light font-display italic px-4">El cielo no es el
@@ -353,7 +377,7 @@
                   </div>
                   <!-- Wrapper divs mirror the Magnetic wrappers in Home.tsx:
                        they carry the responsive width, buttons fill them. -->
-                  <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 short:!gap-3 justify-center items-center px-4">
+                  <div class="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 short:gap-3 justify-center items-center px-4">
                     <div class="w-full sm:w-auto">
                       <button
                         class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium tracking-[.02em] h-11 text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 rounded-full w-full">Access

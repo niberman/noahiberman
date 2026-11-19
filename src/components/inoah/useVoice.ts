@@ -1,7 +1,13 @@
 // Voice for iNoah replies. ElevenLabs through the inoah-tts function when the
 // server has a key, otherwise the browser's SpeechSynthesis API. The engine is
 // probed once per page and cached; a mid-session ElevenLabs failure downgrades
-// to the browser engine instead of silencing the reply.
+// to the browser engine, which then follows the browser engine's rule below
+// (quiet unless the visitor asks for it).
+//
+// The two engines do not get the same default. ElevenLabs is Noah's own voice
+// and plays unless the visitor has muted it. The browser engine is a stock
+// system voice, so it never plays on its own: it stays off until the visitor
+// taps the speaker, and that choice lasts for the page, not across visits.
 //
 // Replies stream, so speech is fed deltas and cut into sentence-sized
 // segments: the first segment is spoken while the rest of the reply is still
@@ -76,18 +82,28 @@ export interface Voice {
 }
 
 export function useVoice(): Voice {
-  const [muted, setMuted] = useState(() => {
+  // ElevenLabs: persisted mute, default on.
+  const [storedMuted, setStoredMuted] = useState(() => {
     try {
       return localStorage.getItem(MUTE_KEY) === "1";
     } catch {
       return false;
     }
   });
+  // Browser engine: opt-in for this page only, default off. Deliberately not
+  // read from MUTE_KEY: a "0" left there by the old default-on behaviour is
+  // not a request to hear the system voice.
+  const [browserOptIn, setBrowserOptIn] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [engine, setEngine] = useState<Engine | null>(null);
+  // Muted until the probe settles, so nothing can play before the engine,
+  // and with it the default, is known.
+  const muted = engine === "elevenlabs" ? storedMuted : !browserOptIn;
 
   const mutedRef = useRef(muted);
   mutedRef.current = muted;
+  const browserOptInRef = useRef(browserOptIn);
+  browserOptInRef.current = browserOptIn;
   const engineRef = useRef<Engine | null>(null);
   const bufferRef = useRef("");
   const pendingUtterances = useRef(0);
@@ -173,10 +189,14 @@ export function useVoice(): Voice {
         body: JSON.stringify({ text }),
       });
       if (!res.ok) {
-        // Key removed or quota gone mid-session: downgrade for good.
+        // Key removed or quota gone mid-session: downgrade for good. The rest
+        // of the reply is read on screen; the system voice does not step in
+        // uninvited (muted flips with the engine, so later segments stop too).
+        // The ref is set here as well: a segment can arrive before the
+        // re-render that would otherwise update it.
         engineRef.current = "browser";
+        mutedRef.current = !browserOptInRef.current;
         setEngine("browser");
-        if (!mutedRef.current && generation === generationRef.current) speakWithBrowser(text);
         return;
       }
       const bytes = await res.arrayBuffer();
@@ -199,7 +219,7 @@ export function useVoice(): Voice {
     } catch {
       // Decode or network failure on one segment: drop it, keep the reply.
     }
-  }, [ensureAudioGraph, refreshSpeaking, speakWithBrowser]);
+  }, [ensureAudioGraph, refreshSpeaking]);
 
   const speakSegment = useCallback((raw: string) => {
     if (mutedRef.current) return;
@@ -250,16 +270,18 @@ export function useVoice(): Voice {
   }, [speakSegment]);
 
   const toggleMute = useCallback(() => {
-    setMuted((prev) => {
-      const next = !prev;
+    const next = !mutedRef.current;
+    if (engineRef.current === "elevenlabs") {
+      setStoredMuted(next);
       try {
         localStorage.setItem(MUTE_KEY, next ? "1" : "0");
       } catch {
         // private mode; the toggle still works for the session
       }
-      if (next) cancel();
-      return next;
-    });
+    } else {
+      setBrowserOptIn(!next);
+    }
+    if (next) cancel();
   }, [cancel]);
 
   // Chrome loads voices asynchronously; touching the list here warms it so the

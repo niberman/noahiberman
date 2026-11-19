@@ -110,7 +110,9 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
   }, []);
 
   // Speak the disclosure once the engine probe has settled, so it uses the
-  // same voice as the replies. Muted visitors read it instead.
+  // same voice as the replies. Muted visitors read it instead, and with the
+  // browser engine everyone starts muted (see useVoice), so there it is only
+  // spoken as the answer to the visitor turning the speaker on.
   const disclosureSpoken = useRef(false);
   useEffect(() => {
     if (disclosureSpoken.current || voice.muted || !voice.engine) return;
@@ -380,7 +382,8 @@ export default function InoahSurface({ variant, onClose }: InoahSurfaceProps) {
             <div className="space-y-1.5">
               <p className="font-editorial text-[30px] font-normal leading-none tracking-[-.02em]">Ask me anything on file.</p>
               <p className="mx-auto max-w-[280px] text-[13px] leading-relaxed text-[var(--in-muted)]">
-                Answers come from Noah's public notes, in his voice, read aloud.
+                Answers come from Noah's public notes, in his voice
+                {voice.engine === "elevenlabs" ? ", read aloud." : "."}
               </p>
             </div>
             <div className="w-full max-w-sm">

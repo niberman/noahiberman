@@ -1,3 +1,52 @@
+# Decisions, iNoah voice and iOS pass, 2026-11-19
+
+Noah asked to merge the audit pass, get rid of the automatic browser voice on iNoah, and do
+more iOS screen testing and movement on iOS. "Movement on iOS" was read as how the site moves
+on an iPhone: scrolling, transitions, animation, and the motion only a cursor could trigger.
+
+- **The browser voice is opt-in. The ElevenLabs voice is not touched.** The stock system
+  voice starting unprompted is what was asked to go. With the browser engine the speaker
+  button starts off and nothing plays until it is tapped. ElevenLabs is Noah's own voice and
+  keeps its default (on, mute remembered). At the time of this pass the live engine probe
+  returned the browser engine, so in practice iNoah is silent until asked.
+- **The opt-in is not saved.** The old default-on behaviour wrote "0" to the mute key for
+  everyone who never touched it, so that key cannot be read as a request to hear the system
+  voice. The choice lives for the page.
+- **A failed ElevenLabs call no longer hands the reply to the system voice.** That fallback
+  was the other way the browser voice could start by itself.
+- **short: and squat: are classes on the root, not media queries.** A max-height query follows
+  Safari's toolbar: it collapses on the first scroll, the viewport grows, and the hero changed
+  layout under the visitor's thumb. The inline head script measures 100svh, which stays put,
+  and re-measures on rotation and window resize. The class selector also outranks the sm: and
+  md: rules, so the overrides no longer need `!`. The critical-CSS pass is told to keep these
+  rules, since they match nothing in the static document.
+- **Touch gets its own entrance keyframes instead of a lighter blur.** Any animated blur
+  repaints per frame. Playwright's WebKit build crashed on most editorial pages at device
+  pixel ratios 1 and 2 until both the reveal blur and the entrance blur were gone, on the
+  live site as well as this build. That is a Linux test browser, not proof an iPhone
+  crashes, but it marks the path as the expensive one. Static blurs (the ambient orbs, the
+  nav and card backdrops) are left alone.
+- **Touch motion replaces cursor motion one for one, and stays quiet.** The hero aura drifts
+  on an 18 second loop with no blend mode. Rows light from a view timeline owned by the row,
+  because every glow row clips its overflow and would otherwise be its own scroller. Press
+  feedback uses the `scale` property so it composes with positioning transforms, and covers
+  buttons and pills only: large link rows would flicker at the start of every scroll.
+- **What WebKit on Linux can and cannot show.** It runs Safari's layout and script engine
+  with iPhone viewports, touch and the iOS user agent. It has no collapsing toolbar, no
+  on-screen keyboard and no safe-area insets. The toolbar and inset fixes follow from the
+  specifications, and the keyboard sizing was exercised against a stand-in visual viewport.
+  They have not been seen on a physical iPhone.
+- **The eval gate still fails closed.** A provider 503 on one of thirty questions failed the
+  production deploy of the previous pass and was reported as a banned claim. Transient
+  failures are retried and named for what they are. An unanswered question still blocks
+  the deploy, because an unverified answer is not a passed one. During this pass the
+  provider began answering 402 (the OpenRouter balance could not cover a full reply), and
+  the first version of the retry logic spent twelve minutes retrying an error that cannot
+  clear by waiting. Account errors now end the run at once with the cause in the log.
+- **Left alone on purpose.** Tailwind's hover-only-when-supported flag (the blog gallery
+  shows its controls through group-hover and would lose them on touch), tilt cards and
+  magnetic buttons on touch, and the launcher's hover lift.
+
 # Decisions, front-end audit and polish pass, 2026-11-18
 
 Noah asked to fix all front-end artifacts and bugs, make the site look smoother, and test the

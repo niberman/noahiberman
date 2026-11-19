@@ -112,27 +112,70 @@ const STYLE = [
   { name: "emoji", re: /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u },
 ];
 
-async function ask(prompt, attempt = 0) {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/inoah-chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: ANON_KEY,
-      Authorization: `Bearer ${ANON_KEY}`,
-    },
-    body: JSON.stringify({ prompt, include_context: true }),
-  });
+// A model provider hiccup is not a banned claim. The production deploy of
+// 2026-11-19 failed on a single upstream 503 ("Provider returned error") on
+// one of the thirty questions, with every answered question clean. Server
+// errors, dropped connections and empty answers get two more tries before the
+// question counts against the build. The gate still fails closed: a question
+// that cannot be asked after retries is unverified, and unverified does not
+// ship.
+const TRANSIENT_RETRIES = 2;
+// Provider errors about the account itself, as inoah-chat relays them.
+const ACCOUNT_ERROR = /\b40[123]\b|more credits|insufficient|quota|billing|api key|unauthori[sz]ed/i;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function ask(prompt, attempt = 0, transient = 0) {
+  const retryTransient = async (why) => {
+    const wait = 8_000 * (transient + 1);
+    console.log(`   ${why}, retrying in ${wait / 1000}s`);
+    await sleep(wait);
+    return ask(prompt, attempt, transient + 1);
+  };
+
+  let res;
+  try {
+    res = await fetch(`${SUPABASE_URL}/functions/v1/inoah-chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: ANON_KEY,
+        Authorization: `Bearer ${ANON_KEY}`,
+      },
+      body: JSON.stringify({ prompt, include_context: true }),
+    });
+  } catch (err) {
+    if (transient < TRANSIENT_RETRIES) return retryTransient(`network error (${err.message})`);
+    throw err;
+  }
   if (res.status === 429 && attempt < 3) {
     const wait = 20_000 * (attempt + 1);
     console.log(`   rate limited, waiting ${wait / 1000}s`);
-    await new Promise((r) => setTimeout(r, wait));
-    return ask(prompt, attempt + 1);
+    await sleep(wait);
+    return ask(prompt, attempt + 1, transient);
+  }
+  if (res.status >= 500) {
+    const body = (await res.text()).slice(0, 300);
+    // The provider refusing the account (out of credits, over quota, bad key)
+    // does not clear on a retry, and every question after it fails the same
+    // way. Stop here with the real cause instead of retrying for ten minutes.
+    if (ACCOUNT_ERROR.test(body)) {
+      const err = new Error(`HTTP ${res.status}: ${body.slice(0, 200)}`);
+      err.account = true;
+      throw err;
+    }
+    if (transient < TRANSIENT_RETRIES) return retryTransient(`HTTP ${res.status} from the endpoint`);
+    throw new Error(`HTTP ${res.status}: ${body.slice(0, 200)}`);
   }
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  return res.json();
+  const data = await res.json();
+  if (!String(data.response ?? "").trim() && transient < TRANSIENT_RETRIES) {
+    return retryTransient("empty answer");
+  }
+  return data;
 }
 
 let failures = 0;
+let unanswered = 0;
 let warnings = 0;
 
 console.log(`inoah-eval: ${QUESTIONS.length} held-out questions against ${SUPABASE_URL}\n`);
@@ -146,8 +189,17 @@ for (let i = 0; i < QUESTIONS.length; i++) {
     answer = String(data.response ?? "");
     if (!answer.trim()) throw new Error("empty answer");
   } catch (err) {
-    failures += 1;
-    console.log(`FAIL ${label} ${q}\n     request failed: ${err.message}`);
+    if (err.account) {
+      console.log(`FAIL ${label} ${q}\n     ${err.message}`);
+      console.error(
+        "\ninoah-eval: the model provider refused the request for an account reason (credits, quota or key). " +
+          "This is not a banned claim, and iNoah is failing for visitors the same way. " +
+          "Failing the build because the answers cannot be checked. Fix the provider account, then redeploy.",
+      );
+      process.exit(1);
+    }
+    unanswered += 1;
+    console.log(`FAIL ${label} ${q}\n     request failed after retries: ${err.message}`);
     continue;
   }
 
@@ -177,12 +229,22 @@ for (let i = 0; i < QUESTIONS.length; i++) {
   }
 
   // Stay well under the endpoint's per-minute rate limit.
-  await new Promise((r) => setTimeout(r, 1200));
+  await sleep(1200);
 }
 
-console.log(`\n${QUESTIONS.length - failures}/${QUESTIONS.length} passed, ${warnings} style warnings.`);
+console.log(`\n${QUESTIONS.length - failures - unanswered}/${QUESTIONS.length} passed, ${warnings} style warnings.`);
 if (failures > 0) {
   console.error(`inoah-eval: ${failures} question(s) produced a banned claim. Failing the build.`);
+}
+if (unanswered > 0) {
+  // Say what actually happened, so a provider outage does not read as iNoah
+  // making a claim it must not make.
+  console.error(
+    `inoah-eval: ${unanswered} question(s) got no answer after retries (endpoint or provider error, not a banned claim). ` +
+      "Failing the build because they are unverified. Redeploy once the endpoint is healthy.",
+  );
+}
+if (failures > 0 || unanswered > 0) {
   process.exit(1);
 }
 console.log("inoah-eval: no banned claims. Build may proceed.");

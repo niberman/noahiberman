@@ -519,9 +519,12 @@ All colors MUST be HSL.
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Fix iOS input zoom */
-    input[type="text"],
-    input[type="email"],
+    /* Fix iOS input zoom. Safari zooms the page when a focused field's text
+       is under 16px and does not zoom back out. Covers every text-entry
+       control: tel, password, number, search, date, untyped inputs and
+       selects zoom the same way text and email do. */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select,
     textarea {
       font-size: 16px !important;
     }
@@ -541,6 +544,14 @@ All colors MUST be HSL.
   .min-dvh-screen {
     min-height: 100vh;
     min-height: 100dvh;
+  }
+
+  /* Small viewport height: the space left with Safari's toolbar showing. It
+     does not change as the toolbar collapses, so nothing sized with it
+     resizes mid-scroll. Use for anything that must fit on screen at load. */
+  .min-svh-screen {
+    min-height: 100vh;
+    min-height: 100svh;
   }
 }
 
@@ -875,6 +886,121 @@ All colors MUST be HSL.
     transform: none;
     filter: none;
     transition: none;
+  }
+}
+
+/* Touch devices get their own motion, tuned for a phone GPU and a finger.
+
+   1. Entrances keep the rise and the fade but drop the blur. An animated
+      filter: blur() repaints its element on every frame, and on a phone that
+      lands on top of scrolling, so reveals stuttered exactly as a section
+      came into view. Opacity and transform stay on the compositor. Pointer
+      devices keep the blur.
+   2. A soft aura drifts across the hero, standing in for the cursor
+      spotlight a phone cannot have (HeroSpotlight.tsx).
+   3. Ledger rows light up as they cross the middle of the screen, standing
+      in for the cursor glow. Needs scroll-driven animations (Safari 26);
+      older Safari shows the rows as before.
+   4. Buttons and pills press in under the finger.
+
+   All of it is off under reduced motion. Keep this block after the rules it
+   overrides: it changes animation-name only, at the same specificity. */
+@keyframes hero-rise-touch {
+  from {
+    opacity: 0;
+    transform: translateY(var(--hero-rise, 20px));
+  }
+}
+@keyframes hero-word-rise-touch {
+  from {
+    transform: translateY(0.45em) scale(0.99);
+  }
+}
+@keyframes reveal-rise-touch {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.985);
+  }
+}
+@keyframes ed-rise-touch {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+}
+@keyframes hero-aura-drift {
+  0%, 100% { transform: translate(-50%, -50%) translate(-24vw, -7vh) scale(1); }
+  33% { transform: translate(-50%, -50%) translate(20vw, 3vh) scale(1.14); }
+  66% { transform: translate(-50%, -50%) translate(-6vw, 13vh) scale(0.92); }
+}
+@keyframes ed-glow-pass {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+.hero-aura {
+  transform: translate(-50%, -50%);
+}
+@media (hover: none) and (pointer: coarse) {
+  .ed-reveal {
+    filter: none;
+  }
+  .ed-reveal.is-in {
+    transition:
+      opacity 0.9s var(--ease-out-expo) var(--d, 0s),
+      transform 0.9s var(--ease-out-expo) var(--d, 0s);
+  }
+}
+@media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  .hero-enter-1,
+  .hero-enter-2,
+  .hero-enter-3 {
+    animation-name: hero-rise-touch;
+  }
+  .hero-word {
+    will-change: transform;
+    animation-name: hero-word-rise-touch;
+  }
+  .ed-rise {
+    animation-name: ed-rise-touch;
+  }
+  .hero-aura {
+    animation: hero-aura-drift 18s ease-in-out infinite;
+  }
+  /* scale, not transform: it composes with whatever transform positions the
+     element instead of replacing it. Snaps in, eases out, like a native
+     control. */
+  :where(button, [role="button"], a[class*="rounded-full"], a[class*="justify-center"]) {
+    transition: scale 0.35s var(--ease-out-expo);
+  }
+  :where(button, [role="button"], a[class*="rounded-full"], a[class*="justify-center"]):active {
+    scale: 0.96;
+    transition-duration: 0s;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .reveal-view {
+      animation-name: reveal-rise-touch;
+    }
+    /* The row owns the timeline: every glow row clips its overflow, which
+       makes it a scroll container, so view() on the overlay itself would
+       measure against the row and never advance. */
+    :has(> .ed-glow) {
+      view-timeline: --ed-row block;
+    }
+    /* The cursor version is a 640px circle, wider than a phone row, so it
+       would fill the row edge to edge and read as a lit rectangle. Here the
+       light is an oval that dies out before it reaches the row's edges. */
+    .ed-glow {
+      background: radial-gradient(
+        ellipse 50% 58% at 50% 50%,
+        rgba(128, 51, 204, calc(var(--glow-alpha, 0.2) * 1.25)),
+        transparent
+      );
+      animation: ed-glow-pass linear both;
+      animation-timeline: --ed-row;
+      animation-range: cover 22% cover 78%;
+    }
   }
 }
 
