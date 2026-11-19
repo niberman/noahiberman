@@ -120,6 +120,8 @@ const STYLE = [
 // that cannot be asked after retries is unverified, and unverified does not
 // ship.
 const TRANSIENT_RETRIES = 2;
+// Provider errors about the account itself, as inoah-chat relays them.
+const ACCOUNT_ERROR = /\b40[123]\b|more credits|insufficient|quota|billing|api key|unauthori[sz]ed/i;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function ask(prompt, attempt = 0, transient = 0) {
@@ -151,8 +153,18 @@ async function ask(prompt, attempt = 0, transient = 0) {
     await sleep(wait);
     return ask(prompt, attempt + 1, transient);
   }
-  if (res.status >= 500 && transient < TRANSIENT_RETRIES) {
-    return retryTransient(`HTTP ${res.status} from the endpoint`);
+  if (res.status >= 500) {
+    const body = (await res.text()).slice(0, 300);
+    // The provider refusing the account (out of credits, over quota, bad key)
+    // does not clear on a retry, and every question after it fails the same
+    // way. Stop here with the real cause instead of retrying for ten minutes.
+    if (ACCOUNT_ERROR.test(body)) {
+      const err = new Error(`HTTP ${res.status}: ${body.slice(0, 200)}`);
+      err.account = true;
+      throw err;
+    }
+    if (transient < TRANSIENT_RETRIES) return retryTransient(`HTTP ${res.status} from the endpoint`);
+    throw new Error(`HTTP ${res.status}: ${body.slice(0, 200)}`);
   }
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const data = await res.json();
@@ -177,6 +189,15 @@ for (let i = 0; i < QUESTIONS.length; i++) {
     answer = String(data.response ?? "");
     if (!answer.trim()) throw new Error("empty answer");
   } catch (err) {
+    if (err.account) {
+      console.log(`FAIL ${label} ${q}\n     ${err.message}`);
+      console.error(
+        "\ninoah-eval: the model provider refused the request for an account reason (credits, quota or key). " +
+          "This is not a banned claim, and iNoah is failing for visitors the same way. " +
+          "Failing the build because the answers cannot be checked. Fix the provider account, then redeploy.",
+      );
+      process.exit(1);
+    }
     unanswered += 1;
     console.log(`FAIL ${label} ${q}\n     request failed after retries: ${err.message}`);
     continue;

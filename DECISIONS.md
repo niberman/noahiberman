@@ -39,7 +39,10 @@ on an iPhone: scrolling, transitions, animation, and the motion only a cursor co
 - **The eval gate still fails closed.** A provider 503 on one of thirty questions failed the
   production deploy of the previous pass and was reported as a banned claim. Transient
   failures are retried and named for what they are. An unanswered question still blocks
-  the deploy, because an unverified answer is not a passed one.
+  the deploy, because an unverified answer is not a passed one. During this pass the
+  provider began answering 402 (the OpenRouter balance could not cover a full reply), and
+  the first version of the retry logic spent twelve minutes retrying an error that cannot
+  clear by waiting. Account errors now end the run at once with the cause in the log.
 - **Left alone on purpose.** Tailwind's hover-only-when-supported flag (the blog gallery
   shows its controls through group-hover and would lose them on touch), tilt cards and
   magnetic buttons on touch, and the launcher's hover lift.
