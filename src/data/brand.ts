@@ -1,5 +1,5 @@
 // Brand configuration - easily add, remove, or reorder words
-export const BrandWords = ["Founder", "Pilot", "Engineer"] as const;
+export const BrandWords = ["Pilot", "Engineer"] as const;
 
-// Formatted string for display (e.g., "Founder, Pilot, Engineer")
+// Formatted string for display (e.g., "Pilot, Engineer")
 export const BrandWordsString = BrandWords.join(", ");

@@ -11,8 +11,8 @@ interface SEOProps {
 }
 
 export function SEO({
-  title = "Noah Berman | Founder and Commercial Pilot in Denver, Colorado",
-  description = "Noah Berman is a software founder and FAA Commercial Pilot based in Denver, Colorado. Founder of Aviari LLC. University of Denver, Class of 2026.",
+  title = "Noah Berman | Commercial Pilot and Engineer, Denver",
+  description = "Noah Berman is an FAA Commercial Pilot, airplanes and helicopters, who builds the tools pilots and operators use. Denver, Colorado. University of Denver graduate.",
   image = "https://noahiberman.com/og-image.png",
   type = "website",
   canonical,

@@ -1,6 +1,6 @@
 import { AnimatePresence, m, MotionConfig, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, BookOpen } from "lucide-react";
+import { MessageCircle, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useRef, useEffect, useState, useCallback, lazy, Suspense } from "react";
@@ -192,8 +192,8 @@ export default function Home() {
             ProfilePage node). No per-page structuredData here or it would
             duplicate the entity. */}
         <SEO
-          title="Noah Berman | Founder and Commercial Pilot in Denver, Colorado"
-          description="Noah Berman is a software founder and FAA Commercial Pilot with instrument, multi-engine, and rotorcraft-helicopter ratings, based in Denver, Colorado. Founder of Aviari LLC. University of Denver graduate."
+          title="Noah Berman | Commercial Pilot and Engineer, Denver"
+          description="Noah Berman is an FAA Commercial Pilot, multi-engine and instrument rated with a private helicopter rating, who builds the tools pilots and operators use. Denver, Colorado. University of Denver graduate."
         />
 
         {/* HERO */}
@@ -283,24 +283,24 @@ export default function Home() {
               <div className="hero-enter-3 flex flex-col sm:flex-row gap-4 sm:gap-5 short:!gap-3 justify-center items-center px-4">
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate("/inoah")}
+                    onClick={() => navigate("/work")}
                     size="lg"
                     className="btn-sheen shadow-[0_0_80px_rgba(128,51,204,.5)] text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 w-full"
                   >
-                    <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Access iNoah
+                    See my work
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </Magnetic>
 
                 <Magnetic className="w-full sm:w-auto">
                   <Button
-                    onClick={() => navigate("/blog")}
+                    onClick={() => navigate("/inoah")}
                     size="lg"
                     variant="outline"
                     className="text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 w-full"
                   >
-                    <BookOpen className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Blog
+                    <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    Access iNoah
                   </Button>
                 </Magnetic>
 

@@ -41,8 +41,8 @@ export default function Es() {
   return (
     <PageShell lang="es">
       <SEO
-        title="Noah Berman | Fundador y piloto comercial en Denver, Colorado"
-        description="Noah Berman es fundador de software y piloto comercial de la FAA con habilitaciones de instrumentos, multimotor y helicóptero, basado en Denver, Colorado. Fundador de Aviari LLC. Graduado de la Universidad de Denver."
+        title="Noah Berman | Piloto comercial e ingeniero en Denver, Colorado"
+        description="Noah Berman es piloto comercial de la FAA con habilitaciones de instrumentos, multimotor y helicóptero, y construye las herramientas que usan pilotos y operadores. Denver, Colorado. Graduado de la Universidad de Denver."
       />
       <header className="mb-[clamp(48px,7vw,96px)]">
         <p className={`ed-rise mb-[clamp(20px,3vw,32px)] ${EYEBROW}`} style={rise(0.05)}>
@@ -52,7 +52,7 @@ export default function Es() {
           className="ed-rise text-balance font-editorial font-normal text-[clamp(56px,10vw,160px)] leading-[.9] tracking-[-.035em]"
           style={rise(0.15, 1.2)}
         >
-          Fundador, Piloto, <em className="text-ed-light">Ingeniero</em>
+          Piloto, <em className="text-ed-light">Ingeniero</em>
         </h1>
         <p className={`ed-rise mt-[clamp(20px,3vw,36px)] ${INTRO}`} style={rise(0.4)}>
           El cielo no es el límite
@@ -70,7 +70,7 @@ export default function Es() {
           <h2 className={SECTION_TITLE}>Quién soy</h2>
           <div className="space-y-5">
             <p className={BODY}>
-              Soy fundador de Aviari LLC y piloto comercial en Denver, Colorado.
+              Soy piloto comercial en Denver, Colorado, y hago consultoría de software a través de Aviari LLC.
               Construyo software de producción por mi cuenta y trabajo en dos
               idiomas. Me gradué de la Universidad de Denver en junio de 2026,
               con una licenciatura en Computación Aplicada y especializaciones en

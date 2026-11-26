@@ -15,7 +15,7 @@ export default function CaseStudies() {
     <EditorialPage>
       <SEO
         title="Work | Noah Berman"
-        description="Shipped work by Noah Berman: production platforms built alone and in use, across restaurant operations, aviation training, education, and AI infrastructure."
+        description="Work by Noah Berman: aviation software built to production, the cockpit references he flies with, a SolidWorks seat design, and platforms in use."
       />
 
       <section className={`flex min-h-[92vh] flex-col items-center justify-center pt-[140px] pb-[60px] text-center ${PAD_X}`}>
@@ -39,7 +39,7 @@ export default function CaseStudies() {
           className="ed-rise mt-[clamp(28px,4vw,48px)] max-w-[560px] text-[clamp(17px,1.4vw,21px)] font-light leading-[1.55] text-ed-body"
           style={rise(0.8)}
         >
-          Production software, not mockups. Every project here is shipped, and every one was built alone.
+          What I've built, from production software to the checklist I fly with.
         </p>
         <div
           className="ed-rise mt-[clamp(48px,8vh,96px)] flex flex-col items-center gap-2.5 text-[11px] uppercase tracking-[.3em] text-ed-muted"
