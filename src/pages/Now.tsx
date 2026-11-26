@@ -6,12 +6,16 @@ import { EditorialPage, EYEBROW, PAD_X } from "@/components/editorial/EditorialP
 import { m } from "framer-motion";
 import { Reveal, glow, rise, tilt, useParallax } from "@/components/editorial/fx";
 
-const NOW_UPDATED = "September 2026";
+const NOW_UPDATED = "November 2026";
 
 const RIGHT_NOW = [
   {
-    title: "Founder, Aviari LLC",
-    body: "Building custom software and AI workflows for small businesses. Recent shipped work is on the Work page.",
+    title: "Looking for a full-time role",
+    body: "Somewhere pilots and engineers work on the same aircraft: cockpit design, flight test or product. Open to relocating.",
+  },
+  {
+    title: "Software consulting through Aviari",
+    body: "Custom software for small businesses while I look. Recent work is on the Work page.",
   },
   {
     title: "Working toward the CFI",
@@ -22,17 +26,12 @@ const RIGHT_NOW = [
     body: "Single and multi-engine, fixed-wing and helicopter, mountains whenever the weather allows.",
   },
   {
-    title: "Fresh out of DU",
-    body: "BA Applied Computing, minors in Entrepreneurship and Spanish, June 2026. Closed the summer with the BASE Camp accelerator final pitch.",
+    title: "Graduated from DU",
+    body: "BA Applied Computing, minors in Entrepreneurship and Spanish, June 2026.",
   },
 ];
 
-const NEXT = [
-  {
-    title: "First clients for Aviari",
-    body: "Conversations with operators across Denver's restaurant and small-business scene.",
-  },
-];
+const NEXT: { title: string; body: string }[] = [];
 
 const FLAVOR = [
   {
@@ -93,7 +92,7 @@ export default function Now() {
     <EditorialPage>
       <SEO
         title="Now | Noah Berman"
-        description="What Noah Berman is doing right now: founding Aviari, working toward a CFI, flying out of Centennial, and planning a move to Latin America."
+        description="What Noah Berman is doing right now: looking for a full-time aviation role, software consulting through Aviari, working toward a CFI, and flying out of Centennial."
       />
       <div className={`mx-auto max-w-[1200px] pt-[clamp(130px,18vh,190px)] pb-[clamp(96px,14vw,180px)] ${PAD_X}`}>
         <div

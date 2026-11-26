@@ -127,6 +127,25 @@ export default function Aviation() {
         </div>
       </section>
 
+      <section className={`mx-auto max-w-[1000px] pb-[clamp(72px,10vw,140px)] text-center ${PAD_X}`}>
+        <Reveal as="p" className={`mb-7 ${EYEBROW}`}>Aircraft and panels</Reveal>
+        <Reveal
+          as="p"
+          delay={80}
+          className="mx-auto max-w-[860px] text-balance font-editorial text-[clamp(22px,2.4vw,34px)] leading-[1.3] tracking-[-.01em] text-ed-ink"
+        >
+          Cessna 172 through the turbocharged T182T, Cirrus SR20 and SR22T, Piper PA-28 Archer,
+          Diamond DA40, Beechcraft Baron 55 and Travel Air, American Champion Decathlon, Robinson R44.
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={160}
+          className="mt-5 text-[clamp(15px,1.2vw,18px)] font-light leading-[1.6] text-ed-body"
+        >
+          Flown behind Garmin G1000, Cirrus Perspective and six-pack panels.
+        </Reveal>
+      </section>
+
       <section className={`mx-auto max-w-[1200px] pb-[clamp(72px,10vw,140px)] ${PAD_X}`}>
         <Reveal as="h2" className={`mb-[clamp(48px,7vw,96px)] text-center ${H2}`}>
           The record, <em className="text-ed-light">in order</em>

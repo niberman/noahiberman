@@ -19,6 +19,60 @@ export interface CaseStudy {
  */
 export const caseStudies: CaseStudy[] = [
   {
+    id: "flight-school-ops",
+    title: "Flight-School Operations Platform",
+    tagline: "Maintenance state, squawks and grounding rules, built to production.",
+    category: "Multi-tenant SaaS / Aviation",
+    year: "2025 - 2026",
+    status: "Built to production",
+    stack: ["Next.js", "TypeScript", "Supabase", "Postgres", "Expo"],
+    summary:
+      "A multi-tenant operations system for small flight schools: multi-participant bookings with two-phase compliance gating, a squawk engine with conditional grounding, telemetry monitoring, ramp operations, notifications, and billing. Web app plus a native mobile app, one backend.",
+    highlights: [
+      "Bookings gated on pilot, aircraft, and currency checks",
+      "Squawk engine with MEL-style conditional grounding",
+      "Telemetry monitoring with automatic grounding",
+      "Web and mobile clients on one Supabase backend",
+    ],
+    accent: "aviation",
+    featured: true,
+  },
+  {
+    id: "cockpit-references",
+    title: "Cockpit References",
+    tagline: "The checklist I fly with.",
+    category: "Pilot Tools / Beechcraft Travel Air",
+    year: "Ongoing",
+    status: "In use in the aircraft",
+    stack: ["ForeFlight"],
+    summary:
+      "I built the ForeFlight weight-and-balance template and the digital checklist I use as pilot in command of a 1962 Beechcraft Travel Air, a light piston twin.",
+    highlights: [
+      "Weight-and-balance template in ForeFlight",
+      "Digital checklist used in the cockpit",
+      "Built for an aircraft I fly as pilot in command",
+    ],
+    accent: "aviation",
+  },
+  {
+    id: "cooler-scooter",
+    title: "Cooler Scooter",
+    tagline: "A seat I modeled, printed and tested.",
+    category: "Mechanical Design / University of Denver",
+    year: "DU coursework",
+    status: "Four-person team project",
+    stack: ["SolidWorks", "3D printing"],
+    summary:
+      "A mechanical engineering design project at the University of Denver. I proposed the concept the team selected for the final frame and ice-holding seat, modeled the knee seat in SolidWorks, integrated my teammates' parts into a 20% scale assembly, 3D printed it, and ran turning and obstacle-clearance tests.",
+    highlights: [
+      "Concept selected for the final frame and seat",
+      "Knee seat modeled in SolidWorks",
+      "Teammates' parts integrated into a 20% scale assembly, 3D printed",
+      "Turning and obstacle-clearance tests on the printed model",
+    ],
+    accent: "education",
+  },
+  {
     id: "smoothie-king-checklist",
     title: "Shift Checklist Platform",
     tagline: "Built alone. In use.",
@@ -35,25 +89,6 @@ export const caseStudies: CaseStudy[] = [
       "Row-level security across every table",
     ],
     accent: "business",
-    featured: true,
-  },
-  {
-    id: "flight-school-ops",
-    title: "Flight-School Operations Platform",
-    tagline: "The strongest pure-engineering artifact in the portfolio.",
-    category: "Multi-tenant SaaS / Aviation",
-    year: "2025 - 2026",
-    status: "Built to production",
-    stack: ["Next.js", "TypeScript", "Supabase", "Postgres", "Expo"],
-    summary:
-      "A multi-tenant operations system for small flight schools: multi-participant bookings with two-phase compliance gating, a squawk engine with conditional grounding, telemetry monitoring, ramp operations, notifications, and billing. Web app plus a native mobile app, one backend.",
-    highlights: [
-      "Bookings gated on pilot, aircraft, and currency checks",
-      "Squawk engine with MEL-style conditional grounding",
-      "Telemetry monitoring with automatic grounding",
-      "Web and mobile clients on one Supabase backend",
-    ],
-    accent: "aviation",
     featured: true,
   },
   {
@@ -93,21 +128,20 @@ export const caseStudies: CaseStudy[] = [
   {
     id: "hermes",
     title: "Hermes",
-    tagline: "My own agent infrastructure.",
+    tagline: "Agent infrastructure I run on my own machines.",
     category: "AI Infrastructure / Personal Systems",
     year: "2026",
-    status: "Running daily",
-    stack: ["Python", "Tailscale", "faster-whisper", "OpenRouter", "Telegram"],
+    status: "In use",
+    stack: ["Hermes Agent", "Python", "Tailscale", "Whisper", "OpenRouter"],
     summary:
-      "A self-hosted autonomous agent stack running across my own machines over a private mesh network. Voice input, a web dashboard, scheduled digests, and a full backup-and-restore path so the whole system can be reactivated on any machine.",
+      "A self-hosted agent stack built on Nous Research's open-source Hermes Agent, set up and run by me across my own machines over a private mesh network. Voice input, a web dashboard, and a full backup-and-restore path so the whole system can be reactivated on any machine.",
     highlights: [
       "Services distributed over a private Tailscale mesh",
-      "Voice input via faster-whisper",
-      "Scheduled digests delivered to Telegram",
+      "Voice input via Whisper",
       "One-repo backup and restore",
     ],
     accent: "business",
-  }
+  },
 ];
 
 export const caseStudyById = (id: string) =>
